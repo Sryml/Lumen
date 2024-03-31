@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Run autopep8 for Blade",
+        "type": "shell",
+        "command": "autopep8",
+        "args": ["${file}", "-i", "--ignore=E402"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      }
+    ]
+  }

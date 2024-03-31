@@ -1,0 +1,13 @@
+{
+    // "python.analysis.ignore": ["*"],
+  
+    // Enable type checking
+    "python.analysis.typeCheckingMode": "basic",
+    // Ignore certain error prompts
+    "python.analysis.diagnosticSeverityOverrides": {
+      "reportShadowedImports": "none",
+      "reportUnboundVariable": "none",
+      "reportOptionalMemberAccess": "none",
+      "reportUnusedExpression": "none"
+    },
+}
