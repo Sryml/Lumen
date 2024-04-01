@@ -14,7 +14,7 @@ class __data:
     map_list_path = "Maps"
     postload_callbacks = {}
     preload_callbacks = {}
-    root_path = os.path.normpath(os.path.join(os.getcwd(), "../.."))
+    root_path = os.path.join(os.getcwd(), "../..")
 
 
 # Store original function
@@ -96,27 +96,35 @@ def LoadLevel(map_dir, mod_dir=""):
     global ModListPath
 
     root_path = GetRootPath()
-    mod_path = "."
     if mod_dir:
         __data.map_list_path = BODLoader.BLModInfo[mod_dir]["MapListPath"]
-        mod_path = os.path.join(ModListPath, mod_dir)
-    map_path = os.path.join(root_path, mod_path, __data.map_list_path, map_dir)
+        mod_path = os.path.normpath(os.path.join(root_path, ModListPath, mod_dir))
+    else:
+        __data.map_list_path = "Maps"
+        mod_path = root_path
+
+    map_path = os.path.join(mod_path, __data.map_list_path, map_dir)
     cfg_file = os.path.join(map_path, "Cfg.py")
     if not os.path.exists(cfg_file) or (not os.path.isfile(cfg_file)):
         print("Cfg.py file not found!")
         return
 
-    sys_init = os.path.join(root_path, "Lib/sys_init.py")
+    # sys_init = os.path.join(root_path, "Lib/sys_init.py")
     execstr = (
         "import Bladex",
         "import sys",
         "Bladex.BeginLoadGame()",
+        #
+        # "Lumen = 1",
         "root_path = '%s'" % root_path,
-        "current_map = '%s'" % map_dir,
+        "mod_path = '%s'" % mod_path,
+        # "current_map = '%s'" % map_dir,
         "current_mod = '%s'" % mod_dir,
         # "sys.path.insert(0,'.')",
         # "sys.path.append('../../Bin')",
         # "sys.path.append('../../Scripts')",
+        "sys.path.append(mod_path + '/Lib')",
+        "sys.path.append(mod_path + '/Lib/PythonLib')",
         "sys.path.append(root_path + '/Lib')",
         "sys.path.append(root_path + '/Lib/PythonLib')",
         "sys.path.append(root_path + '/../Lib')",
@@ -129,10 +137,11 @@ def LoadLevel(map_dir, mod_dir=""):
         # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8/lib')",
         "import Lumenx",
         "Lumenx.SetRootPath(root_path)",
-        "Lumenx.SetCurrentMap(current_map)",
+        # "Lumenx.SetCurrentMap(current_map)",
         "Lumenx.SetCurrentMod(current_mod)",
-        "del root_path, current_map, current_mod",
-        "execfile('%s')" % sys_init,
+        "del root_path, mod_path, current_mod",
+        #
+        # "execfile('%s')" % sys_init,
         "execfile('%s')" % cfg_file,
         "Bladex.DoneLoadGame()",
     )
