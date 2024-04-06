@@ -14,7 +14,7 @@ class __data:
     map_list_path = "Maps"
     postload_callbacks = {}
     preload_callbacks = {}
-    root_path = os.path.join(os.getcwd(), "../..")
+    root_path = os.path.normpath(os.path.join(os.getcwd(), "../.."))
 
 
 # Store original function
@@ -95,6 +95,9 @@ def LoadLevel(map_dir, mod_dir=""):
     """
     global ModListPath
 
+    if map_dir == "":
+        return
+
     root_path = GetRootPath()
     if mod_dir:
         __data.map_list_path = BODLoader.BLModInfo[mod_dir]["MapListPath"]
@@ -115,10 +118,10 @@ def LoadLevel(map_dir, mod_dir=""):
         "import sys",
         "Bladex.BeginLoadGame()",
         #
-        # "Lumen = 1",
+        "Lumen = 1",
         "root_path = '%s'" % root_path,
         "mod_path = '%s'" % mod_path,
-        # "current_map = '%s'" % map_dir,
+        "current_map = '%s'" % map_dir,
         "current_mod = '%s'" % mod_dir,
         # "sys.path.insert(0,'.')",
         # "sys.path.append('../../Bin')",
@@ -137,9 +140,9 @@ def LoadLevel(map_dir, mod_dir=""):
         # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8/lib')",
         "import Lumenx",
         "Lumenx.SetRootPath(root_path)",
-        # "Lumenx.SetCurrentMap(current_map)",
         "Lumenx.SetCurrentMod(current_mod)",
-        "del root_path, mod_path, current_mod",
+        "Lumenx.SetCurrentMap(current_map)",
+        "del root_path, mod_path, map_dir, current_mod",
         #
         # "execfile('%s')" % sys_init,
         "execfile('%s')" % cfg_file,

@@ -44,11 +44,9 @@ def init():
         for p in paths:
             sys.path.append(os.path.join(root, p))
 
-    Lumenx.SetCurrentMap(os.path.basename(os.getcwd()))
-
     # Loaded from original
-    # if not globals().get("Lumen"):
-    #     pass
+    if not globals().get("Lumen"):
+        Lumenx.SetCurrentMap(os.path.basename(os.getcwd()))
 
 
 init()
