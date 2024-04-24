@@ -1,10 +1,70 @@
+# type: ignore
+
+# Author: Sryml
+# Email: sryml@hotmail.com
+# Python Version: 1.5.2
+# License: MIT
+
 import Bladex
-import BODLoader
+import __main__
 import os
+import sys
 
 ModListPath = "Mods"
 
-__override_funcs = ["GetCurrentMap", "ReadAlphaBitMap", "ReadBitMap"]
+
+######### Set sys.path
+def __fn():
+    paths = [
+        "Bin",
+        "Scripts",
+        "Scripts/Combos",
+        "Scripts/Biped",
+        "Lib",
+        "Lib/AnmSets",
+        "Lib/Widgets",
+        "Lib/PythonLib",
+        "Lib/PythonLib/Idle')",
+        "Lib/PythonLib/lib-tk')",
+        "Lib/PythonLib/DLLs')",
+        "Lib/PythonLib/Pmw')",
+        "Lib/PythonLib/Pmw/Pmw_0_8')",
+        "Lib/PythonLib/Pmw/Pmw_0_8/lib')",
+    ]
+
+    sys.path = ["."]
+
+    # Determine if it is an original campaign
+    if __main__.__dict__.get("current_mod", ""):
+        ModRelpath = os.path.join("..", os.path.relpath(".", __main__.map_list_path))
+        RootRelpath = os.path.join(ModRelpath, "..", os.path.relpath(".", ModListPath))
+    else:
+        ModRelpath = ""
+        RootRelpath = "../.."
+    OriginalRootRelpath = os.path.join(RootRelpath, "..")
+
+    for root in (
+        ModRelpath,
+        RootRelpath,
+        OriginalRootRelpath,
+    ):
+        if not ModRelpath:
+            continue
+        for p in paths:
+            sys.path.append(os.path.join(root, p))
+
+
+__fn()
+######### sys.path setup completed
+
+import BODLoader
+import string
+
+
+# Add True and False to __builtin__
+# Use exec to be compatible with formatted documents
+exec('sys.modules["__builtin__"].True = (1 == 1)')
+exec('sys.modules["__builtin__"].False = (1 == 0)')
 
 
 # private database
@@ -22,11 +82,12 @@ class __Bladex:
     pass
 
 
+__override_funcs = ["GetCurrentMap", "ReadAlphaBitMap", "ReadBitMap"]
 for __fn in __override_funcs:
     __Bladex.__dict__[__fn] = Bladex.__dict__[__fn]
 
 
-# Function
+######### Function Start
 def AddPostloadCB(map_token, fn):
     """AddPostloadCB("Barb_M1", fn)\n
     AddPostloadCB("Demo:M1", fn)\n
@@ -49,6 +110,22 @@ def AddPreloadCB(map_token, fn):
     list_ = __data.preload_callbacks.get(map_path, [])
     list_.append(fn)
     __data.preload_callbacks[map_path] = list_
+
+
+def BladeRawInput(prompt=None):
+    "Provides raw_input() for Blade"
+    # flush stderr/out first.
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except:
+        pass
+    if prompt is None:
+        prompt = ""
+    ret = Bladex.Input(prompt)
+    if ret == 0:
+        exec('raise KeyboardInterrupt, "operation cancelled"')
+    return ret
 
 
 def CallPostloadCB():
@@ -84,6 +161,10 @@ def GetRootPath():
     return __data.root_path
 
 
+def LoadComponent(comps):
+    import LoadBar
+
+
 def LoadLevel(map_dir, mod_dir=""):
     # type: (str, str) -> None
     """
@@ -100,16 +181,16 @@ def LoadLevel(map_dir, mod_dir=""):
 
     root_path = GetRootPath()
     if mod_dir:
-        __data.map_list_path = BODLoader.BLModInfo[mod_dir]["MapListPath"]
+        map_list_path = BODLoader.BLModInfo[mod_dir]["MapListPath"]
         mod_path = os.path.normpath(os.path.join(root_path, ModListPath, mod_dir))
     else:
-        __data.map_list_path = "Maps"
+        map_list_path = "Maps"
         mod_path = root_path
 
-    map_path = os.path.join(mod_path, __data.map_list_path, map_dir)
+    map_path = os.path.join(mod_path, map_list_path, map_dir)
     cfg_file = os.path.join(map_path, "Cfg.py")
     if not os.path.exists(cfg_file) or (not os.path.isfile(cfg_file)):
-        print("Cfg.py file not found!")
+        printx("Cfg.py file not found!")
         return
 
     # sys_init = os.path.join(root_path, "Lib/sys_init.py")
@@ -119,10 +200,11 @@ def LoadLevel(map_dir, mod_dir=""):
         "Bladex.BeginLoadGame()",
         #
         "Lumen = 1",
-        "root_path = '%s'" % root_path,
-        "mod_path = '%s'" % mod_path,
         "current_map = '%s'" % map_dir,
         "current_mod = '%s'" % mod_dir,
+        "map_list_path = '%s'" % map_list_path,
+        "mod_path = '%s'" % mod_path,
+        "root_path = '%s'" % root_path,
         # "sys.path.insert(0,'.')",
         # "sys.path.append('../../Bin')",
         # "sys.path.append('../../Scripts')",
@@ -139,10 +221,11 @@ def LoadLevel(map_dir, mod_dir=""):
         # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8')",
         # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8/lib')",
         "import Lumenx",
-        "Lumenx.SetRootPath(root_path)",
-        "Lumenx.SetCurrentMod(current_mod)",
         "Lumenx.SetCurrentMap(current_map)",
-        "del root_path, mod_path, map_dir, current_mod",
+        "Lumenx.SetCurrentMod(current_mod)",
+        "Lumenx.SetMapListPath(map_list_path)",
+        "Lumenx.SetRootPath(root_path)",
+        "del root_path, mod_path, map_dir, current_mod, map_list_path",
         #
         # "execfile('%s')" % sys_init,
         "execfile('%s')" % cfg_file,
@@ -151,6 +234,22 @@ def LoadLevel(map_dir, mod_dir=""):
     Bladex.BeginLoadGame()
     os.chdir(map_path)
     Bladex.CloseLevel(string.join(execstr, ";"), map_dir)
+
+
+# print function
+def printx(*values, **kwargs):
+    sep = kwargs.get("sep", " ")
+    end = kwargs.get("end", "\n")
+    file = kwargs.get("file", None)
+    flush = kwargs.get("flush", 0)
+
+    output = string.join(map(str, values), sep)
+    if file is None:
+        file = sys.stdout
+    file.write(output)
+    file.write(end)
+    # if flush:
+    #     file.flush()
 
 
 def ReadAlphaBitMap():
@@ -169,18 +268,53 @@ def SetCurrentMod(mod_dir):
     __data.current_mod = mod_dir
 
 
+def SetMapListPath(path):
+    __data.map_list_path = path
+
+
 def SetRootPath(path):
     __data.root_path = os.path.normpath(path)
 
+
+# from sys_init.py
+def sys_init():
+    # Loaded from original
+    if not __main__.__dict__.get("Lumen"):
+        SetCurrentMap(os.path.basename(os.getcwd()))
+
+    # fmt: off
+    import ConsoleOutput
+    ConsoleOutput.InitConsole()
+    # fmt: on
+
+    sys.modules["__builtin__"].raw_input = BladeRawInput
+    sys.modules["__builtin__"].input = BladeRawInput
+    sys.setcheckinterval(100)
+
+    Bladex.CloseDebugChannel("DefaultChannel")
+
+    # fmt: off
+    import BODLoader
+    BODLoader.init()
+    # fmt: on
+
+    printx("Executed Lumenx.sys_init")
+
+
+######### Function End
 
 # Override function
 for __fn in __override_funcs:
     Bladex.__dict__[__fn] = globals()[__fn]
 
 
+# Clean up
+del __fn, __override_funcs
+
 """
 AddPostloadCB
 AddPreloadCB
+BladeRawInput
 CallPostloadCB
 CallPreloadCB
 GetCurrentMap
@@ -189,10 +323,14 @@ GetMapListPath
 GetPostloadCB
 GetPreloadCB
 GetRootPath
+LoadComponent
 LoadLevel
+print
 ReadAlphaBitMap
 ReadBitMap
 SetCurrentMap
 SetCurrentMod
+SetMapListPath
 SetRootPath
+sys_init
 """
