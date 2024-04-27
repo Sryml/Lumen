@@ -1,5 +1,3 @@
-# type: ignore
-
 # Author: Sryml
 # Email: sryml@hotmail.com
 # Python Version: 1.5.2
@@ -57,14 +55,16 @@ def __fn():
 __fn()
 ######### sys.path setup completed
 
-import BODLoader
-import string
-
 
 # Add True and False to __builtin__
 # Use exec to be compatible with formatted documents
 exec('sys.modules["__builtin__"].True = (1 == 1)')
 exec('sys.modules["__builtin__"].False = (1 == 0)')
+
+
+import BODLoader
+import string
+import BInput
 
 
 # private database
@@ -82,12 +82,40 @@ class __Bladex:
     pass
 
 
-__override_funcs = ["GetCurrentMap", "ReadAlphaBitMap", "ReadBitMap"]
-for __fn in __override_funcs:
-    __Bladex.__dict__[__fn] = Bladex.__dict__[__fn]
+__override_funcs = [
+    "AddBoundFunc",
+    "AddInputAction",
+    "AssocKey",
+    "GetCurrentMap",
+    "GetTimeActionHeld",
+    "ReadAlphaBitMap",
+    "ReadBitMap",
+    "RemoveBoundFunc",
+    "RemoveInputAction",
+]
+for __fn in __override_funcs:  # type: ignore
+    __Bladex.__dict__[__fn] = Bladex.__dict__[__fn]  # type: ignore
 
 
 ######### Function Start
+def AddBoundFunc(action_name, proc):
+    IActions = BInput.GetInputManager().GetInputActions()
+    action_name = BInput.GetInternalName(IActions.ID, action_name)
+    __Bladex.AddBoundFunc(action_name, proc)  # type: ignore
+    return 1
+
+
+def AddInputAction(action_name, npi):
+    val = BInput.GetInputManager().AddInputAction(action_name, npi, dict_only=1)
+    if not val:
+        return 0
+
+    IActions = BInput.GetInputManager().GetInputActions()
+    action_name = BInput.GetInternalName(IActions.ID, action_name)
+    __Bladex.AddInputAction(action_name, npi)  # type: ignore
+    return 1
+
+
 def AddPostloadCB(map_token, fn):
     """AddPostloadCB("Barb_M1", fn)\n
     AddPostloadCB("Demo:M1", fn)\n
@@ -112,6 +140,19 @@ def AddPreloadCB(map_token, fn):
     __data.preload_callbacks[map_path] = list_
 
 
+def AssocKey(action_name, device, key, on_press=1):
+    val = BInput.GetInputManager().AssocKey(
+        action_name, device, key, on_press, dict_only=1
+    )
+    if not val:
+        return 0
+
+    IActions = BInput.GetInputManager().GetInputActions()
+    action_name = BInput.GetInternalName(IActions.ID, action_name)
+    __Bladex.AssocKey(action_name, device, key, on_press)  # type: ignore
+    return 1
+
+
 def BladeRawInput(prompt=None):
     "Provides raw_input() for Blade"
     # flush stderr/out first.
@@ -124,7 +165,7 @@ def BladeRawInput(prompt=None):
         prompt = ""
     ret = Bladex.Input(prompt)
     if ret == 0:
-        exec('raise KeyboardInterrupt, "operation cancelled"')
+        exec(Raisex(KeyboardInterrupt, "operation cancelled"))
     return ret
 
 
@@ -159,6 +200,14 @@ def GetPreloadCB(map_path):
 def GetRootPath():
     """Returns the root path of Lumen"""
     return __data.root_path
+
+
+def GetTimeActionHeld(action_name):
+    """Return the amount of milliseconds a key has been hald down, or zero if it is currently considered released"""
+    action_name = BInput.GetInternalName(
+        BInput.GetInputManager().GetInputActions().ID, action_name
+    )
+    return __Bladex.GetTimeActionHeld(action_name)  # type: ignore
 
 
 def LoadComponent(comps):
@@ -233,7 +282,7 @@ def LoadLevel(map_dir, mod_dir=""):
     )
     Bladex.BeginLoadGame()
     os.chdir(map_path)
-    Bladex.CloseLevel(string.join(execstr, ";"), map_dir)
+    Bladex.CloseLevel(string.join(execstr, ";"), map_dir)  # type: ignore
 
 
 # print function
@@ -243,7 +292,7 @@ def printx(*values, **kwargs):
     file = kwargs.get("file", None)
     flush = kwargs.get("flush", 0)
 
-    output = string.join(map(str, values), sep)
+    output = string.join(map(str, values), sep)  # type: ignore
     if file is None:
         file = sys.stdout
     file.write(output)
@@ -252,12 +301,34 @@ def printx(*values, **kwargs):
     #     file.flush()
 
 
+def Raisex(exc, msg=""):
+    return "raise %s, %s" % (exc, repr(msg))
+
+
 def ReadAlphaBitMap():
     pass
 
 
 def ReadBitMap():
     pass
+
+
+def RemoveBoundFunc(action_name, proc):
+    IActions = BInput.GetInputManager().GetInputActions()
+    action_name = BInput.GetInternalName(IActions.ID, action_name)
+    __Bladex.RemoveBoundFunc(action_name, proc)  # type: ignore
+    return 1
+
+
+def RemoveInputAction(action_name):
+    IActions = BInput.GetInputManager().GetInputActions()
+    val = IActions.RemoveAction(action_name, dict_only=1)
+    if not val:
+        return 0
+
+    action_name = BInput.GetInternalName(IActions.ID, action_name)
+    __Bladex.RemoveInputAction(action_name)  # type: ignore
+    return 1
 
 
 def SetCurrentMap(map_dir):
@@ -287,16 +358,13 @@ def sys_init():
     ConsoleOutput.InitConsole()
     # fmt: on
 
-    sys.modules["__builtin__"].raw_input = BladeRawInput
-    sys.modules["__builtin__"].input = BladeRawInput
-    sys.setcheckinterval(100)
+    sys.modules["__builtin__"].raw_input = BladeRawInput  # type: ignore
+    sys.modules["__builtin__"].input = BladeRawInput  # type: ignore
+    sys.setcheckinterval(100)  # type: ignore
 
     Bladex.CloseDebugChannel("DefaultChannel")
 
-    # fmt: off
-    import BODLoader
     BODLoader.init()
-    # fmt: on
 
     printx("Executed Lumenx.sys_init")
 
@@ -304,16 +372,19 @@ def sys_init():
 ######### Function End
 
 # Override function
-for __fn in __override_funcs:
-    Bladex.__dict__[__fn] = globals()[__fn]
+for __fn in __override_funcs:  # type: ignore
+    Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore
 
 
 # Clean up
 del __fn, __override_funcs
 
 """
+AddBoundFunc
+AddInputAction
 AddPostloadCB
 AddPreloadCB
+AssocKey
 BladeRawInput
 CallPostloadCB
 CallPreloadCB
@@ -323,11 +394,15 @@ GetMapListPath
 GetPostloadCB
 GetPreloadCB
 GetRootPath
+GetTimeActionHeld
 LoadComponent
 LoadLevel
-print
+printx
+Raisex
 ReadAlphaBitMap
 ReadBitMap
+RemoveBoundFunc
+RemoveInputAction
 SetCurrentMap
 SetCurrentMod
 SetMapListPath
