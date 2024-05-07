@@ -59,6 +59,7 @@ class B_InputDevicePtr:
         return val
 
     def Name(self):
+        """Newly added function to get the name of the device."""
         return self.__name
 
     def RemoveListener(self, arg0):
@@ -79,6 +80,20 @@ class B_InputDevicePtr:
             + args,
         )
         return val
+
+    def UnBinded(self, key):
+        """Newly added function to unbind a key."""
+        InputManager = GetInputManager()
+        IActions = InputManager.GetInputActions()
+        for action_name in IActions.names:
+            for k, on_press in IActions.actions[action_name]["Devices"][
+                self.Name()
+            ].items():
+                if k == key:
+                    IAction = IActions.Find(action_name)
+                    IAction.RemoveEvent(self, key, on_press)
+                    break
+        return 1
 
     def __str__(self):
         val = BInputc.B_InputDevice___str__(self.this)
@@ -149,11 +164,11 @@ class B_InputActionPtr:
 
     def AddEvent(self, device_obj, key, on_press, toggle=0):
         device = device_obj.Name()
-        if self.action["Events"][device].get(key, None) == on_press and (not toggle):
+        if self.action["Devices"][device].get(key, None) == on_press and (not toggle):
             return 0
 
         if not toggle:
-            self.action["Events"][device][key] = on_press
+            self.action["Devices"][device][key] = on_press
         val = BInputc.B_InputAction_AddEvent(self.this, device_obj.this, key, on_press)
         return val
 
@@ -172,32 +187,33 @@ class B_InputActionPtr:
 
     def RemoveEvent(self, device_obj, key, on_press):
         device = device_obj.Name()
-        if not self.action["Events"][device].get(key, None):
+        if not self.action["Devices"][device].get(key, None):
             return 0
 
         val = BInputc.B_InputAction_RemoveEvent(
             self.this, device_obj.this, key, on_press
         )
-        del self.action["Events"][device][key]
+        del self.action["Devices"][device][key]
         return val
 
     def RemoveAllEvents(self, toggle=0):
         if not toggle:
-            for device in self.action["Events"].keys():
-                self.action["Events"][device].clear()
+            for device in self.action["Devices"].keys():
+                self.action["Devices"][device].clear()
         val = BInputc.B_InputAction_RemoveAllEvents(self.this)
         return val
 
     def RemoveAllDeviceEvents(self, device):
+        """New to the reissue, it now also applies to the Classic Edition."""
         if not hasattr(BInputc, "B_InputAction_RemoveAllDeviceEvents"):
             # printx("RemoveAllDeviceEvents: Not available in current version.")
             device_obj = GetInputManager().GetAttachedDevice(device)
-            for key, on_press in self.action["Events"][device].items():
+            for key, on_press in self.action["Devices"][device].items():
                 self.RemoveEvent(device_obj, key, on_press)
             return 1
 
         val = BInputc.B_InputAction_RemoveAllDeviceEvents(self.this, device)  # type: ignore
-        self.action["Events"][device].clear()
+        self.action["Devices"][device].clear()
         return val
 
     def RemoveAllProcs(self):
@@ -222,7 +238,7 @@ class B_InputActionsPtr:
         self.actions = {
             # "action_name": {
             #     "IsConst": 0,
-            #     "Events": {
+            #     "Devices": {
             #         "Keyboard": {"A": 1},
             #         "Mouse": {},
             #         "Gamepad": {},
@@ -305,7 +321,7 @@ class B_InputManagerPtr:
 
         IActions.names.append(action_name)
         IActions.actions[action_name] = {
-            "Events": {
+            "Devices": {
                 "Keyboard": {},
                 "Mouse": {},
                 "Gamepad": {},
@@ -321,10 +337,10 @@ class B_InputManagerPtr:
         if not action_name in IActions.names:
             return 0
 
-        if IActions.actions[action_name]["Events"][device].get(key, None) == on_press:
+        if IActions.actions[action_name]["Devices"][device].get(key, None) == on_press:
             return 0
 
-        IActions.actions[action_name]["Events"][device][key] = on_press
+        IActions.actions[action_name]["Devices"][device][key] = on_press
 
         if not dict_only:
             action_name = GetInternalName(IActions.ID, action_name)
@@ -369,6 +385,7 @@ class B_InputManagerPtr:
         # return val
 
     def ClearInputActionsSet(self, set_name):
+        """New to the reissue, it now also applies to the Classic Edition."""
         if not self.InputActionsSet.get(set_name, None):
             return 0
         if set_name == self.GetInputActionsSet():
@@ -401,7 +418,7 @@ class B_InputManagerPtr:
         IActions = self.InputActionsSet[set_name]
         for action_name in IActions.names:
             IAction = IActions.Find(action_name)
-            for device, keys in IActions.actions[action_name]["Events"].items():
+            for device, keys in IActions.actions[action_name]["Devices"].items():
                 device_obj = self.GetAttachedDevice(device)
                 for key, on_press in keys.items():
                     IAction.AddEvent(device_obj, key, on_press, toggle=1)
