@@ -3,6 +3,19 @@
 # Python Version: 1.5.2
 # License: MIT
 
+# Example usage:
+"""test_Vector3.py
+import BTest
+
+def test_Vector3_init():
+    v = Vector3((1.0, 2.0, 3.0))
+    assert v.value == (1.0, 2.0, 3.0)
+
+# Execute at the bottom of the file:
+BTest.Run()
+"""
+# import test_Vector3
+
 import traceback
 import sys
 import types
@@ -62,12 +75,12 @@ class Run:
                     exc_type, exc_value, exc_traceback
                 )
                 # Only print the first traceback
-                exception_str = string.join(
+                exception_str = string.join(  # type: ignore
                     exception_str[:1] + exception_str[-2:],
                     "",
                 )
                 # Print each line of the exception
-                exception_str = string.split(exception_str, "\n")
+                exception_str = string.split(exception_str, "\n")  # type: ignore
                 for s in exception_str:
                     printx(s)
 
@@ -76,11 +89,3 @@ class Run:
             "Total tests: %d, Passed: %d, Failed: %d"
             % (len(self.tests), passed, failed)
         )
-
-
-"""
-import BTest
-
-# Execute at the bottom of the file:
-BTest.Run()
-"""
