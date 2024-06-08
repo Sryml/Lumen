@@ -83,16 +83,16 @@ class B_InputDevicePtr:
 
     def UnBinded(self, key):
         """Newly added function to unbind a key."""
-        InputManager = GetInputManager()
+        count = 0
         IActions = InputManager.GetInputActions()
         for action_name in IActions.names:
-            for k, on_press in IActions.actions[action_name]["Devices"][
-                self.Name()
-            ].items():
+            for k, on_press in IActions.actions[action_name]["Devices"][self.Name()]:
                 if k == key:
                     IAction = IActions.Find(action_name)
                     IAction.RemoveEvent(self, key, on_press)
-                    break
+                    count = count + 1
+                    if count == 2:
+                        break
         return 1
 
     def __str__(self):
@@ -164,11 +164,15 @@ class B_InputActionPtr:
 
     def AddEvent(self, device_obj, key, on_press, toggle=0):
         device = device_obj.Name()
-        if self.action["Devices"][device].get(key, None) == on_press and (not toggle):
+        key_tuple = (key, on_press)
+        if key_tuple in self.action["Devices"][device] and (not toggle):
             return 0
 
         if not toggle:
-            self.action["Devices"][device][key] = on_press
+            device_obj = InputManager.GetAttachedDevice(device)
+            if device_obj.IsBinded(key):
+                device_obj.UnBinded(key)
+            self.action["Devices"][device].append(key_tuple)
         val = BInputc.B_InputAction_AddEvent(self.this, device_obj.this, key, on_press)
         return val
 
@@ -187,19 +191,20 @@ class B_InputActionPtr:
 
     def RemoveEvent(self, device_obj, key, on_press):
         device = device_obj.Name()
-        if not self.action["Devices"][device].get(key, None):
+        key_tuple = (key, on_press)
+        if key_tuple not in self.action["Devices"][device]:
             return 0
 
         val = BInputc.B_InputAction_RemoveEvent(
             self.this, device_obj.this, key, on_press
         )
-        del self.action["Devices"][device][key]
+        self.action["Devices"][device].remove(key_tuple)
         return val
 
     def RemoveAllEvents(self, toggle=0):
         if not toggle:
             for device in self.action["Devices"].keys():
-                self.action["Devices"][device].clear()
+                self.action["Devices"][device] = []
         val = BInputc.B_InputAction_RemoveAllEvents(self.this)
         return val
 
@@ -208,12 +213,12 @@ class B_InputActionPtr:
         if not hasattr(BInputc, "B_InputAction_RemoveAllDeviceEvents"):
             # printx("RemoveAllDeviceEvents: Not available in current version.")
             device_obj = GetInputManager().GetAttachedDevice(device)
-            for key, on_press in self.action["Devices"][device].items():
+            for key, on_press in self.action["Devices"][device]:
                 self.RemoveEvent(device_obj, key, on_press)
             return 1
 
         val = BInputc.B_InputAction_RemoveAllDeviceEvents(self.this, device)  # type: ignore
-        self.action["Devices"][device].clear()
+        self.action["Devices"][device] = []
         return val
 
     def RemoveAllProcs(self):
@@ -239,9 +244,9 @@ class B_InputActionsPtr:
             # "action_name": {
             #     "IsConst": 0,
             #     "Devices": {
-            #         "Keyboard": {"A": 1},
-            #         "Mouse": {},
-            #         "Gamepad": {},
+            #         "Keyboard": [("A", 1),("A", 0)],
+            #         "Mouse": [],
+            #         "Gamepad": [],
             #     },
             #     "BoundFunc": [],
             # },
@@ -322,9 +327,9 @@ class B_InputManagerPtr:
         IActions.names.append(action_name)
         IActions.actions[action_name] = {
             "Devices": {
-                "Keyboard": {},
-                "Mouse": {},
-                "Gamepad": {},
+                "Keyboard": [],
+                "Mouse": [],
+                "Gamepad": [],
             },
         }
         if not dict_only:
@@ -337,10 +342,15 @@ class B_InputManagerPtr:
         if not action_name in IActions.names:
             return 0
 
-        if IActions.actions[action_name]["Devices"][device].get(key, None) == on_press:
+        key_tuple = (key, on_press)
+        if key_tuple in IActions.actions[action_name]["Devices"][device]:
             return 0
 
-        IActions.actions[action_name]["Devices"][device][key] = on_press
+        device_obj = self.GetAttachedDevice(device)
+        if device_obj.IsBinded(key):
+            device_obj.UnBinded(key)
+
+        IActions.actions[action_name]["Devices"][device].append(key_tuple)
 
         if not dict_only:
             action_name = GetInternalName(IActions.ID, action_name)
@@ -350,11 +360,11 @@ class B_InputManagerPtr:
         return 1
 
     def DisassocKey(self, device, key):
-        if not hasattr(BInputc, "B_InputManager_DisassocKey"):
-            printx("DisassocKey: Not available in current version.")
-            return
-        val = BInputc.B_InputManager_DisassocKey(self.this, device, key)  # type: ignore
-        return val
+        # if not hasattr(BInputc, "B_InputManager_DisassocKey"):
+        #     printx("DisassocKey: Not available in current version.")
+        #     return
+        # val = BInputc.B_InputManager_DisassocKey(self.this, device, key)  # type: ignore
+        return self.GetAttachedDevice(device).UnBinded(key)
 
     def Bind2(self, arg0, arg1, arg2, arg3):
         val = BInputc.B_InputManager_Bind2(self.this, arg0, arg1, arg2, arg3)
@@ -420,7 +430,7 @@ class B_InputManagerPtr:
             IAction = IActions.Find(action_name)
             for device, keys in IActions.actions[action_name]["Devices"].items():
                 device_obj = self.GetAttachedDevice(device)
-                for key, on_press in keys.items():
+                for key, on_press in keys:
                     IAction.AddEvent(device_obj, key, on_press, toggle=1)
 
         globals()["__CurrentInputActions"] = set_name
@@ -445,11 +455,15 @@ class B_InputManager(B_InputManagerPtr):
 
 # -------------- FUNCTION WRAPPERS ------------------
 
+InputManager = None
+
 
 def GetInputManager():
-    val = BInputc.GetInputManager()
-    val = B_InputManagerPtr(val)
-    return val
+    global InputManager
+    if not InputManager:
+        InputManager = BInputc.GetInputManager()
+        InputManager = B_InputManagerPtr(InputManager)
+    return InputManager
 
 
 # -------------- VARIABLE WRAPPERS ------------------
