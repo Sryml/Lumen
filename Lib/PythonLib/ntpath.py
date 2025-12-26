@@ -382,7 +382,9 @@ def normpath(path):
 def relpath(target_path, base_path="."):
     """Return a relative version of a path"""
     if not target_path:
-        print("ValueError: no path specified")
+        # fmt: off
+        print ("ValueError: no path specified")
+        # fmt: on
         return
 
     target_abs = normpath(join(os.getcwd(), target_path))
@@ -390,10 +392,12 @@ def relpath(target_path, base_path="."):
     target_drive, target_rest = splitdrive(target_abs)
     base_drive, base_rest = splitdrive(base_abs)
     if normcase(base_drive) != normcase(target_drive):
-        print(
+        # fmt: off
+        print (
             "ValueError: target is on mount %s, base on mount %s"
             % (target_drive, base_drive)
         )
+        # fmt: on
         return
 
     target_list = string.split(target_rest, os.sep)
