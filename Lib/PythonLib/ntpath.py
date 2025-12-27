@@ -379,6 +379,7 @@ def normpath(path):
     return prefix + string.joinfields(comps, os.sep)
 
 
+# by Sryml: start
 def relpath(target_path, base_path="."):
     """Return a relative version of a path"""
     if not target_path:
@@ -416,3 +417,12 @@ def relpath(target_path, base_path="."):
     if not rel_list:
         return os.curdir
     return string.join(rel_list, os.sep)
+
+
+def abspath(path):
+    """Return an absolute path."""
+    if not isabs(path):
+        path = join(os.getcwd(), path)
+    return normpath(path)
+
+# by Sryml: end
