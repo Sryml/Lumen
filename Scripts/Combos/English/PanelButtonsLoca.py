@@ -1,0 +1,1 @@
+buttons = ["SPECIALS", "WEAPONS", "ABILITIES", "ITEMS", "TEXTS", "SECRETS"]
