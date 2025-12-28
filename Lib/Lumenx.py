@@ -127,10 +127,11 @@ import struct
 #
 import Bladex
 import BODLoader
-import BInput
 
+#
 if typing.TYPE_CHECKING:
     apply = lambda fn, args=(), kwds={}: fn(args, kwds)
+    import BInput
 
 
 # Store original function
@@ -161,6 +162,9 @@ class __FunctionDecorator:
         return self.RawFunc.execfile(filename, globals, locals)
 
 
+def __empty_func(*args, **kwargs):
+    return "empty_func"
+
 # Backup Bladex functions to Bladex_raw
 __bladex_decorators = [
     "AddBoundFunc",
@@ -184,7 +188,7 @@ __bladex_decorators = [
     "SetGhostSectorSound",
 ]
 for __fn in __bladex_decorators:  # type: ignore
-    Bladex_raw.__dict__[__fn] = Bladex.__dict__[__fn]  # type: ignore
+    Bladex_raw.__dict__[__fn] = Bladex.__dict__.get(__fn, __empty_func)  # type: ignore
 
 
 ######### Proxy
@@ -731,6 +735,8 @@ def sys_init():
     if not os.path.exists("../../AnmPak"):
         os.mkdir("../../AnmPak")
 
+    import BInput
+    globals()["BInput"] = BInput
     BODLoader.init()
 
     printx("Executed Lumenx.sys_init")

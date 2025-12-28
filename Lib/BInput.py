@@ -169,9 +169,23 @@ class B_InputActionPtr:
             return 0
 
         if not toggle:
-            device_obj = InputManager.GetAttachedDevice(device)
+            IActions = InputManager.GetInputActions()
+            # If already bound, unbind and overwrite
             if device_obj.IsBinded(key):
-                device_obj.UnBinded(key)
+                interrupt = 0
+                for name in IActions.names:
+                    # Actions with IsConst set to 1 will not be overridden, skipped
+                    if IActions.actions[name]["IsConst"] or name == self.name:
+                        continue
+                    for _key, _on_press in IActions.actions[name]["Devices"][device]:
+                        if (_key, _on_press) == key_tuple:
+                            IAction = IActions.Find(name)
+                            IAction.RemoveEvent(device_obj, key, on_press)
+                            interrupt = 1
+                            break
+                    if interrupt:
+                        break
+            #
             self.action["Devices"][device].append(key_tuple)
         val = BInputc.B_InputAction_AddEvent(self.this, device_obj.this, key, on_press)
         return val
@@ -264,7 +278,7 @@ class B_InputActionsPtr:
         # return val
 
     def Find(self, action_name):
-        if not action_name in self.names:
+        if action_name not in self.names:
             action_name = "NULL"
         val = BInputc.B_InputActions_Find(
             self.this, GetInternalName(self.ID, action_name)
@@ -273,7 +287,8 @@ class B_InputActionsPtr:
         return val
 
     def RemoveAction(self, action_name, dict_only=0):
-        if not action_name in self.names:
+        """dict_only: If set to 1, only the dictionary is updated"""
+        if action_name not in self.names:
             return 0
 
         self.names.remove(action_name)
@@ -320,12 +335,14 @@ class B_InputManagerPtr:
         return val
 
     def AddInputAction(self, action_name, IsConst, dict_only=0):
+        """dict_only: If set to 1, only the dictionary is updated"""
         IActions = self.GetInputActions()
         if action_name in IActions.names:
             return 0
 
         IActions.names.append(action_name)
         IActions.actions[action_name] = {
+            "IsConst": IsConst,
             "Devices": {
                 "Keyboard": [],
                 "Mouse": [],
@@ -338,18 +355,31 @@ class B_InputManagerPtr:
         return 1
 
     def AssocKey(self, action_name, device, key, on_press, dict_only=0):
+        """dict_only: If set to 1, only the dictionary is updated"""
         IActions = self.GetInputActions()
-        if not action_name in IActions.names:
+        if action_name not in IActions.names:
             return 0
 
         key_tuple = (key, on_press)
         if key_tuple in IActions.actions[action_name]["Devices"][device]:
             return 0
-
-        device_obj = self.GetAttachedDevice(device)
+        # If already bound, unbind and overwrite
+        device_obj = GetInputManager().GetAttachedDevice(device)
         if device_obj.IsBinded(key):
-            device_obj.UnBinded(key)
-
+            interrupt = 0
+            for name in IActions.names:
+                # Actions with IsConst set to 1 will not be overridden, skipped
+                if IActions.actions[name]["IsConst"] or name == action_name:
+                    continue
+                for _key, _on_press in IActions.actions[name]["Devices"][device]:
+                    if (_key, _on_press) == key_tuple:
+                        IAction = IActions.Find(name)
+                        IAction.RemoveEvent(device_obj, key, on_press)
+                        interrupt = 1
+                        break
+                if interrupt:
+                    break
+        #
         IActions.actions[action_name]["Devices"][device].append(key_tuple)
 
         if not dict_only:
