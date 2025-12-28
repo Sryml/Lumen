@@ -1402,8 +1402,7 @@ class WorldState:
 
         elems=[]
         for i in g.items():
-            obj = hasattr(i[1], "is_proxy") and i[1].target or i[1]
-            if type(obj) == req_type:
+            if type(i[1])==req_type:
                 elems.append(i)
         return elems
 

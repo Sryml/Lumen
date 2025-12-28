@@ -1,4 +1,5 @@
 import Bladex
+import Lumenx
 import math
 import netgame
 import os
@@ -15,7 +16,7 @@ TWOPI = PI*2.0
 #
 
 DEMO_MODE=0
-if not os.path.exists("../../maps/Mine_M5"):
+if not os.path.exists(os.path.join(Lumenx.GetLumenRoot(),"maps/Mine_M5")): # by Sryml
 	DEMO_MODE=1
 DEMO_PLAYERS=("AM", "BR", "KN", "DW")
 
