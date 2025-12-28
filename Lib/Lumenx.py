@@ -126,12 +126,20 @@ import struct
 
 #
 import Bladex
+import BInput
 import BODLoader
 
 #
 if typing.TYPE_CHECKING:
     apply = lambda fn, args=(), kwds={}: fn(args, kwds)
-    import BInput
+
+
+#
+def Wrapper(func, *args, **kwargs):
+    def wrapped(func=func, args=args, kwargs=kwargs):
+        return apply(func, args, kwargs)
+
+    return wrapped
 
 
 # Store original function
@@ -165,6 +173,7 @@ class __FunctionDecorator:
 def __empty_func(*args, **kwargs):
     return "empty_func"
 
+
 # Backup Bladex functions to Bladex_raw
 __bladex_decorators = [
     "AddBoundFunc",
@@ -177,6 +186,7 @@ __bladex_decorators = [
     "CreateEntity",
     "CreateSound",
     "GetCurrentMap",
+    "GetEntity",
     "GetTimeActionHeld",
     "LoadLevel",
     "LoadSampledAnimation",
@@ -490,6 +500,13 @@ def GetCurrentMod():
     return __data.current_mod
 
 
+def GetEntity(arg):
+    ret = Bladex_raw.GetEntity(arg)
+    if ret and ret.Kind == "Entity Sound":
+        return B_PyEntity_Proxy(ret)
+    return ret
+
+
 def GetLumenRoot():
     """Returns the root path of Lumen"""
     return __data.lumen_root
@@ -734,9 +751,7 @@ def sys_init():
 
     if not os.path.exists("../../AnmPak"):
         os.mkdir("../../AnmPak")
-
-    import BInput
-    globals()["BInput"] = BInput
+    #
     BODLoader.init()
 
     printx("Executed Lumenx.sys_init")
@@ -778,6 +793,7 @@ CreateSound
 GetBladeRoot
 GetCurrentMap
 GetCurrentMod
+GetEntity
 GetLumenRoot
 GetMapListPath
 GetModRoot

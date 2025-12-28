@@ -1266,7 +1266,7 @@ class WorldState:
     def SaveEntities(self,file):
         "Saves entity objects in the global scope."
 
-        ent=Bladex.GetEntity(0)
+        ent=Bladex.GetEntity("Camera") # by Sryml
         ent_vars=self.GetGlobalsAux(type(ent))
 
         file.write('\n# Entity objects\n')
@@ -1402,7 +1402,8 @@ class WorldState:
 
         elems=[]
         for i in g.items():
-            if type(i[1])==req_type:
+            obj = hasattr(i[1], "is_proxy") and i[1].target or i[1] # by Sryml
+            if type(obj) == req_type:
                 elems.append(i)
         return elems
 

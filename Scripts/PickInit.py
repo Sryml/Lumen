@@ -99,7 +99,7 @@ def RedEntity(e):
 def RegisterPickEntity():
   #Creo uno cualquiera.  ¿Revisar?
   #gmadlig=Bladex.CreateEntity('PickEntity','Entity Spot',0,0,0)
-  gmadlig=Bladex.GetEntity(0)
+  gmadlig=Bladex.GetEntity("Camera") # by Sryml
 
   copy_reg.pickle(type(gmadlig),RedEntity,ConstEntity)
 

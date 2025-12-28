@@ -352,7 +352,7 @@ def LoadFunctionAux(func_id_ex,res_obj=None,res_field=None,aux=None):
       assign_func=eval("cl."+func_id[1])
     else:
       if res_obj is not None:
-        if type(res_obj) == type(Bladex.GetEntity(0)):
+        if type(res_obj) == type(Bladex.GetEntity("Camera")): # by Sryml
           #print "FixDataBase.append() Entity->",func_id,res_obj.Name,res_field,ob_id
           FixDataBase.append((func_id,res_obj.Name,res_field,ob_id,"Entity"))
         else:
@@ -480,11 +480,15 @@ def SaveNewMembers(check_class):
     return ()
 
   ret=[]
-  entity_type=type(Bladex.GetEntity(0))
+  entity_type=type(Bladex.GetEntity("Camera")) # by Sryml
   members=GetNewMembers(check_class)
   members_keys=members.keys()
   for i in members_keys:
     member=members[i]
+    # by Sryml
+    if hasattr(member, "is_proxy"):
+      member = member.target
+    #
     member_t=type(member)
     #print check_class,i,member_t
     if member_t==types.FunctionType or member_t==types.MethodType:
