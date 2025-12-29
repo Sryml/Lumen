@@ -190,8 +190,10 @@ __bladex_decorators = [
     "GetTimeActionHeld",
     "LoadLevel",
     "LoadSampledAnimation",
+    "LoadWorld",
     "ReadAlphaBitMap",
     "ReadBitMap",
+    "ReadLevel",
     "RemoveBoundFunc",
     "RemoveInputAction",
     "SetGhostSectorGroupSound",
@@ -208,10 +210,13 @@ class B_PyEntity_Proxy:
         self.is_proxy = 1
 
     def __getstate__(self):
-        return self.target.Name
+        return hasattr(self.target, "Name") and self.target.Name or None
 
     def __setstate__(self, state):
-        self.target = Bladex.GetEntity(state)
+        if state:
+            self.target = Bladex.GetEntity(state)
+        else:
+            self.target = None
         self.is_proxy = 1
 
     def __getattr__(self, attr):
@@ -224,7 +229,9 @@ class B_PyEntity_Proxy:
             setattr(self.target, attr, value)
 
     def __repr__(self):
-        return "<B_PyEntity_Proxy for %s>" % self.target.Name
+        return "<B_PyEntity_Proxy for %s>" % (
+            hasattr(self.target, "Name") and self.target.Name or "destroyed"
+        )
 
     def SetSound(self, file_name):
         file_name = AutomatedAssets(file_name)
@@ -343,6 +350,11 @@ def AutomatedAssets(path, root_priority=""):
     if path == "":
         return path
     #
+    ext = os.path.splitext(path)[1]
+    check_ext = ""
+    if string.lower(ext) in (".wav", ".mp3"):
+        check_ext = ".ogg"
+    #
     base_path = os.path.relpath(path, __data.mod_root)
     result = re.match(r"^(\.\.[/\\])*", base_path).group(0)
     result = string.replace(result, "\\", "/")  # type: ignore
@@ -357,6 +369,10 @@ def AutomatedAssets(path, root_priority=""):
             new_path = os.path.join(root, base_path)
             if os.path.exists(new_path):
                 return new_path
+            elif check_ext:
+                new_path = os.path.splitext(new_path)[0] + check_ext
+                if os.path.exists(new_path):
+                    return new_path
     # if result in ROOT_PATH_LIST:
     #     index = ROOT_PATH_LIST.index(result)
     #     if index > 0 and (not os.path.exists(path)):
@@ -410,21 +426,6 @@ def BodInspector():
             BodLink.close()
             if tell == 0:
                 os.remove(BodLink.name)
-
-    # if has_update:
-    #     pass
-    # else:
-    #     BodLink = os.path.join(root_dir, "BodLink.list")
-    #     if os.path.exists(BodLink):
-    #         f = open(BodLink, "rt")
-    #         f_path = f.readline()
-    #         while f_path:
-    #             # [:-1] is used to remove \n
-    #             BBLib.ReadBOD(f_path[:-1])
-    #             BBLib.LoadBOD(f.readline()[:-1])
-    #             f_path = f.readline()
-    #         f.close()
-    #         return
 
 
 def AutoLoadAssets(root_dir, BodLink, depth=0):
@@ -638,6 +639,11 @@ def LoadSampledAnimation(file, anm_name, *args):
     return apply(Bladex_raw.LoadSampledAnimation, (file, anm_name) + args)
 
 
+def LoadWorld(file_name):
+    file_name = AutomatedAssets(file_name)
+    return Bladex_raw.LoadWorld(file_name)
+
+
 def Raisex(exc, msg=""):
     return "raise %s, %s" % (exc, repr(msg))
 
@@ -650,6 +656,39 @@ def ReadAlphaBitMap(file_name, internal_name):
 def ReadBitMap(file_name, internal_name):
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadBitMap(file_name, internal_name)
+
+
+def ReadLevel(file_name):
+    import BBLib
+
+    file_name = AutomatedAssets(file_name)
+    if not os.path.isfile(file_name):
+        return
+    #
+    funcs = {
+        "Bitmaps": BBLib.ReadMMP,
+        "BOD": BBLib.ReadBOD,
+        "GammaC": None,
+        "World": LoadWorld,
+        "WorldDome": BBLib.ReadMMP,
+    }
+    #
+    f = open(file_name, "rt")
+    lines = f.readlines()
+    f.close()
+    for line in lines:
+        line = string.strip(line)
+        if not line:
+            continue
+        # ignore comments
+        if line[0] != "#":
+            lst = tuple(map(string.strip, string.split(line, " ->")))
+            if len(lst) != 2:
+                continue
+            key, val = lst
+            fn = funcs.get(key)
+            if fn is not None:
+                fn(val)
 
 
 def RemoveBoundFunc(action_name, proc):
@@ -735,8 +774,8 @@ def SetModRoot(path):
 # from sys_init.py
 def sys_init():
     # Loaded from original
-    if not __main__.__dict__.get("Lumen"):
-        SetCurrentMap(os.path.basename(os.getcwd()))
+    # if not __main__.__dict__.get("Lumen"):
+    #     SetCurrentMap(os.path.basename(os.getcwd()))
 
     # fmt: off
     import ConsoleOutput
@@ -803,10 +842,12 @@ GetTimeActionHeld
 LoadComponent
 LoadLevel
 LoadSampledAnimation
+LoadWorld
 printx
 Raisex
 ReadAlphaBitMap
 ReadBitMap
+ReadLevel
 RemoveBoundFunc
 RemoveInputAction
 SetBladeRoot

@@ -4,6 +4,7 @@
 
 
 
+import Lumenx # by Sryml
 import re
 import sys
 import string
@@ -73,6 +74,7 @@ def __ReadGhostSector(fileobject):
 
 
 def ReadGhostSectorFile(filename):
+  filename = Lumenx.AutomatedAssets(filename) # by sryml
   print filename
 #  win32dbg.set_trace()
   f=open(filename,"rt")

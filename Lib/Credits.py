@@ -1,4 +1,5 @@
 import Bladex
+import Lumenx # by Sryml
 import Scorer
 import Raster
 import BBLib
@@ -21,7 +22,7 @@ class B_CreditsImageWidget(BUIx.B_RectWidget):
         self.ResX = Raster.GetSize()[0]
         self.ResY = Raster.GetSize()[1]
         self.BitmapsHandler = []
-        self.path = "../../Data/Credits/"+Language.Current
+        self.path = Lumenx.AutomatedAssets("../../Data/Credits/"+Language.Current) # by Sryml
         self.OldSndNewMenuVol = Menu.SndNewMenu.Volume
         self.OldSndCorreGemaVol= Menu.SndCorreGema.Volume
         Menu.SndNewMenu.Volume = 0
@@ -31,7 +32,7 @@ class B_CreditsImageWidget(BUIx.B_RectWidget):
         
         Credits = []
         if(not path.isdir(self.path)):
-            self.path = "../../Data/Credits/English"
+            self.path = Lumenx.AutomatedAssets("../../Data/Credits/English") # by Sryml
         for f in listdir(self.path):
             Credits.append("/" + f)
         Credits.sort()
