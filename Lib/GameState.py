@@ -772,6 +772,7 @@ class WorldState:
         file.write('import darfuncs\n\n\n\n')
         file.write('import LoadBar\n\n\n\n')
         file.write('import Language\n')
+        file.write('import MODLoader\n') # by Sryml
         file.write('############################################################\n')
         file.write('#\n\n\n')
 

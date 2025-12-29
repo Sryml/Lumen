@@ -22,6 +22,7 @@ class __data:
     blade_root = ""
     asset_path = ()
     asset_path_model = ""
+    server_port = 0
 
 
 ######### Initialization #########
@@ -34,12 +35,13 @@ def __fn():
     current_dir = os.getcwd()
     # If it is not the first time to start from Lumen.exe
     if not __main__.__dict__.get("isLumenLoadLevel"):
-        f_name = "f854f806-0ccc-58e8-8ee9-b44b5a78fa06"  # by uuid.uuid5(uuid.NAMESPACE_OID,"LumenTemp")
+        f_name = "2ea5b509-3c98-5063-95c2-cae184dc13fd"  # by uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:Port")
         f = open("../../" + f_name, "r")
-        ServerPort = int(f.readline()[:-1])
+        __data.server_port = int(f.readline()[:-1])
         __data.lumen_root = os.path.normpath(f.readline()[:-1])
         f.close()
     else:
+        __data.server_port = __main__.__dict__["server_port"]
         __data.lumen_root = __main__.__dict__["lumen_root"]
     lumen_root = __data.lumen_root
 
@@ -127,7 +129,6 @@ import struct
 #
 import Bladex
 import BInput
-import BODLoader
 
 #
 if typing.TYPE_CHECKING:
@@ -235,7 +236,11 @@ class B_PyEntity_Proxy:
 
     def SetSound(self, file_name):
         file_name = AutomatedAssets(file_name)
-        self.target.SetSound(file_name)
+        return self.target.SetSound(file_name)
+
+    def SetMaxCamera(self, cam_file_name, start, end):
+        cam_file_name = AutomatedAssets(cam_file_name)
+        return self.target.SetMaxCamera(cam_file_name, start, end)
 
 
 ######### Function Start
@@ -373,33 +378,8 @@ def AutomatedAssets(path, root_priority=""):
                 new_path = os.path.splitext(new_path)[0] + check_ext
                 if os.path.exists(new_path):
                     return new_path
-    # if result in ROOT_PATH_LIST:
-    #     index = ROOT_PATH_LIST.index(result)
-    #     if index > 0 and (not os.path.exists(path)):
-    #         base_path = path[len(result) + 1 :]
-    #         while index > 0:
-    #             index = index - 1
-    #             new_path = os.path.join(ROOT_PATH_LIST[index], base_path)
-    #             if os.path.exists(new_path):
-    #                 return new_path
     #
     return path
-
-
-def BladeRawInput(prompt=None):
-    "Provides raw_input() for Blade"
-    # flush stderr/out first.
-    try:
-        sys.stdout.flush()
-        sys.stderr.flush()
-    except:
-        pass
-    if prompt is None:
-        prompt = ""
-    ret = Bladex.Input(prompt)
-    if ret == 0:
-        exec(Raisex(KeyboardInterrupt, "operation cancelled"))
-    return ret
 
 
 def BodInspector():
@@ -503,7 +483,7 @@ def GetCurrentMod():
 
 def GetEntity(arg):
     ret = Bladex_raw.GetEntity(arg)
-    if ret and ret.Kind == "Entity Sound":
+    if ret and ret.Kind in ("Entity Sound", "Entity Camera"):
         return B_PyEntity_Proxy(ret)
     return ret
 
@@ -551,27 +531,18 @@ def LoadLevel(map_dir, mod_dir=""):
         map_dir (str): Map Directory\n
         mod_dir (str, optional): MOD Directory. Defaults to "".
     """
-    global ModListPath
-
     if map_dir == "":
         return
 
-    lumen_abspath = os.path.normpath(GetLumenRoot())
+    lumen_root = __data.lumen_root
     map_list_path = "Maps"
-    mod_root = "../.."
     if mod_dir:
-        # map_list_path = BODLoader.BLModInfo[mod_dir]["MapListPath"]
-        mod_abspath = os.path.normpath(
-            os.path.join(lumen_abspath, ModListPath, mod_dir)
-        )
-        lumen_root = "../../../.."
+        mod_root = os.path.join(lumen_root, ModListPath, mod_dir)
     else:
-        # map_list_path = "Maps"
-        mod_abspath = lumen_abspath
-        lumen_root = mod_root
-    blade_root = lumen_root + "/.."
+        mod_root = lumen_root
+    blade_root = os.path.normpath(lumen_root + "/..")
 
-    map_path = os.path.join(mod_abspath, map_list_path, map_dir)
+    map_path = os.path.join(mod_root, map_list_path, map_dir)
     cfg_file = os.path.join(map_path, "Cfg.py")
     if not os.path.isfile(cfg_file):
         printx("Cfg.py file not found!")
@@ -587,47 +558,45 @@ def LoadLevel(map_dir, mod_dir=""):
         # "current_map = '%s'" % map_dir,
         # "current_mod = '%s'" % mod_dir,
         # "map_list_path = '%s'" % map_list_path,
-        # "mod_path = '%s'" % mod_abspath,
+        # "mod_path = '%s'" % mod_root,
         # "root_path = '%s'" % lumen_absroot,
         # "sys.path.insert(0,'.')",
         # "sys.path.append('../../Bin')",
         # "sys.path.append('../../Scripts')",
     ]
-    if mod_abspath != lumen_abspath:
-        execstr.extend(
-            [
-                "sys.path.append('%s/Lib')" % mod_abspath,
-                "sys.path.append('%s/Lib/PythonLib')" % mod_abspath,
-            ]
-        )
-
-    execstr.extend(
-        [
-            "sys.path.append('%s/Lib')" % lumen_abspath,
-            "sys.path.append('%s/Lib/PythonLib')" % lumen_abspath,
-            # "sys.path.append('%s/../Lib')" % lumen_abspath,
-            "sys.path.append('%s/../Lib/PythonLib')" % lumen_abspath,
-            "sys.path.append('%s/../Lib/PythonLib/Plat-Win')" % lumen_abspath,
-            # "sys.path.append('../../Lib/PythonLib/Idle')",
-            # "sys.path.append('../../Lib/PythonLib/lib-tk')",
-            # "sys.path.append('../../Lib/PythonLib/DLLs')",
-            # "sys.path.append('../../Lib/PythonLib/Pmw')",
-            # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8')",
-            # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8/lib')",
-            "import Lumenx",
-            "Lumenx.SetCurrentMap(%s)" % repr(map_dir),
-            "Lumenx.SetCurrentMod(%s)" % repr(mod_dir),
-            # "Lumenx.SetMapListPath(map_list_path)",
-            "Lumenx.SetModRoot(%s)" % repr(mod_root),
-            "Lumenx.SetLumenRoot(%s)" % repr(lumen_root),
-            "Lumenx.SetBladeRoot(%s)" % repr(blade_root),
-            # "del map_dir, current_mod",
-            #
-            # "execfile('%s')" % sys_init,
-            "execfile('%s')" % cfg_file,
-            "Bladex.DoneLoadGame()",
+    if mod_root != lumen_root:
+        execstr = execstr + [
+            "sys.path.append('%s/Lib')" % mod_root,
+            "sys.path.append('%s/Lib/PythonLib')" % mod_root,
         ]
-    )
+
+    execstr = execstr + [
+        "sys.path.append('%s/Lib')" % lumen_root,
+        "sys.path.append('%s/Lib/PythonLib')" % lumen_root,
+        # "sys.path.append('%s/../Lib')" % lumen_root,
+        "sys.path.append('%s/Lib/PythonLib')" % blade_root,
+        "sys.path.append('%s/Lib/PythonLib/Plat-Win')" % blade_root,
+        # "sys.path.append('../../Lib/PythonLib/Idle')",
+        # "sys.path.append('../../Lib/PythonLib/lib-tk')",
+        # "sys.path.append('../../Lib/PythonLib/DLLs')",
+        # "sys.path.append('../../Lib/PythonLib/Pmw')",
+        # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8')",
+        # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8/lib')",
+        "server_port = %d" % __data.server_port,
+        "lumen_root = %s" % repr(lumen_root),
+        "import Lumenx",
+        # "Lumenx.SetCurrentMap(%s)" % repr(map_dir),
+        # "Lumenx.SetCurrentMod(%s)" % repr(mod_dir),
+        # "Lumenx.SetMapListPath(map_list_path)",
+        # "Lumenx.SetModRoot(%s)" % repr(mod_root),
+        # "Lumenx.SetLumenRoot(%s)" % repr(lumen_root),
+        # "Lumenx.SetBladeRoot(%s)" % repr(blade_root),
+        # "del map_dir, current_mod",
+        #
+        # "execfile('%s')" % sys_init,
+        "execfile('%s')" % cfg_file,
+        "Bladex.DoneLoadGame()",
+    ]
     Bladex.BeginLoadGame()
     os.chdir(map_path)
     Bladex.CloseLevel(string.join(execstr, ";"), map_dir)  # type: ignore
@@ -659,23 +628,16 @@ def ReadBitMap(file_name, internal_name):
 
 
 def ReadLevel(file_name):
-    import BBLib
-
     file_name = AutomatedAssets(file_name)
     if not os.path.isfile(file_name):
         return
     #
-    funcs = {
-        "Bitmaps": BBLib.ReadMMP,
-        "BOD": BBLib.ReadBOD,
-        "GammaC": None,
-        "World": LoadWorld,
-        "WorldDome": BBLib.ReadMMP,
-    }
-    #
+    new_lines = []
     f = open(file_name, "rt")
     lines = f.readlines()
     f.close()
+    current_dir = os.getcwd()
+    #
     for line in lines:
         line = string.strip(line)
         if not line:
@@ -686,9 +648,45 @@ def ReadLevel(file_name):
             if len(lst) != 2:
                 continue
             key, val = lst
-            fn = funcs.get(key)
-            if fn is not None:
-                fn(val)
+            if key != "GammaC":
+                val = os.path.relpath(AutomatedAssets(lst[1]), current_dir)
+            new_lines.append("%s -> %s\n" % (key, val))
+    #
+    lvl_name = "7c3460c1-cc3c-5b9e-a038-1ff69ff753c9"  # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:ReadLevel")
+    lvl_path = os.path.join(__data.lumen_root, lvl_name)
+    f = open(lvl_path, "wt")
+    f.writelines(new_lines)
+    f.close()
+    ret = Bladex_raw.ReadLevel(lvl_path)
+    os.remove(lvl_path)
+    return ret
+
+    # import BBLib
+    # #
+    # funcs = {
+    #     "Bitmaps": BBLib.ReadMMP,
+    #     "BOD": BBLib.ReadBOD,
+    #     "GammaC": None,
+    #     "World": LoadWorld,
+    #     "WorldDome": BBLib.ReadMMP,
+    # }
+    # #
+    # f = open(file_name, "rt")
+    # lines = f.readlines()
+    # f.close()
+    # for line in lines:
+    #     line = string.strip(line)
+    #     if not line:
+    #         continue
+    #     # ignore comments
+    #     if line[0] != "#":
+    #         lst = tuple(map(string.strip, string.split(line, " ->")))
+    #         if len(lst) != 2:
+    #             continue
+    #         key, val = lst
+    #         fn = funcs.get(key)
+    #         if fn is not None:
+    #             fn(val)
 
 
 def RemoveBoundFunc(action_name, proc):
@@ -771,31 +769,6 @@ def SetModRoot(path):
     __data.mod_root = path
 
 
-# from sys_init.py
-def sys_init():
-    # Loaded from original
-    # if not __main__.__dict__.get("Lumen"):
-    #     SetCurrentMap(os.path.basename(os.getcwd()))
-
-    # fmt: off
-    import ConsoleOutput
-    ConsoleOutput.InitConsole()
-    # fmt: on
-
-    sys.modules["__builtin__"].raw_input = BladeRawInput  # type: ignore
-    sys.modules["__builtin__"].input = BladeRawInput  # type: ignore
-    sys.setcheckinterval(100)  # type: ignore
-
-    Bladex.CloseDebugChannel("DefaultChannel")
-
-    if not os.path.exists("../../AnmPak"):
-        os.mkdir("../../AnmPak")
-    #
-    BODLoader.init()
-
-    printx("Executed Lumenx.sys_init")
-
-
 ######### Function End
 
 # hook Bladex functions
@@ -822,7 +795,6 @@ AddPostloadCB
 AddPreloadCB
 AssocKey
 AutomatedAssets
-BladeRawInput
 BodInspector
 CallPostloadCB
 CallPreloadCB
@@ -858,5 +830,4 @@ SetGhostSectorSound
 SetLumenRoot
 SetMapListPath
 SetModRoot
-sys_init
 """

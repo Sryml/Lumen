@@ -1,5 +1,5 @@
 
-
+import Lumenx # by Sryml
 import BBLib
 import Raster
 import Bladex
@@ -111,8 +111,9 @@ class BackImageBar:
     if background_image:
       back_image=BBLib.B_BitMap24()
       background_hi_image=""
-      if background_image[-8:] <> "_hi.jpg":
-        background_hi_image = background_image[0:len(background_image) - 4] + "_hi.jpg"
+      background_image = Lumenx.AutomatedAssets(background_image) # by Sryml
+      if background_image[-7:] != "_hi.jpg": # by Sryml
+        background_hi_image = Lumenx.AutomatedAssets(background_image[:-4] + "_hi.jpg") # by Sryml
 
       if not os.path.exists(background_image) and not os.path.exists(background_hi_image):
         print "Missing BackImage :"
@@ -294,10 +295,10 @@ class ECTSProgressBar(ProgressBar):
 class LanguageProgressBar(ECTSProgressBar):
   def __init__(self,total_increments,background_image=None,auto_remove=1):
     import Language
-    self.path = Language.Current + '/'
+    self.path = Lumenx.AutomatedAssets(Language.Current) + "/" # by Sryml
 
     if not os.path.exists(self.path):
-        self.path = 'EnglishUS/'
+        self.path = Lumenx.AutomatedAssets("EnglishUS") + "/" # by Sryml
 
     ProgressBar.__init__(self,total_increments,self.path + background_image)
     self.updated=0
@@ -330,10 +331,10 @@ class LanguageProgressBar(ECTSProgressBar):
 class DemoProgressBar(ECTSProgressBar):
   def __init__(self,total_increments,background_image=None):
     import Language
-    self.path = Language.Current + '/'
+    self.path = Lumenx.AutomatedAssets(Language.Current) + "/" # by Sryml
 
     if not os.path.exists(self.path):
-        self.path = 'EnglishUS/'
+        self.path = Lumenx.AutomatedAssets("EnglishUS") + "/" # by Sryml
 
     self.updated=1
     self.segment_size=total_increments/4

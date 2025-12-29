@@ -1,6 +1,6 @@
 
 
-
+import Lumenx # by Sryml
 import Scorer
 import Bladex
 import os
@@ -29,7 +29,7 @@ def SetLanguage(lang):
   if lang != current_language:
     current_language= lang
     print "Setting language",lang
-    l_path="../../Data/Text/"+lang
+    l_path=Lumenx.AutomatedAssets("../../Data/Text/"+lang) # by Sryml
     if not os.path.exists(l_path):
       return
 
