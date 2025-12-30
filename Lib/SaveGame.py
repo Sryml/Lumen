@@ -79,14 +79,12 @@ def SaveGameToDisk(menu_class):
 	file = open("../../Save/Temp.sv","w")
 
 	char = Bladex.GetEntity("Player1")
-	if char.Kind[0] =="K":
-		cad = MenuText.GetMenuText("Knight")
-	if char.Kind[0] =="B":
-		cad = MenuText.GetMenuText("Barbarian")
-	if char.Kind[0] =="D":
-		cad = MenuText.GetMenuText("Dwarf")
-	if char.Kind[0] =="A":
-		cad = MenuText.GetMenuText("Amazon")
+	# by Sryml
+	kind = char.Kind
+	if string.upper(kind[-2:]) == "_N":
+		kind = kind[:-2]
+	cad = MenuText.GetMenuText(kind)
+	#
 
 	cadtime = time.strftime(DATE_FORMAT,time.localtime(time.time()))
 
@@ -112,7 +110,7 @@ def SaveGameToDisk(menu_class):
 
 	# save Screen shoot
 	Scorer.SetVisible(0)
-	Bladex.SaveScreenShot('../../Save/Temp.BMP',160,120)
+	Bladex.SaveScreenShot('../../Save/Temp.BMP',640,360) # by Sryml
 	SaveGameString = "import GameState;state=GameState.WorldState();state.GetState();state.SaveState('../../Save/SaveGame"+menu_class.MenuDescr["Clave"]+".py');state=None;GameState=None;"
 
 	# Save the game
