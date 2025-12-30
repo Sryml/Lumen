@@ -4,8 +4,12 @@
 # License: MIT
 
 import __main__
-import os
 import sys
+
+if not __main__.__dict__.get("isLumenLoadLevel"):
+    sys.path.append(__file__[:-14] + "../Lib/PythonLib")
+#
+import os
 
 ModListPath = "Mods"
 
@@ -169,6 +173,11 @@ class __FunctionDecorator:
                 if not locals:
                     locals = sys.exc_info()[2].tb_frame.f_back.f_locals
         return self.RawFunc.execfile(filename, globals, locals)
+
+    def type(self, obj):
+        if hasattr(obj, "is_proxy"):
+            obj = obj.target
+        return self.RawFunc.type(obj)
 
 
 def __empty_func(*args, **kwargs):
@@ -776,7 +785,8 @@ for __fn in __bladex_decorators:  # type: ignore
     Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore
 
 FunctionDecorator = __FunctionDecorator()
-for obj, name in ((sys.modules["__builtin__"], "execfile"),):
+for obj, name in ((sys.modules["__builtin__"], "execfile"),
+                  (sys.modules["__builtin__"], "type")):
     FunctionDecorator.Decorator(obj, name)
 
 # Clean up

@@ -66,7 +66,7 @@ def SavePickledObjects(file,aux_dir):
     except IOError:
         print "Failed to open file" + filename
         return 0
-    except pickle.PicklingError:   
+    except cPickle.PicklingError: # by Sryml
         print "Failed to pickle file"+filename
         return 0
     return 1
@@ -1201,7 +1201,7 @@ class WorldState:
             
         try:
             p=cPickle.Pickler(globfile)
-        except pickle.PicklingError:   
+        except cPickle.PicklingError: # by Sryml
             print "Failed to pickle file"+globfile
             globfile.close()
             return 0
@@ -1403,8 +1403,7 @@ class WorldState:
 
         elems=[]
         for i in g.items():
-            obj = hasattr(i[1], "is_proxy") and i[1].target or i[1] # by Sryml
-            if type(obj) == req_type:
+            if type(i[1])==req_type:
                 elems.append(i)
         return elems
 

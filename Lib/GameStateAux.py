@@ -485,10 +485,6 @@ def SaveNewMembers(check_class):
   members_keys=members.keys()
   for i in members_keys:
     member=members[i]
-    # by Sryml
-    if hasattr(member, "is_proxy"):
-      member = member.target
-    #
     member_t=type(member)
     #print check_class,i,member_t
     if member_t==types.FunctionType or member_t==types.MethodType:
@@ -586,7 +582,7 @@ def GetFunctionFile(f):
     filename_noext=os.path.splitext(filename)[0]
 
     return filename_noext
-  except e:
+  except Exception,e: # by Sryml
     print "Exception in GetFunctionFile",e
     return "Error getting lib"
 
