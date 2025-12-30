@@ -25,9 +25,9 @@ def CheckStore():
 
 ##    # Recoleccion de basura
     for i in ObjectsStore.keys():
-        if sys.getrefcount(ObjectsStore[i])<2:
+        if sys.getrefcount(ObjectsStore[i])<=2: # Thanks Tomash
             # garbage collection, if the only reference to the class is here, delete it
-            print "CheckStore(): "+`ObjectsStore[i]`+" deleted by garbage collection",rfcount
+            print "CheckStore(): "+`ObjectsStore[i]`+" deleted by garbage collection",i
             del ObjectsStore[i]
 
     # Objetos que ya no son validos
