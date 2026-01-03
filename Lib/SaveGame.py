@@ -1,5 +1,6 @@
 import MenuText
 import Bladex
+import Lumenx
 import netwidgets
 import MenuWidget
 import os
@@ -9,6 +10,7 @@ import Reference
 import AuxFuncs
 import stat
 
+printx = Lumenx.printx
 EMPTY_SLOT  = MenuText.GetMenuText("<Empty Slot>")
 DATE_FORMAT = MenuText.GetMenuText("%d/%m %H:%M")
 SaveCounter = []
@@ -44,17 +46,50 @@ def LoadGameAux(name):
 	import Language
 	import SplashImage
 
+	# by Sryml: start
 	path="../../Save/%s_files"%(name,)
-	execfile="execfile('../../Scripts/sys_init.py');execfile('../../Save/%s.py')"%(name,)
-
 	file_data_aux=open("%s/%saux"%(path,"aux"),"rt")
-	text=file_data_aux.read()
-	print text
+	map_dir=file_data_aux.readline()[:-1]
+	mod_dir = file_data_aux.readline()[:-1]
+	printx(map_dir, mod_dir)
 	file_data_aux.close()
+
+	lines = ["import sys", "isLumen = 1"]
+	lumen_root = Lumenx.GetLumenRoot()
+	if mod_dir:
+		mod_root = os.path.join(lumen_root, Lumenx.ModListPath, mod_dir)
+		new_lumen_root = "..\\..\\..\\.."
+	else:
+		mod_root = lumen_root
+		new_lumen_root = "..\\.."
+	map_path = os.path.join(mod_root, "Maps", map_dir)
+	#
+	new_mod_root = "..\\.."
+	new_blade_root = new_lumen_root + "\\.."
+	if new_mod_root != new_lumen_root:
+		lines.append("sys.path.append('%s/Lib')" % new_mod_root)
+		lines.append("sys.path.append('%s/Lib/PythonLib')" % new_mod_root)
+
 	scr_name="../../Data/Menu/Save/"+Language.Current+"/Cerrando_hi.jpg"
 	SplashImage.ShowImage(scr_name,0)
 	Bladex.BeginLoadGame()
-	Bladex.CloseLevel(execfile,text)
+	prev_map_root = os.path.normpath(os.getcwd() + "\\..")
+	os.chdir(map_path)
+	new_map_dir = os.path.relpath(os.getcwd(), prev_map_root)
+
+	lines = lines + [
+        "sys.path.append('%s/Lib')" % new_lumen_root,
+        "sys.path.append('%s/Lib/PythonLib')" % new_lumen_root,
+        "sys.path.append('%s/Lib/PythonLib')" % new_blade_root,
+        "sys.path.append('%s/Lib/PythonLib/Plat-Win')" % new_blade_root,
+		"import Lumenx",
+		"execfile('../../Scripts/sys_init.py')",
+		"InNewMap = %d" % (string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
+		"execfile('../../Save/%s.py')"%(name,),
+	]
+
+	Bladex.CloseLevel(string.join(lines, ";"),new_map_dir)
+	# by Sryml: end
 
 def LoadGameFromDisk(menu_class):
 	LoadGameAux("SaveGame"+menu_class.MenuDescr["Clave"])
@@ -110,7 +145,7 @@ def SaveGameToDisk(menu_class):
 
 	# save Screen shoot
 	Scorer.SetVisible(0)
-	Bladex.SaveScreenShot('../../Save/Temp.BMP',640,360) # by Sryml
+	Bladex.SaveScreenShot('../../Save/Temp.BMP',160,120)
 	SaveGameString = "import GameState;state=GameState.WorldState();state.GetState();state.SaveState('../../Save/SaveGame"+menu_class.MenuDescr["Clave"]+".py');state=None;GameState=None;"
 
 	# Save the game

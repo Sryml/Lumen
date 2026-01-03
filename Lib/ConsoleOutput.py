@@ -1,4 +1,4 @@
-
+# for Lumen
 
 
 import Console
@@ -12,8 +12,11 @@ class ConsoleOutput:
   def write(self,message):
     if message is None:
       Console.ConsoleOutput("None")
+      sys.__stdout__.write("None")
     else:
       Console.ConsoleOutput(message)
+      sys.__stdout__.write(message)
+    sys.__stdout__.flush()
 
   def flush(self):
     pass

@@ -111,23 +111,27 @@ class BackImageBar:
     if background_image:
       back_image=BBLib.B_BitMap24()
       background_hi_image=""
-      background_image = Lumenx.AutomatedAssets(background_image) # by Sryml
-      if background_image[-7:] != "_hi.jpg": # by Sryml
-        background_hi_image = Lumenx.AutomatedAssets(background_image[:-4] + "_hi.jpg") # by Sryml
+      # by Sryml
+      background_image = Lumenx.AutomatedAssets(background_image)
+      if string.lower(background_image[-7:]) != "_hi.jpg":
+        background_hi_image = Lumenx.AutomatedAssets(background_image[:-4] + "_hi.jpg")
 
-      if not os.path.exists(background_image) and not os.path.exists(background_hi_image):
+      if os.path.exists(background_hi_image):
+        background_image = background_hi_image
+      if not os.path.exists(background_image):
         print "Missing BackImage :"
         print background_image
-        background_hi_image = "../../Data/Menu/Save/EnglishUS/Cargando_hi.jpg"
+        background_image = "../../Data/Menu/Save/EnglishUS/Cargando_hi.jpg"
 
-      if back_image.ReadFromFile(background_hi_image) or back_image.ReadFromFile(background_image):
+      if back_image.ReadFromFile(background_image):
         w,h=back_image.GetDimension()
         if w == 640:
           self.Mode = "ScaledCentered"
-        elif string.find(background_hi_image, "Cargando") <> -1 or string.find(background_hi_image, "Guardando") <> -1:
+        elif string.find(background_image, "Cargando") != -1 or string.find(background_image, "Guardando") != -1:
           self.Mode = "VerticalStretch"
         else:
           self.Mode = "ScaledCentered"
+      #
 
         Raster.SetBackgroundImage(w,h,"RGB","Normal",self.Mode,back_image.GetData())
         back_image.Clear()

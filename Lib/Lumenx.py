@@ -6,7 +6,7 @@
 import __main__
 import sys
 
-if not __main__.__dict__.get("isLumenLoadLevel"):
+if not __main__.__dict__.get("isLumen"):
     sys.path.append(__file__[:-14] + "../Lib/PythonLib")
 #
 import os
@@ -26,7 +26,6 @@ class __data:
     blade_root = ""
     asset_path = ()
     asset_path_model = ""
-    server_port = 0
 
 
 ######### Initialization #########
@@ -37,33 +36,23 @@ def __fn():
     setattr(sys.modules["__builtin__"], "False", (1 == 0))
 
     current_dir = os.getcwd()
-    # If it is not the first time to start from Lumen.exe
-    if not __main__.__dict__.get("isLumenLoadLevel"):
-        f_name = "2ea5b509-3c98-5063-95c2-cae184dc13fd"  # by uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:Port")
-        f = open("../../" + f_name, "r")
-        __data.server_port = int(f.readline()[:-1])
-        __data.lumen_root = os.path.normpath(f.readline()[:-1])
-        f.close()
-    else:
-        __data.server_port = __main__.__dict__["server_port"]
-        __data.lumen_root = __main__.__dict__["lumen_root"]
-    lumen_root = __data.lumen_root
+    __data.lumen_root = lumen_root = os.path.relpath(__file__[:-14], current_dir)
 
     __data.blade_root = blade_root = os.path.normpath(lumen_root + "/..")
-    __data.mod_root = mod_root = os.path.abspath(os.path.join(current_dir, "../.."))
+    __data.mod_root = mod_root = "..\\.."
 
+    root_paths = []
     if mod_root == lumen_root:
         __data.current_mod = ""
-        ModRelpath = ""
         __data.asset_path = (lumen_root, blade_root)
     else:
         __data.current_mod = os.path.basename(mod_root)
-        ModRelpath = os.path.relpath(mod_root, current_dir)
+        root_paths.append(mod_root)
         __data.asset_path = (mod_root, lumen_root, blade_root)
-    __data.current_map = os.path.basename(current_dir)
+    # __data.current_map = os.path.basename(current_dir)
 
-    LumenRelpath = os.path.relpath(lumen_root, current_dir)
-    BladeRelpath = os.path.relpath(blade_root, current_dir)
+    root_paths.append(lumen_root)
+    root_paths.append(blade_root)
 
     #
     paths = [
@@ -87,15 +76,23 @@ def __fn():
 
     sys.path = ["."]
 
-    for root in (
-        ModRelpath,
-        LumenRelpath,
-        BladeRelpath,
-    ):
-        if not root:
-            continue
+    for root in root_paths:
         for p in paths:
             sys.path.append(os.path.join(root, p))
+    #
+    import Bladex
+
+    # If it is not the first time to start from Lumen.exe
+    if not __main__.__dict__.get("isLumen"):
+        f_name = "2ea5b509-3c98-5063-95c2-cae184dc13fd"  # by uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:Port")
+        path = os.path.join(lumen_root, f_name)
+        if os.path.exists(path):
+            f = open(path, "r")
+            ServicePort = f.readline()[:-1]
+            f.close()
+        else:
+            ServicePort = "17018"
+        Bladex.SetStringValue("Lumen:ServicePort", ServicePort)
 
 
 __fn()
@@ -206,6 +203,7 @@ __bladex_decorators = [
     "ReadLevel",
     "RemoveBoundFunc",
     "RemoveInputAction",
+    "SetCurrentMap",
     "SetGhostSectorGroupSound",
     "SetGhostSectorSound",
 ]
@@ -364,31 +362,32 @@ def AutomatedAssets(path, root_priority=""):
     if path == "":
         return path
     #
-    ext = os.path.splitext(path)[1]
-    check_ext = ""
-    if string.lower(ext) in (".wav", ".mp3"):
-        check_ext = ".ogg"
+    # ext = os.path.splitext(path)[1]
+    # check_ext = ""
+    # if string.lower(ext) in (".wav", ".mp3"):
+    #     check_ext = ".ogg"
     #
     base_path = os.path.relpath(path, __data.mod_root)
     result = re.match(r"^(\.\.[/\\])*", base_path).group(0)
-    result = string.replace(result, "\\", "/")  # type: ignore
-    parent_path = os.path.normpath(os.path.join(__data.mod_root, result))
+    # result = string.replace(result, "\\", "/")  # type: ignore
+    base_root = os.path.normpath(os.path.join(__data.mod_root, result))
+    if result:
+        base_path = os.path.relpath(path, base_root)
+    #
+    new_path = path
     for root in (root_priority,) + __data.asset_path:
         if not root:
             continue
-        if (
-            root == parent_path
-            or os.path.commonprefix([root, parent_path]) != parent_path
-        ):
+        if root == base_root or os.path.commonprefix([root, base_root]) != root:
             new_path = os.path.join(root, base_path)
             if os.path.exists(new_path):
-                return new_path
-            elif check_ext:
-                new_path = os.path.splitext(new_path)[0] + check_ext
-                if os.path.exists(new_path):
-                    return new_path
+                break
+            # elif check_ext:
+            #     new_path = os.path.splitext(new_path)[0] + check_ext
+            #     if os.path.exists(new_path):
+            #         return new_path
     #
-    return path
+    return new_path
 
 
 def BodInspector():
@@ -519,6 +518,11 @@ def GetPreloadCB(map_path):
     return __data.preload_callbacks.get(map_path, [])
 
 
+def GetServicePort():
+    ret = Bladex.GetStringValue("Lumen:ServicePort")
+    return int(ret)
+
+
 def GetTimeActionHeld(action_name):
     """Return the amount of milliseconds a key has been hald down, or zero if it is currently considered released"""
     action_name = BInput.GetInternalName(
@@ -543,27 +547,31 @@ def LoadLevel(map_dir, mod_dir=""):
     if map_dir == "":
         return
 
-    lumen_root = __data.lumen_root
     map_list_path = "Maps"
-    if mod_dir:
-        mod_root = os.path.join(lumen_root, ModListPath, mod_dir)
-    else:
-        mod_root = lumen_root
-    blade_root = os.path.normpath(lumen_root + "/..")
 
+    if mod_dir:
+        mod_root = os.path.join(__data.lumen_root, ModListPath, mod_dir)
+        new_lumen_root = "..\\..\\..\\.."
+    else:
+        mod_root = __data.lumen_root
+        new_lumen_root = "..\\.."
     map_path = os.path.join(mod_root, map_list_path, map_dir)
     cfg_file = os.path.join(map_path, "Cfg.py")
     if not os.path.isfile(cfg_file):
         printx("Cfg.py file not found!")
         return
+    #
+    new_mod_root = "..\\.."
+    new_blade_root = new_lumen_root + "\\.."
 
     # sys_init = os.path.join(root_path, "Lib/sys_init.py")
     execstr = [
         "import Bladex",
         "import sys",
+        "Bladex.SetAppMode('Game')",
         "Bladex.BeginLoadGame()",
         #
-        "isLumenLoadLevel = 1",
+        "isLumen = 1",
         # "current_map = '%s'" % map_dir,
         # "current_mod = '%s'" % mod_dir,
         # "map_list_path = '%s'" % map_list_path,
@@ -573,26 +581,25 @@ def LoadLevel(map_dir, mod_dir=""):
         # "sys.path.append('../../Bin')",
         # "sys.path.append('../../Scripts')",
     ]
-    if mod_root != lumen_root:
+    if new_mod_root != new_lumen_root:
         execstr = execstr + [
-            "sys.path.append('%s/Lib')" % mod_root,
-            "sys.path.append('%s/Lib/PythonLib')" % mod_root,
+            "sys.path.append('%s/Lib')" % new_mod_root,
+            "sys.path.append('%s/Lib/PythonLib')" % new_mod_root,
         ]
 
     execstr = execstr + [
-        "sys.path.append('%s/Lib')" % lumen_root,
-        "sys.path.append('%s/Lib/PythonLib')" % lumen_root,
-        # "sys.path.append('%s/../Lib')" % lumen_root,
-        "sys.path.append('%s/Lib/PythonLib')" % blade_root,
-        "sys.path.append('%s/Lib/PythonLib/Plat-Win')" % blade_root,
+        "sys.path.append('%s/Lib')" % new_lumen_root,
+        "sys.path.append('%s/Lib/PythonLib')" % new_lumen_root,
+        # "sys.path.append('%s/../Lib')" % new_lumen_root,
+        "sys.path.append('%s/Lib/PythonLib')" % new_blade_root,
+        "sys.path.append('%s/Lib/PythonLib/Plat-Win')" % new_blade_root,
         # "sys.path.append('../../Lib/PythonLib/Idle')",
         # "sys.path.append('../../Lib/PythonLib/lib-tk')",
         # "sys.path.append('../../Lib/PythonLib/DLLs')",
         # "sys.path.append('../../Lib/PythonLib/Pmw')",
         # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8')",
         # "sys.path.append('../../Lib/PythonLib/Pmw/Pmw_0_8/lib')",
-        "server_port = %d" % __data.server_port,
-        "lumen_root = %s" % repr(lumen_root),
+        # "lumen_root = %s" % repr(new_blade_root),
         "import Lumenx",
         # "Lumenx.SetCurrentMap(%s)" % repr(map_dir),
         # "Lumenx.SetCurrentMod(%s)" % repr(mod_dir),
@@ -600,15 +607,17 @@ def LoadLevel(map_dir, mod_dir=""):
         # "Lumenx.SetModRoot(%s)" % repr(mod_root),
         # "Lumenx.SetLumenRoot(%s)" % repr(lumen_root),
         # "Lumenx.SetBladeRoot(%s)" % repr(blade_root),
-        # "del map_dir, current_mod",
         #
         # "execfile('%s')" % sys_init,
         "execfile('%s')" % cfg_file,
+        "isMenuAppMode =  Bladex.GetAppMode() == 'Menu'",
         "Bladex.DoneLoadGame()",
+        "isMenuAppMode and Bladex.SetAppMode('Menu')",
+        "del isMenuAppMode",
     ]
     Bladex.BeginLoadGame()
     os.chdir(map_path)
-    Bladex.CloseLevel(string.join(execstr, ";"), map_dir)  # type: ignore
+    Bladex.CloseLevel(string.join(execstr, ";"), "") # map_name is empty, make sure to load a brand new one.
 
 
 def LoadSampledAnimation(file, anm_name, *args):
@@ -722,6 +731,7 @@ def SetBladeRoot(path):
 
 def SetCurrentMap(map_dir):
     __data.current_map = map_dir
+    return Bladex_raw.SetCurrentMap(map_dir)
 
 
 def SetCurrentMod(mod_dir):
@@ -785,9 +795,14 @@ for __fn in __bladex_decorators:  # type: ignore
     Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore
 
 FunctionDecorator = __FunctionDecorator()
-for obj, name in ((sys.modules["__builtin__"], "execfile"),
-                  (sys.modules["__builtin__"], "type")):
+for obj, name in (
+    (sys.modules["__builtin__"], "execfile"),
+    (sys.modules["__builtin__"], "type"),
+):
     FunctionDecorator.Decorator(obj, name)
+
+#
+SetCurrentMap(os.path.basename(os.getcwd()))
 
 # Clean up
 del __fn, __bladex_decorators, obj, name
@@ -820,6 +835,7 @@ GetMapListPath
 GetModRoot
 GetPostloadCB
 GetPreloadCB
+GetServicePort
 GetTimeActionHeld
 LoadComponent
 LoadLevel

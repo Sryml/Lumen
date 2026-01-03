@@ -1039,7 +1039,7 @@ class B_BackImageWidget(BUIx.B_RectWidget):
 		global BackImageBitmap
 		if not BackImageBitmap:
 			BackImageBitmap  = BBLib.B_BitMap24()
-			BackImageBitmap.ReadFromFile("../../Data/menu_wide.png")
+			BackImageBitmap.ReadFromFile("../../Data/menu_wide.jpg") # by Sryml
 		self.vidw = 1
 		self.vidh = 1
 		BUIx.B_RectWidget.__init__(self,Parent,MenuDescr["Name"],self.vidw,self.vidh)
@@ -1050,7 +1050,8 @@ class B_BackImageWidget(BUIx.B_RectWidget):
 
 	def Draw(self,x,y,time):
 		Raster.SetPosition(0,0)
-		Raster.DrawImage(1920, 1080, "RGB", "Cover", BackImageBitmap.GetData())
+		w, h = BackImageBitmap.GetDimension()
+		Raster.DrawImage(w, h, "RGB", "Cover", BackImageBitmap.GetData()) # by Sryml
 		self.DefDraw(x,y,time)
 
 	def FinalRelease(self):

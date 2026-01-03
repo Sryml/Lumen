@@ -2,6 +2,7 @@
 
 
 import Bladex
+import Lumenx
 import BBLib
 import time
 import types
@@ -742,7 +743,10 @@ class WorldState:
             print "Could not open"+("%s/%saux"%(temp_dir,"aux"),"wt")
             return 0
 
-        file_data_aux.write(Bladex.GetCurrentMap())
+         # by Sryml
+        file_data_aux.write(Lumenx.GetCurrentMap()+"\n")
+        file_data_aux.write(Lumenx.GetCurrentMod()+"\n")
+        #
         file_data_aux.close()
 
         # Ahora genero el script que al ejecutarse regenera el mundo
@@ -772,7 +776,6 @@ class WorldState:
         file.write('import darfuncs\n\n\n\n')
         file.write('import LoadBar\n\n\n\n')
         file.write('import Language\n')
-        file.write('import MODLoader\n') # by Sryml
         file.write('############################################################\n')
         file.write('#\n\n\n')
 
@@ -786,15 +789,17 @@ class WorldState:
         file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ","%s")\n'%(Bladex.nEntities()/5,"../../Data/Menu/Save/"+Language.Current+"/Cargando_hi.jpg"))
         file.write('GameStateAux.aux_dir="%s"\n'%(aux_dir,))
 
-        file.write('InNewMap=0\n')
-        file.write('if Bladex.GetCurrentMap()!="%s":\n'%(Bladex.GetCurrentMap(),))
-        file.write('  InNewMap=1\n')
+        # by Sryml
+        # file.write('InNewMap=0\n')
+        # file.write('if Bladex.GetCurrentMap()!="%s":\n'%(Bladex.GetCurrentMap(),))
+        # file.write('  InNewMap=1\n')
 ##        file.write('InNewMap=1\n')
 
         file.write('print "InNewMap",InNewMap\n')
 
-        file.write('Bladex.SetCurrentMap(\"%s\")\n'%(Bladex.GetCurrentMap(),))
-        file.write('sys.path.insert(0,os.getcwd())\n')
+        # by Sryml
+        # file.write('Bladex.SetCurrentMap(\"%s\")\n'%(Bladex.GetCurrentMap(),))
+        # file.write('sys.path.insert(0,os.getcwd())\n')
         file.write('Bladex.SetSaveInfo(%s)\n'%(str(Bladex.GetSaveInfo(),)))
 
         load_bar.Increment("MMPs")
@@ -851,7 +856,7 @@ class WorldState:
 ##        file.write('Bladex.SetTime(%f)\n'%(Bladex.GetTime(),))
         self.SaveTimers(file)
         file.write('if InNewMap:\n')
-        file.write('  Bladex.LoadWorld(\"%s")\n'%(Bladex.GetWorldFileName(),))
+        file.write('  Bladex.LoadWorld(%s)\n'%(repr(Bladex.GetWorldFileName()),)) # by Sryml
         file.write('__load_bar.Increment()\n')
 
         file.write('import ObjStore\n')
