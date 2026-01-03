@@ -372,6 +372,11 @@ def AutomatedAssets(path, root_priority=""):
     # result = string.replace(result, "\\", "/")  # type: ignore
     base_root = os.path.normpath(os.path.join(__data.mod_root, result))
     if result:
+        num = len(base_root)
+        for root in __data.asset_path:
+            if len(root) >= num:
+                base_root = root
+                break
         base_path = os.path.relpath(path, base_root)
     #
     new_path = path
@@ -609,7 +614,7 @@ def LoadLevel(map_dir, mod_dir=""):
         # "Lumenx.SetBladeRoot(%s)" % repr(blade_root),
         #
         # "execfile('%s')" % sys_init,
-        "execfile('%s')" % cfg_file,
+        "execfile('Cfg.py')",
         "isMenuAppMode =  Bladex.GetAppMode() == 'Menu'",
         "Bladex.DoneLoadGame()",
         "isMenuAppMode and Bladex.SetAppMode('Menu')",
@@ -617,7 +622,9 @@ def LoadLevel(map_dir, mod_dir=""):
     ]
     Bladex.BeginLoadGame()
     os.chdir(map_path)
-    Bladex.CloseLevel(string.join(execstr, ";"), "") # map_name is empty, make sure to load a brand new one.
+    Bladex.CloseLevel(
+        string.join(execstr, ";"), ""
+    )  # map_name is empty, make sure to load a brand new one.
 
 
 def LoadSampledAnimation(file, anm_name, *args):
