@@ -1,0 +1,8 @@
+Bladex.LoadSampledAnimation("../../Anm/Kgt_final_mina.bmv","Kgt_final_mina",1,"Knight_N")
+Bladex.LoadSampledAnimation("../../Anm/Kgt_ambush_mine.bmv","Kgt_ambush_mine",0,"Dwarf_N")
+Bladex.LoadSampledAnimation("../../Anm/Spd_1_mina_01.bmv","Spd_1_mina_01",0,"Spidersmall",20)
+Bladex.LoadSampledAnimation("../../Anm/Spd_2_mina_01.bmv","Spd_2_mina_01",0,"Spidersmall",20)
+Bladex.LoadSampledAnimation("../../Anm/Spd_3_mina_01.bmv","Spd_3_mina_01",0,"Spidersmall",20)
+Bladex.LoadSampledAnimation("../../Anm/Gem_escena01_mina.BMV","Gem_escena01_mina",1,"Gemaazul")
+Bladex.LoadSampledAnimation("../../Anm/Kgt_escena01_mina.BMV","Kgt_escena01_mina",1,"Knight_N")
+Bladex.LoadSampledAnimation("../../Anm/Cos_escena01_mina.BMV","Cos_escena01_mina",1,"Cos")

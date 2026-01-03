@@ -1,0 +1,33 @@
+Bladex.UnBindAll()
+
+Bladex.Bind("Keyboard","Up","Forwards");
+Bladex.Bind("Keyboard","Shift","Run");
+Bladex.Bind("Keyboard","Down","Backwards");
+Bladex.Bind("Keyboard","Right","Turn Right");
+Bladex.Bind("Keyboard","Left","Turn Left");
+Bladex.Bind("Keyboard","K","Crouch");
+Bladex.Bind("Keyboard","Z","Jump");
+Bladex.Bind("Keyboard","M","Magic");
+Bladex.Bind("Keyboard","1","Throw");
+Bladex.Bind("Keyboard","L","Take");
+Bladex.Bind("Keyboard","4","Swim Up");
+Bladex.Bind("Keyboard","3","Swim Down");
+Bladex.Bind("Keyboard","Tab","Free Look");
+Bladex.Bind("Keyboard","A","Look Up");
+Bladex.Bind("Keyboard","Q","Look Down");
+Bladex.Bind("Keyboard","N","Dodge");
+Bladex.Bind("Keyboard","Ctrl","Attack");
+Bladex.Bind("Keyboard","I","Inventory");
+Bladex.Bind("Keyboard","U","Char Details");
+Bladex.Bind("Keyboard","F12","Camera Left");
+Bladex.Bind("Keyboard","F11","Camera Right");
+Bladex.Bind("Keyboard","F10","Change Camera");
+Bladex.Bind("Keyboard","F9","Fixed Camera");
+Bladex.Bind("Keyboard","F3","Camera Dist");
+Bladex.Bind("Keyboard","F4","Change Mov");
+Bladex.Bind("Keyboard","B","TakeSnapShot");
+Bladex.Bind("Keyboard","F6","ToggleBoings");
+Bladex.Bind("Keyboard","7","EnemyWatch");
+Bladex.Bind("Keyboard","G","KillEnemy");
+Bladex.Bind("Keyboard","5","NextPOV");
+Bladex.Bind("Keyboard","Space","ToggleStats");

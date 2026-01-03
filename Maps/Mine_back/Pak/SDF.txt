@@ -1,0 +1,8 @@
+(dp0
+S'MineBackAcido'
+p1
+F36.15625
+sS'MineBackTablilla'
+p2
+F21.84375
+s.

@@ -1,0 +1,5 @@
+(dp0
+S'EscenaPeleaOrcos'
+p1
+F12.046875
+s.

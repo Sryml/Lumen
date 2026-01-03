@@ -1,0 +1,5 @@
+(dp0
+S'EscenaInicioIsla'
+p1
+F45.046875
+s.

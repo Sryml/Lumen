@@ -1,0 +1,17 @@
+(dp0
+S'inicio'
+p1
+F39.96875
+sS'final'
+p2
+F21.796875
+sS'arania'
+p3
+F10.03125
+sS'wscene'
+p4
+F14.5625
+sS'fourLDS'
+p5
+F18.890625
+s.

@@ -1,0 +1,11 @@
+(dp0
+S'ragnaranda'
+p1
+F25.015625
+sS'1erscript'
+p2
+F40.0625
+sS'cacaos'
+p3
+F19.03125
+s.

@@ -1,0 +1,5 @@
+(dp0
+S'EscenaTablilla'
+p1
+F36.21875
+s.

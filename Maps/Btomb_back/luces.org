@@ -1,0 +1,124 @@
+##focos zona tablilla
+
+
+"""
+##foco solar 1
+
+foco1=Bladex.CreateEntity("Foco1","Entity Spot",325008,-9500,-73361)
+foco1.Color=239,149,37
+foco1.Intensity=15
+foco1.Precission=0.1
+foco1.CastShadows=0
+foco1.Visible=0
+foco1.Flick=0
+
+
+##foco solar 2
+
+foco2=Bladex.CreateEntity("Foco2","Entity Spot",325008,-9500,-62361)
+foco2.Color=239,149,37
+foco2.Intensity=15
+foco2.Precission=0.1
+foco2.CastShadows=0
+foco2.Visible=0
+foco2.Flick=0
+
+
+##foco solar 3
+
+foco3=Bladex.CreateEntity("Foco3","Entity Spot",325008,-9500,-51111)
+foco3.Color=239,149,37
+foco3.Intensity=15
+foco3.Precission=0.1
+foco3.CastShadows=0
+foco3.Visible=0
+foco3.Flick=0
+
+
+##foco solar 4
+
+foco4=Bladex.CreateEntity("Foco4","Entity Spot",325008,-9500,-39986)
+foco4.Color=239,149,37
+foco4.Intensity=15
+foco4.Precission=0.1
+foco4.CastShadows=0
+foco4.Visible=0
+foco4.Flick=0
+
+
+
+##foco verde 1
+
+foco5=Bladex.CreateEntity("Foco5","Entity Spot",325008,10000,-73361)
+foco5.Color=18,37,37
+foco5.Intensity=20
+foco5.Precission=0.1
+foco5.CastShadows=0
+foco5.Visible=0
+foco5.Flick=0
+
+
+
+#foco verde 2
+
+foco6=Bladex.CreateEntity("Foco6","Entity Spot",325008,10000,-62361)
+foco6.Color=18,37,37
+foco6.Intensity=20
+foco6.Precission=0.1
+foco6.CastShadows=0
+foco6.Visible=0
+foco6.Flick=0
+
+
+##foco verde 3
+
+foco7=Bladex.CreateEntity("Foco7","Entity Spot",325008,10000,-51111)
+foco7.Color=18,37,37
+foco7.Intensity=20
+foco7.Precission=0.1
+foco7.CastShadows=0
+foco7.Visible=0
+foco7.Flick=0
+
+
+##foco verde 4
+
+foco8=Bladex.CreateEntity("Foco8","Entity Spot",325008,10000,-39986)
+foco8.Color=18,37,37
+foco8.Intensity=20
+foco8.Precission=0.1
+foco8.CastShadows=0
+foco8.Visible=0
+foco8.Flick=0
+
+
+
+
+###focos palacio final
+
+foco9=Bladex.CreateEntity("Foco9","Entity Spot",450000,39700,62000)
+foco9.Color=18,37,37
+foco9.Intensity=50
+foco9.Precission=0.1
+foco9.CastShadows=0
+foco9.Visible=0
+foco9.Flick=0
+"""
+
+foco10=Bladex.CreateEntity("Foco10","Entity Spot",467000,39700,62000)
+foco10.Color=18,37,37
+foco10.Intensity=80
+foco10.Precission=0.3
+foco10.CastShadows=0
+foco10.Visible=0
+foco10.Flick=0
+
+"""
+foco11=Bladex.CreateEntity("Foco11","Entity Spot",483000,39700,62000)
+foco11.Color=18,37,37
+foco11.Intensity=50
+foco11.Precission=0.1
+foco11.CastShadows=0
+foco11.Visible=0
+foco11.Flick=0
+"""

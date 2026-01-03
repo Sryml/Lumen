@@ -1,0 +1,1 @@
+Bladex.LoadSampledAnimation("../../Anm/Vejete_rlx_no.BMV","Vejete_rlx_no",1,"Vejete")

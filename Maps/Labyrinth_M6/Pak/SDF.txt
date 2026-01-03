@@ -1,0 +1,14 @@
+(dp0
+S'EscenaInicio'
+p1
+F21.265625
+sS'EscenaAgonia'
+p2
+F25.796875
+sS'EscenaEstanque'
+p3
+F3.03125
+sS'EscenaTablilla'
+p4
+F36.21875
+s.

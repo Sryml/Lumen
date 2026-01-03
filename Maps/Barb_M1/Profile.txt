@@ -1,0 +1,56 @@
+Section	Time	Calls	Time/Call	MaxCallTime	Comment
+psScriptSection0	0.00000	0	-1.#IND0	0.00000
+psScriptSection1	0.00000	0	-1.#IND0	0.00000
+psScriptSection2	0.00000	0	-1.#IND0	0.00000
+psScriptSection3	0.26600	4	0.06650	0.08800	BladeInit.Enemies
+psScriptSection4	10.88100	4	2.72025	3.19900	BladeInit.Biped
+psScriptSection5	0.07800	4	0.01950	0.03500	BladeInit.anm_conv
+psScriptSection6	0.00000	0	-1.#IND0	0.00000
+psScriptSection7	0.00000	0	-1.#IND0	0.00000
+psScriptSection8	0.00000	0	-1.#IND0	0.00000
+psScriptSection9	0.00000	0	-1.#IND0	0.00000
+psLoadAnim	71.46200	138	0.51784	23.87100
+psLoadAnimPython	71.41600	16	4.46350	23.86800
+psLoadAllAnims	0.04300	16	0.00269	0.00400
+psIDataFileAnmSampled	12.69500	1006	0.01262	0.15600	../../Anm/Bar_seleccion.BMV
+psLoadSampledAnimation	53.77600	1006	0.05346	2.43000	../../Anm\Kgt_attack_chg_r_l.BMV
+psPivotCorrection	15.54800	1006	0.01546	2.40300
+psOpenDataFile	14.08900	1006	0.01400	0.20300
+psLoadAnmRaceData	0.01100	16	0.00069	0.00100
+psLoadLevel	173.02500	4	43.25625	108.55200
+psAStarCalc	0.45800	3	0.15267	0.30900
+psLoadBOD	6.36500	62	0.10266	2.38900	Knight_N
+psReadLevel_LoadWorld	15.51700	4	3.87925	6.22300
+psBreakSectorAux_MakeObjDscr	0.00000	0	-1.#IND0	0.00000
+psSetListenerPosition	1.36500	1863	0.00073	0.07500
+psUpdateDMS	0.00000	0	-1.#IND0	0.00000
+psUpdateYSS	0.00000	0	-1.#IND0	0.00000
+psStopAndFree3dChannel	0.00100	131	0.00001	0.00100
+psProc3DChannels	0.06400	755	0.00008	0.01400
+psAILsampleStatus	0.04500	12104	0.00000	0.01400
+psUpdateSystem	0.00000	0	-1.#IND0	0.00000
+psUpdateSounds	0.00000	0	-1.#IND0	0.00000
+psUpdateGhosts	0.00000	0	-1.#IND0	0.00000
+psCreateTimer	0.00000	0	-1.#IND0	0.00000
+psB_ResourceLocation_GetResource	22.54500	728	0.03097	2.40100	../../3dChars/Kgt_N.BOD
+psConstructorDataFile	9.18100	1106	0.00830	0.42200	../../3dObjs/3dobjs.mmp
+psActivateInput	0.00100	1	0.00100	0.00100
+psSearchInPakFiles	0.00000	0	-1.#IND0	0.00000
+psSetActiveTexture	0.00000	0	-1.#IND0	0.00000
+psTestHit	1.59700	17431	0.00009	0.03600
+psAStarThinking	0.00000	0	-1.#IND0	0.00000
+psLaunchAnimation	0.28200	153	0.00184	0.04700	Rlx
+psSoundPlay	0.00000	0	-1.#IND0	0.00000
+psSoundPlay2D	0.00000	0	-1.#IND0	0.00000
+psExeMusicEvent	0.12100	6	0.02017	0.05500	../../Sounds/seleccion-personaje.MP3
+psOctreeSetup	0.00000	0	-1.#IND0	0.00000
+psDrawAura	0.00000	0	-1.#IND0	0.00000
+psMoveCamera	0.84500	2858	0.00030	0.07400
+psEventFuncC	0.28000	487	0.00057	0.03600	FloorFail
+psComboStampUpdate	0.01300	5182	0.00000	0.00200
+psProcessSlotsTo	9.66900	1863	0.00519	0.45800
+psDrawWorld	51.31800	1863	0.02755	0.88000
+psDrawEntities	11.96600	1863	0.00642	0.05300
+psDrawPortalsList	21.42200	1863	0.01150	0.10400
+psChooseNextAttack	0.00000	0	-1.#IND0	0.00000
+psMakeOctTree	5.71300	4	1.42825	2.80500

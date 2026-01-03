@@ -1,0 +1,11 @@
+(dp0
+S'BtombInicio'
+p1
+F30.078125
+sS'BtombTablilla'
+p2
+F42.828125
+sS'BtombFinal'
+p3
+F45.421875
+s.

@@ -1,0 +1,11 @@
+(dp0
+S'minagemas'
+p1
+F15.046875
+sS'MineBichozampon'
+p2
+F18.9375
+sS'minaini'
+p3
+F32.015625
+s.

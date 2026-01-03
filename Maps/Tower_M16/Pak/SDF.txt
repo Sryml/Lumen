@@ -1,0 +1,11 @@
+(dp0
+S'EscenaMeskalandug'
+p1
+F45.109375
+sS'EscenaFINALDALGURAK'
+p2
+F52.75
+sS'EscenainicioTower'
+p3
+F40.328125
+s.

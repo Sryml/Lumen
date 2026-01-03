@@ -1,0 +1,83 @@
+import GameText
+
+# Posicion del personaje
+SectorInicioPos   = 325103,6387,17380
+TablStartPosition = 325029,6723,-6447
+AnglStartPosition = 3.1415
+AnimationName     = "tablilla_btomb"
+
+# Camara
+CameraName        = "Tablilla_btombCamera03.cam"
+TabSFrame         = 210
+TabLFrame         = 855
+
+# Eventos de la camara
+Event_CogeLaTablilla     = 475+53-TabSFrame
+Event_tTablillaDust1     = 475+105-TabSFrame
+Event_tTablillaDust2     = 475+114-TabSFrame
+Event_DesapareceTablilla = 475+297-TabSFrame
+
+ColorLuz = 28,57,57
+
+# tablilla
+tab=Bladex.CreateEntity("Tablilla4","Tablilla4",324787,6430,18066)
+tab.Static=0
+tab.Scale=2.006763
+tab.Orientation=0.887011,0.461749,0.000000,0.000000
+tab.CastShadows=0
+tab.Solid=0
+
+# luz de la tablilla
+luzta             = Bladex.CreateEntity("Luz2","Entity Spot",160214.623000,6010.844000,586.605000)
+luzta.Color       = ColorLuz 
+luzta.Intensity   = 18
+luzta.Precission  = 0.09
+luzta.CastShadows = 0
+luzta.SizeFactor  = 2
+luzta.Flick       = 0
+tab.Link(luzta) 
+
+#---------------------------------#
+#     Escena de la tablilla       #
+#---------------------------------#
+
+Bladex.ReadAlphaBitMap("../../Data/Estrellita.bmp","Estrellita")
+
+# Estrellitas y duendes
+Bladex.AddParticleGType("Estrellitas","Estrellita",B_PARTICLE_GTYPE_BLEND,64)
+for i in range(64):
+	r=255.0
+	g=255.0
+	b=255.0
+	a   = (i*255)/64
+	size= (64-i)*2
+	Bladex.SetParticleGVal("Estrellitas",i,r,g,b,a,size)
+
+
+# Polvillo
+Bladex.AddParticleGType("Polvillo","SmokeParticle",B_PARTICLE_GTYPE_BLEND,128)
+for i in range(128):
+	if i>64:
+		traux=0.0
+	else:
+		traux=(64.0-i)/64.0
+	aux  = (128.0-i)/128.0
+	r    = ColorLuz[0]
+	g    = ColorLuz[1]
+	b    = ColorLuz[2]
+	a    = 150.0*(1.0-traux)**0.5
+	size = 4.0+aux*400.0
+	Bladex.SetParticleGVal("Polvillo",i,r,g,b,a,size)
+
+
+  
+PosX  = 0
+PosY  = 0
+PosZ  = 0
+Tick  = 0
+
+  
+Bladex.CreateTimer("TablillaTimer",0.020)
+  
+#TabillaSector = Bladex.GetSector(SectorInicioPos[0], SectorInicioPos[1], SectorInicioPos[2])
+#TabillaSector.OnEnter = ComienzaAnimacionTablilla

@@ -1,0 +1,5 @@
+Bladex.LoadSampledAnimation("../../Anm/Wyv_escena01.BMV","Wyv_escena01",1,"Wyvern")
+Bladex.LoadSampledAnimation("../../Anm/Wyv_escena02a.BMV","Wyv_escena02a",1,"Wyvern")
+Bladex.LoadSampledAnimation("../../Anm/Wyv_escena03b_island.BMV","Wyv_escena03b_island",1,"Wyvern")
+Bladex.LoadSampledAnimation("../../Anm/Wyv_escena03a_island.BMV","Wyv_escena03a_island",1,"Wyvern")
+Bladex.LoadSampledAnimation("../../Anm/Crw_start_pic.BMV","Crw_start_pic",1,"Crw")

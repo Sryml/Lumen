@@ -1,0 +1,8 @@
+(dp0
+S'EscenaINICIODESIERTO'
+p1
+F40.296875
+sS'EscenaDesertTablillas'
+p2
+F19.171875
+s.

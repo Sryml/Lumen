@@ -1,0 +1,5 @@
+(dp0
+S'EscenaTablillaTumba'
+p1
+F21.078125
+s.

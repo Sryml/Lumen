@@ -1,0 +1,8 @@
+(dp0
+S'CaosTropa'
+p1
+F20.046875
+sS'CaosInicio'
+p2
+F40.078125
+s.

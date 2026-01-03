@@ -1,0 +1,14 @@
+(dp0
+S'EscenaFinalTumba'
+p1
+F17.4375
+sS'EscenaTablillaTumba'
+p2
+F21.078125
+sS'EscenaKingCalentito'
+p3
+F30.390625
+sS'EscenaInicioTumba'
+p4
+F50.0347499847
+s.
