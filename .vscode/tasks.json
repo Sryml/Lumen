@@ -2,14 +2,37 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Run autopep8 for Blade",
+        "label": "Run autopep8 [ignore E402]",
         "type": "shell",
         "command": "autopep8",
-        "args": ["${file}", "-i", "--ignore=E402"],
-        "group": {
-          "kind": "build",
-          "isDefault": true
+        "args": ["\"${file}\"", "-i", "--ignore=E402"],
+        "presentation": {
+          "reveal": "never",
+          "panel": "dedicated", // 使用单独的终端面板
+          "showReuseMessage": false,
+          "clear": true
         },
+        // "group": {
+        //   "kind": "build",
+        //   "isDefault": false
+        // },
+        "problemMatcher": []
+      },
+      {
+        "label": "Run black fast",
+        "type": "shell",
+        "command": "black",
+        "args": ["\"${file}\"", "--fast"],
+        "presentation": {
+          "reveal": "never",
+          "panel": "dedicated", // 使用单独的终端面板
+          "showReuseMessage": false,
+          "clear": true
+        },
+        // "group": {
+        //   "kind": "build",
+        //   "isDefault": true
+        // },
         "problemMatcher": []
       }
     ]

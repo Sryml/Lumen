@@ -8,6 +8,43 @@
       "reportShadowedImports": "none",
       "reportUnboundVariable": "none",
       "reportOptionalMemberAccess": "none",
+      "reportAttributeAccessIssue": "none",
       "reportUnusedExpression": "none"
     },
+    "python.autoComplete.extraPaths": [
+      "${workspaceFolder}/Scripts",
+      "${workspaceFolder}/Scripts/Combos",
+      "${workspaceFolder}/Scripts/Biped",
+      "${workspaceFolder}/Lib",
+      "${workspaceFolder}/Lib/AnmSets",
+      "${workspaceFolder}/Lib/Widgets",
+      "${workspaceFolder}/Lib/PythonLib",
+      "D:/GOG Galaxy/Games/Blade of Darkness/Lib/PythonLib",
+      "D:/GOG Galaxy/Games/Blade of Darkness/Lib/PythonLib/lib-tk",
+      "D:/GOG Galaxy/Games/Blade of Darkness/Lib/PythonLib/DLLs",
+      "~/AppData/Local/Programs/Python/Python39/Lib/site-packages/Bladex/__ext__"
+    ],
+    "python.analysis.extraPaths": [
+      "${workspaceFolder}/Scripts",
+      "${workspaceFolder}/Scripts/Combos",
+      "${workspaceFolder}/Scripts/Biped",
+      "${workspaceFolder}/Lib",
+      "${workspaceFolder}/Lib/AnmSets",
+      "${workspaceFolder}/Lib/Widgets",
+      "${workspaceFolder}/Lib/PythonLib",
+      "D:/GOG Galaxy/Games/Blade of Darkness/Lib/PythonLib",
+      "D:/GOG Galaxy/Games/Blade of Darkness/Lib/PythonLib/lib-tk",
+      "D:/GOG Galaxy/Games/Blade of Darkness/Lib/PythonLib/DLLs",
+      "~/AppData/Local/Programs/Python/Python39/Lib/site-packages/Bladex/__ext__"
+    ],
+    "C_Cpp.default.includePath": [
+      // "${workspaceFolder}/Bin"
+    ],
+    "python-envs.pythonProjects": [
+      {
+        "path": "",
+        "envManager": "ms-python.python:venv",
+        "packageManager": "ms-python.python:pip"
+      }
+    ],
 }
