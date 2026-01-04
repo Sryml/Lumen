@@ -29,6 +29,8 @@ def Knight():
 	Bladex.AddBipedAction("Knight","dth_penr","Kgt_dth_penr",0.0,1.0,0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_hit_l.bmv","Kgt_dth_penl",1)
 	Bladex.AddBipedAction("Knight","dth_penl","Kgt_dth_penl",0.0,1.0,0)
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_push_wall.bmv","Kgt_push_wall",0)
 
 # folllowing should not be necessary, or should be in animation sets
 #Bladex.LoadSampledAnimation("../../Anm/Rgn_rlx_1h.bmv","Rgn_rlx_1h",1,"Ragnar")

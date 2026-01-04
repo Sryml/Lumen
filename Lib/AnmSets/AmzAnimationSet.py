@@ -2696,3 +2696,6 @@ def LoadAmzAnimationSet(ct_name):
 	Bladex.AddAnmLStep(anm_name,0.667)
 	Bladex.AddAnmLRelease(anm_name,0.678)
 	Bladex.AddAnmLStep(anm_name,0.713)
+
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Amz_tablilla_mina.bmv","Amz_tablilla_mina",0)

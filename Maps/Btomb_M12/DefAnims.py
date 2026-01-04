@@ -34,5 +34,5 @@ def Ork():
 	qLoadAnims("Ork","laughing1","Ork_laughing1","Ork")
 	qLoadAnims("Ork","laughing2","Ork_laughing2","Ork")
 
-def Tkn():
+def Knight_Traitor(): # by Sryml
 	qLoadAnims("Tkn","death_btomb","Tkn_death_btomb","Knight_Traitor")

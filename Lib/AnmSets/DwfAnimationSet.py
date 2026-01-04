@@ -2140,3 +2140,6 @@ def LoadDwfAnimationSet(ct_name):
 		Bladex.AddAnmLStep(anm_name,0.000)
 		Bladex.AddAnmLRelease(anm_name,0.335)
 		Bladex.AddAnmLStep(anm_name,0.792)
+
+		# by Sryml
+		Bladex.LoadSampledAnimation("../../Anm/Dwf_tablilla_mina.bmv","Dwf_tablilla_mina",0)

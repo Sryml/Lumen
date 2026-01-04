@@ -12,7 +12,7 @@ def Min():
 def Ldm():
 	qLoadAnims("Ldm","window","Ldm_window","Little_Demon")
 
-def Tkn():
+def Knight_Traitor(): # by Sryml
 	qLoadAnims("Tkn","sleep_wall","Tkn_sleep_wall","Traitor_Knight")
 	qLoadAnims("Tkn","alarm01","Tkn_alarm01","Traitor_Knight")
 

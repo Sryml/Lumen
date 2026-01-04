@@ -370,3 +370,11 @@ def LoadLdmAnimationSet(ct_name):
 	Bladex.AddAnmLStep(anm_name,0)
 	Bladex.AddAnmRRelease(anm_name,0.028)
 	Bladex.AddAnmLRelease(anm_name,0.028)
+
+	# by Sryml
+	anm_name="Ldm_dth_disap"
+	Bladex.LoadSampledAnimation("../../Anm/Ldm_dth_disap.BMV",anm_name,0)
+	Bladex.AddAnmRStep(anm_name,0)
+	Bladex.AddAnmLStep(anm_name,0)
+	Bladex.AddAnmRRelease(anm_name,0.028)
+	Bladex.AddAnmLRelease(anm_name,0.028)

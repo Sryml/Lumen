@@ -32,3 +32,13 @@ def LoadPrsAnimationSet(ct_name):
 	Bladex.LoadSampledAnimation("../../Anm/Prs_dth.BMV","Prs_dth0",1)
 	Bladex.AddAnmRStep("Prs_dth0",0.0)
 	Bladex.AddAnmLStep("Prs_dth0",0.0)
+
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Prs_rlx_02.BMV","Prs_rlx_02",1)
+	Bladex.AddAnmRStep("Prs_rlx_02",0.0)
+	Bladex.AddAnmLStep("Prs_rlx_02",0.0)	
+
+	Bladex.LoadSampledAnimation("../../Anm/Prs_dth.BMV","Prs_dth",1)
+	Bladex.AddAnmRStep("Prs_dth",0.0)
+	Bladex.AddAnmLStep("Prs_dth",0.0)
+	#

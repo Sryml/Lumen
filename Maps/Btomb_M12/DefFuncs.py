@@ -589,7 +589,7 @@ def EscenaGranFinal():
         Bladex.AddScheduledFunc(Bladex.GetTime()+1.0, MusicaytextoB,())
 
         char.Wuea=Reference.WUEA_ENDED
-        char.LaunchAnimation("Kgt_oasis_muraldoble")
+        char.LaunchAnimation("oasis_muraldoble") # by Sryml
 
         char.SetOnFloor()
         cam = Bladex.GetEntity("Camera")

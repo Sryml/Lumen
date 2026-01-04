@@ -392,3 +392,15 @@ def LoadDgkAnimationSet(ct_name):
 	Bladex.AddAnmRRelease(anm_name,0.715)
 	Bladex.AddAnmRStep(anm_name,0.915)
 	Bladex.AddAnmEvent(anm_name,"StartLifeUp",0.2)
+
+	# by Sryml: start
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_back.BMV","Dgk_hurt_back",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_big.BMV","Dgk_hurt_big",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_chest.BMV","Dgk_hurt_chest",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_l_arm.BMV","Dgk_hurt_l_arm",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_l_leg.BMV","Dgk_hurt_l_leg",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_lite.BMV","Dgk_hurt_lite",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_r_arm.BMV","Dgk_hurt_r_arm",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_hurt_r_leg.BMV","Dgk_hurt_r_leg",0)
+	Bladex.LoadSampledAnimation("../../Anm/Dgk_powup.BMV","Dgk_powup",0)
+	# by Sryml: end

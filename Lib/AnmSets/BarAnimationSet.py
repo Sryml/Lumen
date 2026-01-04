@@ -2995,3 +2995,6 @@ def LoadBarAnimationSet(ct_name):
 	Bladex.AddAnmLStep(anm_name,0.000)
 	Bladex.AddAnmEvent("Bar_g_d_r_axe","W2hToLeft",0.23)
 	Bladex.AddAnmEvent("Bar_g_d_r_axe","W2hToRight",0.95)
+
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Bar_tablilla_mina.bmv","Bar_tablilla_mina",0)

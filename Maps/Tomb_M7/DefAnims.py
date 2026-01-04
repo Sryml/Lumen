@@ -1,5 +1,9 @@
 import Bladex
 
+# by Sryml
+Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_a.BMV","Kgt_read_shield_a",0)
+Bladex.LoadSampledAnimation("../../Anm/Dwf_read_shield_a.BMV","Dwf_read_shield_a",0)
+
 def Knight():
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_escena01_mina.BMV","Kgt_escena01_mina",0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_final_mina.bmv","Kgt_final_mina",0)

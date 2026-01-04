@@ -7,7 +7,7 @@ def qLoadAnims(Kind,Animation,AnimationFile,person):
 def Min():
 	qLoadAnims("Min","sp","Min_sp","Minotaur")
 
-def Tkn():
+def Knight_Traitor(): # by Sryml
 	Bladex.LoadSampledAnimation("../../Anm/Tkn_prisionero_rlx.bmv","Tkn_prisionero_rlx",1,"Knight_Traitor",1)
 
 def Gok():

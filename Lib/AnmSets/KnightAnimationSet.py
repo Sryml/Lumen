@@ -2699,3 +2699,6 @@ def LoadKnightAnimationSet(ct_name):
 #	Bladex.AddAnmLStep(anm_name,0)
 #	Bladex.AddAnmLRelease(anm_name,0.48)
 #	Bladex.AddAnmLStep(anm_name,0.82)
+
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_tablilla_mina.bmv","Kgt_tablilla_mina",0)

@@ -1223,3 +1223,7 @@ def LoadOrkAnimationSet(ct_name):
 	Bladex.AddAnmLStep(anm_name,0.676)
 	Bladex.AddAnmLRelease(anm_name,0.823)
 	Bladex.AddAnmLStep(anm_name,0.950)
+
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Ork_jmp_1h.BMV","Ork_jmp_1h",0)
+	#
