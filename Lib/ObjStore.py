@@ -22,12 +22,12 @@ def GetNewId():
 
 
 def CheckStore():
-
+    import Reference
 ##    # Recoleccion de basura
     for i in ObjectsStore.keys():
-        if sys.getrefcount(ObjectsStore[i])<=2: # Thanks Tomash
+        if sys.getrefcount(ObjectsStore[i]) <= 2: # Thanks Tomash
             # garbage collection, if the only reference to the class is here, delete it
-            print "CheckStore(): "+`ObjectsStore[i]`+" deleted by garbage collection",i
+            Reference.debugprint("CheckStore(): %s deleted by garbage collection, index %s" % (ObjectsStore[i], repr(i))) # by Sryml
             del ObjectsStore[i]
 
     # Objetos que ya no son validos
