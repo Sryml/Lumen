@@ -1221,3 +1221,6 @@ def LoadTraitorKnightAnimationSet(ct_name):
 	Bladex.AddAnmLStep("Tkn_alarm01",0.0)
 	Bladex.AddAnmLRelease("Tkn_alarm01",0.265)
 	Bladex.AddAnmLStep("Tkn_alarm01",0.420)
+
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_order.BMV","Tkn_order",0)

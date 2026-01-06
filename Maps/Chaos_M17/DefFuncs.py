@@ -1010,7 +1010,7 @@ def CreaOrcoGordo(n, x, y, z,CreaLlave=1):
 def Escapex():
 	ork = Bladex.GetEntity(  "Orkus2" )
 	ork.SetTmpAnmFlags(1,1,1,0,5,1)
-	ork.LaunchAnimation( "Kgt_order" )
+	ork.LaunchAnimation( "Tkn_order" ) # by Sryml
 	ork.AnmEndedFunc = Atakax
 	ork.SetOnFloor()
 	_GritaOrco.Play(char.Position[0], char.Position[1], char.Position[2], 0)

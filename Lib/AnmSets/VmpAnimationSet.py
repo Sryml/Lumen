@@ -299,3 +299,7 @@ def LoadVmpAnimationSet(ct_name):
 	Bladex.AddAnmLStep(anm_name,0.000)
 	Bladex.AddAnmLRelease(anm_name,0.230)
 	Bladex.AddAnmLStep(anm_name,0.560)
+
+	# by Sryml
+	anm_name = "Vmp_dth0"
+	Bladex.LoadSampledAnimation("../../Anm/%s.BMV" % anm_name, anm_name, 0)

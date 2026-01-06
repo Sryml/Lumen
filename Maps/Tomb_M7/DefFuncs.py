@@ -1807,10 +1807,7 @@ def sSceneLaunchTakeAnimationA():
 	print(">>sSceneLaunchTakeAnimationA()")
 	char = Bladex.GetEntity("Player1")
 	char.Wuea = Reference.WUEA_ENDED
-	if char.Kind[0] == "D":
-		char.LaunchAnimation("Dwf_read_shield_a")
-	else:
-		char.LaunchAnimation("Kgt_read_shield_a")
+	char.LaunchAnimation("Kgt_read_shield_a")
 	char.AddAnmEventFunc("RightStoreShield",sSceneKeepShield)
 	char.AddAnmEventFunc("RightPickupShield",sSceneTakeShield)
 	char.AddAnmEventFunc("StartRead",sSceneReadStartEvent)

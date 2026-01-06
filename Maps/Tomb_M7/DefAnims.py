@@ -1,8 +1,5 @@
 import Bladex
 
-# by Sryml
-Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_a.BMV","Kgt_read_shield_a",0)
-Bladex.LoadSampledAnimation("../../Anm/Dwf_read_shield_a.BMV","Dwf_read_shield_a",0)
 
 def Knight():
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_escena01_mina.BMV","Kgt_escena01_mina",0)
@@ -12,6 +9,9 @@ def Knight():
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_tumba_rey.BMV","Kgt_tumba_rey",0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_reina_start.BMV","Kgt_reina_start",0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_abrirsarcofago.BMV","Kgt_abrirsarcofago",0)
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_a.BMV","Kgt_read_shield_a",0)
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_b.BMV","Kgt_read_shield_b",0)
 
 	Bladex.AddBipedAction("Kgt","escena01_mina","Kgt_escena01_mina",0.0,1.0,0)
 	Bladex.AddBipedAction("Kgt","final_mina","Kgt_final_mina",0.0,1.0,0)
@@ -29,6 +29,9 @@ def Amz():
 	Bladex.LoadSampledAnimation("../../Anm/Amz_tumba_rey.BMV","Amz_tumba_rey",0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_reina_start.BMV","Amz_reina_start",0,"Amazon_N")
 	Bladex.LoadSampledAnimation("../../Anm/Amz_abrirsarcofago.BMV","Amz_abrirsarcofago",0,"Knight_N")
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_a.BMV","Kgt_read_shield_a",0, "Amazon_N")
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_b.BMV","Kgt_read_shield_b",0,"Amazon_N")
 
 	Bladex.AddBipedAction("Amz","escena01_mina","Amz_escena01_mina",0.0,1.0,0)
 	Bladex.AddBipedAction("Amz","final_mina","Amz_final_mina",0.0,1.0,0)
@@ -46,6 +49,9 @@ def Bar():
 	Bladex.LoadSampledAnimation("../../Anm/Bar_tumba_rey.BMV","Bar_tumba_rey",0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_reina_start.BMV","Kgt_reina_start",0,"Knight_N")
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_abrirsarcofago.BMV","Bar_abrirsarcofago",0,"Barbarian_N")
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_a.BMV","Kgt_read_shield_a",0, "Barbarian_N")
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_b.BMV","Kgt_read_shield_b",0,"Barbarian_N")
 
 	Bladex.AddBipedAction("Bar","escena01_mina","Bar_escena01_mina",0.0,1.0,0)
 	Bladex.AddBipedAction("Bar","final_mina","Bar_final_mina",0.0,1.0,0)
@@ -64,6 +70,9 @@ def Dwf():
 	Bladex.LoadSampledAnimation("../../Anm/Dwf_tumba_rey.BMV","Dwf_tumba_rey",0)
 	Bladex.LoadSampledAnimation("../../Anm/Dwf_reina_start.BMV","Dwf_reina_start",0)
 	Bladex.LoadSampledAnimation("../../Anm/Kgt_abrirsarcofago.BMV","Dwf_abrirsarcofago",0,"Dwarf_N")
+	# by Sryml
+	Bladex.LoadSampledAnimation("../../Anm/Dwf_read_shield_a.BMV","Kgt_read_shield_a",0)
+	Bladex.LoadSampledAnimation("../../Anm/Kgt_read_shield_b.BMV","Kgt_read_shield_b",0)
 
 	Bladex.AddBipedAction("Dwf","escena01_mina","Dwf_escena01_mina",0.0,1.0,0)
 	Bladex.AddBipedAction("Dwf","final_mina","Dwf_final_mina",0.0,1.0,0)
@@ -72,6 +81,7 @@ def Dwf():
 	Bladex.AddBipedAction("Dwf","tumba_rey","Dwf_tumba_rey",0.0,1.0,0)
 	Bladex.AddBipedAction("Dwf","reina_start","Dwf_reina_start",0.0,1.0,0)
 	Bladex.AddBipedAction("Dwf","abrirsarcofago","Dwf_abrirsarcofago",0.0,1.0,0)
+
 
 def Spd():
 	Bladex.LoadSampledAnimation("../../Anm/Spd_1_mina_01.bmv","Spd_1_mina_01",0,"Spidersmall",20)

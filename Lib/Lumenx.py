@@ -561,6 +561,9 @@ def LoadLevel(map_dir, mod_dir=""):
         mod_root = __data.lumen_root
         new_lumen_root = "..\\.."
     map_path = os.path.join(mod_root, map_list_path, map_dir)
+    if not os.path.isdir(map_path):
+        printx("Map directory not found!")
+        return
     cfg_file = os.path.join(map_path, "Cfg.py")
     if not os.path.isfile(cfg_file):
         printx("Cfg.py file not found!")
