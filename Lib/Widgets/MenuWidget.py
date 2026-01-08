@@ -1225,8 +1225,8 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		self.Border=0
 		self.SetDrawFunc(self.Draw)
 
-		self.SndCorreGema=Bladex.CreateSound("../../Sounds/golpe-2.wav","Chanje")
-		self.SndCorreGema.Volume=0.5
+		self.SndCorreGema=Bladex.CreateSound("../../Sounds/golpe_maderamed.wav","Chanje")
+		self.SndCorreGema.Volume=0.4
 		self.SndCorreGema.MinDistance=1000000.0
 		self.SndCorreGema.MaxDistance=2000000
 

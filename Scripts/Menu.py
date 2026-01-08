@@ -58,13 +58,13 @@ TBUDSoundAble = 1
 EscapeFunction = None
 
 # SOUNDS FOR MENU->
-SndCorreGema=Bladex.CreateSound("../../Sounds/golpe-2.wav","Risoto1")
-SndCorreGema.Volume=0.5
+SndCorreGema=Bladex.CreateSound("../../Sounds/golpe_maderamed.wav","Risoto1") # by Sryml
+SndCorreGema.Volume=0.4
 SndCorreGema.MinDistance=1000000.0
 SndCorreGema.MaxDistance=2000000
 
 SndNewMenu=Bladex.CreateSound("../../Sounds/golpe-madera-pesada.wav","Risoto2")
-SndNewMenu.Volume=1.0
+SndNewMenu.Volume=0.8
 SndNewMenu.MinDistance=1000000.0
 SndNewMenu.MaxDistance=2000000
 
