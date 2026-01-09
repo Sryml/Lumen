@@ -13,9 +13,14 @@ import os
 
 ModListPath = "Mods"
 
+CLASSIC_VER = 0
+V109_VER = 1
+MAJOR_VER = 2
+
 
 # private database
 class __data:
+    game_version = 1
     current_map = ""
     current_mod = ""
     # map_list_path = "Maps"
@@ -93,6 +98,13 @@ def __fn():
         else:
             ServicePort = "17018"
         Bladex.SetStringValue("Lumen:ServicePort", ServicePort)
+    #
+    if hasattr(Bladex, "SetBloom"):
+        __data.game_version = MAJOR_VER
+    elif hasattr(Bladex, "TriggerEvent"):
+        __data.game_version = V109_VER
+    else:
+        __data.game_version = CLASSIC_VER
 
 
 __fn()
@@ -368,6 +380,9 @@ def AutomatedAssets(path, root_priority=""):
     #     check_ext = ".ogg"
     #
     base_path = os.path.relpath(path, __data.mod_root)
+    if base_path is None:
+        return path
+    #
     result = re.match(r"^(\.\.[/\\])*", base_path).group(0)
     # result = string.replace(result, "\\", "/")  # type: ignore
     base_root = os.path.normpath(os.path.join(__data.mod_root, result))
@@ -383,14 +398,14 @@ def AutomatedAssets(path, root_priority=""):
     for root in (root_priority,) + __data.asset_path:
         if not root:
             continue
-        if root == base_root or os.path.commonprefix([root, base_root]) != root:
-            new_path = os.path.join(root, base_path)
-            if os.path.exists(new_path):
-                break
-            # elif check_ext:
-            #     new_path = os.path.splitext(new_path)[0] + check_ext
-            #     if os.path.exists(new_path):
-            #         return new_path
+        # if root == base_root or os.path.commonprefix([root, base_root]) != root:
+        new_path = os.path.join(root, base_path)
+        if os.path.exists(new_path):
+            break
+        # elif check_ext:
+        #     new_path = os.path.splitext(new_path)[0] + check_ext
+        #     if os.path.exists(new_path):
+        #         return new_path
     #
     return new_path
 
@@ -404,12 +419,13 @@ def BodInspector():
         BodLink = os.path.join(root_dir, "BodLink.list")
         if os.path.isfile(BodLink):
             f = open(BodLink, "rt")
-            f_path = f.readline()
-            while f_path:
-                # [:-1] is used to remove \n
-                BBLib.ReadBOD(f_path[:-1])
-                BBLib.LoadBOD(f.readline()[:-1])
-                f_path = f.readline()
+            line = f.readline()
+            while line:
+                f_path = string.strip(line)
+                if f_path:
+                    BBLib.ReadBOD(f_path)
+                    BBLib.LoadBOD(string.strip(f.readline()))
+                line = f.readline()
             f.close()
         else:
             BodLink = open(os.path.join(root_dir, "BodLink.list"), "wt+")
@@ -499,6 +515,10 @@ def GetEntity(arg):
     if ret and ret.Kind in ("Entity Sound", "Entity Camera"):
         return B_PyEntity_Proxy(ret)
     return ret
+
+
+def GetGameVersion():
+    return __data.game_version
 
 
 def GetLumenRoot():
@@ -804,6 +824,7 @@ def SetModRoot(path):
 for __fn in __bladex_decorators:  # type: ignore
     Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore
 
+# hook other functions
 FunctionDecorator = __FunctionDecorator()
 for obj, name in (
     (sys.modules["__builtin__"], "execfile"),
@@ -840,6 +861,7 @@ GetBladeRoot
 GetCurrentMap
 GetCurrentMod
 GetEntity
+GetGameVersion
 GetLumenRoot
 GetMapListPath
 GetModRoot
