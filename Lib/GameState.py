@@ -873,6 +873,11 @@ class WorldState:
         file.write('  __load_bar.Increment("SolidMask")\n')
         file.write('  import SolidMask\n')
         file.write('  SolidMask.Init()\n')
+        # Sryml
+        file.write('  __load_bar.Increment("Mass")\n')
+        file.write('  import Mass\n')
+        file.write('  Mass.Init()\n')
+        #
         file.write('  __load_bar.Increment("Material")\n')
         file.write('  import Material\n')
         file.write('  Material.Init()\n')

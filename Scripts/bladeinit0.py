@@ -20,6 +20,11 @@ import SolidMask
 SolidMask.Init()
 
 
+# Sryml
+import Mass
+Mass.Init()
+#
+
 import Material
 Material.Init()
 
