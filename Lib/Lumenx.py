@@ -31,6 +31,10 @@ class __data:
     blade_root = ""
     asset_path = ()
     asset_path_model = ""
+    #
+    res_mmps = []
+    res_bmps = {}
+    res_alpha_bmps = {}
 
 
 ######### Initialization #########
@@ -187,6 +191,47 @@ class __FunctionDecorator:
         if hasattr(obj, "is_proxy"):
             obj = obj.target
         return self.RawFunc.type(obj)
+
+    # BBLibc module
+    def B_BitMap24_ReadFromBMP(self, this, arg0):
+        arg0 = AutomatedAssets(arg0)
+        return self.RawFunc.B_BitMap24_ReadFromBMP(this, arg0)
+
+    def B_BitMap24_ReadFromJPEG(self, this, arg0):
+        arg0 = AutomatedAssets(arg0)
+        return self.RawFunc.B_BitMap24_ReadFromJPEG(this, arg0)
+
+    def B_BitMap24_ReadFromFile(self, this, arg0):
+        arg0 = AutomatedAssets(arg0)
+        return self.RawFunc.B_BitMap24_ReadFromFile(this, arg0)
+
+    def ReadBOD(self, path):
+        path = AutomatedAssets(path)
+        return self.RawFunc.ReadBOD(path)
+
+    def ReadMMP(self, path):
+        data = globals()["__data"]
+        if path not in data.res_mmps:
+            data.res_mmps.append(path)
+        path = AutomatedAssets(path)
+        return self.RawFunc.ReadMMP(path)
+
+    # BUIxc module
+    def B_FontServer_CreateBFont(self, this, arg0, *args):
+        arg0 = AutomatedAssets(arg0)
+        return apply(self.RawFunc.B_FontServer_CreateBFont, (this, arg0) + args)
+
+    def new_B_TextWidget(self, arg0, arg1, arg2, arg3, arg4, *args):
+        arg4 = AutomatedAssets(arg4)
+        return apply(
+            self.RawFunc.new_B_TextWidget, (arg0, arg1, arg2, arg3, arg4) + args
+        )
+
+    def new_B_BitmapWidget(self, arg0, arg1, arg2, arg3, arg4, *args):
+        args = tuple(map(AutomatedAssets, args))
+        return apply(
+            self.RawFunc.new_B_BitmapWidget, (arg0, arg1, arg2, arg3, arg4) + args
+        )
 
 
 def __empty_func(*args, **kwargs):
@@ -497,9 +542,17 @@ def CreateSound(file_name, sound_name):
     return Bladex_raw.CreateSound(file_name, sound_name)
 
 
+def GetAlphaBMPFiles():
+    return __data.res_alpha_bmps
+
+
 def GetBladeRoot():
     """Returns the root path of Blade"""
     return __data.blade_root
+
+
+def GetBMPFiles():
+    return __data.res_bmps
 
 
 def GetCurrentMap():
@@ -528,6 +581,10 @@ def GetLumenRoot():
 
 def GetMapListPath():
     return __data.map_list_path
+
+
+def GetMMPFiles():
+    return __data.res_mmps
 
 
 def GetModRoot():
@@ -666,11 +723,15 @@ def Raisex(exc, msg=""):
 
 
 def ReadAlphaBitMap(file_name, internal_name):
+    if __data.res_alpha_bmps.get(internal_name) is None:
+        __data.res_alpha_bmps[internal_name] = file_name
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadAlphaBitMap(file_name, internal_name)
 
 
 def ReadBitMap(file_name, internal_name):
+    if __data.res_bmps.get(internal_name) is None:
+        __data.res_bmps[internal_name] = file_name
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadBitMap(file_name, internal_name)
 
@@ -697,7 +758,11 @@ def ReadLevel(file_name):
                 continue
             key, val = lst
             if key != "GammaC":
-                val = os.path.relpath(AutomatedAssets(lst[1]), current_dir)
+                if key in ("Bitmaps", "WorldDome"):
+                    if val not in __data.res_mmps:
+                        __data.res_mmps.append(val)
+                #
+                val = os.path.relpath(AutomatedAssets(val), current_dir)
             new_lines.append("%s -> %s\n" % (key, val))
     #
     lvl_name = "7c3460c1-cc3c-5b9e-a038-1ff69ff753c9"  # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:ReadLevel")
@@ -825,10 +890,20 @@ for __fn in __bladex_decorators:  # type: ignore
     Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore
 
 # hook other functions
+import BBLibc, BUIxc
+
 FunctionDecorator = __FunctionDecorator()
 for obj, name in (
     (sys.modules["__builtin__"], "execfile"),
     (sys.modules["__builtin__"], "type"),
+    (BBLibc, "B_BitMap24_ReadFromBMP"),
+    (BBLibc, "B_BitMap24_ReadFromJPEG"),
+    (BBLibc, "B_BitMap24_ReadFromFile"),
+    (BBLibc, "ReadBOD"),
+    (BBLibc, "ReadMMP"),
+    (BUIxc, "B_FontServer_CreateBFont"),
+    (BUIxc, "new_B_TextWidget"),
+    (BUIxc, "new_B_BitmapWidget"),
 ):
     FunctionDecorator.Decorator(obj, name)
 
@@ -857,13 +932,16 @@ CallPreloadCB
 ConnectionService
 CreateEntity
 CreateSound
+GetAlphaBMPFiles
 GetBladeRoot
+GetBMPFiles
 GetCurrentMap
 GetCurrentMod
 GetEntity
 GetGameVersion
 GetLumenRoot
 GetMapListPath
+GetMMPFiles
 GetModRoot
 GetPostloadCB
 GetPreloadCB

@@ -241,13 +241,13 @@ def LoadMMPs(files):
 
 
 def LoadAlphaBMPs(files):
-  for i in files:
-    Bladex.ReadAlphaBitMap(i[0],i[1])
+  for internal_name, path in files.items():
+    Bladex.ReadAlphaBitMap(path, internal_name)
 
 
 def LoadBMPs(files):
-  for i in files:
-    Bladex.ReadBitMap(i[0],i[1])
+  for internal_name, path in files.items():
+    Bladex.ReadBitMap(path, internal_name)
 
 
 def LoadBODs(files):

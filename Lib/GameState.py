@@ -803,22 +803,24 @@ class WorldState:
         file.write('Bladex.SetSaveInfo(%s)\n'%(str(Bladex.GetSaveInfo(),)))
 
         load_bar.Increment("MMPs")
-        ResFiles=self.GetMMPFiles()
+        # ResFiles=self.GetMMPFiles()
         file.write('__load_bar.Increment("MMPs")\n')
-        file.write('GameStateAux.LoadMMPs(%s)\n'%(str(ResFiles),))
+        file.write('GameStateAux.LoadMMPs(%s)\n' % Lumenx.GetMMPFiles()) # by Sryml
         file.write('__load_bar.Increment()\n')
 
         load_bar.Increment("BMPs")
-        ResFiles=self.GetBMPFiles()
+        # ResFiles=self.GetBMPFiles()
         file.write('__load_bar.Increment("BMPs")\n')
-        self.SaveList('GameStateAux.LoadBMPs(%s)\n',ResFiles,file)
+        # self.SaveList('GameStateAux.LoadBMPs(%s)\n',ResFiles,file)
+        file.write('GameStateAux.LoadBMPs(%s)\n' % Lumenx.GetBMPFiles()) # by Sryml
         file.write('__load_bar.Increment()\n')
 
 
         load_bar.Increment("AlphaBMPs")
-        ResFiles=self.GetAlphaBMPFiles()
+        # ResFiles=self.GetAlphaBMPFiles()
         file.write('__load_bar.Increment("AlphaBMPs")\n')
-        self.SaveList('GameStateAux.LoadAlphaBMPs(%s)\n',ResFiles,file)
+        # self.SaveList('GameStateAux.LoadAlphaBMPs(%s)\n',ResFiles,file)
+        file.write('GameStateAux.LoadAlphaBMPs(%s)\n' % Lumenx.GetAlphaBMPFiles()) # by Sryml
         file.write('__load_bar.Increment()\n')
 
         load_bar.Increment("Sounds")

@@ -1,5 +1,4 @@
 # This file was created automatically by SWIG.
-import Lumenx # by Sryml
 import BUIxc
 class B_FontPtr :
     def __init__(self,this):
@@ -40,7 +39,6 @@ class B_FontServerPtr :
         if self.thisown == 1 :
             BUIxc.delete_B_FontServer(self.this)
     def CreateBFont(self,arg0,*args):
-        arg0 = Lumenx.AutomatedAssets(arg0) # by Sryml
         val = apply(BUIxc.B_FontServer_CreateBFont,(self.this,arg0,)+args)
         val = B_FontPtr(val)
         val.thisown = 1
@@ -402,7 +400,6 @@ class B_TextWidgetPtr(B_RectWidgetPtr):
         return "<C B_TextWidget instance>"
 class B_TextWidget(B_TextWidgetPtr):
     def __init__(self,arg0,arg1,arg2,arg3,arg4,*args) :
-        arg4 = Lumenx.AutomatedAssets(arg4) # by Sryml
         self.this = apply(BUIxc.new_B_TextWidget,(arg0.this,arg1,arg2,arg3.this,arg4,)+args)
         self.thisown = 1
 
@@ -497,7 +494,6 @@ class B_BitmapWidgetPtr(B_WidgetPtr):
         return "<C B_BitmapWidget instance>"
 class B_BitmapWidget(B_BitmapWidgetPtr):
     def __init__(self,arg0,arg1,arg2,arg3,arg4,*args) :
-        args = tuple(map(Lumenx.AutomatedAssets, args)) # by Sryml
         self.this = apply(BUIxc.new_B_BitmapWidget,(arg0.this,arg1,arg2,arg3,arg4,)+args)
         self.thisown = 1
 

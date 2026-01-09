@@ -1,5 +1,5 @@
 # This file was created automatically by SWIG.
-import Lumenx # by Sryml
+import Lumenx
 import BBLibc
 class B_BitMap24Ptr :
     def __init__(self,this):
@@ -12,6 +12,8 @@ class B_BitMap24Ptr :
         val = BBLibc.B_BitMap24_GetDimension(self.this)
         return val
     def GetData(self):
+        if Lumenx.GetGameVersion() == Lumenx.MAJOR_VER:
+            return self
         val = BBLibc.B_BitMap24_GetData(self.this)
         return val
     def Clear(self):
@@ -23,18 +25,15 @@ class B_BitMap24Ptr :
         val = BBLibc.B_BitMap24_SaveToBMP(self.this,arg0)
         return val
     def ReadFromBMP(self,arg0):
-        arg0 = Lumenx.AutomatedAssets(arg0) # by Sryml
         val = BBLibc.B_BitMap24_ReadFromBMP(self.this,arg0)
         return val
     def SaveToJPEG(self,arg0,*args):
         val = apply(BBLibc.B_BitMap24_SaveToJPEG,(self.this,arg0,)+args)
         return val
     def ReadFromJPEG(self,arg0):
-        arg0 = Lumenx.AutomatedAssets(arg0) # by Sryml
         val = BBLibc.B_BitMap24_ReadFromJPEG(self.this,arg0)
         return val
     def ReadFromFile(self,arg0):
-        arg0 = Lumenx.AutomatedAssets(arg0) # by Sryml
         val = BBLibc.B_BitMap24_ReadFromFile(self.this,arg0)
         return val
     def SaveToFile(self,arg0,*args):
@@ -88,15 +87,8 @@ class B_ResourceManager(B_ResourceManagerPtr):
         self.this = this
 
 
-######### by Sryml: start
-def ReadBOD(path):
-    path = Lumenx.AutomatedAssets(path)
-    return BBLibc.ReadBOD(path)
 
-def ReadMMP(path):
-    path = Lumenx.AutomatedAssets(path)
-    return BBLibc.ReadMMP(path)
-######### by Sryml: end
+
 
 
 #-------------- FUNCTION WRAPPERS ------------------
@@ -111,13 +103,13 @@ SetOnOpenInputFileFunc = BBLibc.SetOnOpenInputFileFunc
 
 RemoveOnOpenInputFileFunc = BBLibc.RemoveOnOpenInputFileFunc
 
-# ReadBOD = BBLibc.ReadBOD # by Sryml
+ReadBOD = BBLibc.ReadBOD
 
 LoadBOD = BBLibc.LoadBOD
 
 ReadAutoBOD = BBLibc.ReadAutoBOD
 
-# ReadMMP = BBLibc.ReadMMP # by Sryml
+ReadMMP = BBLibc.ReadMMP
 
 SaveBODData = BBLibc.SaveBODData
 
