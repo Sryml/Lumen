@@ -1,5 +1,21 @@
 # This file was created automatically by SWIG.
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
+import typing
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: fn(args, kwds)
+
+import Lumenx
 import BUIxc
+
 class B_FontPtr :
     def __init__(self,this):
         self.this = this
@@ -296,6 +312,28 @@ class B_FrameWidget(B_FrameWidgetPtr):
         self.this = BUIxc.new_B_FrameWidget(arg0.this,arg1,arg2,arg3)
         self.thisown = 1
 
+    # -----------------------------------------
+    # by Sryml: start
+    # -----------------------------------------
+    def AddWidget(self, arg0, arg1, arg2, *args):
+        if arg0.__dict__.get("ScaleFrame") and arg0.ScaleFrame != self:
+            apply(arg0.SetAnchor, args)
+            arg0 = arg0.ScaleFrame
+
+        val = apply(
+            BUIxc.B_FrameWidget_AddWidget,
+            (
+                self.this,
+                arg0.this,
+                arg1,
+                arg2,
+            )
+            + args,
+        )
+        return val
+    # -----------------------------------------
+    # by Sryml: end
+    # -----------------------------------------
 
 
 
@@ -398,12 +436,86 @@ class B_TextWidgetPtr(B_RectWidgetPtr):
         return val
     def __repr__(self):
         return "<C B_TextWidget instance>"
+# -----------------------------------------
+# by Sryml: start
+# -----------------------------------------
 class B_TextWidget(B_TextWidgetPtr):
     def __init__(self,arg0,arg1,arg2,arg3,arg4,*args) :
         self.this = apply(BUIxc.new_B_TextWidget,(arg0.this,arg1,arg2,arg3.this,arg4,)+args)
         self.thisown = 1
 
+        self.ScaleFrame = None  # type: ...
+        if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+            self.ScaleFrame = B_FrameWidget(arg0, "%s_ScaleFrame" % arg1, 100, 100)
+            self.ScaleFrame.SetAutoScale(1)
+            BUIxc.B_Widget_SetAutoScale(self.this, 1)
+            self.SetAnchor()
 
+    def SetCanvas(self, size):
+        if self.ScaleFrame:
+            f = 2.5 * (size[1] / 1440.0)
+            self.ScaleFrame.SetSize(int(100 * f), int(100 * f))
+            self.BaseSize = self.ScaleFrame.GetSize()
+
+    def SetAutoScale(self, arg0):
+        target = self.ScaleFrame or self
+        val = BUIxc.B_Widget_SetAutoScale(target.this, arg0)
+        return val
+
+    def GetAutoScale(self):
+        target = self.ScaleFrame or self
+        val = BUIxc.B_Widget_GetAutoScale(target.this)
+        return val
+
+    def SetText(self, arg0):
+        val = BUIxc.B_TextWidget_SetText(self.this, arg0)
+        if self.ScaleFrame:
+            self.ScaleFrame.RecalcLayout()
+        return val
+
+    def SetScale(self, Scale):
+        if self.ScaleFrame:
+            size = map(lambda x, s=Scale: int(x * s), self.BaseSize)
+            self.ScaleFrame.SetSize(size[0], size[1])  # type: ignore
+        else:
+            B_TextWidgetPtr.SetScale(self, Scale)
+
+    def SetAnchor(
+        self,
+        HIndicator=None,
+        HAnchor=B_Widget.B_FR_Left,
+        VIndicator=None,
+        VAnchor=B_Widget.B_FR_Top,
+    ):
+        HPos = 0
+        if HAnchor == B_Widget.B_FR_HCenter:
+            HPos = 0.5
+        elif HAnchor == B_Widget.B_FR_Right:
+            HPos = 1
+
+        VPos = 0
+        if VAnchor == B_Widget.B_FR_VCenter:
+            VPos = 0.5
+        elif VAnchor == B_Widget.B_FR_Bottom:
+            VPos = 1
+
+        HIndicator = B_Widget.B_FR_HRelative
+        VIndicator = B_Widget.B_FR_VRelative
+
+        if self.ScaleFrame.nWidgets() == 1:
+            self.ScaleFrame.RemoveWidget_Idx(0)
+        self.ScaleFrame.AddWidget(
+            self,
+            HPos,
+            VPos,
+            HIndicator,
+            HAnchor,
+            VIndicator,
+            VAnchor,
+        )
+# -----------------------------------------
+# by Sryml: end
+# -----------------------------------------
 
 
 class B_BarWidgetPtr(B_RectWidgetPtr):

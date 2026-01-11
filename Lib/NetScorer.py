@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
 import netgame
 import BUIx
 import CharStats
@@ -59,7 +69,7 @@ wLifeBar.SetBitmap("Vida")
 ##
 ##wLifeBar.SetSizeChangedFunc(wLifeBarSizeChanged)
 
-wLifeLabel=BUIx.B_TextWidget(wLifeBar,"LifeLabel","100/100",ScorerWidgets.font_server,Language.MapaDeLetras)
+wLifeLabel=BUIx.B_TextWidget(wLifeBar,"LifeLabel","100/100",ScorerWidgets.font_server,Language.FontCommon)
 wLifeLabel.SetColor(255,0,0)
 wLifeLabel.SetAlpha(1.0)
 wLifeBar.AddLabel(wLifeLabel,4-BAR_DELTA,-2,
@@ -69,7 +79,7 @@ wLifeBar.AddLabel(wLifeLabel,4-BAR_DELTA,-2,
                   )
 
 
-wPoisonLabel=BUIx.B_TextWidget(wLifeBar,"PoisonLabel",MenuText.GetMenuText("POISONED"),ScorerWidgets.font_server,Language.MapaDeLetras)
+wPoisonLabel=BUIx.B_TextWidget(wLifeBar,"PoisonLabel",MenuText.GetMenuText("POISONED"),ScorerWidgets.font_server,Language.FontCommon)
 wPoisonLabel.SetColor(85,105,60)
 wPoisonLabel.SetAlpha(1.0)
 wLifeBar.AddLabel(wPoisonLabel,0.4,0.5,
@@ -80,7 +90,7 @@ wLifeBar.AddLabel(wPoisonLabel,0.4,0.5,
 wPoisonLabel.SetVisible(0)
 
 
-wCurrentLevelLabel=BUIx.B_TextWidget(wLifeBar,"CurrentLevelLabel","Level 5",ScorerWidgets.font_server,Language.MapaDeLetras)
+wCurrentLevelLabel=BUIx.B_TextWidget(wLifeBar,"CurrentLevelLabel","Level 5",ScorerWidgets.font_server,Language.FontCommon)
 wCurrentLevelLabel.SetColor(0,159,220)
 wCurrentLevelLabel.SetAlpha(0.5)
 wLifeBar.AddLabel(wCurrentLevelLabel,0,5,
@@ -90,7 +100,7 @@ wLifeBar.AddLabel(wCurrentLevelLabel,0,5,
                   )
 
 # Frags
-wPlayersFrags=BUIx.B_TextWidget(wLifeBar,"FragsLabel","",ScorerWidgets.font_server,Language.LetrasMenu)
+wPlayersFrags=BUIx.B_TextWidget(wLifeBar,"FragsLabel","",ScorerWidgets.font_server,Language.FontTitle)
 wPlayersFrags.SetColor(207,144,49)
 wPlayersFrags.SetAlpha(0.8)
 wLifeBar.AddLabel(wPlayersFrags,10,5,
@@ -101,15 +111,16 @@ wLifeBar.AddLabel(wPlayersFrags,10,5,
 
 
 # versus value
-wPlayersVS=BUIx.B_TextWidget(wLifeBar,"VersusLabel",MenuText.GetMenuText("Waiting for combat..."),ScorerWidgets.font_server,Language.MapaDeLetras)
+wPlayersVS=BUIx.B_TextWidget(wLifeBar,"VersusLabel",MenuText.GetMenuText("Waiting for combat..."),ScorerWidgets.font_server,Language.FontCommon)
 wPlayersVS.SetColor(220,220,220)
 wPlayersVS.SetAlpha(0.7)
 wDownFrame.AddWidget(wPlayersVS,0,0)
 
 # Status of the client
-wStatusGame=BUIx.B_TextWidget(wLifeBar,"VersusLabel","",ScorerWidgets.font_server,Language.LetrasMenuSmall)
+wStatusGame=BUIx.B_TextWidget(wLifeBar,"VersusLabel","",ScorerWidgets.font_server,Language.FontTitle)
 wStatusGame.SetColor(0,128,255)
 wStatusGame.SetAlpha(0.8)
+wStatusGame.SetScale(Language.MFontScale["M"])
 wDownFrame.AddWidget(wStatusGame,0,16)
 
 
@@ -132,7 +143,7 @@ wStrengthBar.SetBackgroundColor(CURRENT_STRENGTH_R,CURRENT_STRENGTH_G,CURRENT_ST
 wStrengthBar.SetVisible(0)
 wStrengthBar.SetBitmap("Vida")
 
-wMaxPowerLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"MaxPowerLabel",MenuText.GetMenuText("Maximun power"),ScorerWidgets.font_server,Language.MapaDeLetras)
+wMaxPowerLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"MaxPowerLabel",MenuText.GetMenuText("Maximun power"),ScorerWidgets.font_server,Language.FontCommon)
 wMaxPowerLabel.SetColor(255,255,255)
 wMaxPowerLabel.SetAlpha(1.0)
 wMaxPowerLabel.SetVisible(0)
@@ -142,7 +153,7 @@ wStrengthBar.AddLabel(wMaxPowerLabel,0.4,0.5,
                   BUIx.B_Widget.B_FR_VRelative, BUIx.B_Widget.B_FR_VCenter
                   )
 
-wStrengthLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"StrengthLabel",MenuText.GetMenuText("Launch"),ScorerWidgets.font_server,Language.MapaDeLetras)
+wStrengthLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"StrengthLabel",MenuText.GetMenuText("Launch"),ScorerWidgets.font_server,Language.FontCommon)
 wStrengthLabel.SetColor(251,210,99)
 wStrengthLabel.SetAlpha(1.0)
 wStrengthLabel.SetFlash(0.0)
@@ -163,7 +174,7 @@ wEnergyBar.SetBackgroundColor(64,64,64)
 wEnergyBar.SetVisible(0)
 wEnergyBar.SetBitmap("Vida")
 
-wDangerLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"DangerLabel",MenuText.GetMenuText("Low energy"),ScorerWidgets.font_server,Language.MapaDeLetras)
+wDangerLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"DangerLabel",MenuText.GetMenuText("Low energy"),ScorerWidgets.font_server,Language.FontCommon)
 wDangerLabel.SetColor(238,191,0)
 wDangerLabel.SetAlpha(1.0)
 wDangerLabel.SetVisible(0)
@@ -173,7 +184,7 @@ wEnergyBar.AddLabel(wDangerLabel,0.4,0.5,
                   BUIx.B_Widget.B_FR_VRelative, BUIx.B_Widget.B_FR_VCenter
                   )
 
-wEnergyMaxLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"EnergyMaxLabel","100",ScorerWidgets.font_server,Language.MapaDeLetras)
+wEnergyMaxLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"EnergyMaxLabel","100",ScorerWidgets.font_server,Language.FontCommon)
 wEnergyMaxLabel.SetColor(0,255,128)
 wEnergyMaxLabel.SetAlpha(1)
 wEnergyMaxLabel.SetVisible(1)
@@ -193,29 +204,31 @@ wLowBarFrame.AddWidget(wEnergyBmp,0,0)
 wChatLines = ["","","",""]
 
 for i in range(len(wChatLines)):
-	wChatLines[i]=BUIx.B_TextWidget(wLifeBar,"VersusLabel","",ScorerWidgets.font_server,Language.MapaDeLetras)
+	wChatLines[i]=BUIx.B_TextWidget(wLifeBar,"VersusLabel","",ScorerWidgets.font_server,Language.FontCommon)
 	wChatLines[i].SetColor(220,220,220)
 	wChatLines[i].SetAlpha((i+1.0)/(len(wChatLines)))
 	wChatFrame.AddWidget(wChatLines[i],0,i*14)
 
-wChatInput=BUIx.B_TextWidget(wLifeBar,"Chatinput","",ScorerWidgets.font_server,Language.MapaDeLetras)
+wChatInput=BUIx.B_TextWidget(wLifeBar,"Chatinput","",ScorerWidgets.font_server,Language.FontCommon)
 wChatInput.SetColor(255,255,255)
 wChatInput.SetAlpha(1.0)
 wChatFrame.AddWidget(wChatInput,0,5*14)
 
 # FragLimit
-wFragLimit=BUIx.B_TextWidget(wFragFrame,"FragLimimit",MenuText.GetMenuText("THE CARNAGE IS OVER"),ScorerWidgets.font_server,Language.LetrasMenuBig)
+wFragLimit=BUIx.B_TextWidget(wFragFrame,"FragLimimit",MenuText.GetMenuText("THE CARNAGE IS OVER"),ScorerWidgets.font_server,Language.FontTitle)
 wFragLimit.SetColor(255,0,0)
 wFragLimit.SetAlpha(0.8)
+wFragLimit.SetScale(Language.MFontScale["L"])
 wFragFrame.AddWidget(wFragLimit,0.5,4,
 				BUIx.B_FrameWidget.B_FR_HRelative,
 				BUIx.B_FrameWidget.B_FR_HCenter,
 				BUIx.B_FrameWidget.B_FR_AbsoluteTop,
 				BUIx.B_FrameWidget.B_FR_Top)
 
-wFragList=BUIx.B_TextWidget(wFragFrame,"FragLimimit","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+wFragList=BUIx.B_TextWidget(wFragFrame,"FragLimimit","",ScorerWidgets.font_server,Language.FontTitle)
 wFragList.SetColor(207,144,49)
 wFragList.SetAlpha(0.8)
+wFragList.SetScale(Language.MFontScale["L"])
 wFragFrame.AddWidget(wFragList,0.5,40,
 				BUIx.B_FrameWidget.B_FR_HRelative,
 				BUIx.B_FrameWidget.B_FR_HCenter,

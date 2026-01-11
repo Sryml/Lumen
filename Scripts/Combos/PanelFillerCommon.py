@@ -53,9 +53,9 @@ def SetParentScale(parent):
 	parent.SetSize(Size_X, Size_Y)
 
 def CheckFontChineseFallback(elem):
-	font = Language.LetrasMenuBig
+	font = Language.FontTitle
 	if elem == "Button":
-		font = Language.LetrasMenuBig
+		font = Language.FontTitle
 	# if Language.Current == "Chinese":
 	# 	font = Language.LetrasPanel
 	# 	if elem == "Button":

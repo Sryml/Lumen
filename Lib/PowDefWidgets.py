@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
 import ScorerWidgets
 import CharStats
 import Reference
@@ -152,21 +162,21 @@ def CreateWidgest():
 	Scorer.wFrame.AddWidget(wPowFrame,0.91,15,BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,BUIx.B_FrameWidget.B_FR_AbsoluteBottom,BUIx.B_FrameWidget.B_FR_Bottom)
 
 
-	DefTextWidget=WidgetsExtra.B_FlashTextWidget(wDefFrame,"DefText","0",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+	DefTextWidget=WidgetsExtra.B_FlashTextWidget(wDefFrame,"DefText","0",ScorerWidgets.font_server,Language.FontCommon)
 
 
 	DefTextWidget.SetAlpha(1)
 	DefTextWidget.SetColor(0,128,255)
 	DefTextWidget.SetText("Def")
-	DefTextWidget.SetScale(0.25)
+	DefTextWidget.SetScale(Language.FontScale["L"])
 	wDefFrame.AddWidget(DefTextWidget,0.5,0.5,BUIx.B_FrameWidget.B_FR_HRelative,      BUIx.B_FrameWidget.B_FR_HCenter,
 	                                          BUIx.B_FrameWidget.B_FR_VRelative,      BUIx.B_FrameWidget.B_FR_VCenter)
 
-	PowTextWidget=WidgetsExtra.B_FlashTextWidget(wPowFrame,"PowText","0",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+	PowTextWidget=WidgetsExtra.B_FlashTextWidget(wPowFrame,"PowText","0",ScorerWidgets.font_server,Language.FontCommon)
 	PowTextWidget.SetAlpha(1)
 	PowTextWidget.SetColor(0,128,255)
 	PowTextWidget.SetText("Pow")
-	PowTextWidget.SetScale(0.25)
+	PowTextWidget.SetScale(Language.FontScale["L"])
 	wPowFrame.AddWidget(PowTextWidget,0.5,0.5,BUIx.B_FrameWidget.B_FR_HRelative,      BUIx.B_FrameWidget.B_FR_HCenter,
 	                                          BUIx.B_FrameWidget.B_FR_VRelative,      BUIx.B_FrameWidget.B_FR_VCenter)
 

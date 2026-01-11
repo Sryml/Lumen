@@ -17,7 +17,7 @@ Label_b=128
 if netgame.GetNetState() != 2:
 	Select.TurnOnAutoSelect("Player1")
 	font_server_behaviour=BUIx.B_FontServer()
-	font_behaviour=font_server_behaviour.CreateBFont(Language.LetrasMenuBig)
+	font_behaviour=font_server_behaviour.CreateBFont(Language.FontTitle)
 ######ARMAS
 
 execfile("../../Data/ObjIds/"+Language.Current+".py")
@@ -97,6 +97,7 @@ def LabelEntity(entity_name,text,dx,dy):
 			text_y=screen[1]
 		if(text_y+text_wh[1]>screen[3]):
 			text_y=screen[3]-text_wh[1]
+		Raster.SetTextScale(Language.FontScale["L"], Language.FontScale["L"])
 		Raster.SetFont(font_behaviour.GetPointer())
 		Bladex.WriteText(text_x,text_y,text)
 

@@ -9,7 +9,9 @@ import string
 import Reference
 import AuxFuncs
 import stat
+import Language
 
+MFontScale = Language.MFontScale
 printx = Lumenx.printx
 EMPTY_SLOT  = MenuText.GetMenuText("<Empty Slot>")
 DATE_FORMAT = MenuText.GetMenuText("%d/%m %H:%M")
@@ -386,8 +388,9 @@ def CreateMenu(MenuName,SaveFlag):
 		                    "VSep"           : -10,
 		                    "Clave"          : "0",
 		                    "FocusCallBack"  : FocusOnBitmap,
-		                    "Font"           : Menu.MenuFontMed,
+		                    # "Font"           : Menu.MenuFontMed,
 		                    "Kind"           : MenuWidget.B_MenuItemTextNoFX,
+							"FontScale":MFontScale["M"],
 		                    "Command"        : RestartLevel
 		                     })
 
@@ -398,7 +401,8 @@ def CreateMenu(MenuName,SaveFlag):
 		if SaveFlag:
 			val =              {"Name"           : SaveGameName,
 			                    "VSep"           : 10,
-			                    "Font"           : Menu.MenuFontMed,
+			                    # "Font"           : Menu.MenuFontMed,
+								"FontScale":MFontScale["M"],
 			                    "FocusCallBack"  : FocusOnBitmap,
 			                    "Clave"          : `i+1`,
 			                    "iFocus"         : 2,
@@ -411,12 +415,14 @@ def CreateMenu(MenuName,SaveFlag):
 			                                        {"Name"    : MenuText.GetMenuText("Yes"),
 			                                         "VSep"    : 20,
 			                                         "Command" : SaveGameToDisk,
-			                                         "Font"    : Menu.MenuFontMed,
+			                                        #  "Font"    : Menu.MenuFontMed,
+													"FontScale":MFontScale["M"],
 			                                         "Clave"   :  `i+1`,
 			                                        },
 			                                        {"Name":MenuText.GetMenuText("No"),
 			                                         "VSep":10,
-			                                         "Font":Menu.MenuFontMed,
+			                                        #  "Font":Menu.MenuFontMed,
+													 "FontScale":MFontScale["M"],
 			                                         "Command" : GetBack
 			                                        },
 			                                        {"Name":"Back",
@@ -433,7 +439,8 @@ def CreateMenu(MenuName,SaveFlag):
 		else:
 			val =              {"Name"           : SaveGameName,
 			                    "VSep"           : 10,
-			                    "Font"           : Menu.MenuFontMed,
+			                    # "Font"           : Menu.MenuFontMed,
+								"FontScale":MFontScale["M"],
 			                    "FocusCallBack"  : FocusOnBitmap,
 			                    "Clave"          : `i+1`,
 			                    "iFocus"         : 2,
@@ -446,12 +453,14 @@ def CreateMenu(MenuName,SaveFlag):
 			                                        {"Name"    : MenuText.GetMenuText("Yes"),
 			                                         "VSep"    : 20,
 			                                         "Command" : LoadGameFromDisk,
-			                                         "Font"    : Menu.MenuFontMed,
+			                                        #  "Font"    : Menu.MenuFontMed,
+													"FontScale":MFontScale["M"],
 			                                         "Clave"   :  `i+1`,
 			                                        },
 			                                        {"Name":MenuText.GetMenuText("No"),
 			                                         "VSep":10,
-			                                         "Font":Menu.MenuFontMed,
+			                                        #  "Font":Menu.MenuFontMed,
+													"FontScale":MFontScale["M"],
 			                                         "Command" : GetBack
 			                                        },
 			                                        {"Name":"Back",

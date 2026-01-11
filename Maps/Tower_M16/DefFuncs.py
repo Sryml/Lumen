@@ -1777,7 +1777,7 @@ def ShowCredits(a,b):
 
     import TutorialScorer
     import GameText
-    TutorialScorer.ActivateTutorialScorer(Language.LetrasMenuBig)
+    TutorialScorer.ActivateTutorialScorer(Language.FontTitle)
     GameText.Textos["THE_END"] = ["THE END"]
     TutorialScorer.ShowUC("THE_END",0)
     Credits.Show(1)

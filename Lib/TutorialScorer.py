@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
 import BUIx
 import Scorer
 import ScorerWidgets
@@ -73,7 +83,7 @@ def LoadTBSamples():
 	FadeTutorialScorer = 1
 	LoopFadeTutorialScorer(2)
 
-def ActivateTutorialScorer(FontFile = Language.MapaDeLetras):
+def ActivateTutorialScorer(FontFile = Language.FontCommon):
 	global wMultiText
 
 
@@ -84,6 +94,7 @@ def ActivateTutorialScorer(FontFile = Language.MapaDeLetras):
 	wMultiText.SetBackgroundAlpha(0.5)
 	wMultiText.SetBackgroundColor(0,0,0)
 	wMultiText.SetAutoScale(0)
+	wMultiText.SetScale(Language.MFontScale["M"])
 
 FlashCicles = 2
 

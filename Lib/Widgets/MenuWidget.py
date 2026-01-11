@@ -1,5 +1,14 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
 
-
+import Lumenx
 import BUIx
 import Bladex
 import Raster
@@ -19,19 +28,29 @@ import Language
 import os
 import Menu
 import GameText
+import traceback
+import types
 
 import netgame
 import PanelFillerCommon
 from PanelFillerCommon import relative, relativev, center, bottom, left, right, buttonOffset, buttonTextPosition
+
+# by Sryml
+from Lumenx import printx
+
+B_FrameWidget = BUIx.B_FrameWidget
+B_TextWidget = BUIx.B_TextWidget
+FontColor = Language.FontColor
+#
 
 #if netgame.GetNetState()==0:
 #  import Scorer
 global isQuitting
 isQuitting = 0
 
-BackButtonY = 100
-BackGamepadButtonY = 70
-AcceptBackY = 40
+BackButtonY = 1 - 0.208 # 100
+BackGamepadButtonY = 1 - 0.146 # 70
+AcceptBackY = 1 - 0.083 # 40
 
 class Stack:
   def __init__(self):
@@ -194,71 +213,81 @@ class B_MenuFocusManager:
 
 
 
+# -----------------------------------------
+# by Sryml: start
+# -----------------------------------------
+class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
+    def __init__(self, Parent, Name, Width, Height, VertPos=0):
+        B_FrameWidget.__init__(self, Parent, Name, Width, Height)
+        B_MenuFocusManager.__init__(self)
+        self.VertPos = VertPos
+        self.thisown = 1
+        self.SetAutoScale(1)
 
-class B_MenuFrameWidget(B_MenuFocusManager,BUIx.B_FrameWidget):
-  def __init__(self,Parent,Name,Width,Height,VertPos=0):
-    #pdb.set_trace()
-    #print "B_MenuFrameWidget.__init__()"
-    BUIx.B_FrameWidget.__init__(self,Parent,Name,Width,Height)
-    B_MenuFocusManager.__init__(self)
-    self.VertPos=VertPos
-    self.thisown=1
-    self.SetAutoScale(1)
-    #print "B_MenuFrameWidget.__init__() End",Name,Width,Height
+    def __del__(self):
+        for i in self.MenuItems:
+            i.SetDrawFunc(None)
 
-  def __del__(self):
-    #print "B_MenuFrameWidget.__del__()",self.Name()
-    for i in self.MenuItems:
-      #print "Deletting SetDrawFunc() of",i
-      i.SetDrawFunc(None)
+        B_FrameWidget.__del__(self)
+        B_MenuFocusManager.__del__(self)
 
-    B_MenuFocusManager.__del__(self)
-    BUIx.B_FrameWidget.__del__(self)
+    def AddMenuElement(
+        self,
+        menu_element,
+        sep=0,
+        HPos=0.5,
+        HIndicator=B_FrameWidget.B_FR_HRelative,
+        HAnchor=B_FrameWidget.B_FR_HCenter,
+        VIndicator=B_FrameWidget.B_FR_AbsoluteTop,
+    ):
+        B_MenuFocusManager.AddMenuElement(self, menu_element)
 
+        if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+            self.AddWidget(  # type: ignore
+                menu_element,
+                HPos,
+                self.VertPos + sep,
+                HIndicator,
+                HAnchor,
+                VIndicator,
+                B_FrameWidget.B_FR_Top,
+            )
+        else:
+            if (
+                sep == Menu.BackOptionVSep
+                or sep == Menu.BackGamepadOptionVSep
+                or sep == Menu.GamepadButtonVSep
+            ):
+                YPos = BackButtonY
+                if sep == Menu.BackGamepadOptionVSep:
+                    YPos = BackGamepadButtonY
+                elif sep == Menu.GamepadButtonVSep:
+                    YPos = AcceptBackY
+                    menu_element.SetScale(0.7)
+                self.AddWidget(  # type: ignore
+                    menu_element,
+                    HPos,
+                    YPos,
+                    HIndicator,
+                    HAnchor,
+                    B_FrameWidget.B_FR_VRelative,
+                    B_FrameWidget.B_FR_Top,
+                )
+            else:
+                self.AddWidget(  # type: ignore
+                    menu_element,
+                    HPos,
+                    self.VertPos + sep,
+                    HIndicator,
+                    HAnchor,
+                    B_FrameWidget.B_FR_AbsoluteTop,
+                    B_FrameWidget.B_FR_Top,
+                )
 
-#  def __str__(self):
-#    print "class B_MenuFrameWidget ",self.Name()
-
-
-  def AddMenuElement(self,menu_element,sep=0,
-                     HPos=0.5,HIndicator=BUIx.B_FrameWidget.B_FR_HRelative,HAnchor=BUIx.B_FrameWidget.B_FR_HCenter):
-    B_MenuFocusManager.AddMenuElement(self,menu_element)
-
-
-    if sep == Menu.BackOptionVSep or sep == Menu.BackGamepadOptionVSep or sep == Menu.GamepadButtonVSep:
-        YPos = BackButtonY
-        if sep == Menu.BackGamepadOptionVSep:
-            YPos = BackGamepadButtonY
-        elif sep == Menu.GamepadButtonVSep:
-            YPos = AcceptBackY
-            menu_element.SetScale(0.7)
-        self.AddWidget(menu_element,HPos,YPos,
-                       HIndicator,HAnchor,
-                       BUIx.B_FrameWidget.B_FR_AbsoluteBottom,BUIx.B_FrameWidget.B_FR_Top)
-    else:
-        self.AddWidget(menu_element,HPos,self.VertPos+sep,
-                       HIndicator,HAnchor,
-                       BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
-
-    self.VertPos=self.VertPos+menu_element.GetSize()[1]+sep
-    #print self.VertPos
-    self.SetFocus(menu_element.Name())
-    #print "B_MenuFrameWidget.AddMenuElement()  (end)->", sys.getrefcount(self)
-
-
-  def AddMenuElementEx(self,menu_element,VPos=0,HPos=0.5,
-                       HIndicator=BUIx.B_FrameWidget.B_FR_HRelative,HAnchor=BUIx.B_FrameWidget.B_FR_HCenter):
-    B_MenuFocusManager.AddMenuElement(self,menu_element)
-
-    self.AddWidget(menu_element,HPos,self.VertPos+sep,
-                   HIndicator,HAnchor,
-                   BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
-
-    self.VertPos=self.VertPos+menu_element.GetSize()[1]+sep
-    #print self.VertPos
-    self.SetFocus(menu_element.Name())
-    #print "B_MenuFrameWidget.AddMenuElement()  (end)->", sys.getrefcount(self)
-
+        self.VertPos = self.VertPos + menu_element.GetSize()[1] + sep
+# -----------------------------------------
+# by Sryml: end
+# -----------------------------------------
 
 
 # MenuDescr es un diccionario con los siguientes campos para describir el men�:
@@ -345,129 +374,278 @@ class B_MenuTreeItem:
 
 
   def CreateFrame(self):
-    #print "CreateFrame()"
-    frame_class=None
+      # by Sryml
+      l_dscr = self.MenuDescr.get("ListDescr", [])
+      if l_dscr == []:
+          printx("l_dscr == []")
+          return None
 
-    try:
-      frame_class=self.MenuDescr["FrameKind"]
-    except KeyError:
-      # B_MenuTree Necesita MenuDescr["ListDescr"], con esto me aseguro que lo tenga y si no, no pasa nada
-      frame_class=B_MenuTree
-      l_dscr=[]
+      frame_class = self.MenuDescr.get("FrameKind", B_MenuTree)
       try:
-        l_dscr=self.MenuDescr["ListDescr"]
-      except KeyError:
-        pass
-      if l_dscr==[]:
-        print "l_dscr==[]"
-        return None
-    try:
-      NewFrame=frame_class(self,self.MenuDescr,self.StackMenu)
-      return NewFrame
-    except Exception,e:
-      print str(e)
-      print "Error Creating frame of class",frame_class
+          return frame_class(self, self.MenuDescr, self.StackMenu)
+      except:
+          printx("Error Creating frame of class", frame_class)
+          traceback.print_exc()
+      #
 
 
 
 
-
+# -----------------------------------------
+# by Sryml: start
+# -----------------------------------------
 class B_MenuTree(B_MenuFrameWidget):
-  def __init__(self,Parent,Menudesc,StackMenu,VertPos=0):
-    #print "MenuTree.__init__()"
-    #print "MenuTree initial refcount",sys.getrefcount(self)
+    def __init__(self, Parent, Menudesc, StackMenu, VertPos=0):
+        vw, vh = Raster.GetSize()
+        Width, Height = Menudesc.get("Size", (vw, vh))
 
-    Width,Height=Raster.GetSize()
-    try:
-      Width,Height=Menudesc["Size"]
-    except KeyError:
-      pass
+        SizeFor = Menudesc.get("SizeFor")
+        if Width == "auto" and Height != "auto":
+            if not SizeFor or Lumenx.GetGameVersion() in SizeFor:
+                ratio = vh / float(vw)
+                Width = int(Height / ratio)
+                Width = Width % 2 and Width + 1 or Width
+            else:
+                Width, Height = vw, vh
+        elif Width != "auto" and Height == "auto":
+            if not SizeFor or Lumenx.GetGameVersion() in SizeFor:
+                ratio = vw / float(vh)
+                Height = int(Width / ratio)
+                Height = Height % 2 and Height + 1 or Height
+            else:
+                Width, Height = vw, vh
+        elif Width == "auto" and Height == "auto":
+            Width, Height = vw, vh
 
-    B_MenuFrameWidget.__init__(self,Parent,"MenuTree"+Menudesc["Name"],Width,Height,VertPos)
+        B_MenuFrameWidget.__init__(
+            self, Parent, "MenuTree" + Menudesc["Name"], Width, Height, VertPos  # type: ignore
+        )
 
-    self.Menudesc=Menudesc
+        self.Menudesc = Menudesc
 
-    ValidIndex   = 0
-    isValidIndex = 0
+        ValidIndex = 0
+        isValidIndex = 0
+        for i in Menudesc["ListDescr"]:
+            m_class = i.get("Kind", B_MenuItemTextNoFX)
+            wSubMenu = m_class(self, i, StackMenu)
+            if not isValidIndex:
+                if wSubMenu.AcceptsFocus():
+                    isValidIndex = 1
+                else:
+                    ValidIndex = ValidIndex + 1
 
-    for i in Menudesc["ListDescr"]:
-      # print str(i)
-      m_class=B_MenuItemTextNoFX
-      try:
-        m_class=i["Kind"]
-      except KeyError:
-        pass
+            vsep = i.get("VSep", 0)
+            if type(vsep) == types.StringType:
+              try:
+                if vsep[-1] == "%":
+                  vsep = int(float(vsep[:-1]) * Height) # type: ignore
+                elif vsep[-2:] == "em":
+                  vsep = int(wSubMenu.GetSize()[1] * float(vsep[:-2]))
+                else:
+                  printx("Invalid VSep value:", vsep)
+                  vsep = 0
+              except:
+                vsep = 0
+                traceback.print_exc()
 
-      vsep=0
-      try:
-        vsep=i["VSep"]
-      except KeyError:
-        pass
+            HPos = 0.5
+            HIndicator = B_FrameWidget.B_FR_HRelative
+            HAnchor = B_FrameWidget.B_FR_HCenter
+            VIndicator = i.get("VIndicator", B_FrameWidget.B_FR_AbsoluteTop)
 
-      wSubMenu=m_class(self,i,StackMenu)
-      if not isValidIndex:
-        if wSubMenu.AcceptsFocus():
-          isValidIndex = 1
+            PosDscr = i.get("Position", i.get("PositionEx"))
+            if PosDscr:
+                HPos = PosDscr[0]
+                HIndicator = PosDscr[1]
+                HAnchor = PosDscr[2]
+
+            B_MenuFrameWidget.AddMenuElement(
+                self, wSubMenu, vsep, HPos, HIndicator, HAnchor, VIndicator
+            )
+
+        if Menudesc.has_key("iFocus"):
+            self.SetFocus_Idx(Menudesc["iFocus"])
         else:
-          ValidIndex = ValidIndex+1
+            self.SetFocus_Idx(ValidIndex)
 
-      HPos=0.5
-      HIndicator=BUIx.B_FrameWidget.B_FR_HRelative
-      HAnchor=BUIx.B_FrameWidget.B_FR_HCenter
-      try:
-        PosDscr=i["Position"]
-        HPos=PosDscr[0]
-        HIndicator=PosDscr[1]
-        HAnchor=PosDscr[2]
-      except KeyError:
+        Menudesc.get("CallBackFunc", lambda x: 0)(self)
+
+    def __del__(self):
+        # print "B_MenuTree.__del__()"
+        B_MenuFrameWidget.__del__(self)
+
+    def __str__(self):
+        printx("B_MenuTree widget with Frame", self.Name())
+
+
+class B_MenuItemTextNoFX(B_TextWidget, B_MenuTreeItem):
+    def __init__(
+        self, Parent, MenuDescr, StackMenu, font_server=ScorerWidgets.font_server
+    ):
+        self.Focusable = MenuDescr.get("Focusable", 1)
+        self.Text = MenuDescr.get("Text", MenuDescr["Name"])
+        self.Color = MenuDescr.get("Color", None)
+        self.Alpha = MenuDescr.get("Alpha", 1.0)
+
+        Font = MenuDescr.get("Font", Language.FontCommon)
+        isVisible = MenuDescr.get("Visible", 1)
+        Scale = MenuDescr.get("FontScale", Language.MFontScale["L"])
+
+        B_TextWidget.__init__(
+            self, Parent, "SubMenu" + MenuDescr["Name"], self.Text, font_server, Font
+        )
+        self.SetCanvas(Parent.GetSize())
+        B_MenuTreeItem.__init__(self, MenuDescr, StackMenu)  # type: ignore
+
+        if self.ScaleFrame:
+            self.Parent = self.ScaleFrame
+        else:
+            self.Parent = Parent
+
+        self.SetAlpha(self.Alpha)
+        self.SetVisible(isVisible)
+        self.SetScale(Scale)
+        MenuDescr.get("PostInitCommand", lambda x: 0)(self)
+
+        self.SetDrawFunc(self.Draw)
+
+    def __str__(self):
+        printx("B_MenuItemTextNoFX widget with text", self.GetTextData())
+
+    def Draw(self, x, y, time):
+        if self.GetVisible() == 0:
+            return
+
+        if self.Color:
+            r, g, b = self.Color
+        else:
+            foc = self.GetHasFocus()
+            if foc:
+                r, g, b = FontColor.Focused
+            elif not self.Focusable:
+                r, g, b = FontColor.Unfocusable
+            else:
+                r, g, b = FontColor.Unfocused
+
+        a = self.Alpha
+
+        if self.GetColor() != (r, g, b):
+            self.SetColor(r, g, b)
+        if self.GetAlpha() != a:
+            self.SetAlpha(a)
+
+        if self.GetTextData() != self.Text:
+            self.SetText(self.Text)
+            self.Parent.RecalcLayout()
+        else:
+            self.DefDraw(x, y, time)
+
+    def ActivateItem(self, activate):
+        if activate == 1:
+            if not self.AcceptsFocus():
+                return 0
+            self.MenuDescr.get("Command_Force", lambda x: 0)(self)
+            NewFrame = self.CreateFrame()
+            if NewFrame:
+                self.StackMenu.Push(NewFrame)
+                return 1
+            else:
+                command = self.MenuDescr.get("Command")
+                if command:
+                    command(self)
+                    return 1
+                return 0
+        elif activate == 0:
+            w = self.StackMenu.Top()
+            hasattr(w, "FinalRelease") and w.FinalRelease()
+            self.StackMenu.Pop()
+
+    def AcceptsFocus(self):
+        if self.GetVisible() == 0:
+            return 0
+        return self.Focusable
+
+    def FinalRelease(self):
+        self.Parent = None
+
+class B_MenuItemTextNoFXNoFocus(B_MenuItemTextNoFX):
+  def __init__(
+      self, Parent, MenuDescr, StackMenu, font_server=ScorerWidgets.font_server
+  ):
+      B_MenuItemTextNoFX.__init__(self, Parent, MenuDescr, StackMenu)
+      self.Focusable = 0
+
+  def AcceptsFocus(self):
+    return 0
+
+class B_MenuItemOption(B_MenuItemTextNoFX):
+    def __init__(
+        self, Parent, MenuDescr, StackMenu, font_server=ScorerWidgets.font_server
+    ):
+        self.Options = MenuDescr.get("Options", ["No option defined"])
+        self.SelOption = MenuDescr.get("SelOptionFunc", lambda: 0)()
+
+        B_MenuItemTextNoFX.__init__(self, Parent, MenuDescr, StackMenu)
+
+        self.OptionText = self.Text
+        self.Text = self.OptionText + "< " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
+
+    def __del__(self):
         pass
+        # printx("B_MenuItemOption.__del__()",self.Name())
 
-      try:
-        PosDscr=i["PositionEx"]
-        HPos=PosDscr[0]
-        HIndicator=PosDscr[1]
-        HAnchor=PosDscr[2]
-      except KeyError:
-        B_MenuFrameWidget.AddMenuElement(self,wSubMenu,vsep,HPos,HIndicator,HAnchor)
+    def ActivateItem(self, activate):
+        check_pass = None
+        val = 1
+        if self.MenuDescr.has_key("CheckPass"):
+            check_pass = self.MenuDescr["CheckPass"]
+            val = check_pass()
 
-    if Menudesc.has_key("iFocus"):
-    	self.SetFocus_Idx(Menudesc["iFocus"])
-    else:
-    	self.SetFocus_Idx(ValidIndex)
-    #print "MenuTree refcount (widgets added)",sys.getrefcount(self)
+        if activate in (1, -1) and (val == 1):
+            self.SelOption = self.SelOption + activate
+            self.SelOption = self.SelOption % len(self.Options)
 
+            self.Text = self.OptionText + "< " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
 
-  def __del__(self):
-    #print "B_MenuTree.__del__()"
-    B_MenuFrameWidget.__del__(self)
+            command = self.MenuDescr.get("Command", lambda x: 0)
+            command(self.Options[self.SelOption])
+        elif activate == 0:
+            self.StackMenu.Pop()
 
-  def __str__(self):
-    print "B_MenuTree widget with Frame",self.Name()
+    def IncMenuItem(self):
+        self.ActivateItem(1)
 
+    def DecMenuItem(self):
+        self.ActivateItem(-1)
 
 
 class B_MenuSpin(SpinWidget.B_SpinWidget,B_MenuTreeItem):
   def __init__(self,Parent,MenuDescr,StackMenu,font_server=ScorerWidgets.font_server):
-    w=300
-    h=19
-    try:
-      w,h=MenuDescr["Size"]
-    except KeyError:
-      pass
+    w,h = MenuDescr.get("Size",(300,19))
+    defaultValue = MenuDescr.get("DefaultValue", -1)
 
-    font=Language.LetrasMenu
-    try:
-      font=MenuDescr["Font"]
-    except KeyError:
-      pass
+    self.Focusable = MenuDescr.get("Focusable", 1)
+    self.Text = MenuDescr.get("Text", MenuDescr["Name"])
+    self.Color = MenuDescr.get("Color", None)
+    self.Alpha = MenuDescr.get("Alpha", 1.0)
 
-    try:
-      defaultValue=MenuDescr["DefaultValue"]
-    except KeyError:
-      defaultValue=-1
+    Font = MenuDescr.get("Font", Language.FontCommon)
+    isVisible = MenuDescr.get("Visible", 1)
+    Scale = MenuDescr.get("FontScale", Language.MFontScale["L"])
 
-    SpinWidget.B_SpinWidget.__init__(self,Parent,MenuDescr["Name"],w,h,font_server,font,defaultValue)
+    SpinWidget.B_SpinWidget.__init__(self,Parent,self.Text,w,h,font_server,Font,defaultValue)
     B_MenuTreeItem.__init__(self,MenuDescr,StackMenu)
+
+    # self.SetAlpha(self.Alpha) # B_FrameWidget do not work
+    self.SetVisible(isVisible)
+
+    self.WText.SetScale(Scale)
+    self.DefaultText.SetScale(Scale)
+    self.Spin.Text.SetScale(Scale)
+    self.Spin.LeftArrow.SetScale(Scale)
+    self.Spin.RightArrow.SetScale(Scale)
+    self.RecalcLayout()
+    self.Spin.RecalcLayout()
 
     try:
       l,u,s=MenuDescr["SpinValues"]
@@ -512,115 +690,25 @@ class B_MenuSpin(SpinWidget.B_SpinWidget,B_MenuTreeItem):
     if self.SetValueEnd is not None:
       self.SetValueEnd(self.GetValue())
 
-
-
-class B_MenuItemTextNoFX(BUIx.B_TextWidget,B_MenuTreeItem):
-  def __init__(self,Parent,MenuDescr,StackMenu,
-               font_server=ScorerWidgets.font_server):
-
-    #print "B_MenuItemText.__init__()",MenuDescr["Name"]
-    font=Language.LetrasMenu
-
-    try:
-      font=MenuDescr["Font"]
-    except KeyError:
-      pass
-
-    self.focusable = 1
-
-    BUIx.B_TextWidget.__init__(self,Parent,"SubMenu"+MenuDescr["Name"],MenuDescr["Name"],font_server,font)
-    B_MenuTreeItem.__init__(self,MenuDescr,StackMenu)
-    self.SetDrawFunc(self.Draw)
-    self.SetAlpha(1.0)
-    self.thisown=1
-
-
-
-  def __del__(self):
-    #print "B_MenuItemText.__del__()",self.Name()
-    pass
-
-  def __str__(self):
-    print "B_MenuItemTextNoFX widget with text",self.GetTextData()
-
-
-  def Draw(self,x,y,time):
-    if self.GetVisible()==0:
-      return
-
-    # print "MenuItemText",self.Name()
-    foc=self.GetHasFocus()
-    if foc:
-      self.SetColor(252,247,167)
-    elif not self.focusable:
-      self.SetColor(128, 128, 128)
-    else:
-      self.SetColor(207,144,49)
-
-    self.DefDraw(x,y,time)
-
-
-
-
-class B_MenuItemTextNoFXNoFocus(BUIx.B_TextWidget,B_MenuTreeItem):
-  def __init__(self,Parent,MenuDescr,StackMenu,
-               font_server=ScorerWidgets.font_server):
-    #print "B_MenuItemText.__init__()",MenuDescr["Name"]
-    font=Language.LetrasMenu
-    try:
-      font=MenuDescr["Font"]
-    except KeyError:
-      pass
-
-    BUIx.B_TextWidget.__init__(self,Parent,"SubMenu"+MenuDescr["Name"],MenuDescr["Name"],font_server,font)
-    B_MenuTreeItem.__init__(self,MenuDescr,StackMenu)
-    self.SetDrawFunc(self.Draw)
-    self.SetAlpha(1.0)
-    self.thisown=1
-
-  def __del__(self):
-    #print "B_MenuItemText.__del__()",self.Name()
-    pass
-
-  def __str__(self):
-    print "B_MenuItemTextNoFX widget with text",self.GetTextData()
-
-
-  def Draw(self,x,y,time):
-    if self.GetVisible()==0:
-      return
-
-    #print "MenuItemText",self.Name()
-    foc=self.GetHasFocus()
-    if foc:
-      self.SetColor(252,247,167)
-    else:
-      self.SetColor(207,144,49)
-    self.SetAlpha(0.4)
-    self.DefDraw(x,y,time)
-    self.SetAlpha(1.0)
   def AcceptsFocus(self):
-    return 0
+      if self.GetVisible() == 0:
+          return 0
+      return self.Focusable
 
-
-
-
-
-
-
+# -----------------------------------------
+# by Sryml: end
+# -----------------------------------------
 
 class B_MenuItemText(TextFXWidget.B_TextFXWidget,B_MenuTreeItem):
   def __init__(self,Parent,MenuDescr,StackMenu,font_server=ScorerWidgets.font_server):
     #print "B_MenuItemText.__init__()",MenuDescr["Name"]
-    font=Language.LetrasMenu
-    try:
-      font=MenuDescr["Font"]
-    except KeyError:
-      pass
+    Font = MenuDescr.get("Font", Language.FontCommon)
+    Scale = MenuDescr.get("FontScale", Language.MFontScale["L"])
 
-    TextFXWidget.B_TextFXWidget.__init__(self,Parent,"SubMenu"+MenuDescr["Name"],MenuDescr["Name"],font_server,font)
+    TextFXWidget.B_TextFXWidget.__init__(self,Parent,"SubMenu"+MenuDescr["Name"],MenuDescr["Name"],font_server,Font)
     B_MenuTreeItem.__init__(self,MenuDescr,StackMenu)
 
+    self.SetScale(Scale)
 
   def __del__(self):
 ##    print "B_MenuItemText.__del__()",self.Name()
@@ -649,143 +737,6 @@ class B_MenuItemTextNoFocus(B_MenuItemText):
 
 
 
-class B_MenuItemOption(B_MenuItemTextNoFX):
-  def __init__(self,Parent,MenuDescr,StackMenu,
-               font_server=ScorerWidgets.font_server):
-
-    # print "Menu Option start"
-
-    self.Options=["No option defined.",]
-    self.SelOption=0
-    self.OptionText=MenuDescr["Name"]
-
-    try:
-      self.Options=MenuDescr["Options"]
-    except KeyError:
-      pass
-
-    try:
-      GetSelFunc=MenuDescr["SelOptionFunc"]
-      OptionSel=GetSelFunc()
-      #print "DM OptionSel",self.OptionText,OptionSel,self.Options
-      self.SelOption=OptionSel
-      # print self.SelOption
-    except KeyError:
-      pass
-
-    B_MenuItemTextNoFX.__init__(self,Parent,MenuDescr,StackMenu)
-    #self.SetDrawFunc(self.Draw)
-    self.Parent=Parent
-
-    OptionText=self.OptionText+" < "+str(self.Options[self.SelOption])+" >"
-    self.SetText(OptionText)
-
-    try:
-      GetPostInitCmd=MenuDescr["PostInitCommand"]
-      GetPostInitCmd(self)
-    except KeyError:
-      pass
-
-    # print "Menu Option end"
-
-
-  def __del__(self):
-    pass
-    #print "B_MenuItemOption.__del__()",self.Name()
-
-##  def Draw(self,x,y,time):
-##    if self.GetVisible()==0:
-##      return
-##    foc=self.GetHasFocus()
-##    if foc:
-##      self.SetColor(240,240,240)
-##    else:
-##      self.SetColor(240,10,10)
-##
-##    self.DefDraw(x,y,time)
-
-  def ActivateItem(self,activate):
-    check_pass = None
-    val = 1
-    if self.MenuDescr.has_key("CheckPass"):
-      check_pass=self.MenuDescr["CheckPass"]
-      val = check_pass()
-
-    if ((activate==1) and (val==1)):
-      self.SelOption=self.SelOption+1
-      self.SelOption=self.SelOption% len(self.Options)
-      OptionText=self.OptionText+" < "+self.Options[self.SelOption]+" >"
-      self.SetText(OptionText)
-
-      try: # Puede que Parent no herede de Frame
-        self.Parent.RecalcLayout()
-      except:
-        pass
-
-      try:
-        command=self.MenuDescr["Command"]
-        command(MenuText.GetInverseMenuText(self.Options[self.SelOption]))
-      except KeyError:
-        pass
-      try:
-        command=self.MenuDescr["Command2"]
-        command(MenuText.GetInverseMenuText(self.Options[self.SelOption]), self)
-      except KeyError:
-        pass
-    elif activate==0:
-      self.StackMenu.Pop()
-
-  def FinalRelease(self):
-    print "B_MenuItemOption.FinalRelease()"
-    self.Parent=None
-    #self.SetDrawFunc(None)
-
-  def IncMenuItem(self):
-    self.ActivateItem(1)
-
-
-  def DecMenuItem(self):
-    check_pass = None
-    val = 1
-    if self.MenuDescr.has_key("CheckPass"):
-      check_pass=self.MenuDescr["CheckPass"]
-      val = check_pass()
-
-    if (val==1):
-      self.SelOption=self.SelOption+len(self.Options)-1
-      self.SelOption=self.SelOption% len(self.Options)
-      OptionText=self.OptionText+" < "+self.Options[self.SelOption]+" >"
-      self.SetText(OptionText)
-
-      try: # Puede que Parent no herede de Frame
-        self.Parent.RecalcLayout()
-      except:
-        pass
-
-      try:
-        command=self.MenuDescr["Command"]
-        command(MenuText.GetInverseMenuText(self.Options[self.SelOption]))
-      except KeyError:
-        pass
-      try:
-        command=self.MenuDescr["Command2"]
-        command(MenuText.GetInverseMenuText(self.Options[self.SelOption]), self)
-      except KeyError:
-        pass
-
-  def SetSelOption(self, option):
-
-    self.SelOption=option
-    OptionText=self.OptionText+" < "+self.Options[self.SelOption]+" >"
-    self.SetText(OptionText)
-
-    try: # Puede que Parent no herede de Frame
-      self.Parent.RecalcLayout()
-    except:
-      pass
-
-  def AcceptsFocus(self):
-    return self.focusable
 
 class B_MenuItemPage(B_MenuFrameWidget):
   def __init__(self,Parent,PageDscr,MenuDescr,StackMenu):
@@ -796,7 +747,7 @@ class B_MenuItemPage(B_MenuFrameWidget):
     self.TitleText=PageDscr["Title"]  #Tienen que tener t�tulo
     B_MenuFrameWidget.__init__(self,Parent,"MenuItemPage "+self.TitleText)
     #B_MenuTreeItem.__init__(self,MenuDescr,StackMenu)
-    font=Language.LetrasMenuSmall # Provisional
+    font=Language.FontTitle # Provisional
     font_server=ScorerWidgets.font_server    # Provisional
 
     self.BackgroundImage=None
@@ -811,9 +762,10 @@ class B_MenuItemPage(B_MenuFrameWidget):
     except KeyError:
       pass
 
-    self.Title=BUIx.B_TextWidget(self,"Title MenuItemPage "+self.TitleText,self.TitleText,font_server,Language.LetrasMenuBig)
+    self.Title=BUIx.B_TextWidget(self,"Title MenuItemPage "+self.TitleText,self.TitleText,font_server,Language.FontTitle)
     self.Title.SetAlpha(0.8)
     self.Title.SetColor(252,247,167)
+    self.Title.SetScale(Language.MFontScale["L"])
     self.AddWidget(self.Title,10,10,
                    BUIx.B_FrameWidget.B_FR_AbsoluteRight,BUIx.B_FrameWidget.B_FR_Right,
                    BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
@@ -922,9 +874,10 @@ class B_MenuItemPage(B_MenuFrameWidget):
 
 class B_MenuItemPages(BUIx.B_TextWidget,B_MenuTreeItem):
   def __init__(self,Parent,MenuDescr,StackMenu):
-    font=Language.LetrasMenu # Provisional
+    Font = MenuDescr.get("Font", Language.FontCommon)
+    Scale = MenuDescr.get("FontScale", Language.MFontScale["L"])
     font_server=ScorerWidgets.font_server    # Provisional
-    BUIx.B_TextWidget.__init__(self,Parent,"B_MenuItemPages","B_MenuItemPages Text",font_server,font)
+    BUIx.B_TextWidget.__init__(self,Parent,"B_MenuItemPages","B_MenuItemPages Text",font_server,Font)
     B_MenuTreeItem.__init__(self,MenuDescr,StackMenu)
     self.Pages=[]
     self.ActivePage=None
@@ -1102,7 +1055,7 @@ def SetGamepadDisconnectFunc(isDisconnect):
     global wDisconnectGamepadBox
 
     if isDisconnect == 1:
-        wDisconnectGamepadBox=BUIx.B_TextWidget(Scorer.wMessageFrame,"MessageWidget","\n\n\n\n\n",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        wDisconnectGamepadBox=BUIx.B_TextWidget(Scorer.wMessageFrame,"MessageWidget","\n\n\n\n\n",ScorerWidgets.font_server,Language.FontTitle)
         wDisconnectGamepadBox.SetColor(255,255,255)
         wDisconnectGamepadBox.SetSolid(1)
         wDisconnectGamepadBox.SetText(" "+MenuText.GetMenuText("Gamepad disconnected")+" ")
@@ -1110,11 +1063,12 @@ def SetGamepadDisconnectFunc(isDisconnect):
         wDisconnectGamepadBox.SetBackgroundAlpha(0.0)
         wDisconnectGamepadBox.SetBackgroundColor(0,0,0)
         wDisconnectGamepadBox.SetAlpha(1)
-        if not GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())):
-            scale = 0.8
-        else:
-            scale = 2
-        wDisconnectGamepadBox.SetScale(scale)
+        # if not GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())):
+        #     scale = 0.8
+        # else:
+        #     scale = 2
+        # wDisconnectGamepadBox.SetScale(scale)
+        wDisconnectGamepadBox.SetScale(Language.MFontScale["L"])
 
         Scorer.wMessageFrame.AddWidget(wDisconnectGamepadBox,0.5,50,
               BUIx.B_FrameWidget.B_FR_HRelative,

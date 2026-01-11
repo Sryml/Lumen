@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
 import BUIx
 import Bladex
 #import Bldb
@@ -15,7 +25,7 @@ from Reference import ENERGY_LOW_LEVEL
 from Reference import DEMO_MODE
 
 
-
+FontScale = Language.FontScale
 
 CURRENT_LEVEL_R=0
 CURRENT_LEVEL_G=128
@@ -222,18 +232,18 @@ wSpecialsFrame=BUIx.B_FrameWidget(wFrame,"SpecialsFrame",180,32)
 
 
 # Texto  ----------------------------------------------------------------------------------------------------
-wGameText=BUIx.B_TextWidget(wFrame,"GameTextWidget","\n\n\n\n\n",ScorerWidgets.font_server,Language.LetrasMenuBig)
+wGameText=BUIx.B_TextWidget(wFrame,"GameTextWidget","\n\n\n\n\n",ScorerWidgets.font_server,Language.FontTitle)
 #wGameText=ScorerWidgets.B_GameTextWidget(wFrame,"GameTextWidget")
-wGameText.SetScale(0.5)
+wGameText.SetScale(FontScale["L"])
 wGameText.SetAlpha(1)
 wGameText.SetColor(255,255,255)
 
 
 
 # Travel Book Warning--------------------------------------------------------------------------------------------
-Widget = BUIx.B_TextWidget(wFrame, "pressF1","",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+Widget = BUIx.B_TextWidget(wFrame, "pressF1","",ScorerWidgets.font_server,Language.FontCommon)
 Widget.SetText(MenuText.GetMenuText("PRESS") + "${\" F1\":LaunchTravel}")
-Widget.SetScale(0.28)
+Widget.SetScale(FontScale["L"])
 Widget.SetAlpha(1)
 Widget.SetColor(240,51,2)
 Widget.SetVisible(1)
@@ -309,10 +319,10 @@ wLifeBar.SetBitmap("Vida")
 ##
 ##wLifeBar.SetSizeChangedFunc(wLifeBarSizeChanged)
 
-wLifeLabel=BUIx.B_TextWidget(wLifeBar,"LifeLabel","100/100",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wLifeLabel=BUIx.B_TextWidget(wLifeBar,"LifeLabel","100/100",ScorerWidgets.font_server,Language.FontCommon)
 wLifeLabel.SetColor(255,0,0)
 wLifeLabel.SetAlpha(1.0)
-wLifeLabel.SetScale(0.25)
+wLifeLabel.SetScale(FontScale["L"])
 wOffset = -2
 if Language.Current == "Russian":
     wOffset = 0
@@ -323,10 +333,10 @@ wLifeBar.AddLabel(wLifeLabel,4-BAR_DELTA,wOffset,
                   )
 
 
-wPoisonLabel=BUIx.B_TextWidget(wLifeBar,"PoisonLabel",MenuText.GetMenuText("POISONED"),ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wPoisonLabel=BUIx.B_TextWidget(wLifeBar,"PoisonLabel",MenuText.GetMenuText("POISONED"),ScorerWidgets.font_server,Language.FontCommon)
 wPoisonLabel.SetColor(85,105,60)
 wPoisonLabel.SetAlpha(1.0)
-wPoisonLabel.SetScale(0.25)
+wPoisonLabel.SetScale(FontScale["L"])
 wLifeBar.AddLabel(wPoisonLabel,0.4,0.5,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_HRelative, BUIx.B_Widget.B_FR_HCenter,
@@ -352,12 +362,12 @@ wLevelBar.SetBackgroundAlpha(0.0)
 wLevelBar.SetBackgroundColor(0,80,110)
 
 
-#wLevelUpLabel=BUIx.B_TextWidget(wLevelBar,"LevelUpLabel",MenuText.GetMenuText("LEVEL UP"),ScorerWidgets.font_server,Language.MapaDeLetrasHi)
-wLevelUpLabel=WidgetsExtra.B_FlashTextWidget(wLevelBar,"LevelUpLabel",MenuText.GetMenuText("LEVEL UP"),ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+#wLevelUpLabel=BUIx.B_TextWidget(wLevelBar,"LevelUpLabel",MenuText.GetMenuText("LEVEL UP"),ScorerWidgets.font_server,Language.FontCommon)
+wLevelUpLabel=WidgetsExtra.B_FlashTextWidget(wLevelBar,"LevelUpLabel",MenuText.GetMenuText("LEVEL UP"),ScorerWidgets.font_server,Language.FontCommon)
 wLevelUpLabel.SetColor(170,170,170)
 wLevelUpLabel.SetAlpha(1.0)
 wLevelUpLabel.SetVisible(0)
-wLevelUpLabel.SetScale(0.25)
+wLevelUpLabel.SetScale(FontScale["L"])
 wLevelBar.AddLabel(wLevelUpLabel,0,2,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_Bottom,
                   BUIx.B_Widget.B_FR_AbsoluteRight,BUIx.B_Widget.B_FR_Right,
@@ -365,10 +375,10 @@ wLevelBar.AddLabel(wLevelUpLabel,0,2,
                   )
 
 
-wCurrentLevelLabel=BUIx.B_TextWidget(wLevelBar,"CurrentLevelLabel","Level 5",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wCurrentLevelLabel=BUIx.B_TextWidget(wLevelBar,"CurrentLevelLabel","Level 5",ScorerWidgets.font_server,Language.FontCommon)
 wCurrentLevelLabel.SetColor(0,159,220)
 wCurrentLevelLabel.SetAlpha(1.0)
-wCurrentLevelLabel.SetScale(0.25)
+wCurrentLevelLabel.SetScale(FontScale["L"])
 wOffset = -4
 if Language.Current == "Russian":
     wOffset = -2
@@ -398,22 +408,22 @@ wStrengthBar.SetBackgroundColor(CURRENT_STRENGTH_R,CURRENT_STRENGTH_G,CURRENT_ST
 wStrengthBar.SetVisible(0)
 wStrengthBar.SetBitmap("Vida")
 
-wMaxPowerLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"MaxPowerLabel",MenuText.GetMenuText("Maximun power"),ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wMaxPowerLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"MaxPowerLabel",MenuText.GetMenuText("Maximun power"),ScorerWidgets.font_server,Language.FontCommon)
 wMaxPowerLabel.SetColor(255,255,255)
 wMaxPowerLabel.SetAlpha(1.0)
 wMaxPowerLabel.SetVisible(0)
-wMaxPowerLabel.SetScale(0.25)
+wMaxPowerLabel.SetScale(FontScale["L"])
 wStrengthBar.AddLabel(wMaxPowerLabel,0.4,0.32,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_HRelative, BUIx.B_Widget.B_FR_HCenter,
                   BUIx.B_Widget.B_FR_VRelative, BUIx.B_Widget.B_FR_VCenter
                   )
 
-wStrengthLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"StrengthLabel",MenuText.GetMenuText("Launch"),ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wStrengthLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"StrengthLabel",MenuText.GetMenuText("Launch"),ScorerWidgets.font_server,Language.FontCommon)
 wStrengthLabel.SetColor(251,210,99)
 wStrengthLabel.SetAlpha(1.0)
 wStrengthLabel.SetFlash(0.0)
-wStrengthLabel.SetScale(0.25)
+wStrengthLabel.SetScale(FontScale["L"])
 wStrengthBar.AddLabel(wStrengthLabel,9,0.32,
                   BUIx.B_Widget.B_LAB_Left,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_AbsoluteRight,BUIx.B_Widget.B_FR_Right,
@@ -431,22 +441,22 @@ wEnergyBar.SetBackgroundColor(64,64,64)
 wEnergyBar.SetVisible(0)
 wEnergyBar.SetBitmap("Vida")
 
-wDangerLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"DangerLabel",MenuText.GetMenuText("Low energy"),ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wDangerLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"DangerLabel",MenuText.GetMenuText("Low energy"),ScorerWidgets.font_server,Language.FontCommon)
 wDangerLabel.SetColor(238,191,0)
 wDangerLabel.SetAlpha(1.0)
 wDangerLabel.SetVisible(0)
-wDangerLabel.SetScale(0.25)
+wDangerLabel.SetScale(FontScale["L"])
 wEnergyBar.AddLabel(wDangerLabel,0.4,0.5,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_HRelative, BUIx.B_Widget.B_FR_HCenter,
                   BUIx.B_Widget.B_FR_VRelative, BUIx.B_Widget.B_FR_VCenter
                   )
 
-wEnergyMaxLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"EnergyMaxLabel","100",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wEnergyMaxLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"EnergyMaxLabel","100",ScorerWidgets.font_server,Language.FontCommon)
 wEnergyMaxLabel.SetColor(0,255,128)
 wEnergyMaxLabel.SetAlpha(1)
 wEnergyMaxLabel.SetVisible(1)
-wEnergyMaxLabel.SetScale(0.25)
+wEnergyMaxLabel.SetScale(FontScale["L"])
 wEnergyBar.AddLabel(wEnergyMaxLabel,7,0.5,
                   BUIx.B_Widget.B_LAB_Left,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_AbsoluteRight, BUIx.B_Widget.B_FR_Right,
@@ -473,11 +483,11 @@ wLogFrame.AddWidget(wNewObject,0.5,3,
                         BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,
                         BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
 
-wNewObjectText=WidgetsExtra.B_FlashTextWidget(wLogFrame,"DangerLabel","el comoe'",ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+wNewObjectText=WidgetsExtra.B_FlashTextWidget(wLogFrame,"DangerLabel","el comoe'",ScorerWidgets.font_server,Language.FontCommon)
 wNewObjectText.SetColor(255,255,255)
 wNewObjectText.SetAlpha(1.0)
 wNewObjectText.SetFlash(10)
-wNewObjectText.SetScale(0.25)
+wNewObjectText.SetScale(FontScale["L"])
 
 wLogFrame.AddWidget(wNewObjectText,0.5,40,
                         BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,
@@ -502,7 +512,7 @@ wTablet6=ScorerWidgets.B_InvTabletWidget(wSpecialsFrame,"Tablilla6","&", char,5)
 """
 # Objetos --------------------------------------------------------------------------------------------------
 wSelObjectText=BUIx.B_TextWidget(wObjectsFrame,"SelObjectText","RED GEM  +10% EXP",
-                 ScorerWidgets.font_server,Language.MapaDeLetrasHi)
+                 ScorerWidgets.font_server,Language.FontCommon)
 wSelObjectText.SetColor(170,170,170)
 wSelObjectText.SetAlpha(0.5)
 """

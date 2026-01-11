@@ -35,7 +35,7 @@ EfectoCool()
 Frame = 0
 
 font_server_behaviour=BUIx.B_FontServer()
-font_behaviour=font_server_behaviour.CreateBFont(Language.LetrasMenuBig)
+font_behaviour=font_server_behaviour.CreateBFont(Language.FontTitle)
 
 
 #------- LABEL SHOWING-------------
@@ -50,6 +50,7 @@ def LabelEntity(entity,text,dx,dy):
 		text_y=(text_pos[1] * Zcreen[0]) + (Zcreen[1]/2) - (text_wh[1] / 2.0 + dy)
 		#Raster.SetTextColor(200,180,180) #Por poner uno cualquiera
 		Raster.SetPosition(text_x,text_y)
+		Raster.SetTextScale(Language.FontScale["L"], Language.FontScale["L"])
 		Raster.WriteText(text)
 
 def ShowLabelEntity(Ent):

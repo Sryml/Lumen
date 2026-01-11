@@ -1,4 +1,12 @@
-
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
 
 
 import Raster
@@ -52,18 +60,20 @@ class B_ListWidget(MenuWidget.B_MenuFocusManager,BUIx.B_FrameWidget):
 
     self.SetFocus_Idx(1)
 
-    self.UpArrow=BUIx.B_TextWidget(self,"UpArrow",chr(189),ScorerWidgets.font_server,Language.LetrasMenu)
+    self.UpArrow=BUIx.B_TextWidget(self,"UpArrow",chr(189),ScorerWidgets.font_server,Language.FontTitle)
     self.AddWidget(self.UpArrow,50,0,BUIx.B_FrameWidget.B_FR_AbsoluteLeft,BUIx.B_FrameWidget.B_FR_Left,
                                     BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
     self.UpArrow.SetColor(207,144,49)
     self.UpArrow.SetAlpha(0.5)
+    self.UpArrow.SetScale(Language.FontScale["M"])
 
 
-    self.DownArrow=BUIx.B_TextWidget(self,"DownArrow",chr(190),ScorerWidgets.font_server,Language.LetrasMenu)
+    self.DownArrow=BUIx.B_TextWidget(self,"DownArrow",chr(190),ScorerWidgets.font_server,Language.FontTitle)
     self.AddWidget(self.DownArrow,50,0,BUIx.B_FrameWidget.B_FR_AbsoluteLeft,BUIx.B_FrameWidget.B_FR_Left,
                                       BUIx.B_FrameWidget.B_FR_AbsoluteBottom,BUIx.B_FrameWidget.B_FR_Bottom)
     self.DownArrow.SetColor(207,144,49)
     self.DownArrow.SetAlpha(0.5)
+    self.DownArrow.SetScale(Language.FontScale["M"])
 
 
 

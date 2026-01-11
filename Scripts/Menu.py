@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
 # Modified 03/Mar/2000 Rod Wolfson
 import Blood
 import MenuWidget
@@ -43,9 +53,9 @@ import GamepadWidget
 
 #import Bldb
 
-MenuFontSmall=Language.LetrasMenuSmall
-MenuFontMed=Language.LetrasMenu
-MenuFontBig=Language.LetrasMenuBig
+MenuFontSmall=Language.FontTitle
+MenuFontMed=Language.FontTitle
+MenuFontBig=Language.FontTitle
 
 GamepadButtonVSep = -1400
 BackOptionVSep = -1000
@@ -79,7 +89,23 @@ def PlaySound(Chound):
 
 # MUSIC FOR MENU->
 #Bladex.AddMusicEventMP3( "MenuMusic",  "../../Sounds/abismo-fin1.MP3",     2.0, 1.0, 1.0, 10001, 1, -1 )
-#-----------------------------------------
+
+# -----------------------------------------
+# by Sryml: start
+# -----------------------------------------
+MFontScale = Language.MFontScale
+
+def GetMenuWidget(name, Frame=None):
+    if not _MainMenu:
+        return
+    CurrFrame = not Frame and _MainMenu.MenuStack.Top() or Frame
+
+    for i in CurrFrame.MenuItems:
+        if hasattr(i, "MenuDescr") and i.MenuDescr["Name"] == name:
+            return i
+# -----------------------------------------
+# by Sryml: end
+# -----------------------------------------
 
 def BackMenu(option):
 	_MainMenu.DeActivateMenuItem()
@@ -1583,8 +1609,8 @@ def AuxCtrlDef(action_menu_name,action_name,kFlags):
              "VSep" : 34,
              "Size" :(200,300)
             }
-    if Language.Current == "Chinese":
-        res["Font"] = Language.CtrlMenu
+    # if Language.Current == "Chinese":
+    #     res["Font"] = Language.CtrlMenu
     return res
 KeybActions=[]
 for k in acts.ConfigurableActions:
@@ -1636,7 +1662,8 @@ if Reference.DEMO_MODE:
                                           },
                                           {"Name":MenuText.GetMenuText("Yes"),
                                            "VSep":10,
-                                           "Font":MenuFontMed,
+                                          #  "Font":MenuFontMed,
+                                          "FontScale":MFontScale["M"],
                                            "ListDescr":[ {"Name":"Features",
                                                           "Kind":MenuWidget.B_BackFeatures
                                                          },
@@ -1645,7 +1672,8 @@ if Reference.DEMO_MODE:
                                           },
                                           {"Name":MenuText.GetMenuText("No"),
                                            "VSep":1,
-                                           "Font":MenuFontMed,
+                                          #  "Font":MenuFontMed,
+                                          "FontScale":MFontScale["M"],
                                            "Command":BackMenu
                                           },
                                           {"Name":"Back",
@@ -1658,7 +1686,7 @@ else:
     QuitMenu  =            {"VSep":-1000,
                             "Size":(640,480),
                             "Name"     :MenuText.GetMenuText("EXIT"),
-                            "Font"     :MenuFontBig,
+                            # "Font"     :MenuFontBig,
                             "iFocus"   :2,
                             "ListDescr":[ {"Name":MenuText.GetMenuText("Exit: are you sure?"),
                                            "VSep":vsepexit,
@@ -1668,11 +1696,13 @@ else:
                                           {"Name":MenuText.GetMenuText("Yes"),
                                            "VSep":10,
                                            "Command":CmdQuit,
-                                           "Font":MenuFontMed
+                                          #  "Font":MenuFontMed
+                                           "FontScale":MFontScale["M"],
                                           },
                                           {"Name":MenuText.GetMenuText("No"),
                                            "VSep":1,
-                                           "Font":MenuFontMed,
+                                          #  "Font":MenuFontMed,
+                                           "FontScale":MFontScale["M"],
                                            "Command":BackMenu
                                           },
                                           {"Name":"Back",
@@ -1690,7 +1720,8 @@ PlayerConfigMenu=[
                    "SetInput":NetMisc.SetPlayerName
                   },
                   {"Name":MenuText.GetMenuText("Character:"),
-                   "Font":MenuFontMed,
+                  #  "Font":MenuFontMed,
+                  "FontScale":MFontScale["M"],
                    "Kind":MenuWidget.B_MenuItemOption,
                    "Options":[MenuText.GetMenuText("Knight"),MenuText.GetMenuText("Barbarian"),MenuText.GetMenuText("Dwarf"),MenuText.GetMenuText("Amazon")],
                    "SelOptionFunc":NetMisc.GetCharType,
@@ -1927,28 +1958,32 @@ Controler_Menu = {"Name":MenuText.GetMenuText("CONTROLS"),
                                             "Size":(640,480),
                                             "ListDescr":[{"Name":MenuText.GetMenuText("Invert") + " X",
                                                           "VSep":100,
-                                                          "Font":MenuFontMed,
+                                                          # "Font":MenuFontMed,
+                                                          "FontScale":MFontScale["M"],
                                                           "Kind":MenuWidget.B_MenuItemOption,
                                                           "Options":[MenuText.GetMenuText("Yes"),MenuText.GetMenuText("No")],
                                                           "SelOptionFunc":GetMouseInvertX,
                                                           "Command": SetMouseInvertX
                                                           },
                                                           {"Name":MenuText.GetMenuText("Invert") + " Y",
-                                                          "Font":MenuFontMed,
+                                                          # "Font":MenuFontMed,
+                                                          "FontScale":MFontScale["M"],
                                                           "Kind":MenuWidget.B_MenuItemOption,
                                                           "Options":[MenuText.GetMenuText("Yes"),MenuText.GetMenuText("No")],
                                                           "SelOptionFunc":GetMouseInvertY,
                                                           "Command": SetMouseInvertY
                                                           },
                                                          {"Name":MenuText.GetMenuText("X Speed"),
-                                                          "Font":MenuFontMed,
+                                                          # "Font":MenuFontMed,
+                                                          "FontScale":MFontScale["M"],
                                                           "Kind":MenuWidget.B_MenuSpin,
                                                           "SpinValues":(int(0),int(10),int(10)),
                                                           "SpinGetValue":GetMouseXSens,
                                                           "SpinSetValueEnd":SetMouseXSens
                                                           },
                                                          {"Name":MenuText.GetMenuText("Y Speed"),
-                                                          "Font":MenuFontMed,
+                                                          # "Font":MenuFontMed,
+                                                          "FontScale":MFontScale["M"],
                                                           "Kind":MenuWidget.B_MenuSpin,
                                                           "SpinValues":(int(0),int(10),int(10)),
                                                           "SpinGetValue":GetMouseYSens,
@@ -1969,7 +2004,8 @@ Controler_Menu = {"Name":MenuText.GetMenuText("CONTROLS"),
                                                           },
                                                           {"Name":MenuText.GetMenuText("Vibration:"),
                                                            "VSep":370,
-                                                           "Font":MenuFontMed,
+                                                          #  "Font":MenuFontMed,
+                                                          "FontScale":MFontScale["M"],
                                                            "Kind":MenuWidget.B_MenuItemOption,
                                                            "Options":[MenuText.GetMenuText("Yes"),MenuText.GetMenuText("No")],
                                                            "SelOptionFunc":Vibration,
@@ -2018,7 +2054,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                   #  },
                                                    {"Name":MenuText.GetMenuText("Anti-Aliasing:"),
                                                     "VSep": 100,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("No"),MenuText.GetMenuText("Yes")],
                                                     "SelOptionFunc":GetAntialiasing,
@@ -2026,7 +2063,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Vertical Sync:"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("No"),MenuText.GetMenuText("Yes")],
                                                     "SelOptionFunc":GetVerticalSync,
@@ -2034,7 +2072,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Framerate Limit:"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("No"),MenuText.GetMenuText("Yes")],
                                                     "SelOptionFunc":GetLimitFps,
@@ -2054,7 +2093,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                       "ListDescr":[
                                                    {"Name":MenuText.GetMenuText("Gamma:"),
                                                     "VSep":100,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuSpin,
                                                     "SpinValues":(0.0,1.0,20),
                                                     "SpinGetValue":GetGammaValue,
@@ -2064,7 +2104,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Contrast:"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuSpin,
                                                     "SpinValues":(0.0,1.0,20),
                                                     "SpinGetValue":GetContrastValue,
@@ -2074,7 +2115,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Brightness:"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuSpin,
                                                     "SpinValues":(0.0,1.0,20),
                                                     "SpinGetValue":GetBrightnessValue,
@@ -2084,12 +2126,14 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("RESET COLOUR CONTROL"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Command": ResetVideo
                                                    },
                                                    {"Name":MenuText.GetMenuText("Character Shadows:"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("Yes"),MenuText.GetMenuText("No")],
                                                     "SelOptionFunc":ShadowsSettings,
@@ -2097,7 +2141,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Field Of View:"),
                                                     "VSep": 15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuSpin,
                                                     "SpinValues":GetValidFieldsOfView(),
                                                     "SpinGetValue":GetCurrentFieldOfView,
@@ -2107,7 +2152,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Reworked Camera:"),
                                                     "VSep":15,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("Yes"),MenuText.GetMenuText("No")],
                                                     "SelOptionFunc":ReworkedCamera,
@@ -2127,7 +2173,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                       "ListDescr":[
                                                    {"Name":MenuText.GetMenuText("Subtitles:"),
                                                     "VSep":100,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("No"),MenuText.GetMenuText("Yes")],
                                                     "SelOptionFunc":GetSubtitlesEnable,
@@ -2135,7 +2182,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("UI Scale:"),
                                                     "VSep":10,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("Small"),MenuText.GetMenuText("Normal"),MenuText.GetMenuText("Big")],
                                                     "SelOptionFunc":GetUIScale,
@@ -2143,7 +2191,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Hide UI:"),
                                                     "VSep":10,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("No"),MenuText.GetMenuText("Yes")],
                                                     "SelOptionFunc":GetHideUI,
@@ -2163,7 +2212,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                        "ListDescr":[
                                                    {"Name":MenuText.GetMenuText("FX Volume:"),
                                                     "VSep":100,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuSpin,
                                                     "SpinValues":(int(0),int(10),int(10)),
                                                     "SpinGetValue":GetSoundValue,
@@ -2172,7 +2222,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Music Volume:"),
                                                     "VSep": 10,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuSpin,
                                                     "SpinValues":(int(0),int(10),int(10)),
                                                     "SpinGetValue":GetMusicValue,
@@ -2181,7 +2232,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                    },
                                                    {"Name":MenuText.GetMenuText("Sound Quality:"),
                                                     "VSep":10,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":[MenuText.GetMenuText("Low"),MenuText.GetMenuText("Med"),MenuText.GetMenuText("High")],
                                                     "SelOptionFunc":GetSoundQuality,
@@ -2202,7 +2254,8 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
 #                                                   },
                                                    {"Name":MenuText.GetMenuText("Speaker Configuration:"),
                                                     "VSep":10,
-                                                    "Font":MenuFontMed,
+                                                    # "Font":MenuFontMed,
+                                                    "FontScale":MFontScale["M"],
                                                     "Options":[MenuText.GetMenuText("Mono"),MenuText.GetMenuText("2 Speakers"),MenuText.GetMenuText("4 Speakers"),MenuText.GetMenuText("5.1"),MenuText.GetMenuText("7.1")],
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "SelOptionFunc":GetSpeakerConfig,
@@ -2329,7 +2382,8 @@ if(Bladex.IsRunningOnHandheldDevice() == 0):
     Options_Menu["ListDescr"][0]["ListDescr"][0]["VSep"] = 15
     Options_Menu["ListDescr"][0]["ListDescr"].insert(0,{"Name":MenuText.GetMenuText("Resolution:"),
                                                         "VSep":15,
-                                                        "Font":MenuFontMed,
+                                                        # "Font":MenuFontMed,
+                                                        "FontScale":MFontScale["M"],
                                                         "Kind":MenuWidget.B_MenuItemOption,
                                                         "Options":GetSupportedResolution(),
                                                         "SelOptionFunc":GetResolutionValue,
@@ -2339,7 +2393,8 @@ if(Bladex.IsRunningOnHandheldDevice() == 0):
     Options_Menu["ListDescr"][0]["ListDescr"].insert(0,{
                                                         "Name":MenuText.GetMenuText("Monitor:"),
                                                         "VSep":15,
-                                                        "Font":MenuFontMed,
+                                                        # "Font":MenuFontMed,
+                                                        "FontScale":MFontScale["M"],
                                                         "Kind":MenuWidget.B_MenuItemOption,
                                                         "Options":GetNumMonitor(),
                                                         "SelOptionFunc":GetActiveMonitor,
@@ -2349,17 +2404,21 @@ if(Bladex.IsRunningOnHandheldDevice() == 0):
 
     Options_Menu["ListDescr"][0]["ListDescr"].insert(0,{"Name":MenuText.GetMenuText("Window Mode:"),
                                                         "VSep":100,
-                                                        "Font":MenuFontMed,
+                                                        # "Font":MenuFontMed,
+                                                        "FontScale":MFontScale["M"],
                                                         "Kind":MenuWidget.B_MenuItemOption,
                                                         "Options":[MenuText.GetMenuText("Windowed"),MenuText.GetMenuText("Fullscreen"), MenuText.GetMenuText("Borderless")],
                                                         "SelOptionFunc":GetScreenMode,
                                                         "Command2":SetScreenModeValue,
                                                        })
 
+import BODLoader
+
 if netgame.GetNetState() != 0:
   PlayerConfigMenu.insert(6,{"Name":MenuText.GetMenuText("This modification will take effect in the next arena"),
                              "VSep":20,
-                             "Font":MenuFontSmall,
+                            #  "Font":MenuFontSmall,
+                            "FontScale":MFontScale["S"],
                              "Kind":MenuWidget.B_MenuItemTextNoFXNoFocus
                              })
 
@@ -2599,6 +2658,7 @@ else:
                                     ]
 
                        },
+                       BODLoader.GetModMenu(),
                        QuitMenu,
                        GamepadButton,
                        {"Name":"Back",
@@ -2712,14 +2772,16 @@ def InitMenuKeys():
 	                GetMenuItem(['GAME','ARENA'])["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus
 	        elif ProtocolList == [1,0]:
 	                GetMenuItem(['GAME','ARENA'])["ListDescr"][0]={ "Name":MenuText.GetMenuText("Connection:")+"  "+MenuText.GetMenuText("IPX (Local network)"),
-	                                                                "Font":MenuFontMed,
+	                                                                # "Font":MenuFontMed,
+                                                                    "FontScale":MFontScale["M"],
 	                                                                "VSep":150,
 	                                                                "Kind":MenuWidget.B_MenuItemTextNoFXNoFocus,
 	                                                             }
 	                NetMisc.TCP = 0
 	        elif ProtocolList == [0,1]:
 	                GetMenuItem(['GAME','ARENA'])["ListDescr"][0]={ "Name":MenuText.GetMenuText("Connection:")+"  "+MenuText.GetMenuText("TCP/IP"),
-	                                                                "Font":MenuFontMed,
+	                                                                # "Font":MenuFontMed,
+                                                                  "FontScale":MFontScale["M"],
 	                                                                "VSep":150,
 	                                                                "Kind":MenuWidget.B_MenuItemTextNoFXNoFocus,
 	                                                             }

@@ -38,7 +38,7 @@ prev_was_menu=0
 
 LOGOS_FULL=1
 
-TutorialScorer.ActivateTutorialScorer(Language.LetrasMenuBig)
+TutorialScorer.ActivateTutorialScorer(Language.FontTitle)
 TutorialScorer.wMultiText.SetScale(0.5)
 TutorialScorer.wMultiText.SetColor(255,0,0)
 

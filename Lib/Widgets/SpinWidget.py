@@ -1,4 +1,12 @@
-
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
 
 
 
@@ -6,7 +14,7 @@ import BUIx
 import DistortFX
 import types
 import MenuText
-
+import Language
 
 
 
@@ -122,8 +130,8 @@ class B_SpinWidgetAux(BUIx.B_FrameWidget):
 class B_SpinWidget(BUIx.B_FrameWidget):
   def __init__(self,Parent,Name,Width,Height,font_server,font,default_value):
     BUIx.B_FrameWidget.__init__(self,Parent,Name,Width,Height)
-    self.Text=BUIx.B_TextWidget(self,"SpinLArrow "+Name,Name,font_server,font)
-    self.AddWidget(self.Text,1,0.5,BUIx.B_FrameWidget.B_FR_AbsoluteLeft,BUIx.B_FrameWidget.B_FR_Left,
+    self.WText=BUIx.B_TextWidget(self,"SpinLArrow "+Name,Name,font_server,font)
+    self.AddWidget(self.WText,1,0.5,BUIx.B_FrameWidget.B_FR_AbsoluteLeft,BUIx.B_FrameWidget.B_FR_Left,
                                    BUIx.B_FrameWidget.B_FR_VRelative,BUIx.B_FrameWidget.B_FR_VCenter)
     self.DefaultText=BUIx.B_TextWidget(self,"DefaultText", Name,font_server,font)
     self.DefaultText.SetText("(" + MenuText.GetMenuText("Default") + ")")
@@ -131,7 +139,7 @@ class B_SpinWidget(BUIx.B_FrameWidget):
     self.AddWidget(self.DefaultText,90,0.5,BUIx.B_FrameWidget.B_FR_AbsoluteRight,BUIx.B_FrameWidget.B_FR_Right,
                                    BUIx.B_FrameWidget.B_FR_VRelative,BUIx.B_FrameWidget.B_FR_VCenter)
 
-    self.Spin=B_SpinWidgetAux(self,"SpinText "+Name,80,Width,font_server,font) # 50 a ojo (Estoy hasta los c######).
+    self.Spin=B_SpinWidgetAux(self,"SpinText "+Name,80,Height,font_server,font) # 50 a ojo (Estoy hasta los c######).
     self.AddWidget(self.Spin,1,0.5,BUIx.B_FrameWidget.B_FR_AbsoluteRight,BUIx.B_FrameWidget.B_FR_Right,
                                    BUIx.B_FrameWidget.B_FR_VRelative,BUIx.B_FrameWidget.B_FR_VCenter)
     self.SetDrawFunc(self.Draw)
@@ -160,28 +168,37 @@ class B_SpinWidget(BUIx.B_FrameWidget):
     return self.Spin.Value
 
   def Draw(self,x,y,time):
-    foc=self.GetHasFocus()
-    self.Text.SetAlpha           (1.0)
-    self.Spin.Text.SetAlpha      (1.0)
-    self.Spin.LeftArrow.SetAlpha (1.0)
-    self.Spin.RightArrow.SetAlpha(1.0)
+    if self.GetVisible() == 0:
+      return
+    
+    if self.Color:
+        r, g, b = self.Color
+    else:
+        foc = self.GetHasFocus()
+        if foc:
+            r, g, b = Language.FontColor.Focused
+        elif not self.Focusable:
+            r, g, b = Language.FontColor.Unfocusable
+        else:
+            r, g, b = Language.FontColor.Unfocused
+
+    a = self.Alpha
+
+    self.WText.SetAlpha          (a)
+    self.Spin.Text.SetAlpha      (a)
+    self.Spin.LeftArrow.SetAlpha (a)
+    self.Spin.RightArrow.SetAlpha(a)
     if(self.DefaultValue==self.GetValue()):
       self.DefaultText.SetAlpha    (1.0)
     else:
       self.DefaultText.SetAlpha    (0.0)
 
-    if foc:
-      self.Text.SetColor           (252,247,167)
-      self.Spin.Text.SetColor      (252,247,167)
-      self.Spin.LeftArrow.SetColor (252,247,167)
-      self.Spin.RightArrow.SetColor(252,247,167)
-      self.DefaultText.SetColor    (252,247,167)
-    else:
-      self.Text.SetColor           (207,144,49)
-      self.Spin.Text.SetColor      (207,144,49)
-      self.Spin.LeftArrow.SetColor (207,144,49)
-      self.Spin.RightArrow.SetColor(207,144,49)
-      self.DefaultText.SetColor    (207,144,49)
+    self.WText.SetColor          (r, g, b)
+    self.Spin.Text.SetColor      (r, g, b)
+    self.Spin.LeftArrow.SetColor (r, g, b)
+    self.Spin.RightArrow.SetColor(r, g, b)
+    self.DefaultText.SetColor    (r, g, b)
+
     self.DefDraw(x,y,time)
 
 

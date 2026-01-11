@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
+
 import BBLib
 import BUIx
 import Raster
@@ -94,10 +104,11 @@ class B_GamepadWidget(BUIx.B_FrameWidget):
 			if index >= (len(self.positions)/2):
 				textAlign = BUIx.B_FrameWidget.B_FR_Left
 			name = "command " + str(index)
-			Widget=BUIx.B_TextWidget(self, name,"",ScorerWidgets.font_server,Language.LetrasMenu)
+			Widget=BUIx.B_TextWidget(self, name,"",ScorerWidgets.font_server,Language.FontTitle)
 			Widget.SetAlpha(1)
 			Widget.SetColor(207,144,49)
 			Widget.SetText(MenuText.GetMenuText(self.commands[index]))
+			Widget.SetScale(Language.FontScale["S"])
 			self.PanelWidgets.append(Widget)
 			self.PanelWidgetsName.append(name)
 			self.AddWidget(

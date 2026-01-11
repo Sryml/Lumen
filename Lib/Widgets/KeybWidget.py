@@ -1,4 +1,12 @@
-
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
 
 import MenuWidget
 import ScorerWidgets
@@ -395,9 +403,10 @@ MOUSE_CONTROLS = ["RightButton","LeftButton","MiddleButton","OtherButton"]
 class B_KeybListWidget(ListWidget.B_ListWidget):
   def __init__(self,Parent,Menudesc,StackMenu,VertPos=0):
     ListWidget.B_ListWidget.__init__(self,Parent,Menudesc,StackMenu,VertPos)
-    self.StatusText=BUIx.B_TextWidget(self,"Status",MenuText.GetMenuText(DefInfoText),ScorerWidgets.font_server,Language.LetrasMenu)
+    self.StatusText=BUIx.B_TextWidget(self,"Status",MenuText.GetMenuText(DefInfoText),ScorerWidgets.font_server,Language.FontTitle)
     self.StatusText.SetColor(252,247,167)
     self.StatusText.SetAlpha(1)
+    self.StatusText.SetScale(Language.FontScale["S"])
     self.AddLabel(self.StatusText,0.5,25,BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_Bottom,
                   BUIx.B_Widget.B_FR_HRelative,BUIx.B_Widget.B_LAB_HCenter,
                   BUIx.B_Widget.B_FR_AbsoluteTop,BUIx.B_Widget.B_FR_Top)

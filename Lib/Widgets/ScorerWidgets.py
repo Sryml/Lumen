@@ -1,4 +1,12 @@
-
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Refactor text UI
+#
 
 
 
@@ -19,14 +27,15 @@ import Language
 import MenuText
 
 font_server=BUIx.B_FontServer()
+FontScale = Language.FontScale
 
 class B_GameTextWidget(BUIx.B_TextWidget):
   def __init__(self,parent,name):
-    BUIx.B_TextWidget.__init__(self,parent,name,"\n\n\n\n\n",font_server,Language.MapaDeLetrasHi)
+    BUIx.B_TextWidget.__init__(self,parent,name,"\n\n\n\n\n",font_server,Language.FontCommon)
     self.Background=BUIx.B_RectWidget(self,name+"Background",0,0)
     self.Background.SetSolid(1)
     self.SetDrawFunc(self.Draw)
-    self.SetScale(0.25)
+    self.SetScale(FontScale["L"])
 
   def SetAlpha(self,al):
     BUIx.B_TextWidget.SetAlpha(self,al)
@@ -191,11 +200,11 @@ if netgame.GetNetState() == 0:
     def __init__(self,Parent,Name,width,Height,BODName,char):
 
 
-      BUIx.B_TextWidget.__init__(self,Parent,Name,"",font_server,Language.MapaDeLetrasHi)
+      BUIx.B_TextWidget.__init__(self,Parent,Name,"",font_server,Language.FontCommon)
       self.SetChar(char)
       self.SetAlpha(1.0)
       self.Scale = 0.075
-      self.SetScale(0.25)
+      self.SetScale(FontScale["L"])
       self.SetDrawFunc(self.Draw)
       self.SetVisible(1)
       self.SetColor(128,128,128)
@@ -245,11 +254,11 @@ if netgame.GetNetState() == 0:
     def __init__(self,Parent,Name,width,Height,BODName,char):
 
 
-      BUIx.B_TextWidget.__init__(self,Parent,Name,"",font_server,Language.MapaDeLetrasHi)
+      BUIx.B_TextWidget.__init__(self,Parent,Name,"",font_server,Language.FontCommon)
       self.SetChar(char)
       self.SetAlpha(1.0)
       self.Scale = 0.075
-      self.SetScale(0.25)
+      self.SetScale(FontScale["L"])
       self.SetDrawFunc(self.Draw)
       self.SetVisible(1)
       self.SetColor(128,128,128)
@@ -402,8 +411,8 @@ if netgame.GetNetState() == 0:
                     BUIx.B_Widget.B_FR_VRelative, BUIx.B_Widget.B_FR_VCenter
                     )
 
-    wEnemyLifeLabel=BUIx.B_TextWidget(wEnemy,RootName+"LifeLabel","250",font_server,Language.MapaDeLetrasHi)
-    wEnemyLifeLabel.SetScale(0.25)
+    wEnemyLifeLabel=BUIx.B_TextWidget(wEnemy,RootName+"LifeLabel","250",font_server,Language.FontCommon)
+    wEnemyLifeLabel.SetScale(FontScale["L"])
     wEnemyLifeLabel.SetColor(255,0,0)
     wEnemyLifeLabel.SetAlpha(0.5)
     wEnemy.AddLabel(wEnemyLifeLabel,2,0,
@@ -413,8 +422,8 @@ if netgame.GetNetState() == 0:
                     )
 
 
-    wEnemyLevelLabel=BUIx.B_TextWidget(wEnemy,RootName+"LevelLabel","8",font_server,Language.MapaDeLetrasHi)
-    wEnemyLevelLabel.SetScale(0.25)
+    wEnemyLevelLabel=BUIx.B_TextWidget(wEnemy,RootName+"LevelLabel","8",font_server,Language.FontCommon)
+    wEnemyLevelLabel.SetScale(FontScale["L"])
     wEnemyLevelLabel.SetColor(0,159,220)
     wEnemyLevelLabel.SetAlpha(0.5)
     wEnemy.AddLabel(wEnemyLevelLabel,1,0,
@@ -507,8 +516,8 @@ if netgame.GetNetState() == 0:
       self.LastTime      = 0.0
       self.LastSelection = 0
 
-      self.NameText=BUIx.B_TextWidget(self,"ObjName","",font_server,Language.MapaDeLetrasHi)
-      self.NameText.SetScale(0.25)
+      self.NameText=BUIx.B_TextWidget(self,"ObjName","",font_server,Language.FontCommon)
+      self.NameText.SetScale(FontScale["L"])
       self.NameText.SetColor(255,255,255)
       self.NameText.SetAlpha(1.0)
       self.AddWidget(self.NameText,0.5,56,
@@ -663,28 +672,28 @@ if netgame.GetNetState() == 0:
         self.wObjects.append(wObj)
 
       # Textos del objeto seleccionado
-      self.wNameText=BUIx.B_TextWidget(self,"NameText","",font_server,Language.MapaDeLetrasHi)
-      self.wNameText.SetScale(0.25)
+      self.wNameText=BUIx.B_TextWidget(self,"NameText","",font_server,Language.FontCommon)
+      self.wNameText.SetScale(FontScale["L"])
       self.wNameText.SetColor(170,170,170)
       self.wNameText.SetAlpha(1.0)
       self.wNameText.SetAutoScale(Wants_auto_scale)
-      self.wDefText=BUIx.B_TextWidget(self,"DefText","+0 DEF ",font_server,Language.MapaDeLetrasHi)
-      self.wDefText.SetScale(0.25)
+      self.wDefText=BUIx.B_TextWidget(self,"DefText","+0 DEF ",font_server,Language.FontCommon)
+      self.wDefText.SetScale(FontScale["L"])
       self.wDefText.SetAlpha(1.0)
       self.wDefText.SetColor(255,0,0)
       self.wDefText.SetAutoScale(Wants_auto_scale)
-      self.wPowText=BUIx.B_TextWidget(self,"PowText","+0 POW",font_server,Language.MapaDeLetrasHi)
-      self.wPowText.SetScale(0.25)
+      self.wPowText=BUIx.B_TextWidget(self,"PowText","+0 POW",font_server,Language.FontCommon)
+      self.wPowText.SetScale(FontScale["L"])
       self.wPowText.SetAlpha(1.0)
       self.wPowText.SetColor(0,160,221)
       self.wPowText.SetAutoScale(Wants_auto_scale)
-      self.wAltPowText=BUIx.B_TextWidget(self,"AltPowText","+0 POW",font_server,Language.MapaDeLetrasHi)
-      self.wAltPowText.SetScale(0.25)
+      self.wAltPowText=BUIx.B_TextWidget(self,"AltPowText","+0 POW",font_server,Language.FontCommon)
+      self.wAltPowText.SetScale(FontScale["L"])
       self.wAltPowText.SetAlpha(1.0)
       self.wAltPowText.SetColor(0,160,221)
       self.wAltPowText.SetAutoScale(Wants_auto_scale)
-      self.wResText=BUIx.B_TextWidget(self,"ResText","RESISTANCE: 0/0",font_server,Language.MapaDeLetrasHi)
-      self.wResText.SetScale(0.25)
+      self.wResText=BUIx.B_TextWidget(self,"ResText","RESISTANCE: 0/0",font_server,Language.FontCommon)
+      self.wResText.SetScale(FontScale["L"])
       self.wResText.SetAlpha(1.0)
       self.wResText.SetColor(119,241,252)
       self.wResText.SetAutoScale(Wants_auto_scale)
@@ -1077,16 +1086,16 @@ if netgame.GetNetState() == 0:
       #pdb.set_trace
       BUIx.B_FrameWidget.__init__(self,Parent,Name,width,Height)
 
-      self.wNameText=BUIx.B_TextWidget(self,"NameText","UNSPECIFIED ARROWS",font_server,Language.MapaDeLetrasHi)
-      self.wNameText.SetScale(0.25)
+      self.wNameText=BUIx.B_TextWidget(self,"NameText","UNSPECIFIED ARROWS",font_server,Language.FontCommon)
+      self.wNameText.SetScale(FontScale["L"])
       self.wNameText.SetAlpha(1.0)
       self.wNameText.SetColor(170,170,170)
       self.AddWidget(self.wNameText,0.5,0,
                      BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,
                      BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
 
-      self.wNumText=BUIx.B_TextWidget(self,"NumText","0/0",font_server,Language.MapaDeLetrasHi)
-      self.wNumText.SetScale(0.25)
+      self.wNumText=BUIx.B_TextWidget(self,"NumText","0/0",font_server,Language.FontCommon)
+      self.wNumText.SetScale(FontScale["L"])
       self.wNumText.SetAlpha(1.0)
       self.wNumText.SetColor(0,159,220)
       # self.wNumText.SetAutoScale(1)

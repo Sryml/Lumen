@@ -470,7 +470,7 @@ def CreateWidgetInfoChar():
     base = 200 * BannerScale
 
     if InfoCharWidget1 == 0:
-        InfoCharWidget1=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar1","",ScorerWidgets.font_server, Language.MenuGrasHi)
+        InfoCharWidget1=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar1","",ScorerWidgets.font_server, Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("InfoChar1", 0)
 
@@ -483,7 +483,7 @@ def CreateWidgetInfoChar():
     Scorer.wFrame.AddWidget(InfoCharWidget1,0.5,base,BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
 
     if InfoCharWidget2 == 0:
-        InfoCharWidget2=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar2","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        InfoCharWidget2=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar2","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("InfoChar2", 0)
 
@@ -496,7 +496,7 @@ def CreateWidgetInfoChar():
     Scorer.wFrame.AddWidget(InfoCharWidget2,0.5,base + 110 * BannerScale,BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
 
     if InfoCharWidget3 == 0:
-        InfoCharWidget3=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar3","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        InfoCharWidget3=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar3","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("InfoChar3", 0)
 
@@ -509,7 +509,7 @@ def CreateWidgetInfoChar():
     Scorer.wFrame.AddWidget(InfoCharWidget3,0.5,base + 440 * BannerScale,BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
 
     if InfoCharWidget4 == 0:
-        InfoCharWidget4=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar4","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        InfoCharWidget4=BUIx.B_TextWidget(Scorer.wFrame,"InfoChar4","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("InfoChar4", 0)
 
@@ -523,11 +523,11 @@ def CreateWidgetInfoChar():
 
 
     if FlechaIzqWidget == 0:
-        FlechaIzqWidget=BUIx.B_TextWidget(Scorer.wFrame,"FlechaIzqWidget","<",ScorerWidgets.font_server,Language.MenuGrasHi)
+        FlechaIzqWidget=BUIx.B_TextWidget(Scorer.wFrame,"FlechaIzqWidget","<",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("FlechaIzqWidget", 0)
 
-    FlechaIzqWidget.SetScale(0.25)
+    FlechaIzqWidget.SetScale(Language.FontScale["M"])
     FlechaIzqWidget.SetAlpha(1)
     FlechaIzqWidget.SetColor(128,128,128)
     FlechaIzqWidget.SetText("<")
@@ -536,11 +536,11 @@ def CreateWidgetInfoChar():
     Scorer.wFrame.AddWidget(FlechaIzqWidget,0.03,15,BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,BUIx.B_FrameWidget.B_FR_AbsoluteBottom,BUIx.B_FrameWidget.B_FR_Bottom)
 
     if FlechaDerWidget == 0:
-        FlechaDerWidget=BUIx.B_TextWidget(Scorer.wFrame,"FlechaDerWidget",">",ScorerWidgets.font_server,Language.MenuGrasHi)
+        FlechaDerWidget=BUIx.B_TextWidget(Scorer.wFrame,"FlechaDerWidget",">",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("FlechaDerWidget", 0)
 
-    FlechaDerWidget.SetScale(0.25)
+    FlechaDerWidget.SetScale(Language.FontScale["M"])
     FlechaDerWidget.SetAlpha(1)
     FlechaDerWidget.SetColor(128,128,128)
     FlechaDerWidget.SetText(">")
@@ -729,7 +729,7 @@ def CreateWidgetAreYouSure():
     BannerScale = Size_Y / 1080.0
 
     if SelectCharacterWidget == 0:
-        SelectCharacterWidget=BUIx.B_TextWidget(Scorer.wFrame,"SelectCharacter","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        SelectCharacterWidget=BUIx.B_TextWidget(Scorer.wFrame,"SelectCharacter","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("SelectCharacter", 0)
 
@@ -739,7 +739,7 @@ def CreateWidgetAreYouSure():
     SelectCharacterWidget.SetText(MenuText.GetMenuText("Press arrows to choose character. Press ${\"ENTER\":Accept} to select"))
 
     if AreYouSureWidget == 0:
-        AreYouSureWidget=BUIx.B_TextWidget(Scorer.wFrame,"AreYouSure","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        AreYouSureWidget=BUIx.B_TextWidget(Scorer.wFrame,"AreYouSure","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("AreYouSure", 0)
 
@@ -749,7 +749,7 @@ def CreateWidgetAreYouSure():
     AreYouSureWidget.SetText(MenuText.GetMenuText("ARE YOU SURE?"))
 
     if YesWidget == 0:
-        YesWidget=BUIx.B_TextWidget(Scorer.wFrame,"Yes","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        YesWidget=BUIx.B_TextWidget(Scorer.wFrame,"Yes","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("Yes", 0)
 
@@ -759,7 +759,7 @@ def CreateWidgetAreYouSure():
     YesWidget.SetText(MenuText.GetMenuText("Yes"))
 
     if NoWidget == 0:
-        NoWidget=BUIx.B_TextWidget(Scorer.wFrame,"No","",ScorerWidgets.font_server,Language.LetrasMenuBig)
+        NoWidget=BUIx.B_TextWidget(Scorer.wFrame,"No","",ScorerWidgets.font_server,Language.FontTitle)
     else:
         Scorer.wFrame.RemoveWidget("No", 0)
 
