@@ -97,8 +97,8 @@ def LabelEntity(entity_name,text,dx,dy):
 			text_y=screen[1]
 		if(text_y+text_wh[1]>screen[3]):
 			text_y=screen[3]-text_wh[1]
-		Raster.SetTextScale(Language.FontScale["L"], Language.FontScale["L"])
 		Raster.SetFont(font_behaviour.GetPointer())
+		Raster.SetTextScale(Language.FontScale["S"] * 0.83, Language.FontScale["S"] * 0.83)
 		Bladex.WriteText(text_x,text_y,text)
 
 

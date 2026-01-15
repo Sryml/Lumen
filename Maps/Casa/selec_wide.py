@@ -474,7 +474,7 @@ def CreateWidgetInfoChar():
     else:
         Scorer.wFrame.RemoveWidget("InfoChar1", 0)
 
-    InfoCharWidget1.SetScale(BannerScale * 0.8)
+    InfoCharWidget1.SetScale(BannerScale * Language.MFontScale["L"] * 2.8)
     InfoCharWidget1.SetText(TextInfoCharAmz1)
     InfoCharWidget1.SetAlpha(1)
     InfoCharWidget1.SetColor(255,0,0)
@@ -487,7 +487,7 @@ def CreateWidgetInfoChar():
     else:
         Scorer.wFrame.RemoveWidget("InfoChar2", 0)
 
-    InfoCharWidget2.SetScale(1.2 * BannerScale)
+    InfoCharWidget2.SetScale(BannerScale * Language.MFontScale["L"] * 1.25)
     InfoCharWidget2.SetText(TextInfoCharAmz2)
     InfoCharWidget2.SetAlpha(1)
     InfoCharWidget2.SetColor(254,254,202)
@@ -500,7 +500,7 @@ def CreateWidgetInfoChar():
     else:
         Scorer.wFrame.RemoveWidget("InfoChar3", 0)
 
-    InfoCharWidget3.SetScale(1.2 * BannerScale)
+    InfoCharWidget3.SetScale(BannerScale * Language.MFontScale["L"] * 1.25)
     InfoCharWidget3.SetText(TextInfoCharAmz3)
     InfoCharWidget3.SetAlpha(1)
     InfoCharWidget3.SetColor(254,116,4)
@@ -513,7 +513,7 @@ def CreateWidgetInfoChar():
     else:
         Scorer.wFrame.RemoveWidget("InfoChar4", 0)
 
-    InfoCharWidget4.SetScale(1.2 * BannerScale)
+    InfoCharWidget4.SetScale(BannerScale * Language.MFontScale["L"] * 1.25)
     InfoCharWidget4.SetText(TextInfoCharAmz4)
     InfoCharWidget4.SetAlpha(1)
     InfoCharWidget4.SetColor(247,255,171)
@@ -527,7 +527,7 @@ def CreateWidgetInfoChar():
     else:
         Scorer.wFrame.RemoveWidget("FlechaIzqWidget", 0)
 
-    FlechaIzqWidget.SetScale(Language.FontScale["M"])
+    FlechaIzqWidget.SetScale(BannerScale * Language.MFontScale["L"])
     FlechaIzqWidget.SetAlpha(1)
     FlechaIzqWidget.SetColor(128,128,128)
     FlechaIzqWidget.SetText("<")
@@ -540,7 +540,7 @@ def CreateWidgetInfoChar():
     else:
         Scorer.wFrame.RemoveWidget("FlechaDerWidget", 0)
 
-    FlechaDerWidget.SetScale(Language.FontScale["M"])
+    FlechaDerWidget.SetScale(BannerScale * Language.MFontScale["L"])
     FlechaDerWidget.SetAlpha(1)
     FlechaDerWidget.SetColor(128,128,128)
     FlechaDerWidget.SetText(">")
@@ -733,7 +733,7 @@ def CreateWidgetAreYouSure():
     else:
         Scorer.wFrame.RemoveWidget("SelectCharacter", 0)
 
-    SelectCharacterWidget.SetScale(BannerScale)
+    SelectCharacterWidget.SetScale(BannerScale * Language.MFontScale["L"])
     SelectCharacterWidget.SetAlpha(1)
     SelectCharacterWidget.SetColor(128,128,128)
     SelectCharacterWidget.SetText(MenuText.GetMenuText("Press arrows to choose character. Press ${\"ENTER\":Accept} to select"))
@@ -743,7 +743,7 @@ def CreateWidgetAreYouSure():
     else:
         Scorer.wFrame.RemoveWidget("AreYouSure", 0)
 
-    AreYouSureWidget.SetScale(BannerScale)
+    AreYouSureWidget.SetScale(BannerScale * Language.MFontScale["L"])
     AreYouSureWidget.SetAlpha(1)
     AreYouSureWidget.SetColor(255,255,255)
     AreYouSureWidget.SetText(MenuText.GetMenuText("ARE YOU SURE?"))
@@ -753,7 +753,7 @@ def CreateWidgetAreYouSure():
     else:
         Scorer.wFrame.RemoveWidget("Yes", 0)
 
-    YesWidget.SetScale(BannerScale)
+    YesWidget.SetScale(BannerScale * Language.MFontScale["L"])
     YesWidget.SetAlpha(1)
     YesWidget.SetColor(128,128,128)
     YesWidget.SetText(MenuText.GetMenuText("Yes"))
@@ -763,7 +763,7 @@ def CreateWidgetAreYouSure():
     else:
         Scorer.wFrame.RemoveWidget("No", 0)
 
-    NoWidget.SetScale(BannerScale)
+    NoWidget.SetScale(BannerScale * Language.MFontScale["L"])
     NoWidget.SetAlpha(1)
     NoWidget.SetColor(128,128,128)
     NoWidget.SetText(MenuText.GetMenuText("No"))

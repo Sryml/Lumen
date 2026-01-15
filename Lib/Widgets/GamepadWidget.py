@@ -108,7 +108,7 @@ class B_GamepadWidget(BUIx.B_FrameWidget):
 			Widget.SetAlpha(1)
 			Widget.SetColor(207,144,49)
 			Widget.SetText(MenuText.GetMenuText(self.commands[index]))
-			Widget.SetScale(Language.FontScale["S"])
+			Widget.SetScale(Language.MFontScale["M"])
 			self.PanelWidgets.append(Widget)
 			self.PanelWidgetsName.append(name)
 			self.AddWidget(

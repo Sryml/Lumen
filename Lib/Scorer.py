@@ -234,7 +234,7 @@ wSpecialsFrame=BUIx.B_FrameWidget(wFrame,"SpecialsFrame",180,32)
 # Texto  ----------------------------------------------------------------------------------------------------
 wGameText=BUIx.B_TextWidget(wFrame,"GameTextWidget","\n\n\n\n\n",ScorerWidgets.font_server,Language.FontTitle)
 #wGameText=ScorerWidgets.B_GameTextWidget(wFrame,"GameTextWidget")
-wGameText.SetScale(FontScale["L"])
+wGameText.SetScale(FontScale["L"] * 0.83)
 wGameText.SetAlpha(1)
 wGameText.SetColor(255,255,255)
 
@@ -243,7 +243,7 @@ wGameText.SetColor(255,255,255)
 # Travel Book Warning--------------------------------------------------------------------------------------------
 Widget = BUIx.B_TextWidget(wFrame, "pressF1","",ScorerWidgets.font_server,Language.FontCommon)
 Widget.SetText(MenuText.GetMenuText("PRESS") + "${\" F1\":LaunchTravel}")
-Widget.SetScale(FontScale["L"])
+Widget.SetScale(FontScale["M"] * 0.87)
 Widget.SetAlpha(1)
 Widget.SetColor(240,51,2)
 Widget.SetVisible(1)
@@ -322,10 +322,10 @@ wLifeBar.SetBitmap("Vida")
 wLifeLabel=BUIx.B_TextWidget(wLifeBar,"LifeLabel","100/100",ScorerWidgets.font_server,Language.FontCommon)
 wLifeLabel.SetColor(255,0,0)
 wLifeLabel.SetAlpha(1.0)
-wLifeLabel.SetScale(FontScale["L"])
+wLifeLabel.SetScale(FontScale["M"] * 0.87)
 wOffset = -2
-if Language.Current == "Russian":
-    wOffset = 0
+# if Language.Current == "Russian":
+#     wOffset = 0
 wLifeBar.AddLabel(wLifeLabel,4-BAR_DELTA,wOffset,
                   BUIx.B_Widget.B_LAB_Right,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_AbsoluteLeft,BUIx.B_Widget.B_FR_Left,
@@ -336,7 +336,7 @@ wLifeBar.AddLabel(wLifeLabel,4-BAR_DELTA,wOffset,
 wPoisonLabel=BUIx.B_TextWidget(wLifeBar,"PoisonLabel",MenuText.GetMenuText("POISONED"),ScorerWidgets.font_server,Language.FontCommon)
 wPoisonLabel.SetColor(85,105,60)
 wPoisonLabel.SetAlpha(1.0)
-wPoisonLabel.SetScale(FontScale["L"])
+wPoisonLabel.SetScale(FontScale["M"] * 0.87)
 wLifeBar.AddLabel(wPoisonLabel,0.4,0.5,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_HRelative, BUIx.B_Widget.B_FR_HCenter,
@@ -367,7 +367,7 @@ wLevelUpLabel=WidgetsExtra.B_FlashTextWidget(wLevelBar,"LevelUpLabel",MenuText.G
 wLevelUpLabel.SetColor(170,170,170)
 wLevelUpLabel.SetAlpha(1.0)
 wLevelUpLabel.SetVisible(0)
-wLevelUpLabel.SetScale(FontScale["L"])
+wLevelUpLabel.SetScale(FontScale["M"] * 0.87)
 wLevelBar.AddLabel(wLevelUpLabel,0,2,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_Bottom,
                   BUIx.B_Widget.B_FR_AbsoluteRight,BUIx.B_Widget.B_FR_Right,
@@ -378,11 +378,11 @@ wLevelBar.AddLabel(wLevelUpLabel,0,2,
 wCurrentLevelLabel=BUIx.B_TextWidget(wLevelBar,"CurrentLevelLabel","Level 5",ScorerWidgets.font_server,Language.FontCommon)
 wCurrentLevelLabel.SetColor(0,159,220)
 wCurrentLevelLabel.SetAlpha(1.0)
-wCurrentLevelLabel.SetScale(FontScale["L"])
-wOffset = -4
-if Language.Current == "Russian":
-    wOffset = -2
-wLevelBar.AddLabel(wCurrentLevelLabel,6-BAR_DELTA,wOffset,
+wCurrentLevelLabel.SetScale(FontScale["M"] * 0.87)
+wOffset = -5
+# if Language.Current == "Russian":
+#     wOffset = -2
+wLevelBar.AddLabel(wCurrentLevelLabel,4-BAR_DELTA,wOffset,
                   BUIx.B_Widget.B_LAB_Right,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_AbsoluteLeft,BUIx.B_Widget.B_FR_Left,
                   BUIx.B_Widget.B_FR_AbsoluteTop,BUIx.B_Widget.B_FR_Top
@@ -412,7 +412,7 @@ wMaxPowerLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"MaxPowerLabel",MenuT
 wMaxPowerLabel.SetColor(255,255,255)
 wMaxPowerLabel.SetAlpha(1.0)
 wMaxPowerLabel.SetVisible(0)
-wMaxPowerLabel.SetScale(FontScale["L"])
+wMaxPowerLabel.SetScale(FontScale["M"] * 0.87)
 wStrengthBar.AddLabel(wMaxPowerLabel,0.4,0.32,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_HRelative, BUIx.B_Widget.B_FR_HCenter,
@@ -423,7 +423,7 @@ wStrengthLabel=WidgetsExtra.B_FlashTextWidget(wStrengthBar,"StrengthLabel",MenuT
 wStrengthLabel.SetColor(251,210,99)
 wStrengthLabel.SetAlpha(1.0)
 wStrengthLabel.SetFlash(0.0)
-wStrengthLabel.SetScale(FontScale["L"])
+wStrengthLabel.SetScale(FontScale["M"] * 0.87)
 wStrengthBar.AddLabel(wStrengthLabel,9,0.32,
                   BUIx.B_Widget.B_LAB_Left,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_AbsoluteRight,BUIx.B_Widget.B_FR_Right,
@@ -445,7 +445,7 @@ wDangerLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"DangerLabel",MenuText.Ge
 wDangerLabel.SetColor(238,191,0)
 wDangerLabel.SetAlpha(1.0)
 wDangerLabel.SetVisible(0)
-wDangerLabel.SetScale(FontScale["L"])
+wDangerLabel.SetScale(FontScale["M"] * 0.87)
 wEnergyBar.AddLabel(wDangerLabel,0.4,0.5,
                   BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_HRelative, BUIx.B_Widget.B_FR_HCenter,
@@ -456,7 +456,7 @@ wEnergyMaxLabel=WidgetsExtra.B_FlashTextWidget(wEnergyBar,"EnergyMaxLabel","100"
 wEnergyMaxLabel.SetColor(0,255,128)
 wEnergyMaxLabel.SetAlpha(1)
 wEnergyMaxLabel.SetVisible(1)
-wEnergyMaxLabel.SetScale(FontScale["L"])
+wEnergyMaxLabel.SetScale(FontScale["M"] * 0.87)
 wEnergyBar.AddLabel(wEnergyMaxLabel,7,0.5,
                   BUIx.B_Widget.B_LAB_Left,BUIx.B_Widget.B_LAB_VCenter,
                   BUIx.B_Widget.B_FR_AbsoluteRight, BUIx.B_Widget.B_FR_Right,
@@ -487,7 +487,7 @@ wNewObjectText=WidgetsExtra.B_FlashTextWidget(wLogFrame,"DangerLabel","el comoe'
 wNewObjectText.SetColor(255,255,255)
 wNewObjectText.SetAlpha(1.0)
 wNewObjectText.SetFlash(10)
-wNewObjectText.SetScale(FontScale["L"])
+wNewObjectText.SetScale(FontScale["M"] * 0.87)
 
 wLogFrame.AddWidget(wNewObjectText,0.5,40,
                         BUIx.B_FrameWidget.B_FR_HRelative,BUIx.B_FrameWidget.B_FR_HCenter,

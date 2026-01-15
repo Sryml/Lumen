@@ -1,5 +1,9 @@
 import Language
+import string
+import typing
 
+if typing.TYPE_CHECKING:
+   ForeingDict = {}
 
 
 if Language.Current != "English":
@@ -11,14 +15,11 @@ Language.Current=Language.Current
 
 def GetMenuText(item):
   if Language.Current!="English":
-    TrWord=item
-    try:
-      TrWord=ForeingDict[item]
-    except:
-      pass
+    TrWord = ForeingDict.get(item,None)
+    if TrWord is None:
+      TrWord = ForeingDict.get(string.lower(item),item)
     return TrWord
-  else:
-    return item
+  return item
 
 
 

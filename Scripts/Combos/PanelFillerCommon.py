@@ -83,17 +83,21 @@ def InitWidget(parent, name, text, font, elem):
 	Widget.SetColor(255,255,255)
 	Widget.SetText(MenuText.GetMenuText(text))
 
-	if Language.Current == "Chinese" and elem != "Combo" and elem != "Combo2":
-		y_scale = y_scale * 1.4
+	# if Language.Current == "Chinese" and elem != "Combo" and elem != "Combo2":
+	# 	y_scale = y_scale * 1.4
+	if string.find(font, "Title") != -1:
+		scale = 0.72
+	else:
+		scale = 0.785
 
-	Widget.SetScale(0.55 * y_scale)
+	Widget.SetScale(0.55 * y_scale * scale)
 
 	if elem == "Button":
-		Widget.SetScale(0.61 * y_scale)
+		Widget.SetScale(0.61 * y_scale * 0.7)
 	elif elem == "Combo" or elem == "Combo2":
-		Widget.SetScale(0.9 * y_scale)
+		Widget.SetScale(0.9 * y_scale * 0.7)
 	elif elem == "Title" and len(text) >= 30:
-		Widget.SetScale(0.5 * y_scale)
+		Widget.SetScale(0.5 * y_scale * scale)
 
 	return Widget
 

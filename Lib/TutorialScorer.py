@@ -93,8 +93,8 @@ def ActivateTutorialScorer(FontFile = Language.FontCommon):
 	wMultiText.SetSolid(1)
 	wMultiText.SetBackgroundAlpha(0.5)
 	wMultiText.SetBackgroundColor(0,0,0)
+	wMultiText.SetScale(Language.FontScale["L"] * 0.83)
 	wMultiText.SetAutoScale(0)
-	wMultiText.SetScale(Language.MFontScale["M"])
 
 FlashCicles = 2
 

@@ -50,7 +50,7 @@ def LabelEntity(entity,text,dx,dy):
 		text_y=(text_pos[1] * Zcreen[0]) + (Zcreen[1]/2) - (text_wh[1] / 2.0 + dy)
 		#Raster.SetTextColor(200,180,180) #Por poner uno cualquiera
 		Raster.SetPosition(text_x,text_y)
-		Raster.SetTextScale(Language.FontScale["L"], Language.FontScale["L"])
+		Raster.SetTextScale(Language.FontScale["L"] * 0.78, Language.FontScale["L"] * 0.78)
 		Raster.WriteText(text)
 
 def ShowLabelEntity(Ent):

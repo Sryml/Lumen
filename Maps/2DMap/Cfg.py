@@ -63,7 +63,7 @@ import ScorerWidgets
 import MenuText
 Bladex.AddScheduledFunc(Bladex.GetTime(),AuxFuncs.FadeFrom,(4.5, 0.0))
 InfoKeysWidget=BUIx.B_TextWidget(Scorer.wFrame,"InfoKeys","",ScorerWidgets.font_server,Language.FontTitle)
-InfoKeysWidget.SetScale(Language.FontScale["L"])
+InfoKeysWidget.SetScale(Language.FontScale["L"] * 0.83)
 InfoKeysWidget.SetAlpha(0)
 InfoKeysWidget.SetColor(249,128,0)
 InfoKeysWidget.SetText(MenuText.GetMenuText("Press Left and Right to select your next destination. Press Enter to confirm"))

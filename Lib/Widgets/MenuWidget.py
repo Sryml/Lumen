@@ -588,7 +588,7 @@ class B_MenuItemOption(B_MenuItemTextNoFX):
         B_MenuItemTextNoFX.__init__(self, Parent, MenuDescr, StackMenu)
 
         self.OptionText = self.Text
-        self.Text = self.OptionText + "< " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
+        self.Text = self.OptionText + " < " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
 
     def __del__(self):
         pass
@@ -602,21 +602,30 @@ class B_MenuItemOption(B_MenuItemTextNoFX):
             val = check_pass()
 
         if activate in (1, -1) and (val == 1):
-            self.SelOption = self.SelOption + activate
-            self.SelOption = self.SelOption % len(self.Options)
+          self.SelOption = self.SelOption + activate
+          self.SelOption = self.SelOption % len(self.Options)
 
-            self.Text = self.OptionText + "< " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
+          self.Text = self.OptionText + " < " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
 
-            command = self.MenuDescr.get("Command", lambda x: 0)
+          command = self.MenuDescr.get("Command", None)
+          if command:
             command(self.Options[self.SelOption])
+          command = self.MenuDescr.get("Command2", None)
+          if command:
+            command(self.Options[self.SelOption], self)
+
         elif activate == 0:
-            self.StackMenu.Pop()
+          self.StackMenu.Pop()
 
     def IncMenuItem(self):
         self.ActivateItem(1)
 
     def DecMenuItem(self):
         self.ActivateItem(-1)
+
+    def SetSelOption(self, option):
+      self.SelOption=option
+      self.Text = self.OptionText + " < " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
 
 
 class B_MenuSpin(SpinWidget.B_SpinWidget,B_MenuTreeItem):
@@ -695,10 +704,6 @@ class B_MenuSpin(SpinWidget.B_SpinWidget,B_MenuTreeItem):
           return 0
       return self.Focusable
 
-# -----------------------------------------
-# by Sryml: end
-# -----------------------------------------
-
 class B_MenuItemText(TextFXWidget.B_TextFXWidget,B_MenuTreeItem):
   def __init__(self,Parent,MenuDescr,StackMenu,font_server=ScorerWidgets.font_server):
     #print "B_MenuItemText.__init__()",MenuDescr["Name"]
@@ -718,6 +723,9 @@ class B_MenuItemText(TextFXWidget.B_TextFXWidget,B_MenuTreeItem):
   def __str__(self):
     print "B_MenuItemText widget with text",self.GetTextData()
 
+# -----------------------------------------
+# by Sryml: end
+# -----------------------------------------
 
 #if Bladex.GetMapType() > 0:
 #  class B_VariableFocusTextMenuItem(B_MenuItemText):
@@ -984,31 +992,29 @@ class B_MenuItemPages(BUIx.B_TextWidget,B_MenuTreeItem):
 
 
 
-BackImageBitmap = None
+BackImageBitmap = BBLib.B_BitMap24()
+BackImageBitmap.ReadFromFile("../../Data/menu_wide.jpg")
 
 class B_BackImageWidget(BUIx.B_RectWidget):
 
 	def __init__(self,Parent,MenuDescr,StackMenu):
-		global BackImageBitmap
-		if not BackImageBitmap:
-			BackImageBitmap  = BBLib.B_BitMap24()
-			BackImageBitmap.ReadFromFile("../../Data/menu_wide.jpg") # by Sryml
+		self.image = MenuDescr.get("Image", BackImageBitmap) # type: BBLib.B_BitMap24
 		self.vidw = 1
 		self.vidh = 1
 		BUIx.B_RectWidget.__init__(self,Parent,MenuDescr["Name"],self.vidw,self.vidh)
 		self.Selected=0
 		self.Solid=0
 		self.Border=0
+		self.Dimension = self.image.GetDimension()
 		self.SetDrawFunc(self.Draw)
 
 	def Draw(self,x,y,time):
 		Raster.SetPosition(0,0)
-		w, h = BackImageBitmap.GetDimension()
-		Raster.DrawImage(w, h, "RGB", "Cover", BackImageBitmap.GetData()) # by Sryml
+		Raster.DrawImage(self.Dimension[0], self.Dimension[1], "RGB", "Cover", self.image.GetData()) # by Sryml
 		self.DefDraw(x,y,time)
 
 	def FinalRelease(self):
-		BUIx.B_RectWidget.FinalRelease(self)
+		pass # BUIx.B_RectWidget.FinalRelease(self)
 
 	def AcceptsFocus(self):
 		return 0

@@ -12,6 +12,8 @@ import Lumenx
 import BBLib
 import os
 
+from Lumenx import printx, Raisex
+
 
 class FontColor:
     Focused = (252, 247, 167)
@@ -40,22 +42,26 @@ FontTitle = ""
 FontCommon = ""
 
 Current = BBLib.GetCurrentLanguage()
+# Current = "Russian"
 # Current = "Spanish"
 # Current = "English"
-Current = "Chinese"
+# Current = "Chinese"
 
 if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
-    FontTitle = "../../Data/FontTitle.bmp"
-    FontCommon = "../../Data/FontCommon.bmp"
+    FontTitle = "../../Data/FontTitleC.bmp"
+    FontCommon = "../../Data/FontCommonC.bmp"
 elif Lumenx.GetGameVersion() == Lumenx.V109_VER:
-    if Current in ("Chinese", "Russian"):
+    if Current == "English":
+        FontTitle = "../../Data/FontTitle_8bpp.fnt"
+        FontCommon = "../../Data/FontCommon_8bpp.fnt"
+    elif Current in ("Chinese", "Russian"):
         FontTitle = "../../Data/FontCommon_8bpp.fnt"
         FontCommon = "../../Data/FontCommon_8bpp.fnt"
     else:
-        FontTitle = "../../Data/FontTitle1252_8bpp.fnt"
-        FontCommon = "../../Data/FontCommon1252_8bpp.fnt"
+        FontTitle = "../../Data/FontTitle.bmp"
+        FontCommon = "../../Data/FontCommon.bmp"
 else:
-    pass
+    assert False, "Unsupported game version"
 
 
 if Current == "Chinese":

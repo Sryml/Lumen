@@ -406,7 +406,7 @@ class B_KeybListWidget(ListWidget.B_ListWidget):
     self.StatusText=BUIx.B_TextWidget(self,"Status",MenuText.GetMenuText(DefInfoText),ScorerWidgets.font_server,Language.FontTitle)
     self.StatusText.SetColor(252,247,167)
     self.StatusText.SetAlpha(1)
-    self.StatusText.SetScale(Language.FontScale["S"])
+    self.StatusText.SetScale(Language.MFontScale["S"])
     self.AddLabel(self.StatusText,0.5,25,BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_Bottom,
                   BUIx.B_Widget.B_FR_HRelative,BUIx.B_Widget.B_LAB_HCenter,
                   BUIx.B_Widget.B_FR_AbsoluteTop,BUIx.B_Widget.B_FR_Top)

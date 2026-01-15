@@ -168,16 +168,16 @@ def CreateWidgest():
 	DefTextWidget.SetAlpha(1)
 	DefTextWidget.SetColor(0,128,255)
 	DefTextWidget.SetText("Def")
-	DefTextWidget.SetScale(Language.FontScale["L"])
-	wDefFrame.AddWidget(DefTextWidget,0.5,0.5,BUIx.B_FrameWidget.B_FR_HRelative,      BUIx.B_FrameWidget.B_FR_HCenter,
+	DefTextWidget.SetScale(Language.FontScale["M"] * 0.87)
+	wDefFrame.AddWidget(DefTextWidget,0.5,0.51,BUIx.B_FrameWidget.B_FR_HRelative,      BUIx.B_FrameWidget.B_FR_HCenter,
 	                                          BUIx.B_FrameWidget.B_FR_VRelative,      BUIx.B_FrameWidget.B_FR_VCenter)
 
 	PowTextWidget=WidgetsExtra.B_FlashTextWidget(wPowFrame,"PowText","0",ScorerWidgets.font_server,Language.FontCommon)
 	PowTextWidget.SetAlpha(1)
 	PowTextWidget.SetColor(0,128,255)
 	PowTextWidget.SetText("Pow")
-	PowTextWidget.SetScale(Language.FontScale["L"])
-	wPowFrame.AddWidget(PowTextWidget,0.5,0.5,BUIx.B_FrameWidget.B_FR_HRelative,      BUIx.B_FrameWidget.B_FR_HCenter,
+	PowTextWidget.SetScale(Language.FontScale["M"] * 0.87)
+	wPowFrame.AddWidget(PowTextWidget,0.5,0.51,BUIx.B_FrameWidget.B_FR_HRelative,      BUIx.B_FrameWidget.B_FR_HCenter,
 	                                          BUIx.B_FrameWidget.B_FR_VRelative,      BUIx.B_FrameWidget.B_FR_VCenter)
 
 

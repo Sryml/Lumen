@@ -17,9 +17,10 @@ CLASSIC_VER = 0
 V109_VER = 1
 MAJOR_VER = 2
 
-
 # private database
-class __data:
+class _DATA:
+    config = {}
+    #
     game_version = 1
     current_map = ""
     current_mod = ""
@@ -45,20 +46,23 @@ def __fn():
     setattr(sys.modules["__builtin__"], "False", (1 == 0))
 
     current_dir = os.getcwd()
-    __data.lumen_root = lumen_root = os.path.relpath(__file__[:-14], current_dir)
-
-    __data.blade_root = blade_root = os.path.normpath(lumen_root + "/..")
-    __data.mod_root = mod_root = "..\\.."
-
+    _DATA.lumen_root = lumen_root = os.path.relpath(__file__[:-14], current_dir)
+    _DATA.blade_root = blade_root = os.path.normpath(lumen_root + "/..")
+    _DATA.mod_root = mod_root = "..\\.."
+    #
+    f = open(lumen_root + "/Config/Lumen.cfg")
+    _DATA.config = eval(f.read())
+    f.close()
+    #
     root_paths = []
     if mod_root == lumen_root:
-        __data.current_mod = ""
-        __data.asset_path = (lumen_root, blade_root)
+        _DATA.current_mod = ""
+        _DATA.asset_path = (lumen_root, blade_root)
     else:
-        __data.current_mod = os.path.basename(mod_root)
+        _DATA.current_mod = os.path.basename(mod_root)
         root_paths.append(mod_root)
-        __data.asset_path = (mod_root, lumen_root, blade_root)
-    # __data.current_map = os.path.basename(current_dir)
+        _DATA.asset_path = (mod_root, lumen_root, blade_root)
+    # _DATA.current_map = os.path.basename(current_dir)
 
     root_paths.append(lumen_root)
     root_paths.append(blade_root)
@@ -104,11 +108,11 @@ def __fn():
         Bladex.SetStringValue("Lumen:ServicePort", ServicePort)
     #
     if hasattr(Bladex, "SetBloom"):
-        __data.game_version = MAJOR_VER
+        _DATA.game_version = MAJOR_VER
     elif hasattr(Bladex, "TriggerEvent"):
-        __data.game_version = V109_VER
+        _DATA.game_version = V109_VER
     else:
-        __data.game_version = CLASSIC_VER
+        _DATA.game_version = CLASSIC_VER
 
 
 __fn()
@@ -210,11 +214,13 @@ class __FunctionDecorator:
         return self.RawFunc.ReadBOD(path)
 
     def ReadMMP(self, path):
-        data = globals()["__data"]
-        if path not in data.res_mmps:
-            data.res_mmps.append(path)
+        if path not in _DATA.res_mmps:
+            _DATA.res_mmps.append(path)
         path = AutomatedAssets(path)
         return self.RawFunc.ReadMMP(path)
+
+    def GetCurrentLanguage(self):
+        return _DATA.config.get("Language", "English")
 
     # BUIxc module
     def B_FontServer_CreateBFont(self, this, arg0, *args):
@@ -384,9 +390,9 @@ def AddPostloadCB(map_path, fn):
         map_path (str)\n
         fn (function)
     """
-    list_ = __data.postload_callbacks.get(map_path, [])
+    list_ = _DATA.postload_callbacks.get(map_path, [])
     list_.append(fn)
-    __data.postload_callbacks[map_path] = list_
+    _DATA.postload_callbacks[map_path] = list_
 
 
 def AddPreloadCB(map_path, fn):
@@ -396,9 +402,9 @@ def AddPreloadCB(map_path, fn):
         map_path (str)\n
         fn (function)
     """
-    list_ = __data.preload_callbacks.get(map_path, [])
+    list_ = _DATA.preload_callbacks.get(map_path, [])
     list_.append(fn)
-    __data.preload_callbacks[map_path] = list_
+    _DATA.preload_callbacks[map_path] = list_
 
 
 def AssocKey(action_name, device, key, on_press=1):
@@ -424,23 +430,23 @@ def AutomatedAssets(path, root_priority=""):
     # if string.lower(ext) in (".wav", ".mp3"):
     #     check_ext = ".ogg"
     #
-    base_path = os.path.relpath(path, __data.mod_root)
+    base_path = os.path.relpath(path, _DATA.mod_root)
     if base_path is None:
         return path
     #
     result = re.match(r"^(\.\.[/\\])*", base_path).group(0)
     # result = string.replace(result, "\\", "/")  # type: ignore
-    base_root = os.path.normpath(os.path.join(__data.mod_root, result))
+    base_root = os.path.normpath(os.path.join(_DATA.mod_root, result))
     if result:
         num = len(base_root)
-        for root in __data.asset_path:
+        for root in _DATA.asset_path:
             if len(root) >= num:
                 base_root = root
                 break
         base_path = os.path.relpath(path, base_root)
     #
     new_path = path
-    for root in (root_priority,) + __data.asset_path:
+    for root in (root_priority,) + _DATA.asset_path:
         if not root:
             continue
         # if root == base_root or os.path.commonprefix([root, base_root]) != root:
@@ -458,7 +464,7 @@ def AutomatedAssets(path, root_priority=""):
 def BodInspector():
     import BBLib
 
-    for root_dir in (__data.asset_path_model,) + __data.asset_path:
+    for root_dir in (_DATA.asset_path_model,) + _DATA.asset_path:
         if not root_dir:
             continue
         BodLink = os.path.join(root_dir, "BodLink.list")
@@ -498,6 +504,7 @@ def AutoLoadAssets(root_dir, BodLink, depth=0):
         ext = os.path.splitext(f_name)[1]
         ext = string.lower(ext)
         if ext == ".bod":
+            f_path = string.replace(f_path, "\\", "/")
             bodfile = open(f_path, "rb")
             size = struct.unpack("I", bodfile.read(4))[0]
             kind = struct.unpack("%ds" % size, bodfile.read(size))[0]
@@ -543,24 +550,24 @@ def CreateSound(file_name, sound_name):
 
 
 def GetAlphaBMPFiles():
-    return __data.res_alpha_bmps
+    return _DATA.res_alpha_bmps
 
 
 def GetBladeRoot():
     """Returns the root path of Blade"""
-    return __data.blade_root
+    return _DATA.blade_root
 
 
 def GetBMPFiles():
-    return __data.res_bmps
+    return _DATA.res_bmps
 
 
 def GetCurrentMap():
-    return __data.current_map
+    return _DATA.current_map
 
 
 def GetCurrentMod():
-    return __data.current_mod
+    return _DATA.current_mod
 
 
 def GetEntity(arg):
@@ -571,33 +578,33 @@ def GetEntity(arg):
 
 
 def GetGameVersion():
-    return __data.game_version
+    return _DATA.game_version
 
 
 def GetLumenRoot():
     """Returns the root path of Lumen"""
-    return __data.lumen_root
+    return _DATA.lumen_root
 
 
 def GetMapListPath():
-    return __data.map_list_path
+    return _DATA.map_list_path
 
 
 def GetMMPFiles():
-    return __data.res_mmps
+    return _DATA.res_mmps
 
 
 def GetModRoot():
     """Returns the root path of the current mod"""
-    return __data.mod_root
+    return _DATA.mod_root
 
 
 def GetPostloadCB(map_path):
-    return __data.postload_callbacks.get(map_path, [])
+    return _DATA.postload_callbacks.get(map_path, [])
 
 
 def GetPreloadCB(map_path):
-    return __data.preload_callbacks.get(map_path, [])
+    return _DATA.preload_callbacks.get(map_path, [])
 
 
 def GetServicePort():
@@ -632,10 +639,10 @@ def LoadLevel(map_dir, mod_dir=""):
     map_list_path = "Maps"
 
     if mod_dir:
-        mod_root = os.path.join(__data.lumen_root, ModListPath, mod_dir)
+        mod_root = os.path.join(_DATA.lumen_root, ModListPath, mod_dir)
         new_lumen_root = "..\\..\\..\\.."
     else:
-        mod_root = __data.lumen_root
+        mod_root = _DATA.lumen_root
         new_lumen_root = "..\\.."
     map_path = os.path.join(mod_root, map_list_path, map_dir)
     if not os.path.isdir(map_path):
@@ -723,15 +730,15 @@ def Raisex(exc, msg=""):
 
 
 def ReadAlphaBitMap(file_name, internal_name):
-    if __data.res_alpha_bmps.get(internal_name) is None:
-        __data.res_alpha_bmps[internal_name] = file_name
+    if _DATA.res_alpha_bmps.get(internal_name) is None:
+        _DATA.res_alpha_bmps[internal_name] = file_name
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadAlphaBitMap(file_name, internal_name)
 
 
 def ReadBitMap(file_name, internal_name):
-    if __data.res_bmps.get(internal_name) is None:
-        __data.res_bmps[internal_name] = file_name
+    if _DATA.res_bmps.get(internal_name) is None:
+        _DATA.res_bmps[internal_name] = file_name
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadBitMap(file_name, internal_name)
 
@@ -759,14 +766,14 @@ def ReadLevel(file_name):
             key, val = lst
             if key != "GammaC":
                 if key in ("Bitmaps", "WorldDome"):
-                    if val not in __data.res_mmps:
-                        __data.res_mmps.append(val)
+                    if val not in _DATA.res_mmps:
+                        _DATA.res_mmps.append(val)
                 #
                 val = os.path.relpath(AutomatedAssets(val), current_dir)
             new_lines.append("%s -> %s\n" % (key, val))
     #
     lvl_name = "7c3460c1-cc3c-5b9e-a038-1ff69ff753c9"  # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:ReadLevel")
-    lvl_path = os.path.join(__data.lumen_root, lvl_name)
+    lvl_path = os.path.join(_DATA.lumen_root, lvl_name)
     f = open(lvl_path, "wt")
     f.writelines(new_lines)
     f.close()
@@ -821,16 +828,16 @@ def RemoveInputAction(action_name):
 
 
 def SetBladeRoot(path):
-    __data.blade_root = path
+    _DATA.blade_root = path
 
 
 def SetCurrentMap(map_dir):
-    __data.current_map = map_dir
+    _DATA.current_map = map_dir
     return Bladex_raw.SetCurrentMap(map_dir)
 
 
 def SetCurrentMod(mod_dir):
-    __data.current_mod = mod_dir
+    _DATA.current_mod = mod_dir
 
 
 def SetGhostSectorGroupSound(
@@ -872,15 +879,15 @@ def SetGhostSectorSound(
 
 
 def SetLumenRoot(path):
-    __data.lumen_root = path
+    _DATA.lumen_root = path
 
 
 def SetMapListPath(path):
-    __data.map_list_path = path
+    _DATA.map_list_path = path
 
 
 def SetModRoot(path):
-    __data.mod_root = path
+    _DATA.mod_root = path
 
 
 ######### Function End
@@ -901,6 +908,7 @@ for obj, name in (
     (BBLibc, "B_BitMap24_ReadFromFile"),
     (BBLibc, "ReadBOD"),
     (BBLibc, "ReadMMP"),
+    (BBLibc, "GetCurrentLanguage"),
     (BUIxc, "B_FontServer_CreateBFont"),
     (BUIxc, "new_B_TextWidget"),
     (BUIxc, "new_B_BitmapWidget"),
@@ -913,8 +921,13 @@ SetCurrentMap(os.path.basename(os.getcwd()))
 # Clean up
 del __fn, __bladex_decorators, obj, name
 
-#########
 
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
 
 """
 AddBoundFunc
