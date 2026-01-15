@@ -17,9 +17,14 @@ CLASSIC_VER = 0
 V109_VER = 1
 MAJOR_VER = 2
 
+
 # private database
 class _DATA:
     config = {}
+    config_default = {
+        "Language": "English",
+        "Cache": "Disabled",
+    }
     #
     game_version = 1
     current_map = ""
@@ -53,6 +58,10 @@ def __fn():
     f = open(lumen_root + "/Config/Lumen.cfg")
     _DATA.config = eval(f.read())
     f.close()
+    for k in _DATA.config_default.keys():
+        if not _DATA.config.has_key(k):
+            _DATA.config[k] = copy.deepcopy(_DATA.config_default[k])
+
     #
     root_paths = []
     if mod_root == lumen_root:
@@ -146,6 +155,8 @@ import imp
 import re
 import typing
 import struct
+import copy
+import pprint
 
 #
 import Bladex
@@ -220,7 +231,7 @@ class __FunctionDecorator:
         return self.RawFunc.ReadMMP(path)
 
     def GetCurrentLanguage(self):
-        return _DATA.config.get("Language", "English")
+        return _DATA.config["Language"]
 
     # BUIxc module
     def B_FontServer_CreateBFont(self, this, arg0, *args):
@@ -258,6 +269,7 @@ __bladex_decorators = [
     "GetCurrentMap",
     "GetEntity",
     "GetTimeActionHeld",
+    "LoadAnmRaceData",
     "LoadLevel",
     "LoadSampledAnimation",
     "LoadWorld",
@@ -266,6 +278,7 @@ __bladex_decorators = [
     "ReadLevel",
     "RemoveBoundFunc",
     "RemoveInputAction",
+    "SaveAnmRaceData",
     "SetCurrentMap",
     "SetGhostSectorGroupSound",
     "SetGhostSectorSound",
@@ -562,6 +575,10 @@ def GetBMPFiles():
     return _DATA.res_bmps
 
 
+def GetConfig():
+    return _DATA.config
+
+
 def GetCurrentMap():
     return _DATA.current_map
 
@@ -618,6 +635,16 @@ def GetTimeActionHeld(action_name):
         BInput.GetInputManager().GetInputActions().ID, action_name
     )
     return Bladex_raw.GetTimeActionHeld(action_name)  # type: ignore
+
+
+def IsCacheEnabled():
+    return _DATA.config["Cache"] == "Enabled"
+
+
+def LoadAnmRaceData(file_name):
+    if IsCacheEnabled():
+        return Bladex_raw.LoadAnmRaceData(file_name)
+    return 0
 
 
 def LoadComponent(comps):
@@ -827,6 +854,20 @@ def RemoveInputAction(action_name):
     return 1
 
 
+def SaveAnmRaceData(file_name, race):
+    if IsCacheEnabled():
+        return Bladex_raw.SaveAnmRaceData(file_name, race)
+
+
+def SaveConfig(config):
+    _DATA.config = copy.deepcopy(config)
+    pp = pprint.PrettyPrinter(indent=4)
+    f = open(_DATA.lumen_root + "/Config/Lumen.cfg", "wt")
+    f.write(pp.pformat(config))
+    f.close()
+    printx("Lumen: Config saved.")
+
+
 def SetBladeRoot(path):
     _DATA.blade_root = path
 
@@ -948,6 +989,7 @@ CreateSound
 GetAlphaBMPFiles
 GetBladeRoot
 GetBMPFiles
+GetConfig
 GetCurrentMap
 GetCurrentMod
 GetEntity
@@ -960,6 +1002,8 @@ GetPostloadCB
 GetPreloadCB
 GetServicePort
 GetTimeActionHeld
+IsCacheEnabled
+LoadAnmRaceData
 LoadComponent
 LoadLevel
 LoadSampledAnimation
@@ -971,6 +1015,8 @@ ReadBitMap
 ReadLevel
 RemoveBoundFunc
 RemoveInputAction
+SaveAnmRaceData
+SaveConfig
 SetBladeRoot
 SetCurrentMap
 SetCurrentMod

@@ -33,7 +33,7 @@ Bladex.CloseDebugChannel("DefaultChannel")
 if not os.path.exists("../../AnmPak"):
     os.mkdir("../../AnmPak")
 #
-import MODLoader
+import BODLoader
 
 
 Lumenx.printx("Executed sys_init.py")

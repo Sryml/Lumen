@@ -48,6 +48,7 @@ FontColor = Language.FontColor
 global isQuitting
 isQuitting = 0
 
+NoteOptionY = 1 - 0.24
 BackButtonY = 1 - 0.208 # 100
 BackGamepadButtonY = 1 - 0.146 # 70
 AcceptBackY = 1 - 0.083 # 40
@@ -94,12 +95,18 @@ class MenuStack(Stack):
       Bladex.SetAppMode("Menu")
     Bladex.SetRootWidget(menu_item.GetPointer())
     Stack.Push(self,menu_item)
+    menu_item.Menudesc.get("OnEnter", lambda x: 0)(self) # by Sryml
     #print "RefCount (pushed)",sys.getrefcount(menu_item)
 
   def Pop(self):
     if isQuitting:
       Bladex.Quit()
     #print "MenuStack.Popping",self.Top(),"with refcount",sys.getrefcount(self.Top())
+    # by Sryml
+    s=self.Top()
+    if s:
+      self.Top().Menudesc.get("OnLeave", lambda x: 0)(self)
+    #
     Stack.Pop(self)
     s=self.Top()
     if s:
@@ -253,17 +260,15 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
                 B_FrameWidget.B_FR_Top,
             )
         else:
-            if (
-                sep == Menu.BackOptionVSep
-                or sep == Menu.BackGamepadOptionVSep
-                or sep == Menu.GamepadButtonVSep
-            ):
+            if sep in (Menu.BackOptionVSep, Menu.BackGamepadOptionVSep, Menu.GamepadButtonVSep, Menu.NoteOptionVSep):
                 YPos = BackButtonY
                 if sep == Menu.BackGamepadOptionVSep:
                     YPos = BackGamepadButtonY
                 elif sep == Menu.GamepadButtonVSep:
                     YPos = AcceptBackY
                     menu_element.SetScale(0.7)
+                elif sep == Menu.NoteOptionVSep:
+                    YPos = NoteOptionY
                 self.AddWidget(  # type: ignore
                     menu_element,
                     HPos,
@@ -377,7 +382,7 @@ class B_MenuTreeItem:
       # by Sryml
       l_dscr = self.MenuDescr.get("ListDescr", [])
       if l_dscr == []:
-          printx("l_dscr == []")
+          # printx("l_dscr == []")
           return None
 
       frame_class = self.MenuDescr.get("FrameKind", B_MenuTree)
@@ -468,8 +473,6 @@ class B_MenuTree(B_MenuFrameWidget):
         else:
             self.SetFocus_Idx(ValidIndex)
 
-        Menudesc.get("CallBackFunc", lambda x: 0)(self)
-
     def __del__(self):
         # print "B_MenuTree.__del__()"
         B_MenuFrameWidget.__del__(self)
@@ -544,20 +547,23 @@ class B_MenuItemTextNoFX(B_TextWidget, B_MenuTreeItem):
         if activate == 1:
             if not self.AcceptsFocus():
                 return 0
-            self.MenuDescr.get("Command_Force", lambda x: 0)(self)
+            self.MenuDescr.get("Command", lambda x: 0)(self)
             NewFrame = self.CreateFrame()
             if NewFrame:
                 self.StackMenu.Push(NewFrame)
-                return 1
-            else:
-                command = self.MenuDescr.get("Command")
-                if command:
-                    command(self)
-                    return 1
-                return 0
+            return 1
+            # else:
+                # command = self.MenuDescr.get("Command")
+                # if command:
+                #     command(self)
+                #     return 1
+                # return 0
         elif activate == 0:
             w = self.StackMenu.Top()
-            hasattr(w, "FinalRelease") and w.FinalRelease()
+            try:
+                w.FinalRelease()
+            except:
+                pass
             self.StackMenu.Pop()
 
     def AcceptsFocus(self):
@@ -582,8 +588,16 @@ class B_MenuItemOption(B_MenuItemTextNoFX):
     def __init__(
         self, Parent, MenuDescr, StackMenu, font_server=ScorerWidgets.font_server
     ):
-        self.Options = MenuDescr.get("Options", ["No option defined"])
-        self.SelOption = MenuDescr.get("SelOptionFunc", lambda: 0)()
+        self.Options = MenuDescr.get("Options")
+        if not self.Options:
+            self.Options = ["No option defined"]
+
+        SelOption = MenuDescr.get("SelOptionFunc")
+        if SelOption is not None:
+          self.SelOption = SelOption()
+        else:
+          SelOption = MenuDescr.get("SelOptionFunc2", lambda x: 0)
+          self.SelOption = SelOption(self)
 
         B_MenuItemTextNoFX.__init__(self, Parent, MenuDescr, StackMenu)
 

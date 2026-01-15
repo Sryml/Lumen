@@ -60,6 +60,7 @@ MenuFontBig=Language.FontTitle
 GamepadButtonVSep = -1400
 BackOptionVSep = -1000
 BackGamepadOptionVSep = -1250
+NoteOptionVSep = -1100 # Added by Sryml
 
 Character = -1
 
@@ -2690,21 +2691,27 @@ def BackMap():
 # Xample by Dario and co
 #    Menu.GetMenuItem(['Game','Save Current'])["Kind"] = MenuWidget.B_MenuItemTextNoFocus
 #    Menu.GetMenuItem(['Options','Game Options','Gore','Password:'])
-def GetMenuItem(way):
+def GetMenuItem(way, tr=1):
 	global Desc1
 
 	idx          = 0
 	continueflag = 1
 	MenuLevel    = Desc1
-	ReturnValue  = 1
+	ReturnValue  = {}
 
 	while(continueflag):
 		continueflag = 0
+		# by Sryml
+		if tr:
+			name = MenuText.GetMenuText(way[idx])
+		else:
+			name = way[idx]
+    #
 		for val in MenuLevel["ListDescr"]:
 			if val.has_key("Name"):
 				#print "see",val["Name"]
 
-				if MenuText.GetMenuText(way[idx]) == val["Name"]:
+				if name == val["Name"]:
 					idx = idx + 1
 					if len(way)==idx:
 						ReturnValue = val
