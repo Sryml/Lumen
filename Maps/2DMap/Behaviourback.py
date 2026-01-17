@@ -39,8 +39,9 @@ font_behaviour=font_server_behaviour.CreateBFont(Language.FontTitle)
 #------- LABEL SHOWING-------------
 def LabelEntity(entity,text,dx,dy):
 	if entity:
+		scale = Language.FontScale["L"] * 0.78
 		Zcreen=Raster.GetSize()
-		text_wh=(font_behaviour.GetTextWidth(text),font_behaviour.GetHeight("H"))
+		text_wh=(font_behaviour.GetTextWidth(text)*scale,font_behaviour.GetHeight("H")*scale)
 		# FIXME: Due to some reason this is not working, re-enalbel next line later.
 		Raster.SetFont(font_behaviour.GetPointer())
 		text_pos=Bladex.GetScreenXY(entity.Rel2AbsPoint(0.0,0.0,0.0))
@@ -48,7 +49,7 @@ def LabelEntity(entity,text,dx,dy):
 		text_y=(text_pos[1] * Zcreen[0]) + (Zcreen[1]/2) - (text_wh[1] / 2.0 + dy)
 		#Raster.SetTextColor(200,180,180) #Por poner uno cualquiera
 		Raster.SetPosition(text_x,text_y)
-		Raster.SetTextScale(Language.FontScale["L"] * 0.78, Language.FontScale["L"] * 0.78)
+		Raster.SetTextScale(scale, scale)
 		Raster.WriteText(text)
 
 def ShowLabelEntity(Ent):
