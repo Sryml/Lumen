@@ -27,11 +27,7 @@ class B_ImageListWidget(BUIx.B_RectWidget):
 		global CharList
 
 		imagelist=MenuDescr["ImageList"]
-		self.MaxHeight = None
-		try:
-			self.MaxHeight = MenuDescr["MaxHeight"]
-		except:
-			pass
+		self.MaxHeight = MenuDescr.get("MaxHeight") #
 		self.Bitmap={}
 		self.IDX = imagelist[0][0]
 
@@ -40,14 +36,20 @@ class B_ImageListWidget(BUIx.B_RectWidget):
 			bitm.ReadFromBMP(i[1])
 			self.Bitmap[i[0]] = bitm
 
-		self.vidw,self.vidh=self.Bitmap[self.IDX].GetDimension()
-		BUIx.B_RectWidget.__init__(self,Parent,MenuDescr["Name"],self.vidw,self.vidh)
+		vidw,vidh=self.Bitmap[self.IDX].GetDimension()
+		if self.MaxHeight is not None:
+			vidw = (float(vidw)/float(vidh))*self.MaxHeight
+			vidh = self.MaxHeight
+		BUIx.B_RectWidget.__init__(self,Parent,MenuDescr["Name"],vidw,vidh)
 		self.Selected=0
 		self.Solid=0
 		self.Border=0
 		self.SetDrawFunc(self.Draw)
 		CharList = self
-		self.IDX         = MenuDescr["GetCharType"]()
+		#
+		GetCharType = MenuDescr.get("GetCharType")
+		if GetCharType:
+			self.IDX = GetCharType()
 
 
 	def ChangeImage(self,name):
@@ -60,7 +62,7 @@ class B_ImageListWidget(BUIx.B_RectWidget):
 			Raster.DrawImage(self.vidw,self.vidh,"BGR","Normal",self.Bitmap[self.IDX].GetData());
 		else:
 			NewWidth = (float(self.vidw)/float(self.vidh))*self.MaxHeight
-			Raster.SetPosition(x+(self.vidw - NewWidth)/2,y)
+			# Raster.SetPosition(x+(self.vidw - NewWidth)/2,y)
 			Raster.DrawResizeImage(self.vidw,self.vidh,"BGR","Normal",self.Bitmap[self.IDX].GetData(), NewWidth, self.MaxHeight)
 			self.DefDraw(x,y,time)
 

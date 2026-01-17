@@ -708,22 +708,24 @@ class WorldState:
         self.EntitiesState.GetState()
         self.MapState.GetState()
 
-    def SaveState(self,filename):
+    def SaveState(self,path):
         print "[SAVE STARTED]"
-        if(self.SaveLState(filename)==0):
-            print "[SAVE FAILED]: "+filename
-            Bladex.ShowCriticalWarning("SaveWarning","failed to save"+filename);
+        if(self.SaveLState(path)==0):
+            print "[SAVE FAILED]: "+path
+            Bladex.ShowCriticalWarning("SaveWarning","failed to save"+path);
             return
 
         print "[SAVE COMPLETED]"
 
-    def SaveLState(self,filename):
+    def SaveLState(self,aux_dir):
         import os
+        import SaveGame
          
-        aux_dir=(os.path.splitext(filename)[0])+"_files"
+        saveNumber = string.split(os.path.basename(aux_dir), "_")[0][8:]
+        save_root = os.path.dirname(aux_dir)
 
-        tempfilename = "../../Save/Temp.py"
-        temp_dir = "../../Save/SaveGame_Temp/"
+        temp_dir = save_root + "/SaveGame_Temp"
+        filename = temp_dir + "/SaveGame%s.py" % (saveNumber,)
         
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
@@ -739,11 +741,13 @@ class WorldState:
 ##        self.SaveFunctions(temp_dir)
         try:
             file_data_aux=open("%s/%saux"%(temp_dir,"aux"),"wt")
-        except OSError:
+        except:
             print "Could not open"+("%s/%saux"%(temp_dir,"aux"),"wt")
             return 0
 
          # by Sryml
+        file_data_aux.write("LUMEN FLAG: # Do not modify\n")
+        file_data_aux.write(SaveGame.GetSaveDesc()+"\n")
         file_data_aux.write(Lumenx.GetCurrentMap()+"\n")
         file_data_aux.write(Lumenx.GetCurrentMod()+"\n")
         #
@@ -751,9 +755,9 @@ class WorldState:
 
         # Ahora genero el script que al ejecutarse regenera el mundo
         try:
-            file=open(tempfilename,"wt")
-        except OSError:
-            print "Could not open"+tempfilename
+            file=open(filename,"wt")
+        except:
+            print "Could not open "+filename
             return 0
             
 
@@ -786,7 +790,7 @@ class WorldState:
         file.write('Bladex.PauseSoundSystem()\n')
 
         file.write('Bladex.BeginLoadGame()\n')
-        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ","%s")\n'%(Bladex.nEntities()/5,"../../Data/Menu/Save/"+Language.Current+"/Cargando_hi.jpg"))
+        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/5,'"../../Data/Menu/Save/" + Language.Current + "/Cargando_hi.jpg"')) # by Sryml
         file.write('GameStateAux.aux_dir="%s"\n'%(aux_dir,))
 
         # by Sryml
@@ -1155,36 +1159,37 @@ class WorldState:
         file.close()
 
         #Move temp file
-        saveNumber = filename[len(filename)-4]
-        imageTempPath = "../../Save/Temp.BMP"
-        svTempPath = "../../Save/Temp.sv"
-        if os.path.isfile(svTempPath)==0:
-            print "Sv file "+svTempPath +" doesn't exist"
-            return 0
+        imageTempPath = save_root + "/Temp.BMP"
+        imagePath = aux_dir + "/Screenshot.BMP"
+        # svTempPath = "../../Save/Temp.sv"
+        # if os.path.isfile(svTempPath)==0:
+        #     print "Sv file "+svTempPath +" doesn't exist"
+        #     return 0
         if os.path.isfile(imageTempPath)==0:
             print "Image "+imageTempPath +" doesn't exist"
             return 0
 
 
         print "Removing Old folder"
-        imagePath = "../../Save/"+str(saveNumber)+".BMP"
-        svPath = "../../Save/"+str(saveNumber)+".sv"
+        oldFilename = "../../Save/SaveGame%s.py" % saveNumber
+        oldImagePath = "../../Save/%s.BMP" % saveNumber
+        oldSvPath = "../../Save/%s.sv" % saveNumber
         if os.path.isdir(aux_dir)==1:
             shutil.rmtree(aux_dir)
-        if os.path.isfile(filename)==1:
-            os.remove(filename)
-        if os.path.isfile(imagePath)==1:
-            os.remove(imagePath)
-        if os.path.isfile(svPath)==1:
-            os.remove(svPath)
+        if os.path.isfile(oldFilename)==1:
+            os.remove(oldFilename)
+        if os.path.isfile(oldImagePath)==1:
+            os.remove(oldImagePath)
+        if os.path.isfile(oldSvPath)==1:
+            os.remove(oldSvPath)
         print "Removed Old folder"
 
         os.rename(temp_dir, aux_dir)
         print filename
-        os.rename(tempfilename,filename)
+        # os.rename(tempfilename,filename)
  
         os.rename(imageTempPath,imagePath)
-        os.rename(svTempPath, svPath)
+        # os.rename(svTempPath, svPath)
         return 1
 
 
@@ -1207,7 +1212,7 @@ class WorldState:
         filename="%s/%s.dat"%(temp_dir,"Globs")
         try:
             globfile=open(filename,"wt")
-        except OSError:
+        except:
             print "failed to open "+filename
             return 0
             

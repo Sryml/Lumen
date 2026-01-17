@@ -95,7 +95,7 @@ class MenuStack(Stack):
       Bladex.SetAppMode("Menu")
     Bladex.SetRootWidget(menu_item.GetPointer())
     Stack.Push(self,menu_item)
-    menu_item.Menudesc.get("OnEnter", lambda x: 0)(self) # by Sryml
+    menu_item.Menudesc.get("OnEnter", lambda x: 0)(menu_item) # by Sryml
     #print "RefCount (pushed)",sys.getrefcount(menu_item)
 
   def Pop(self):
@@ -105,7 +105,7 @@ class MenuStack(Stack):
     # by Sryml
     s=self.Top()
     if s:
-      self.Top().Menudesc.get("OnLeave", lambda x: 0)(self)
+      s.Menudesc.get("OnLeave", lambda x: 0)(s)
     #
     Stack.Pop(self)
     s=self.Top()
@@ -151,7 +151,7 @@ class B_MenuFocusManager:
       if menu_element==old_foc:
         return 1
       if old_foc:
-      	old_foc.SetHasFocus(0)
+        old_foc.SetHasFocus(0)
       menu_element.SetHasFocus(1)
       self.Focus=menu_element
       return 1
@@ -164,6 +164,8 @@ class B_MenuFocusManager:
     try:
       menu_element=self.MenuItems[menu_element_idx]
       self.SetFocus(menu_element)
+      if menu_element.FocusCallBack:
+        menu_element.FocusCallBack(menu_element) # Added by Sryml
     except:
       print "Error setting focus to index",menu_element_idx
 
@@ -176,10 +178,8 @@ class B_MenuFocusManager:
       list=self.MenuItems[index+1:]+self.MenuItems[:index]
       for i in list:
         if self.SetFocus(i):
-          try:
-          	i.FocusCallBack(i)
-          except AttributeError:
-          	pass
+          if i.FocusCallBack: # by Sryml
+            i.FocusCallBack(i)
           return
     except:
       print "B_MenuFocusManager::NextFocus() -> Exception ocurred."
@@ -200,10 +200,8 @@ class B_MenuFocusManager:
 
       for i in list:
         if self.SetFocus(i):
-          try:
-          	i.FocusCallBack(i)
-          except AttributeError:
-          	pass
+          if i.FocusCallBack: # by Sryml
+            i.FocusCallBack(i)
           return
 
     except:
@@ -328,10 +326,7 @@ class B_MenuTreeItem:
     self.SetAlpha(0.5)
     self.StackMenu=StackMenu
     self.MenuDescr=MenuDescr
-    try:
-    	self.FocusCallBack = MenuDescr["FocusCallBack"]
-    except:
-    	pass
+    self.FocusCallBack = MenuDescr.get("FocusCallBack") # by Sryml
 
   def __del__(self):
     #print "MenuTreeItem.__del__()"
@@ -500,10 +495,7 @@ class B_MenuItemTextNoFX(B_TextWidget, B_MenuTreeItem):
         self.SetCanvas(Parent.GetSize())
         B_MenuTreeItem.__init__(self, MenuDescr, StackMenu)  # type: ignore
 
-        if self.ScaleFrame:
-            self.Parent = self.ScaleFrame
-        else:
-            self.Parent = Parent
+        self.Parent = Parent
 
         self.SetAlpha(self.Alpha)
         self.SetVisible(isVisible)
@@ -539,7 +531,10 @@ class B_MenuItemTextNoFX(B_TextWidget, B_MenuTreeItem):
 
         if self.GetTextData() != self.Text:
             self.SetText(self.Text)
-            self.Parent.RecalcLayout()
+            if self.ScaleFrame:
+                self.ScaleFrame.RecalcLayout()
+            else:
+                self.Parent.RecalcLayout()
         else:
             self.DefDraw(x, y, time)
 

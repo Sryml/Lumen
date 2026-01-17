@@ -1305,9 +1305,9 @@ def ActivateMenu(caller_id = None):
 
     InputManager=BInput.GetInputManager()
     InputManager.SetInputActionsSet("Menu")
-    if Reference.DEMO_MODE==0:
-        if netgame.GetNetState() == 0:
-           SaveGame.CreateSaveMenu()
+    # if Reference.DEMO_MODE==0:
+    #     if netgame.GetNetState() == 0:
+    #        SaveGame.CreateSaveMenu()
 
     #print "Reference count _MainMenu.wMenu: (fin de ActivateMenu())",sys.getrefcount(_MainMenu.wMenu)
     #Bladex.SetAppMode("Menu")
@@ -2453,6 +2453,7 @@ else:
                         "Font":MenuFontBig,
                         "VSep":100,
                         "Size":(640,480),
+                        "OnEnter": SaveGame.CreateSLMenu,
                         "ListDescr":[{
                                        "Name":MenuText.GetMenuText("START NEW GAME"),
                                        "Size":(640,480),
@@ -2460,9 +2461,11 @@ else:
                                        "VSep":100,
                                        "Command":LoadPlayerSelect
                                       },
-                                      {"Name":MenuText.GetMenuText("SAVE GAME"),
+                                      {
+                                       "Name":"SAVE GAME",
+                                       "Text":MenuText.GetMenuText("SAVE GAME"),
                                        "Font":MenuFontBig,
-                                       "Size":(640,480),
+                                      #  "Size":(640,480),
                                        #"Kind":MenuWidget.B_VariableFocusTextMenuItem,
                                        #"Command":SaveGame1
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Savegame Slot 1:"),
@@ -2490,9 +2493,11 @@ else:
                                                      }
                                                    ]
                                       },
-                                      {"Name":MenuText.GetMenuText("LOAD GAME"),
+                                      {
+                                       "Name":"LOAD GAME",
+                                       "Text":MenuText.GetMenuText("LOAD GAME"),
                                        "Font":MenuFontBig,
-                                       "Size":(640,480),
+                                      #  "Size":(640,480),
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Load Game at Slot 1:"),
                                                       "Font":MenuFontBig,
                                                       "VSep"     : 200,
@@ -2762,10 +2767,10 @@ def InitMenuKeys():
         GetMenuItem(['CREDITS'])["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus
         del GetMenuItem(['CREDITS'])["ListDescr"] #xq tienen submenus
 
-        GetMenuItem(['GAME','SAVE GAME'])["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus
+        GetMenuItem(['GAME','SAVE GAME'])["Focusable"] = 0
         del GetMenuItem(['GAME','SAVE GAME'])["ListDescr"] #xq tienen submenus
 
-        GetMenuItem(['GAME','LOAD GAME'])["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus
+        GetMenuItem(['GAME','LOAD GAME'])["Focusable"] = 0
         del GetMenuItem(['GAME','LOAD GAME'])["ListDescr"] #xq tienen submenus
 
         # GetMenuItem(['GAME','ARENA'])["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus

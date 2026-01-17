@@ -38,7 +38,7 @@ if ContinueLoad:
 	
 	Scorer.SetVisible(0)
 	Bladex.SetListenerPosition(2)
-	Menu.GetMenuItem(['GAME','SAVE GAME'])["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus
+	Menu.GetMenuItem(['GAME','SAVE GAME'])["Focusable"] = 0
 	Menu.GetMenuItem(['GAME','START NEW GAME'])["Name"] = MenuText.GetMenuText("START GAME")
 	Menu.ActivateMenu()
 	

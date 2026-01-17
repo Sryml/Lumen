@@ -100,6 +100,8 @@ ForeingDict = {
     "cache": "缓存",
     "basic clone": "基础克隆",
     "Note: Current changes are not saved and will be saved when exiting this menu.": "注意：当前更改尚未保存，离开此菜单时将自动保存。",
+    "Restarting can revive this save!": "重新开始可以复活该存档！",
+    "Current Selection": "当前选择",
     # Blade Arena
     "dives into the lava": "坠入熔岩",
     "flies too high": "飞的太高了",
