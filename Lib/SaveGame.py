@@ -183,7 +183,7 @@ def FocusOnBitmap(menu_class=0, parametro=0):
 
     clave = menu_class.MenuDescr["Clave"]
     netwidgets.ChangePlayer(clave)
-    label = Menu.GetMenuWidget("Current Selection", menu_class.Parent)
+    label = Menu.GetMenuWidget("Current Selection", menu_class.Parent)[0]
     if label:
         label.Text = MenuText.GetMenuText("Current Selection") + ": " + clave
 
@@ -211,7 +211,7 @@ def GetSaveDesc():
     if string.upper(kind[-2:]) == "_N":
         kind = kind[:-2]
     cadtime = time.strftime(DATE_FORMAT, time.localtime(time.time()))
-    mapname = Lumenx.GetCurrentMap()
+    map_name = Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod())
     #
     Reference.TimesSaved = Reference.TimesSaved + 1
     nMaps = 1
@@ -225,9 +225,9 @@ def GetSaveDesc():
         DisgustingMessage = SaveCounter[vismap]
     #
     ret = (
-        'MenuText.GetMenuText(GameText.MapDescriptor(%s)) + " - Lv.%d " + MenuText.GetMenuText(%s) + " - %s - %d " + (MenuText.GetMenuText(%s))'
+        'MenuText.GetMenuText(%s) + " - Lv.%d " + MenuText.GetMenuText(%s) + " - %s - %d " + (MenuText.GetMenuText(%s))'
         % (
-            repr(mapname),
+            repr(map_name),
             char.Level + 1,
             repr(kind),
             cadtime,
@@ -242,16 +242,18 @@ def CreateSLMenu(menu_class):
     import GameText
     import Menu
 
-    SaveMenu = Menu.GetMenuWidget("SAVE GAME", menu_class)
-    LoadMenu = Menu.GetMenuWidget("LOAD GAME", menu_class)
+    SaveMenu = Menu.GetMenuWidget("SAVE GAME", menu_class)[0]
+    LoadMenu = Menu.GetMenuWidget("LOAD GAME", menu_class)[0]
     if not (SaveMenu and LoadMenu):
         return
     #
     revive_descr = MenuText.GetMenuText("Restarting can revive this save!")
     SaveBitmaps = [("0", EMPTY_IMAGE, EMPTY_SLOT)]
-    mod = menu_class.Menudesc.get("Mod", "")
+    mod_dir = menu_class.Menudesc.get("Mod", "")
+    current_map = Lumenx.GetCurrentMap()
+    current_mod = Lumenx.GetCurrentMod()
     #
-    save_root = os.path.join(Lumenx.GetLumenRoot(), mod, "Save")
+    save_root = os.path.join(Lumenx.GetLumenRoot(), mod_dir, "Save")
     if not os.path.exists(save_root):
         os.mkdir(save_root)
     #
@@ -275,13 +277,12 @@ def CreateSLMenu(menu_class):
     LoadListDescr = [SaveListDescr[0].copy(), SaveListDescr[1].copy()]
     LoadListDescr[0]["Text"] = MenuText.GetMenuText("LOAD GAME")
     # LoadListDescr[1]["GetCharType"] = GetLoadGameImage
+    map_name = Lumenx.GetMapListItem(current_map, current_mod)
     LoadListDescr.append(
         {
             "Name": "Restart",
-            "Text": MenuText.GetMenuText("Restart")
-            + ' "'
-            + GameText.MapDescriptor(Bladex.GetCurrentMap())
-            + '"',
+            "Text": "%s %s"
+            % (MenuText.GetMenuText("Restart"), MenuText.GetMenuText(map_name)),
             "VSep": "0.4em",
             "Clave": "0",
             "FocusCallBack": FocusOnBitmap,
@@ -290,8 +291,15 @@ def CreateSLMenu(menu_class):
         }
     )
     #
+    lasttime = 0
+    firstime = 10000000000000.0
+    first_empty_slot = -1
+    save_item_focus = 2
+    load_item_focus = 3
     save_count = 0
+
     for slot_num in range(1, 13):
+        save_exists = 0
         need_revive = 0
         restartable = 0
         map_dir = ""
@@ -316,7 +324,7 @@ def CreateSLMenu(menu_class):
             else:
                 map_dir = string.strip(lines[0])
             #
-            if not os.path.isfile(save_file) and mod == "":
+            if not os.path.isfile(save_file) and mod_dir == "":
                 # compatible saves
                 need_revive = 1
                 save_file = os.path.join(save_root, filename)  # classic save
@@ -344,14 +352,26 @@ def CreateSLMenu(menu_class):
                     restartable = 1
                 #
                 if not need_revive:
-                    save_count = save_count + 1
+                    save_exists = 1
                     slot_name = eval(string.strip(lines[1]))
                     screenshot = os.path.join(save_dir, "Screenshot.BMP")
                     if not os.path.isfile(screenshot):
                         screenshot = EMPTY_IMAGE
                 elif restartable:
-                    save_count = save_count + 1
+                    save_exists = 1
                     slot_name = "[%s]" % revive_descr
+            #
+            if save_exists:
+                save_count = save_count + 1
+                filetime = os.stat(aux_file)[stat.ST_MTIME]
+                if lasttime < filetime:
+                    lasttime = filetime
+                    load_item_focus = slot_num + 2
+                if firstime > filetime:
+                    firstime = filetime
+                    save_item_focus = slot_num + 1
+        if not save_exists and first_empty_slot == -1:
+            first_empty_slot = slot_num + 1
         # ----------------------------------
         clave = str(slot_num)
         SaveBitmaps.append((clave, screenshot, slot_name))
@@ -409,7 +429,7 @@ def CreateSLMenu(menu_class):
         if slot_num == 1:
             save_val["VSep"] = "0.8em"
             load_val["VSep"] = "0.8em"
-        if slot_name == EMPTY_SLOT:
+        if not save_exists:
             del save_val["ListDescr"]
             save_val["Command"] = SaveGameToDisk
             #
@@ -423,6 +443,8 @@ def CreateSLMenu(menu_class):
         LoadListDescr.append(load_val)
 
     # ----------------------------------
+    if first_empty_slot != -1:
+        save_item_focus = first_empty_slot
     label = {
         "Name": "Current Selection",
         "Text": MenuText.GetMenuText("Current Selection"),
@@ -437,18 +459,23 @@ def CreateSLMenu(menu_class):
     LoadListDescr.append(Menu.BackOption)
     LoadListDescr.append({"Name": "Back", "Kind": MenuWidget.B_BackBlank})
 
-    if Bladex.GetEntity("Player1").Life <= 0:
+    if (
+        Bladex.GetEntity("Player1").Life <= 0
+        or (not map_name)
+        or current_mod != mod_dir
+    ):
         SaveMenu.Focusable = 0
     else:
         SaveMenu.MenuDescr["ListDescr"] = SaveListDescr
+        SaveMenu.MenuDescr["iFocus"] = save_item_focus
     if save_count == 0:
         LoadMenu.Focusable = 0
     else:
         LoadMenu.MenuDescr["ListDescr"] = LoadListDescr
+        LoadMenu.MenuDescr["iFocus"] = load_item_focus
     #
-    if Lumenx.GetCurrentMap() == "Casa" or Lumenx.GetCurrentMod() != mod_dir:
-        SaveMenu.Focusable = 0
-        LoadListDescr[2]["Focusable"] = 0  # restart option
+    if SaveMenu.Focusable:
+        menu_class.SetFocus_Idx(Menu.GetMenuWidget("SAVE GAME", menu_class)[1])
     #
     Reference.debugprint("Find %d saved games." % save_count)
 
@@ -458,147 +485,8 @@ def CreateSLMenu(menu_class):
 # ----------------------------------
 
 
-def CreateSaveMenu():
-    import Menu
-    import GameText
-
-    index = InspectSaveList()
-
-    if AllEmpty and not GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())):
-        try:
-            Menu.GetMenuItem(["GAME", "LOAD GAME"])[
-                "Kind"
-            ] = MenuWidget.B_MenuItemTextNoFXNoFocus
-        except:
-            pass
-        try:
-            del Menu.GetMenuItem(["GAME", "LOAD GAME"])["ListDescr"]
-        except:
-            pass
-    else:
-        try:
-            CreateMenu("LOAD GAME", 0)
-        except:
-            pass
-        try:
-            del Menu.GetMenuItem(["GAME", "LOAD GAME"])["Kind"]
-        except:
-            pass
-
-    if (Bladex.GetEntity("Player1").Life <= 0) or not GameText.MapList.has_key(
-        string.upper(Bladex.GetCurrentMap())
-    ):
-        try:
-            Menu.GetMenuItem(["GAME", "SAVE GAME"])[
-                "Kind"
-            ] = MenuWidget.B_MenuItemTextNoFXNoFocus
-        except:
-            pass
-    else:
-        try:
-            del Menu.GetMenuItem(["GAME", "SAVE GAME"])["Kind"]
-        except:
-            pass
-        try:
-            CreateMenu("SAVE GAME", 1)
-        except:
-            pass
-
-        try:
-            Menu.GetMenuItem(["GAME"])["iFocus"] = 1
-        except:
-            pass
-
-    try:
-        if GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())):
-            Menu.GetMenuItem(["GAME", "LOAD GAME"])["iFocus"] = index[0] + 1
-        else:
-            Menu.GetMenuItem(["GAME", "LOAD GAME"])["iFocus"] = index[0]
-    except:
-        pass
-
-    try:
-        Menu.GetMenuItem(["GAME", "SAVE GAME"])["iFocus"] = index[1]
-    except:
-        pass
-
-
-def InspectSaveList():
-    global SaveBitmaps
-    global AllEmpty
-    global FirstSaved
-    global SAVEGAMEIMAGE
-    global LOADGAMEIMAGE
-
-    FirstSaved = None
-    AllEmpty = 1
-
-    lasttime = 0
-    indexsel = 1
-
-    firstime = 10000000000000.0
-    indexselfirst = 2
-
-    FirstEmptySlot = -1
-
-    SaveBitmaps = []
-    path = "../../Save/"
-
-    try:
-        os.mkdir(path)
-    except:
-        pass
-
-    ListDir = []
-    for filename in os.listdir(path):
-        ListDir.append(string.upper(filename))
-
-    for i in range(6):
-        cad = repr(i + 1) + ".BMP"
-        if cad in ListDir:
-            file = open(path + repr(i + 1) + ".sv", "r")
-            name = file.readline()
-
-            file.close()
-
-            # try:
-            #     printx(name)
-            # except:
-            #     SaveBitmaps.append((repr(i + 1), "../../Data/Empty.BMP", EMPTY_SLOT))
-            #     if FirstEmptySlot == -1:
-            #         FirstEmptySlot = i + 2
-            #     continue
-
-            SaveBitmaps.append((repr(i + 1), path + cad, name))
-            AllEmpty = 0
-            if not FirstSaved:
-                FirstSaved = repr(i + 1)
-            filetime = os.stat(path + cad)[stat.ST_MTIME]
-            if lasttime < filetime:
-                lasttime = filetime
-                indexsel = i + 2
-            if firstime > filetime:
-                firstime = filetime
-                indexselfirst = i + 2
-        else:
-            SaveBitmaps.append((repr(i + 1), "../../Data/Empty.BMP", EMPTY_SLOT))
-            if FirstEmptySlot == -1:
-                FirstEmptySlot = i + 2
-
-    SaveBitmaps.append(("0", "../../Data/Empty.BMP", EMPTY_SLOT))
-    if FirstEmptySlot == -1:
-        FirstEmptySlot = indexselfirst
-        SAVEGAMEIMAGE = repr(indexselfirst - 1)
-    else:
-        SAVEGAMEIMAGE = "0"
-
-    LOADGAMEIMAGE = repr(indexsel - 1)
-
-    return indexsel, FirstEmptySlot
-
-
 def RestartLevel(menu_class):
-    Bladex.LoadLevel(Bladex.GetCurrentMap())
+    Lumenx.LoadLevel(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod())
 
 
 def MenuStart(EntityName):
@@ -630,164 +518,3 @@ def ActivaMenuDeRegreso():
     Menu.ActivateMenu()
     Menu._MainMenu.ActivateMenuItem()
     Menu._MainMenu.ActivateMenuItem()
-
-
-def CreateMenu(MenuName, SaveFlag):
-    import Menu
-    import MenuText
-    import GameText
-
-    global EmptyImage
-
-    menuItem = Menu.GetMenuItem(["GAME", MenuName])
-
-    if menuItem == 1:
-        return
-
-    Save_Menu = []
-
-    EmptyImage = (not SaveFlag) and GameText.MapList.has_key(
-        string.upper(Bladex.GetCurrentMap())
-    )
-
-    Save_Menu.append(
-        {
-            "Name": MenuText.GetMenuText(MenuName),
-            "VSep": 30,
-            "Font": Menu.MenuFontBig,
-            "Kind": MenuWidget.B_MenuItemTextNoFXNoFocus,
-        }
-    )
-
-    if SaveFlag:
-        Save_Menu.append(
-            {
-                "Name": "GameList",
-                "Kind": netwidgets.B_ImageListWidget,
-                "ImageList": SaveBitmaps,
-                "MaxHeight": 90,
-                "GetCharType": GetSaveGameImage,
-                "VSep": 10,
-            }
-        )
-    else:
-        Save_Menu.append(
-            {
-                "Name": "GameList",
-                "Kind": netwidgets.B_ImageListWidget,
-                "ImageList": SaveBitmaps,
-                "MaxHeight": 90,
-                "GetCharType": GetLoadGameImage,
-                "VSep": 10,
-            }
-        )
-
-    if EmptyImage:
-        Save_Menu.append(
-            {
-                "Name": MenuText.GetMenuText("Restart")
-                + ' "'
-                + GameText.MapDescriptor(Bladex.GetCurrentMap())
-                + '"',
-                "VSep": -10,
-                "Clave": "0",
-                "FocusCallBack": FocusOnBitmap,
-                # "Font"           : Menu.MenuFontMed,
-                "Kind": MenuWidget.B_MenuItemTextNoFX,
-                "FontScale": MFontScale["M"],
-                "Command": RestartLevel,
-            }
-        )
-
-    ####################################
-    for i in range(6):
-        SaveGameName = SaveBitmaps[i][2]
-        if SaveFlag:
-            val = {
-                "Name": SaveGameName,
-                "VSep": 10,
-                # "Font"           : Menu.MenuFontMed,
-                "FontScale": MFontScale["M"],
-                "FocusCallBack": FocusOnBitmap,
-                "Clave": repr(i + 1),
-                "iFocus": 2,
-                "ListDescr": [
-                    {
-                        "Name": MenuText.GetMenuText(
-                            "Overwrite a previously saved game?"
-                        ),
-                        "VSep": 200,
-                        "Font": Menu.MenuFontBig,
-                        "Kind": MenuWidget.B_MenuItemTextNoFXNoFocus,
-                    },
-                    {
-                        "Name": MenuText.GetMenuText("Yes"),
-                        "VSep": 20,
-                        "Command": SaveGameToDisk,
-                        #  "Font"    : Menu.MenuFontMed,
-                        "FontScale": MFontScale["M"],
-                        "Clave": repr(i + 1),
-                    },
-                    {
-                        "Name": MenuText.GetMenuText("No"),
-                        "VSep": 10,
-                        #  "Font":Menu.MenuFontMed,
-                        "FontScale": MFontScale["M"],
-                        "Command": GetBack,
-                    },
-                    {"Name": "Back", "Kind": MenuWidget.B_BackBlank},
-                ],
-            }
-            if i == 0:
-                val["VSep"] = 10
-            if SaveGameName == EMPTY_SLOT:
-                del val["ListDescr"]
-                val["Command"] = SaveGameToDisk
-            Save_Menu.append(val)
-        else:
-            val = {
-                "Name": SaveGameName,
-                "VSep": 10,
-                # "Font"           : Menu.MenuFontMed,
-                "FontScale": MFontScale["M"],
-                "FocusCallBack": FocusOnBitmap,
-                "Clave": repr(i + 1),
-                "iFocus": 2,
-                "ListDescr": [
-                    {
-                        "Name": MenuText.GetMenuText("ARE YOU SURE?"),
-                        "VSep": 200,
-                        "Font": Menu.MenuFontBig,
-                        "Kind": MenuWidget.B_MenuItemTextNoFXNoFocus,
-                    },
-                    {
-                        "Name": MenuText.GetMenuText("Yes"),
-                        "VSep": 20,
-                        "Command": LoadGameFromDisk,
-                        #  "Font"    : Menu.MenuFontMed,
-                        "FontScale": MFontScale["M"],
-                        "Clave": repr(i + 1),
-                    },
-                    {
-                        "Name": MenuText.GetMenuText("No"),
-                        "VSep": 10,
-                        #  "Font":Menu.MenuFontMed,
-                        "FontScale": MFontScale["M"],
-                        "Command": GetBack,
-                    },
-                    {"Name": "Back", "Kind": MenuWidget.B_BackBlank},
-                ],
-            }
-            if i == 0 and not EmptyImage:
-                val["VSep"] = 10
-
-            if SaveGameName == EMPTY_SLOT:
-                val["Kind"] = MenuWidget.B_MenuItemTextNoFXNoFocus
-            Save_Menu.append(val)
-
-    ####################################
-
-    Save_Menu.append(Menu.BackOption)
-    Save_Menu.append({"Name": "Back", "Kind": MenuWidget.B_BackBlank})
-
-    menuItem["ListDescr"] = Save_Menu

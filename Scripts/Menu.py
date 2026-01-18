@@ -98,12 +98,14 @@ MFontScale = Language.MFontScale
 
 def GetMenuWidget(name, Frame=None):
     if not _MainMenu:
-        return
+        return (None, -1)
     CurrFrame = not Frame and _MainMenu.MenuStack.Top() or Frame
 
-    for i in CurrFrame.MenuItems:
-        if hasattr(i, "MenuDescr") and i.MenuDescr["Name"] == name:
-            return i
+    for i in range(len(CurrFrame.MenuItems)):
+        item = CurrFrame.MenuItems[i]
+        if hasattr(item, "MenuDescr") and item.MenuDescr["Name"] == name:
+            return (item, i)
+    return (None, -1)
 # -----------------------------------------
 # by Sryml: end
 # -----------------------------------------

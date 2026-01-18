@@ -44,9 +44,9 @@ def OnChangeMenu():
     import Menu
 
     if _DATA.menu_config != Lumenx.GetConfig():
-        Menu.GetMenuWidget("NOTE").SetVisible(1)
+        Menu.GetMenuWidget("NOTE")[0].SetVisible(1)
     else:
-        Menu.GetMenuWidget("NOTE").SetVisible(0)
+        Menu.GetMenuWidget("NOTE")[0].SetVisible(0)
 
 
 def GetCacheOption(this):

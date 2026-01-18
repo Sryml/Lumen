@@ -1,4 +1,5 @@
 import Bladex
+import Lumenx
 ### /    Added by Dario    \ ####
 import Ontake
 import Stars
@@ -3021,7 +3022,7 @@ def FreezeMeGuy(PersonName):
 		per.Alpha = 1
 		per.SelfIlum = 0
 		return
-	if (netgame.GetNetState()==0) and (Reference.DEMO_MODE==0) and (PersonName=="Player1") and GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())):
+	if (netgame.GetNetState()==0) and (Reference.DEMO_MODE==0) and (PersonName=="Player1") and Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod()):
 		import SaveGame
 		Bladex.AddScheduledFunc(Bladex.GetTime()+7.0,SaveGame.MenuStart,(PersonName,))
 

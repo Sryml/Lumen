@@ -1,4 +1,5 @@
 import Bladex
+import Lumenx
 import Actions
 import BInput
 import string
@@ -28,7 +29,7 @@ def ExecTravelBookNP():
 
 	GameText.AbortText()
 
-	if GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())) and (not Menu.MENU_PREACTIVATED):
+	if Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod()) and (not Menu.MENU_PREACTIVATED):
 		Menu.TB_ACTIVATED=1
 		Menu.MENU_PREACTIVATED = 1
 		#Menu.ExecTravelBook(0)

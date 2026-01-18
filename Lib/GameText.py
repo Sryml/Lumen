@@ -1,7 +1,14 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Improve Map List
+#
 
-
-import Lumenx # by Sryml
-import Scorer
+import Lumenx
 import Bladex
 import os
 import Interpolator
@@ -34,16 +41,20 @@ def SetLanguage(lang):
       return
 
     files=os.listdir(l_path)    
-    for i in files:      
+    for i in files:
+      if string.lower(i) == "map2d.py":
+        continue
       file=l_path+"/"+str(i)
       if file[len(file)-3:]=='.py':
         execfile(file)
 
 def MapDescriptor(map):
-	if MapList.has_key(string.upper(map)):
-		return MapList[string.upper(map)]
-	else:
-		return map
+  import MenuText
+  return MenuText.GetMenuText(Lumenx.GetMapListItem(map, ""))
+  # if MapList.has_key(string.upper(map)):
+  #   return MapList[string.upper(map)]
+  # else:
+  #   return map
 
 
 class FadeText(Interpolator.LinearInt):
@@ -56,11 +67,13 @@ class FadeText(Interpolator.LinearInt):
 
 
   def Execute(self,value):
+    import Scorer
     ret=Interpolator.LinearInt.Execute(self,value)
     Scorer.wGameText.SetAlpha(ret)
 
 
   def EndExecute(self):
+    import Scorer
     self.Interpolator.Kill()
     Scorer.wGameText.SetAlpha(self.end_val)
     if self.end_val==0:
@@ -73,6 +86,7 @@ def ClearText():
 
 
 def AbortText():
+  import Scorer
   Bladex.RemoveScheduledFunc("ClearText")
   Bladex.RemoveScheduledFunc("NextText")
   Scorer.wGameText.SetAlpha(0)
@@ -81,7 +95,7 @@ def AbortText():
 
 
 def WriteTextAux(txt,duration,init_r,init_g,init_b,next_text,ypos=None,patch=None):
-
+  import Scorer
 ##  if not patch:
   if Scorer.VISIBLE==0:
     Scorer.wFrame.SetSize(10,10)
@@ -142,6 +156,7 @@ def WriteText(txt_id,ypos=None):
 
 
 def ShowMessage(message="",r=255,g=255,b=255):
+	import Scorer
 	Scorer.wGameText.SetText(message)
 	Scorer.wGameText.SetAlpha(1.0)
 	Scorer.wGameText.SetColor(r,g,b)

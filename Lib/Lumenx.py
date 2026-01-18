@@ -25,6 +25,35 @@ class _DATA:
         "Language": "English",
         "Cache": "Disabled",
     }
+    map_list = {
+        "": {
+            "barb_m1": "Kashgar",
+            "ragnar_m2": "Tabriz",
+            "dwarf_m3": "Khazel Zalam",
+            "ruins_m4": "Marakamda",
+            "mine_m5": "Mines of Kelbegen",
+            "labyrinth_m6": "Fortress of Tell Halaf",
+            "tomb_m7": "Tombs of Ephyra",
+            "island_m8": "Island of Karum",
+            "orc_m9": "Shalatuwar Fortress",
+            "orlok_m10": "The Gorge of Orlok",
+            "ice_m11": "Fortress of Nemrut",
+            "btomb_m12": "The Oasis of Nejeb",
+            "desert_m13": "Temple of Al Farum",
+            "volcano_m14": "Forge of Xshathra",
+            "palace_m15": "The Temple of Ianna",
+            "tower_m16": "Tower of Dal Gurak",
+            "chaos_m17": "The Abyss",
+            #
+            "palace_back": "The Temple of Ianna",
+            "mine_back": "Mines of Kelbegen",
+            "labyrinth_back": "Fortress of Tell Halaf",
+            "tomb_back": "Tombs of Ephyra",
+            "ice_back": "Fortress of Nemrut",
+            "btomb_back": "The Oasis of Nejeb",
+            "desert_back": "Temple of Al Farum",
+        }
+    }
     #
     game_version = 1
     current_map = ""
@@ -164,7 +193,8 @@ import BInput
 
 #
 if typing.TYPE_CHECKING:
-    apply = lambda fn, args=(), kwds={}: fn(args, kwds)
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
 
 
 #
@@ -343,6 +373,14 @@ def AddInputAction(action_name, npi):
     action_name = BInput.GetInternalName(IActions.ID, action_name)
     Bladex_raw.AddInputAction(action_name, npi)  # type: ignore
     return 1
+
+
+def AddMapList(map_list, mod_dir):
+    mod_dir = string.lower(mod_dir)
+    new_map_list = {}
+    for k, v in map_list.items():
+        new_map_list[string.lower(k)] = v
+    _DATA.map_list[mod_dir] = new_map_list
 
 
 def AddMusicEventADPCM(
@@ -601,6 +639,12 @@ def GetGameVersion():
 def GetLumenRoot():
     """Returns the root path of Lumen"""
     return _DATA.lumen_root
+
+
+def GetMapListItem(map_dir, mod_dir):
+    mod_dir = string.lower(mod_dir)
+    map_dir = string.lower(map_dir)
+    return _DATA.map_list.get(mod_dir, {}).get(map_dir, "")
 
 
 def GetMapListPath():
@@ -973,6 +1017,7 @@ del __fn, __bladex_decorators, obj, name
 """
 AddBoundFunc
 AddInputAction
+AddMapList
 AddMusicEventADPCM
 AddMusicEventMP3
 AddMusicEventWAV
@@ -995,6 +1040,7 @@ GetCurrentMod
 GetEntity
 GetGameVersion
 GetLumenRoot
+GetMapListItem
 GetMapListPath
 GetMMPFiles
 GetModRoot

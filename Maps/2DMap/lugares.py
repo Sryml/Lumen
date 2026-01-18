@@ -5,11 +5,40 @@ import GotoMapVars
 import GameText
 import AuxFuncs
 import Language
+import string
+import MenuText
+import Lumenx
 
 language = Language.CheckFallback()
 
-MapList = {}
-execfile ("../../data/text/"+Language.Current+"/map2D.py")
+# MapList = {}
+# execfile ("../../data/text/"+Language.Current+"/map2D.py")
+
+# by Sryml: start
+var_dict = {
+	"Monolith": "BARB_M1",
+	"Tabriz": "RAGNAR_M2",
+	"Khazel": "DWARF_M3",
+	"Marakamda": "RUINS_M4",
+	"Mine": "MINE_M5",
+	"TellHa": "LABYRINTH_M6",
+	"QueensT": "TOMB_M7",
+	"Karum": "ISLAND_M8",
+	"Shalatuwar": "ORC_M9",
+	"Orlok": "ORLOK_M10",
+	"Nemrut": "ICE_M11",
+	"Nejev": "BTOMB_M12",
+	"Alfarum": "DESERT_M13",
+	"Xathra": "VOLCANO_M14",
+	"Ianna": "PALACE_M15",
+	"DalGurak": "TOWER_M16",
+	"Chaos": "CHAOS_M17"
+}
+for k,v in var_dict.items():
+	map_name = MenuText.GetMenuText(Lumenx.GetMapListItem(v, mod_dir=""))
+	globals()[k] = map_name
+	globals()[string.upper(k)] = map_name
+# by Sryml: end
 
 sound1=Bladex.CreateSound('../../Sounds/golpe-madera-pesada.wav', 'Sound1')
 sound1.Volume=0.5

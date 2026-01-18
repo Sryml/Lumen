@@ -381,7 +381,8 @@ def SavePlayerConfiguration(xx=0):
 	
 	if netgame.GetNetState() == 0:
 		import GameText
-		if GameText.MapList.has_key(string.upper(Bladex.GetCurrentMap())):
+		import Lumenx
+		if Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod()):
 			InputManager=BInput.GetInputManager()
 			oldIAS = InputManager.GetInputActionsSet()
 			
