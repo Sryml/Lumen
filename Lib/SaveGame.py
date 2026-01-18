@@ -134,7 +134,7 @@ def SaveGameToDisk(menu_class):
 
     # save Screen shoot
     Scorer.SetVisible(0)
-    Bladex.SaveScreenShot("../../Save/Temp.BMP", 288, 162)  # 160, 120
+    Bladex.SaveScreenShot("../../Save/Temp.BMP", 480, 270)  # 160, 120
     SaveGameString = (
         "import GameState;state=GameState.WorldState();state.GetState();state.SaveState(%s);state=None;GameState=None;"
         % repr(save_dir)
