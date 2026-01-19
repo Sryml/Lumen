@@ -43,6 +43,7 @@ if ContinueLoad:
 	Menu.ActivateMenu()
 	
 	if MemPersistence.Get("MapAlreadyLoaded"):
+		MemPersistence.Delete("MapAlreadyLoaded")
 		Menu.LoadPlayerSelect(0)
 	
 	CurrentPerson = 3
