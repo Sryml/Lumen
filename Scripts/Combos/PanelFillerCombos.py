@@ -80,6 +80,11 @@ def FillCombosText(parent):
 	language = PanelFillerCommon.GetLanguageFallback()
 	global combos
 	execfile("../../SCRIPTS/Combos/" + language + "/PanelCombosLoca.py")
+	#
+	currTilePos = tilePosition
+	if charKind == "Barbarian_N":
+		currTilePos = barbTilePosition
+	#
 	for elem in elemToDisplay:
 		index = 0
 		if elem == "Combo":
@@ -93,15 +98,14 @@ def FillCombosText(parent):
 				texts = WeaponsCombosKgt
 		else:
 			texts = combos[language][charKind][elem]
+		#
+		font = PanelFillerCommon.CheckFontChineseFallback(elem)
+		#
 		for text in texts:
 			if text == -1:
 				index = index + 1
 				continue
 			name = language + charKind + elem + str(index)
-			currTilePos = tilePosition
-			if charKind == "Barbarian_N":
-				currTilePos = barbTilePosition
-			font = PanelFillerCommon.CheckFontChineseFallback(elem)
 			CombosWidget=PanelFillerCommon.InitWidget(widget, name, text, font, elem)
 			alignX = left
 			alignY = bottom

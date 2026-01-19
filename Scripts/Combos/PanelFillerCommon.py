@@ -11,7 +11,7 @@ import sys
 
 amzIndexString = ["Bo", "Bichero", "Lanza", "Naginata", "Tridente", "Axpear", "DeathBo", "Crosspear", "Hachacuchilla", "CrushBo", "Arpon", "Naginata2", "LanzaAncha"]
 barbIndexString = ["Chaosword", "Eclipse", "DeathSword", "Guadanya", "LongSword", "Alfanje", "Hacha2hojas", "FlatSword", "BigSword", "RhinoClub", "Hacharrajada", "SawSword"]
-dwfIndexString = ["Garrote", "Hacha", "Hacha6", "Garropin", "Hacha3", "Hacha4", "Martillo", "Martillo2", "Garrote2", "MazaDoble", "Hacha5", "Hacha2", "Martillo3"]
+dwfIndexString = ["Garrote", "Hacha", "Hacha5", "Garropin", "Hacha4", "Hacha3", "Martillo", "Martillo2", "Garrote2", "MazaDoble", "Hacha6", "Hacha2", "Martillo3"]
 kgtIndexString = ["Gladius", "Maza", "Espadaromana", "Espadaelfica", "Maza2", "HookSword", "Espadacurva", "Dagesse", "Cimitarra", "Maza3", "DoubleSword", "Espadafilo", "Espada"]
 
 specialAmzIndexString = ["QueenSword", "IceWand", "SteelFeather", "FireBo", "BladeSword"]
@@ -70,7 +70,7 @@ def CorrectPosX(x):
 	return ((x - 0.5) / scale + 0.5) * scaledCenteredSizeFactor - ((scaledCenteredSizeFactor - 1) * 0.50)
 
 def CorrectPosY(y):
-	return y * scaledCenteredSizeFactor - ((scaledCenteredSizeFactor - 1 ) * 0.50)
+	return y * scaledCenteredSizeFactor - ((scaledCenteredSizeFactor - 1 ) * 0.50) + 0.0018
 
 def InitWidget(parent, name, text, font, elem):
 	Size_X, Size_Y = Raster.GetUnscaledSize()

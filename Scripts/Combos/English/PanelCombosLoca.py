@@ -2,7 +2,7 @@ import PanelFillerCommon
 combos["English"]["Amazon_N"]["Title"] = PanelFillerCommon.GetAmzTitle("Weapon: ")
 combos["English"]["Amazon_N"]["Descr"] = ["Attack: OVERHEAD SMASH","Attack: BLINDING SLICE","Attack: LIGHTNING CUT","Attack: KILLER SMASH","Attack: SEA SMASH","Attack: SPIN SMASH","Attack: NIGHTMARE","Attack: DARK STAR","Attack: TUMBLEKILL","Attack: DEADLY MIST","Attack: CUT WRENCHER","Attack: SPIRAL OF DEATH","Attack: WAY OF THE GODDESS"]
 combos["English"]["Amazon_N"]["Attack"] = ["+3A","+16A","+35A","+50A","+75A","+95A","+130A","+160A","+215A","+300A","+390A","+490A","+760A"]
-combos["English"]["Amazon_N"]["Defense"] = ["-5D","-10D","-20D","-30D","-40D","-35D","-45D","-50D","-60D","-70D","-80D","-90D"]
+combos["English"]["Amazon_N"]["Defense"] = [-1, "-5D","-10D","-20D","-30D","-40D","-35D","-45D","-50D","-60D","-70D","-80D","-90D"]
 combos["English"]["Amazon_N"]["Level"] = ["L.3","L.7","L.8","L.9","L.10","L.11","L.12","L.14","L.15","L.16","L.17","L.18","L.19"]
 
 combos["English"]["Barbarian_N"]["Title"] = PanelFillerCommon.GetBarbTitle("Weapon: ")

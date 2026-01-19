@@ -225,13 +225,13 @@ def GetSaveDesc():
         DisgustingMessage = SaveCounter[vismap]
     #
     ret = (
-        'MenuText.GetMenuText(%s) + " - Lv.%d " + MenuText.GetMenuText(%s) + " - %s - %d " + (MenuText.GetMenuText(%s))'
+        '"%%s - Lv.%s %%s - %s - %s (%%s)" %% (MenuText.GetMenuText(%s), MenuText.GetMenuText(%s), MenuText.GetMenuText(%s))'
         % (
-            repr(map_name),
             char.Level + 1,
-            repr(kind),
             cadtime,
             Reference.TimesSaved,
+            repr(map_name),
+            repr(kind),
             repr(DisgustingMessage),
         )
     )
