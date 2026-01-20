@@ -14,6 +14,16 @@ import os
 
 from Lumenx import printx, Raisex
 
+AvailableLanguages = [
+    "Chinese",
+    "English",
+    "French",
+    "German",
+    "Italian",
+    "Russian",
+    "Spanish",
+]
+
 
 class FontColor:
     Focused = (252, 247, 167)

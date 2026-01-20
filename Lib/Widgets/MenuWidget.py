@@ -26,7 +26,6 @@ import sys
 import string
 import Language
 import os
-import Menu
 import GameText
 import traceback
 import types
@@ -93,9 +92,17 @@ class MenuStack(Stack):
     s=self.Top()
     if not s:
       Bladex.SetAppMode("Menu")
+    else:
+      #
+      if s.Menudesc.get("OnLeaveMode", "all") in ("to_child", "all"):
+        s.Menudesc.get("OnLeave", lambda x: 0)(s) 
+      #
     Bladex.SetRootWidget(menu_item.GetPointer())
     Stack.Push(self,menu_item)
-    menu_item.Menudesc.get("OnEnter", lambda x: 0)(menu_item) # by Sryml
+    #
+    if menu_item.Menudesc.get("OnEnterMode", "all") in ("from_parent", "all"):
+      menu_item.Menudesc.get("OnEnter", lambda x: 0)(menu_item) 
+    #
     #print "RefCount (pushed)",sys.getrefcount(menu_item)
 
   def Pop(self):
@@ -105,12 +112,19 @@ class MenuStack(Stack):
     # by Sryml
     s=self.Top()
     if s:
-      s.Menudesc.get("OnLeave", lambda x: 0)(s)
+      #
+      if s.Menudesc.get("OnLeaveMode", "all") in ("to_parent", "all"):
+        s.Menudesc.get("OnLeave", lambda x: 0)(s)
+      #
     #
     Stack.Pop(self)
     s=self.Top()
     if s:
       Bladex.SetRootWidget(s.GetPointer())
+      #
+      if s.Menudesc.get("OnEnterMode", "all") in ("from_child", "all"):
+        s.Menudesc.get("OnEnter", lambda x: 0)(s)
+      #
     else:
       #print "Final CallBack"
       self.FinalCallBack()
@@ -245,6 +259,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
         HAnchor=B_FrameWidget.B_FR_HCenter,
         VIndicator=B_FrameWidget.B_FR_AbsoluteTop,
     ):
+        import Menu
         B_MenuFocusManager.AddMenuElement(self, menu_element)
 
         if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:

@@ -50,6 +50,7 @@ import Language
 
 import os
 import GamepadWidget
+import Lumenx
 
 #import Bldb
 
@@ -134,6 +135,10 @@ BackGamepadOption = {"Name"    : MenuText.GetMenuText("BACK"),
 			  "Command" : BackMenu,
 			  "Font"    : MenuFontBig
 			 }
+
+# -----------------------------------
+import BODLoader
+# -----------------------------------
 
 # Map Loading Upong Menu Request---
 def Load2DMap(option):
@@ -374,11 +379,13 @@ def CurrentScorer():
 		return 1
 
 def SetScorer(option):
+	# unused features
+	return
 	global CurrentScorerVar
 	import Scorer
 	if option == "Full":
 		Scorer.PowDefWidgets.Activate()
-		Scorer.wKeysFrame.SetVisible(1)
+		# Scorer.wKeysFrame.SetVisible(1) # 
 		Scorer.wKeysRFrame.SetVisible(1)
 		Scorer.wSpecialsFrame.SetVisible(1)
 		Scorer.wEnemiesFrame.SetVisible(1)
@@ -388,7 +395,7 @@ def SetScorer(option):
 		Scorer.wLeftHand.SetVisible(0)
 		Scorer.wRightHand.SetVisible(0)
 		Scorer.PowDefWidgets.Deactivate()
-		Scorer.wKeysFrame.SetVisible(0)
+		# Scorer.wKeysFrame.SetVisible(0) # 
 		Scorer.wKeysRFrame.SetVisible(0)
 		Scorer.wSpecialsFrame.SetVisible(0)
 		Scorer.wEnemiesFrame.SetVisible(0)
@@ -438,7 +445,7 @@ def SaveConfiguration():
 	cfgfile.write("Bladex.SetUIScaleFactor("+`Bladex.GetUIScaleFactor()`+')\n')
 	cfgfile.write("Bladex.SetAecGap("+`Bladex.GetAecGap()`+')\n')
 	cfgfile.write("Blood.Evaporation = "+`Blood.Evaporation`+'\n')
-	cfgfile.write("SetScorer("+`CurrentScorerVar`+")\n")
+	# cfgfile.write("SetScorer("+`CurrentScorerVar`+")\n")
 	cfgfile.write('\n# Achalay my brother!.\n\n\n')
 	cfgfile.close()
 
@@ -2038,6 +2045,7 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                         "VSep":8,
                         "Font":MenuFontBig,
                         "Size":(640,480),
+                        "OnLeave": BODLoader.LeaveMenu,
                         "ListDescr":[
                                       {
                                         "Name":MenuText.GetMenuText("DISPLAY"),
@@ -2311,7 +2319,7 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                     "SelOptionFunc":GetFacing
                                      },
                                      {"Name":MenuText.GetMenuText("PLAY INTRO:"),
-                                                    "VSep":10,
+                                                    "VSep":-5,
                                                     "Font":MenuFontBig,
                                                     "Kind":MenuWidget.B_MenuItemOption,
                                                     "Options":['No', 'Yes'],
@@ -2319,6 +2327,17 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                     "SelOptionFunc":GetPlayIntro
 
                                      },
+                                     {"Name":MenuText.GetMenuText("LANGUAGE") + ":",
+                                                    "VSep":-5,
+                                                    "Font":MenuFontBig,
+                                                    "Kind":MenuWidget.B_MenuItemOption,
+                                                    "Options":Language.AvailableLanguages,
+                                                    "Command": BODLoader.SetLanguage,
+                                                    "SelOptionFunc2":BODLoader.GetLanguage,
+                                                    "Focusable": string.lower(Lumenx.GetCurrentMap()) == "casa"
+
+                                     },
+                                     BODLoader.NoteLabel,
                                      # {"Name":MenuText.GetMenuText("PLAY INTRO:"),
                                      #  "VSep":-5,
                                      #  "Font":MenuFontBig,
@@ -2416,7 +2435,6 @@ if(Bladex.IsRunningOnHandheldDevice() == 0):
                                                         "Command2":SetScreenModeValue,
                                                        })
 
-import BODLoader
 
 if netgame.GetNetState() != 0:
   PlayerConfigMenu.insert(6,{"Name":MenuText.GetMenuText("This modification will take effect in the next arena"),
@@ -2455,6 +2473,7 @@ else:
                         "Font":MenuFontBig,
                         "VSep":100,
                         "Size":(640,480),
+                        "OnEnterMode": "from_parent",
                         "OnEnter": SaveGame.CreateSLMenu,
                         "ListDescr":[{
                                        "Name":MenuText.GetMenuText("START NEW GAME"),
@@ -2467,7 +2486,7 @@ else:
                                        "Name":"SAVE GAME",
                                        "Text":MenuText.GetMenuText("SAVE GAME"),
                                        "Font":MenuFontBig,
-                                      #  "Size":(640,480),
+                                       "Size":(1424, 801),
                                        #"Kind":MenuWidget.B_VariableFocusTextMenuItem,
                                        #"Command":SaveGame1
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Savegame Slot 1:"),
@@ -2499,7 +2518,7 @@ else:
                                        "Name":"LOAD GAME",
                                        "Text":MenuText.GetMenuText("LOAD GAME"),
                                        "Font":MenuFontBig,
-                                      #  "Size":(640,480),
+                                       "Size":(1424, 801),
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Load Game at Slot 1:"),
                                                       "Font":MenuFontBig,
                                                       "VSep"     : 200,
@@ -2667,7 +2686,7 @@ else:
                                     ]
 
                        },
-                       BODLoader.GetModMenu(),
+                       BODLoader.ModMenu,
                        QuitMenu,
                        GamepadButton,
                        {"Name":"Back",
@@ -2738,6 +2757,12 @@ def GetMenuItem(way, tr=1):
 
 
 def InitMenuKeys():
+    try:
+      execfile("../../Config/GameCfg.py")
+      print "Menu.py -> Executed GameCfg.py"
+    except:
+      print "Menu.py -> No GameCfg.py found"
+    #
     Raster.SetTextMode(3)
     InputManager=BInput.GetInputManager()
     InputManager.AddInputActionsSet("MenuRedefine") #Conjunto para cuando se est�n definiendo los controles
@@ -2807,11 +2832,11 @@ def InitMenuKeys():
 #InitMenuKeys()
 
 
-try:
-  execfile("../../Config/GameCfg.py")
-  print "Menu.py -> Executed GameCfg.py"
-except:
-  print "Menu.py -> No GameCfg.py found"
+# try:
+#   execfile("../../Config/GameCfg.py")
+#   print "Menu.py -> Executed GameCfg.py"
+# except:
+#   print "Menu.py -> No GameCfg.py found"
 
 
 

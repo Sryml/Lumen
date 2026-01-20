@@ -281,7 +281,7 @@ def CreateSLMenu(menu_class):
     LoadListDescr.append(
         {
             "Name": "Restart",
-            "Text": "%s %s"
+            "Text": '%s "%s"'
             % (MenuText.GetMenuText("Restart"), MenuText.GetMenuText(map_name)),
             "VSep": "0.4em",
             "Clave": "0",

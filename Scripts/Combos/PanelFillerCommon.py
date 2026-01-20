@@ -86,16 +86,16 @@ def InitWidget(parent, name, text, font, elem):
 	# if Language.Current == "Chinese" and elem != "Combo" and elem != "Combo2":
 	# 	y_scale = y_scale * 1.4
 	if string.find(font, "Title") != -1:
-		scale = 0.72
+		scale = 0.71
 	else:
-		scale = 0.785
+		scale = 0.78
 
 	Widget.SetScale(0.55 * y_scale * scale)
 
 	if elem == "Button":
-		Widget.SetScale(0.61 * y_scale * 0.7)
+		Widget.SetScale(0.61 * y_scale * scale)
 	elif elem == "Combo" or elem == "Combo2":
-		Widget.SetScale(0.9 * y_scale * 0.7)
+		Widget.SetScale(0.88 * y_scale * 0.7)
 	elif elem == "Title" and len(text) >= 30:
 		Widget.SetScale(0.5 * y_scale * scale)
 

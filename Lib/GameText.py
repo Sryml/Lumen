@@ -6,6 +6,7 @@
 #
 # Change list:
 # * Improve Map List
+# * Change the loading method of `../../Data/Text`
 #
 
 import Lumenx
@@ -36,17 +37,17 @@ def SetLanguage(lang):
   if lang != current_language:
     current_language= lang
     print "Setting language",lang
-    l_path=Lumenx.AutomatedAssets("../../Data/Text/"+lang) # by Sryml
-    if not os.path.exists(l_path):
-      return
+    # by Sryml
+    root = "../../Data/Text/" + lang
+    files = ["casa.py","Combos.py","map2D.py","tutor.py"]
+    for i in range(1,18):
+       files.append("M%d.py" % i)
+    # print "Executing files: ",files
+    for name in files:
+      filepath = os.path.join(root, name)
+      execfile(filepath)
+    #
 
-    files=os.listdir(l_path)    
-    for i in files:
-      if string.lower(i) == "map2d.py":
-        continue
-      file=l_path+"/"+str(i)
-      if file[len(file)-3:]=='.py':
-        execfile(file)
 
 def MapDescriptor(map):
   import MenuText
