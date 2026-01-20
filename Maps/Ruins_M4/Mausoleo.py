@@ -5,6 +5,7 @@ import Objects
 import Actions
 import Sparks
 
+from Lumenx import AutomatedAssets
 
 
 B_PARTICLE_GTYPE_BLEND=1
@@ -271,14 +272,14 @@ sndimplengua.MinDistance=5000 #1000
 sndimplengua.MaxDistance=50000 #25000
 
 sndespiritu=Bladex.CreateEntity("SonidoEspiritu", "Entity Sound", 0, 0, 0)
-sndespiritu.SetSound("../../Sounds/Espiritus1.wav")
+sndespiritu.SetSound(AutomatedAssets("../../Sounds/Espiritus1.wav"))
 sndespiritu.Volume=1.0
 sndespiritu.MinDistance=5000 #1000
 sndespiritu.MaxDistance=50000 #25000
 spirit1.Link(sndespiritu)
 
 sndlengua=Bladex.CreateEntity("SonidoLengua", "Entity Sound", 0, 0, 0)
-sndlengua.SetSound("../../Sounds/lanza-espiritu.wav")
+sndlengua.SetSound(AutomatedAssets("../../Sounds/lanza-espiritu.wav"))
 sndlengua.Volume=1.0
 sndlengua.MinDistance=5000 #1000
 sndlengua.MaxDistance=50000 #25000

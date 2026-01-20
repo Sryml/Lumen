@@ -9,6 +9,8 @@ import whrandom
 import Sounds
 import Actions
 
+from Lumenx import AutomatedAssets
+
 def rand(time):
 	PRIME = 123457
 	MULTI = 510510
@@ -101,7 +103,7 @@ class LavaFlood:
 			sound=Bladex.GetEntity(snd_name)
 			if not sound:
 				sound=Bladex.CreateEntity(snd_name, "Entity Sound", pos[0], pos[1], pos[2] )
-				sound.SetSound("../../Sounds/muerte-acida.wav")
+				sound.SetSound(AutomatedAssets("../../Sounds/muerte-acida.wav"))
 			else:
 				sound.Position=pos
 			if sound.Playing==0:

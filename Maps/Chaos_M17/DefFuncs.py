@@ -22,6 +22,8 @@ import CharStats
 import ScriptSkip
 import MusicTool
 
+from Lumenx import AutomatedAssets
+
 #*************************************************************************************************
 #*************************************************************************************************
 #*************************************************************************************************
@@ -3000,32 +3002,32 @@ def CreaTornado():
 	luzrayot.Visible=0
 	luzrayot.CastShadows=0
 	soundrayot1=Bladex.CreateEntity("SonidoRayoTornado1", "Entity Sound", xl, yl, zl)
-	soundrayot1.SetSound("../../Sounds/trueno5.wav")
+	soundrayot1.SetSound(AutomatedAssets("../../Sounds/trueno5.wav"))
 	soundrayot1.Volume=1.0
 	soundrayot1.MinDistance=150000
 	soundrayot1.MaxDistance=300000
 	soundrayot2=Bladex.CreateEntity("SonidoRayoTornado2", "Entity Sound", xl, yl, zl)
-	soundrayot2.SetSound("../../Sounds/trueno6.wav")
+	soundrayot2.SetSound(AutomatedAssets("../../Sounds/trueno6.wav"))
 	soundrayot2.Volume=1.0
 	soundrayot2.MinDistance=150000
 	soundrayot2.MaxDistance=300000
 	soundrayot3=Bladex.CreateEntity("SonidoRayoTornado3", "Entity Sound", xl, yl, zl)
-	soundrayot3.SetSound("../../Sounds/trueno5.wav")
+	soundrayot3.SetSound(AutomatedAssets("../../Sounds/trueno5.wav"))
 	soundrayot3.Volume=1.0
 	soundrayot3.MinDistance=150000
 	soundrayot3.MaxDistance=300000
 	soundrayot4=Bladex.CreateEntity("SonidoRayoTornado4", "Entity Sound", xl, yl, zl)
-	soundrayot4.SetSound("../../Sounds/trueno6.wav")
+	soundrayot4.SetSound(AutomatedAssets("../../Sounds/trueno6.wav"))
 	soundrayot4.Volume=1.0
 	soundrayot4.MinDistance=150000
 	soundrayot4.MaxDistance=300000
 	soundrayot5=Bladex.CreateEntity("SonidoRayoTornado5", "Entity Sound", xl, yl, zl)
-	soundrayot5.SetSound("../../Sounds/trueno5.wav")
+	soundrayot5.SetSound(AutomatedAssets("../../Sounds/trueno5.wav"))
 	soundrayot5.Volume=1.0
 	soundrayot5.MinDistance=150000
 	soundrayot5.MaxDistance=300000
 	soundrayot6=Bladex.CreateEntity("SonidoRayoTornado6", "Entity Sound", xl, yl, zl)
-	soundrayot6.SetSound("../../Sounds/trueno6.wav")
+	soundrayot6.SetSound(AutomatedAssets("../../Sounds/trueno6.wav"))
 	soundrayot6.Volume=1.0
 	soundrayot6.MinDistance=150000
 	soundrayot6.MaxDistance=300000

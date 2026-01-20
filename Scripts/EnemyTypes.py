@@ -31,6 +31,7 @@ import OnOff
 import DMusic
 import ObjStore
 
+from Lumenx import AutomatedAssets
 
 
 #
@@ -638,7 +639,7 @@ class ChaosKnight (Enm_Def.NPCPerson):
 			missile.Visible=0
 			missile.Flick=0
 			missilesound=Bladex.CreateEntity("MissileSound", "Entity Sound", 0, 0, 0)
-			missilesound.SetSound("../../Sounds/M-CAMPO-MAG.wav")
+			missilesound.SetSound(AutomatedAssets("../../Sounds/M-CAMPO-MAG.wav"))
 			missilesound.MinDistance=10000
 			missilesound.MaxDistance=20000
 			missile.Link(missilesound)
@@ -3575,7 +3576,7 @@ class DarkLord (Enm_Def.NPCPerson):
 		missileconc.Time2Live=30
 		missileconc.DeathTime=Bladex.GetTime()+1.0
 		missileconcsound=Bladex.CreateEntity(missilename+"ConcSound", "Entity Sound", x+vx, y+vy, z+vz)
-		missileconcsound.SetSound("../../Sounds/fireball-swing.wav")
+		missileconcsound.SetSound(AutomatedAssets("../../Sounds/fireball-swing.wav"))
 		missileconcsound.MinDistance=5000
 		missileconcsound.MaxDistance=30000
 		missileconcsound.PlaySound(0)
@@ -4370,7 +4371,7 @@ class DalGurak (Enm_Def.NPCPerson):
 		me.Life= CharStats.GetCharMaxLife(me.Kind, me.Level)
 
 		self.dgkdisapsound= Bladex.CreateEntity (self.Name+"DisappearSound", "Entity Sound", 0, 0, 0)
-		self.dgkdisapsound.SetSound ("../../Sounds/desaparece-Dgk.wav")
+		self.dgkdisapsound.SetSound(AutomatedAssets("../../Sounds/desaparece-Dgk.wav"))
 		self.dgkdisapsound.MinDistance=10000
 		self.dgkdisapsound.MaxDistance=20000
 		me.Link(self.dgkdisapsound)

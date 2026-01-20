@@ -23,6 +23,8 @@ import Netval
 import Torchs
 import ItemTypes
 
+from Lumenx import AutomatedAssets
+
 #
 # Fade out values -> For Enric
 #
@@ -2531,7 +2533,7 @@ def TestDrawBow(EntityName):
 				me.LaunchAnmType ("b1")
 				arrow= Bladex.GetEntity(me.InvRight)
 				tensar_sound=Bladex.CreateEntity(arrow.Name+"RedrawSound", "Entity Sound", 0, 0, 0)
-				tensar_sound.SetSound("../../Sounds/M-CREAKCUERDA-3b.wav")
+				tensar_sound.SetSound(AutomatedAssets("../../Sounds/M-CREAKCUERDA-3b.wav"))
 				tensar_sound.MinDistance=5000
 				tensar_sound.MaxDistance=10000
 				arrow.Link(tensar_sound)
@@ -2622,7 +2624,7 @@ def EndDrawBowEventHandler(EntityName, EventName):
 			arrow.Data.ThrownBy= me
 
 			soltar_sound=Bladex.CreateEntity(arrow.Name+"FlySound", "Entity Sound", 0, 0, 0)
-			soltar_sound.SetSound("../../Sounds/ARCO-DISPARO-3.wav")
+			soltar_sound.SetSound(AutomatedAssets("../../Sounds/ARCO-DISPARO-3.wav"))
 			soltar_sound.MinDistance=5000
 			soltar_sound.MaxDistance=10000
 			arrow.Link(soltar_sound)
@@ -2655,7 +2657,7 @@ def CheckRefireBowEventHandler(EntityName, EventName):
 				GraspString (EntityName,"GraspString")
 				me.DoActionWI ("b1", FixedFootAutoInterp, 0.3, 0.9)
 				tensar_sound=Bladex.CreateEntity(arrow.Name+"RedrawSound", "Entity Sound", 0, 0, 0)
-				tensar_sound.SetSound("../../Sounds/M-CREAKCUERDA-44.wav")
+				tensar_sound.SetSound(AutomatedAssets("../../Sounds/M-CREAKCUERDA-44.wav"))
 				tensar_sound.MinDistance=5000
 				tensar_sound.MaxDistance=10000
 				arrow.Link(tensar_sound)
@@ -2963,7 +2965,7 @@ def LinkContinuosSoundAux(csound):
 def LinkContinuosSound(EntityName,SoundName,max_dist=12000,min_dist=5000):
     me = Bladex.GetEntity(EntityName)
     csound=Bladex.CreateEntity(EntityName+"ContinuosSound", "Entity Sound", 0,0,0)
-    csound.SetSound(SoundName)
+    csound.SetSound(AutomatedAssets(SoundName))
     csound.MinDistance=min_dist
     csound.MaxDistance=max_dist
     me.Link(csound)

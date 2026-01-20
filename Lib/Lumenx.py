@@ -347,9 +347,9 @@ class B_PyEntity_Proxy:
             hasattr(self.target, "Name") and self.target.Name or "destroyed"
         )
 
-    def SetSound(self, file_name):
-        file_name = AutomatedAssets(file_name)
-        return self.target.SetSound(file_name)
+    # def SetSound(self, file_name):
+    #     file_name = AutomatedAssets(file_name)
+    #     return self.target.SetSound(file_name)
 
     def SetMaxCamera(self, cam_file_name, start, end):
         cam_file_name = AutomatedAssets(cam_file_name)
@@ -590,8 +590,8 @@ def CreateEntity(name, kind, x, y, z, *args):
         Bladex_raw.CreateEntity,
         (name, kind, x, y, z) + args,
     )
-    if kind == "Entity Sound":
-        return B_PyEntity_Proxy(ret)
+    # if kind == "Entity Sound":
+    #     return B_PyEntity_Proxy(ret)
     return ret
 
 
@@ -627,7 +627,7 @@ def GetCurrentMod():
 
 def GetEntity(arg):
     ret = Bladex_raw.GetEntity(arg)
-    if ret and ret.Kind in ("Entity Sound", "Entity Camera"):
+    if ret and ret.Kind == "Entity Camera":
         return B_PyEntity_Proxy(ret)
     return ret
 

@@ -25,6 +25,7 @@ import AbreCam
 import AuxFuncs
 import CharStats
 
+from Lumenx import AutomatedAssets
 
 UNDEDICATED = not netgame.IsDedicated()
 
@@ -104,7 +105,7 @@ class LAVA_AREA:
 			sound=Bladex.GetEntity(snd_name)
 			if not sound:
 				sound=Bladex.CreateEntity(snd_name, "Entity Sound", pos[0], pos[1], pos[2] )
-				sound.SetSound("../../Sounds/muerte-acida.wav")
+				sound.SetSound(AutomatedAssets("../../Sounds/muerte-acida.wav"))
 			else:
 				sound.Position=pos
 			sound.PlaySound(0)

@@ -4,6 +4,8 @@ import whrandom
 import ObjStore
 import GameStateAux
 
+from Lumenx import AutomatedAssets
+
 def RepeatPeriodicSound(persound):
 
   if (persound.OnPlay):
@@ -73,7 +75,7 @@ def CreatePeriodicSound(file_name, sound_name, frecuency, frec_variation, focus)
 
   persound=PeriodicSound()
   persound.sound=Bladex.CreateEntity(sound_name, "Entity Sound", focus[0], focus[1], focus[2])
-  persound.sound.SetSound(file_name)
+  persound.sound.SetSound(AutomatedAssets(file_name))
   persound.frecuency=frecuency
   persound.frec_variation=frec_variation
   persound.sound.Data=persound
@@ -84,5 +86,5 @@ def CreatePeriodicSound(file_name, sound_name, frecuency, frec_variation, focus)
 def CreateEntitySound(file_name, sound_name, focus=(0.0, 0.0, 0.0)):
 
   entsound=Bladex.CreateEntity(sound_name, "Entity Sound", focus[0], focus[1], focus[2])
-  entsound.SetSound(file_name)
+  entsound.SetSound(AutomatedAssets(file_name))
   return entsound

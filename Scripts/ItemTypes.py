@@ -19,6 +19,8 @@ import GenFX
 import ObjStore
 import GameStateAux
 
+from Lumenx import AutomatedAssets
+
 class PersistantItemType:
 	def __init__(self, me):
 		self.ObjId= ObjStore.GetNewId()
@@ -347,7 +349,7 @@ class BolaDalGurak(PersistantItemType):
 		concball.DeathTime=Bladex.GetTime()+1.0
 
 		concsound=Bladex.CreateEntity(me.Name+"ConcSound", "Entity Sound", 0, 0, 0)
-		concsound.SetSound("../../Sounds/energy-ball-conc.wav")
+		concsound.SetSound(AutomatedAssets("../../Sounds/energy-ball-conc.wav"))
 		concsound.MinDistance=5000
 		concsound.MaxDistance=30000
 		me.Link(concsound)
@@ -442,7 +444,7 @@ class BolaDalGurak(PersistantItemType):
 			elif kind=="impact":
 				missilesound=Bladex.CreateEntity(self.Name+"ImpactSound", "Entity Sound", 0, 0, 0)
 				self.MissileImpactSound=missilesound
-			missilesound.SetSound(wavfile)
+			missilesound.SetSound(AutomatedAssets(wavfile))
 			missilesound.Volume=1.0
 			missilesound.MinDistance=5000
 			missilesound.MaxDistance=30000
@@ -746,7 +748,7 @@ class BolaRayos(PersistantItemType):
 		concball.DeathTime=Bladex.GetTime()+1.25
 
 		concsound=Bladex.CreateEntity(me.Name+"ConcSound", "Entity Sound", 0, 0, 0)
-		concsound.SetSound("../../Sounds/energy-ball-conc.wav")
+		concsound.SetSound(AutomatedAssets("../../Sounds/energy-ball-conc.wav"))
 		concsound.MinDistance=5000
 		concsound.MaxDistance=30000
 		me.Link(concsound)
@@ -842,7 +844,7 @@ class BolaRayos(PersistantItemType):
 			elif kind=="impact":
 				missilesound=Bladex.CreateEntity(self.Name+"ImpactSound", "Entity Sound", 0, 0, 0)
 				self.MissileImpactSound=missilesound
-			missilesound.SetSound(wavfile)
+			missilesound.SetSound(AutomatedAssets(wavfile))
 			missilesound.Volume=1.0
 			missilesound.MinDistance=5000
 			missilesound.MaxDistance=30000
@@ -1172,7 +1174,7 @@ class GenericMissile:
 			elif kind=="impact":
 				missilesound=Bladex.CreateEntity(self.MissileName+"ImpactSound", "Entity Sound", 0, 0, 0)
 				self.MissileImpactSound=missilesound
-			missilesound.SetSound(wavfile)
+			missilesound.SetSound(AutomatedAssets(wavfile))
 			missilesound.Volume=1.0
 			missilesound.MinDistance=5000
 			missilesound.MaxDistance=30000
@@ -1399,7 +1401,7 @@ class MagicShield:
 		# Create a looped sound
 		SoundName= "../../Sounds/campo-escudo-barrera1.wav"
 		self.loopsound= Bladex.CreateEntity (me.Name+"LoopSound", "Entity Sound", 0, 0, 0)
-		self.loopsound.SetSound (SoundName)
+		self.loopsound.SetSound(AutomatedAssets(SoundName))
 		self.loopsound.MinDistance=5000
 		self.loopsound.MaxDistance=10000
 		owner.Link(self.loopsound)
@@ -1585,7 +1587,7 @@ class MagicShield:
 
 			self.AGE= self.AGE+1
 			impsound=Bladex.CreateEntity (me.Name+"ImpactSound_"+`self.AGE`, "Entity Sound", 0, 0, 0)
-			impsound.SetSound (SoundName)
+			impsound.SetSound(AutomatedAssets(SoundName))
 			impsound.MinDistance=5000
 			impsound.MaxDistance=60000
 			me.Link(impsound)
@@ -2035,13 +2037,13 @@ class BladeSword2(ActivateableSpecialWeapon):
 		self.AuxFuncsData=None
 
 		self.WhileSound=Bladex.CreateEntity (me.Name+"MissileLoopSound", "Entity Sound", 0, 0, 0)
-		self.WhileSound.SetSound("../../Sounds/energy-ball.wav")
+		self.WhileSound.SetSound(AutomatedAssets("../../Sounds/energy-ball.wav"))
 		self.WhileSound.MinDistance=5000
 		self.WhileSound.MaxDistance=30000
 		me.Link(self.WhileSound)
 
 		self.ImpactSound=Bladex.CreateEntity (me.Name+"MissileImpactSound", "Entity Sound", 0, 0, 0)
-		self.ImpactSound.SetSound("../../Sounds/energy-ball-impact.wav")
+		self.ImpactSound.SetSound(AutomatedAssets("../../Sounds/energy-ball-impact.wav"))
 		self.ImpactSound.MinDistance=5000
 		self.ImpactSound.MaxDistance=30000
 
@@ -2343,7 +2345,7 @@ class DalWeapon(PersistantItemType):
 		# Create a looped sound
 		SoundName= "../../Sounds/vueltas-en-el-aire.wav"
 		self.spinsound= Bladex.CreateEntity (me.Name+"LoopSound", "Entity Sound", 0, 0, 0)
-		self.spinsound.SetSound (SoundName)
+		self.spinsound.SetSound(AutomatedAssets(SoundName))
 		self.spinsound.MinDistance=5000
 		self.spinsound.MaxDistance=30000
 		me.Link(self.spinsound)
@@ -2587,7 +2589,7 @@ class DalBlade(PersistantItemType):
 		AuxFuncs.SpotIntensityVariation(self.LightName, 0.0, 6.0, 1.0)
 
 		concsound=Bladex.CreateEntity(me.Name+"_ConcSound", "Entity Sound", 0, 0, 0)
-		concsound.SetSound("../../Sounds/energy-ball-conc.wav")
+		concsound.SetSound(AutomatedAssets("../../Sounds/energy-ball-conc.wav"))
 		concsound.MinDistance=5000
 		concsound.MaxDistance=30000
 		me.Link(concsound)
@@ -2693,7 +2695,7 @@ class DalBlade(PersistantItemType):
 			elif kind=="impact":
 				missilesound=Bladex.CreateEntity(self.Name+"_ImpactSound", "Entity Sound", 0, 0, 0)
 				self.MissileImpactSound=missilesound
-			missilesound.SetSound(wavfile)
+			missilesound.SetSound(AutomatedAssets(wavfile))
 			missilesound.Volume=1.0
 			missilesound.MinDistance=5000
 			missilesound.MaxDistance=30000
@@ -2866,7 +2868,7 @@ class HalfmoonTrail(PersistantItemType):
 		# Create a looped sound
 		SoundName= "../../Sounds/rueda-metal.wav"
 		self.loopsound= Bladex.CreateEntity (me.Name+"LoopSound", "Entity Sound", 0, 0, 0)
-		self.loopsound.SetSound (SoundName)
+		self.loopsound.SetSound(AutomatedAssets(SoundName))
 		self.loopsound.MinDistance=500
 		self.loopsound.MaxDistance=20000
 		me.Link(self.loopsound)
@@ -3000,7 +3002,7 @@ class HalfmoonTrail(PersistantItemType):
 		# Create a firing sound
 		SoundName= "../../Sounds/disparo-cuchilla.wav"
 		firesound=Bladex.CreateEntity(weapon.Name+"firesound", "Entity Sound", 0, 0, 0)
-		firesound.SetSound(SoundName)
+		firesound.SetSound(AutomatedAssets(SoundName))
 		firesound.MinDistance=5000
 		firesound.MaxDistance=30000
 		weapon.Link(firesound)
@@ -3041,7 +3043,7 @@ class HalfmoonTrail(PersistantItemType):
 				# Create a firing sound
 				SoundName= "../../Sounds/impacto-cuchilla.wav"
 				hitsound=Bladex.CreateEntity(me.Name+"hitsound", "Entity Sound", 0, 0, 0)
-				hitsound.SetSound(SoundName)
+				hitsound.SetSound(AutomatedAssets(SoundName))
 				hitsound.MinDistance=5000
 				hitsound.MaxDistance=30000
 				me.Link(hitsound)

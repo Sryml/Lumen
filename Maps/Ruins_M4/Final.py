@@ -9,7 +9,7 @@ import OnInitTake
 import GameState
 import GotoMapVars
 
-
+from Lumenx import AutomatedAssets
 
 
 ### Sonidos
@@ -30,31 +30,31 @@ golpeescalonfinal.MinDistance=5000 #1000
 golpeescalonfinal.MaxDistance=50000 #25000
 
 sndimplibro=Bladex.CreateEntity("SonidoImpLibro", "Entity Sound", 0, 0, 0)
-sndimplibro.SetSound("../../Sounds/M-IMPACTO-FUEGO.wav")
+sndimplibro.SetSound(AutomatedAssets("../../Sounds/M-IMPACTO-FUEGO.wav"))
 sndimplibro.Volume=0.7
 sndimplibro.MinDistance=5000 #1000
 sndimplibro.MaxDistance=50000 #25000
 
 sndimpdemonsello=Bladex.CreateEntity("SonidoImpDemonioSello", "Entity Sound", 0, 0, 0)
-sndimpdemonsello.SetSound("../../Sounds/fireball-impact.wav")
+sndimpdemonsello.SetSound(AutomatedAssets("../../Sounds/fireball-impact.wav"))
 sndimpdemonsello.Volume=1.0
 sndimpdemonsello.MinDistance=5000 #1000
 sndimpdemonsello.MaxDistance=50000 #25000
 
 expldemonruins=Bladex.CreateEntity("ExplosionDemonRuins", "Entity Sound", 0, 0, 0)
-expldemonruins.SetSound("../../Sounds/Fireball-Fire.wav")
+expldemonruins.SetSound(AutomatedAssets("../../Sounds/Fireball-Fire.wav"))
 expldemonruins.Volume=1.0
 expldemonruins.MinDistance=5000 #1000
 expldemonruins.MaxDistance=50000 #25000
 
 sndchispaslibro=Bladex.CreateEntity("SonidoChispasLibro", "Entity Sound", 0, 0, 0)
-sndchispaslibro.SetSound("../../Sounds/efecto-ruina-bucle1.wav")
+sndchispaslibro.SetSound(AutomatedAssets("../../Sounds/efecto-ruina-bucle1.wav"))
 sndchispaslibro.Volume=0.0
 sndchispaslibro.MinDistance=5000 #1000
 sndchispaslibro.MaxDistance=50000 #25000
 
 sndfuegodemon=Bladex.CreateEntity("SonidoFuegoDemon", "Entity Sound", 0, 0, 0)
-sndfuegodemon.SetSound("../../Sounds/fuego-loop.wav")
+sndfuegodemon.SetSound(AutomatedAssets("../../Sounds/fuego-loop.wav"))
 sndfuegodemon.Volume=0.0
 sndfuegodemon.MinDistance=5000 #1000
 sndfuegodemon.MaxDistance=50000 #25000
