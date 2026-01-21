@@ -14,34 +14,46 @@ BAR_X=64.0
 BAR_Y=425.0
 BAR2_Y=356.0
 ScaledCenteredScale = 0.62
+INTERVAL = 10
+ProgressBarInst = None
+opened_files_delta = 0
 
 class BaseProgressBar:
   "Clase base de las barras de progreso de carga"
 
   def __init__(self,total_increments):
+    global ProgressBarInst
     self.total_increments=total_increments
     self.RectSize=(512.0,16.0)
     self.SolidBar=0
     self.hBmpBar=None
     self.PrefixText="Loading "
     self.Mode = "ScaledCentered"
+    self.filehook = 0
+    self.n_file = 0
 
     if not self.SolidBar:
       Bladex.ReadBitMap("../../Data/Gray_progress_bar.bmp","LoadBarBmp")
       self.hBmpBar=Raster.BmpHandle("LoadBarBmp")
 
+    ProgressBarInst = self
+
   def __del__(self):
-    self.Clear()
+    pass
 
   def Clear(self):
-    pass
+    global ProgressBarInst
+    ProgressBarInst = None
+    print "Opened Input Files:", BBLib.GetnOpenedInputFiles(), self.n_file
 
 
   def BarIncrement(self,n_file,text):
 
-    if Raster.ClassIdName()=="B_Direct3DRasterDevice":
-      if n_file%10:
-        return
+    if n_file%INTERVAL:
+      return
+    # if Raster.ClassIdName()=="B_Direct3DRasterDevice":
+    #   if n_file%10:
+    #     return
 
     str="%s%s."%(self.PrefixText,text)
     percentage=float(n_file)/float(self.total_increments)
@@ -100,7 +112,7 @@ class BaseProgressBar:
     Raster.SetRasterParameter("endscene","")
     # 3D Drawing Ends
 
-    Raster.SysWrite(10,h-25,str,240,240,20)
+    # Raster.SysWrite(10,h-25,str,240,240,20)
     Raster.SwapBuffers()
 
 
@@ -164,7 +176,7 @@ class ProgressBar(BaseProgressBar,BackImageBar):
     self.cleared=0
 
     if auto_remove:
-      Bladex.AddScheduledFunc(0,self.Clear,())
+      Bladex.AddScheduledFunc(-1,self.Clear,())
 
 
   def Clear(self):
@@ -189,10 +201,11 @@ class AutoProgressBar(BaseProgressBar,BackImageBar):
     self.PrefixText=prefix_text
 
   def Increment(self,text=""):
-    self.CurrentPoint=self.CurrentPoint+1
     self.BarIncrement(self.CurrentPoint,text)
+    self.CurrentPoint=self.CurrentPoint+1
 
   def Clear(self):
+    # self.BarIncrement(self.total_increments*INTERVAL, "")
     BaseProgressBar.Clear(self)
     BackImageBar.Clear(self)    
 
@@ -202,7 +215,7 @@ class ECTSProgressBar(ProgressBar):
     self.updated=0
 
   def BarIncrement(self,n_file,text):
-
+    n_file = n_file + opened_files_delta
     if n_file>self.total_increments/2 and not self.updated:
       BBLib.RemoveOnOpenInputFileFunc()
       back_image=BBLib.B_BitMap24()
@@ -226,9 +239,12 @@ class ECTSProgressBar(ProgressBar):
 
 
   def BarIncrement2(self,n_file,text):
-    if Raster.ClassIdName()=="B_Direct3DRasterDevice":
-      if n_file%10:
-        return
+    # self.n_file = n_file
+    if n_file%INTERVAL:
+      return
+    # if Raster.ClassIdName()=="B_Direct3DRasterDevice":
+    #   if n_file%10:
+    #     return
 
     str="%s%s."%(self.PrefixText,text)
     percentage=float(n_file)/float(self.total_increments)
@@ -308,7 +324,7 @@ class LanguageProgressBar(ECTSProgressBar):
     self.updated=0
 
   def BarIncrement(self,n_file,text):
-
+    n_file = n_file + opened_files_delta
     if n_file>self.total_increments/2 and not self.updated:
       BBLib.RemoveOnOpenInputFileFunc()
       back_image=BBLib.B_BitMap24()
@@ -350,10 +366,11 @@ class DemoProgressBar(ECTSProgressBar):
     ProgressBar.__init__(self,total_increments,self.path + background_image)
 
   def BarIncrement(self,n_file,text):
+    n_file = n_file + opened_files_delta
 
-    if Raster.ClassIdName()=="B_Direct3DRasterDevice":
-      if n_file%10:
-        return
+    # if Raster.ClassIdName()=="B_Direct3DRasterDevice":
+    #   if n_file%10:
+    #     return
 
     if (n_file>self.segment3 and self.updated==3) or (n_file>self.segment2 and self.updated==2) or (n_file>self.segment1 and self.updated==1):
       BBLib.RemoveOnOpenInputFileFunc()

@@ -71,7 +71,8 @@ def LoadGameAux(slot_num):
     mod_dir = string.strip(lines[3])
     printx("%s, %s" % (repr(mod_dir), map_dir))
 
-    lines = ["import sys", "isLumen = 1"]
+    # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:LoadStartTime")
+    lines = ["import sys;import time;b3028472_681f_5be2_8aeb_c7011b166583=time.time();isLumen = 1"]
     lumen_root = Lumenx.GetLumenRoot()
     if mod_dir:
         mod_root = os.path.join(lumen_root, Lumenx.ModListPath, mod_dir)
@@ -104,6 +105,8 @@ def LoadGameAux(slot_num):
         "InNewMap = %d"
         % (string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
         "execfile(%s)" % (repr(string.replace(save_file, "\\", "/")),),
+        "print 'Load Time =', round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
+        "del b3028472_681f_5be2_8aeb_c7011b166583",
     ]
 
     Bladex.CloseLevel(string.join(lines, ";"), new_map_dir)

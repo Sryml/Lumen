@@ -403,9 +403,6 @@ def EndOfLevel():
 	ObjStore.CheckStore()
 
 	import Language
-	import SplashImage
-	scr_name="../../Data/Menu/Save/"+Language.Current+"/Cerrando_hi.jpg"
-	SplashImage.ShowImage(scr_name,0)
 
 	print "EndOfLevel()"
 

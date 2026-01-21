@@ -467,7 +467,7 @@ class EntitiesStateAux:
         for i in self.Entities:
             global v__entities_saved
             v__entities_saved=v__entities_saved+1
-            if not v__entities_saved%5:
+            if not v__entities_saved%10: # by Sryml
                 file.write('__load_bar.Increment("Entity")\n')
             i.SaveStatePass2(file,aux_dir)
 
@@ -790,10 +790,9 @@ class WorldState:
         file.write('Bladex.PauseSoundSystem()\n')
 
         file.write('Bladex.BeginLoadGame()\n')
-        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/5,'"../../Data/Menu/Save/" + Language.Current + "/Cargando_hi.jpg"')) # by Sryml
+        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/10 + 40,'"../../Data/Menu/Save/" + Language.Current + "/Cargando_hi.jpg"')) # by Sryml
         file.write('GameStateAux.aux_dir="%s"\n'%(aux_dir,))
 
-        # by Sryml
         # file.write('InNewMap=0\n')
         # file.write('if Bladex.GetCurrentMap()!="%s":\n'%(Bladex.GetCurrentMap(),))
         # file.write('  InNewMap=1\n')
@@ -801,31 +800,52 @@ class WorldState:
 
         file.write('print "InNewMap",InNewMap\n')
 
-        # by Sryml
         # file.write('Bladex.SetCurrentMap(\"%s\")\n'%(Bladex.GetCurrentMap(),))
         # file.write('sys.path.insert(0,os.getcwd())\n')
-        file.write('Bladex.SetSaveInfo(%s)\n'%(str(Bladex.GetSaveInfo(),)))
+        file.write('Bladex.SetSaveInfo(%s)\n\n'%(str(Bladex.GetSaveInfo(),)))
 
+        # ---------------------------
+        # by Sryml: start
+        # ---------------------------
         load_bar.Increment("MMPs")
-        # ResFiles=self.GetMMPFiles()
-        file.write('__load_bar.Increment("MMPs")\n')
-        file.write('GameStateAux.LoadMMPs(%s)\n' % Lumenx.GetMMPFiles()) # by Sryml
-        file.write('__load_bar.Increment()\n')
+        file.write("""
+interval = 2
+files = %s
+for i in range(len(files)):
+    if i %% interval == 0:
+        __load_bar.Increment("MMPs")
+    BBLib.ReadMMP(files[i])
 
+""" % Lumenx.GetMMPFiles())
+        #
         load_bar.Increment("BMPs")
-        # ResFiles=self.GetBMPFiles()
-        file.write('__load_bar.Increment("BMPs")\n')
-        # self.SaveList('GameStateAux.LoadBMPs(%s)\n',ResFiles,file)
-        file.write('GameStateAux.LoadBMPs(%s)\n' % Lumenx.GetBMPFiles()) # by Sryml
-        file.write('__load_bar.Increment()\n')
+        file.write("""
+interval = 5
+files = %s
+keys = files.keys()
+for i in range(len(keys)):
+    if i %% interval == 0:
+        __load_bar.Increment("BMPs")
+    Bladex.ReadBitMap(files[keys[i]], keys[i])
 
-
+""" % Lumenx.GetBMPFiles())
+        #
         load_bar.Increment("AlphaBMPs")
-        # ResFiles=self.GetAlphaBMPFiles()
-        file.write('__load_bar.Increment("AlphaBMPs")\n')
-        # self.SaveList('GameStateAux.LoadAlphaBMPs(%s)\n',ResFiles,file)
-        file.write('GameStateAux.LoadAlphaBMPs(%s)\n' % Lumenx.GetAlphaBMPFiles()) # by Sryml
-        file.write('__load_bar.Increment()\n')
+        file.write("""
+interval = 5
+files = %s
+keys = files.keys()
+for i in range(len(keys)):
+    if i %% interval == 0:
+        __load_bar.Increment("AlphaBMPs")
+    Bladex.ReadAlphaBitMap(files[keys[i]], keys[i])
+
+""" % Lumenx.GetAlphaBMPFiles())
+        #
+        file.write("del interval, files, keys, i\n\n")
+        # ---------------------------
+        # by Sryml: end
+        # ---------------------------
 
         load_bar.Increment("Sounds")
         file.write('__load_bar.Increment("Sounds")\n')
@@ -962,7 +982,7 @@ class WorldState:
         file.write('try:\n')
         file.write('  execfile("DefFuncs.py")\n')
         file.write('except IOError:\n')
-        file.write('  print "Can�t find DefFuncs.py"\n\n\n')
+        file.write('  print "Cannot find DefFuncs.py"\n\n\n')
         file.write('__load_bar.Increment()\n')
 
         file.write('try:\n')
@@ -1190,6 +1210,7 @@ class WorldState:
  
         os.rename(imageTempPath,imagePath)
         # os.rename(svTempPath, svPath)
+        load_bar.Clear()
         return 1
 
 

@@ -70,6 +70,9 @@ class _DATA:
     res_mmps = []
     res_bmps = {}
     res_alpha_bmps = {}
+    #
+    bod_inspector_loaded = 0
+    opened_files_delta = 0  # 修正量
 
 
 ######### Initialization #########
@@ -255,6 +258,7 @@ class __FunctionDecorator:
         return self.RawFunc.ReadBOD(path)
 
     def ReadMMP(self, path):
+        path = string.replace(path, "\\", "/")
         if path not in _DATA.res_mmps:
             _DATA.res_mmps.append(path)
         path = AutomatedAssets(path)
@@ -262,6 +266,9 @@ class __FunctionDecorator:
 
     def GetCurrentLanguage(self):
         return _DATA.config["Language"]
+
+    def GetnOpenedInputFiles(self):
+        return self.RawFunc.GetnOpenedInputFiles() + _DATA.opened_files_delta
 
     # BUIxc module
     def B_FontServer_CreateBFont(self, this, arg0, *args):
@@ -514,7 +521,15 @@ def AutomatedAssets(path, root_priority=""):
 
 def BodInspector():
     import BBLib
+    import LoadBar
 
+    if _DATA.bod_inspector_loaded:
+        return
+
+    _DATA.opened_files_delta = BBLib.GetnOpenedInputFiles()
+    LoadBar.opened_files_delta = _DATA.opened_files_delta
+    if LoadBar.ProgressBarInst and LoadBar.ProgressBarInst.filehook:
+        BBLib.RemoveOnOpenInputFileFunc()
     for root_dir in (_DATA.asset_path_model,) + _DATA.asset_path:
         if not root_dir:
             continue
@@ -526,7 +541,8 @@ def BodInspector():
                 f_path = string.strip(line)
                 if f_path:
                     BBLib.ReadBOD(f_path)
-                    BBLib.LoadBOD(string.strip(f.readline()))
+                    f.readline()
+                    # BBLib.LoadBOD(string.strip(f.readline()))
                 line = f.readline()
             f.close()
         else:
@@ -537,6 +553,11 @@ def BodInspector():
             BodLink.close()
             if tell == 0:
                 os.remove(BodLink.name)
+    #
+    _DATA.bod_inspector_loaded = 1
+    BBLib.ResetnOpenedInputFiles()
+    if LoadBar.ProgressBarInst and LoadBar.ProgressBarInst.filehook:
+        BBLib.SetOnOpenInputFileFunc(LoadBar.ProgressBarInst.BarIncrement)
 
 
 def AutoLoadAssets(root_dir, BodLink, depth=0):
@@ -562,7 +583,7 @@ def AutoLoadAssets(root_dir, BodLink, depth=0):
             bodfile.close()
 
             BBLib.ReadBOD(f_path)
-            BBLib.LoadBOD(kind)
+            # BBLib.LoadBOD(kind)
             if BodLink:
                 BodLink.write(f_path + "\n")
                 BodLink.write(kind + "\n")
@@ -738,6 +759,8 @@ def LoadLevel(map_dir, mod_dir=""):
     execstr = [
         "import Bladex",
         "import sys",
+        "import time",
+        "b3028472_681f_5be2_8aeb_c7011b166583=time.time()",
         "Bladex.SetAppMode('Game')",
         "Bladex.BeginLoadGame()",
         #
@@ -783,8 +806,17 @@ def LoadLevel(map_dir, mod_dir=""):
         "isMenuAppMode =  Bladex.GetAppMode() == 'Menu'",
         "Bladex.DoneLoadGame()",
         "isMenuAppMode and Bladex.SetAppMode('Menu')",
+        "print 'Load Time =', round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
+        "del b3028472_681f_5be2_8aeb_c7011b166583",
         "del isMenuAppMode",
     ]
+    #
+    import SplashImage
+    import Language
+
+    scr_name = "../../Data/Menu/Save/" + Language.Current + "/Cerrando_hi.jpg"
+    SplashImage.ShowImage(scr_name, 0)
+    #
     Bladex.BeginLoadGame()
     os.chdir(map_path)
     Bladex.CloseLevel(
@@ -842,6 +874,7 @@ def ReadLevel(file_name):
             if len(lst) != 2:
                 continue
             key, val = lst
+            val = string.replace(val, "\\", "/")
             if key != "GammaC":
                 if key in ("Bitmaps", "WorldDome"):
                     if val not in _DATA.res_mmps:
@@ -1001,6 +1034,7 @@ for obj, name in (
     (BBLibc, "ReadBOD"),
     (BBLibc, "ReadMMP"),
     (BBLibc, "GetCurrentLanguage"),
+    (BBLibc, "GetnOpenedInputFiles"),
     (BUIxc, "B_FontServer_CreateBFont"),
     (BUIxc, "new_B_TextWidget"),
     (BUIxc, "new_B_BitmapWidget"),

@@ -10,6 +10,7 @@
 
 import Lumenx
 import BBLib
+import BUIx
 import os
 
 from Lumenx import printx, Raisex
@@ -74,14 +75,14 @@ else:
     assert False, "Unsupported game version"
 
 
-if Current == "Chinese":
-    MapaDeLetras = "../../Data/fontCN32.fnt"
-    MapaDeLetrasHi = "../../Data/fontCN42.fnt"
-    LetrasMenu = "../../Data/fontCN18.fnt"
-    LetrasMenuSmall = "../../Data/fontCN32.fnt"
-    LetrasMenuBig = "../../Data/fontCN32.fnt"
-    MenuGrasHi = "../../Data/fontCN72.fnt"
-    CtrlMenu = "../../Data/fontCN16.fnt"
+# if Current == "Chinese":
+#     MapaDeLetras = "../../Data/fontCN32.fnt"
+#     MapaDeLetrasHi = "../../Data/fontCN42.fnt"
+#     LetrasMenu = "../../Data/fontCN18.fnt"
+#     LetrasMenuSmall = "../../Data/fontCN32.fnt"
+#     LetrasMenuBig = "../../Data/fontCN32.fnt"
+#     MenuGrasHi = "../../Data/fontCN72.fnt"
+#     CtrlMenu = "../../Data/fontCN16.fnt"
 # elif Current == "Russian":
 #     MapaDeLetras = "../../Data/fontRu16.fnt"
 #     MapaDeLetrasHi = "../../Data/fontRu32.fnt"
@@ -97,6 +98,11 @@ if Current == "Chinese":
 #     LetrasMenuBig="../../Data/letras_menu_gra.bmp"
 #     MenuGrasHi="../../Data/letras_menu_gras_hi.bmp"
 
+#
+font_server_behaviour=BUIx.B_FontServer()
+font_behaviour_title=font_server_behaviour.CreateBFont(FontTitle)
+font_behaviour_common=font_server_behaviour.CreateBFont(FontCommon)
+#
 
 def CheckFallback():
     if not os.path.exists("../../SOUNDS/" + Current + "/kashgar-antepasados.ogg"):
