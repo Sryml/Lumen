@@ -34,7 +34,7 @@ if not os.path.exists("../../AnmPak"):
     os.mkdir("../../AnmPak")
 #
 import Menu
-import BODLoader
+from LumenLib import BODLoader
 
 BODLoader.Init()
 

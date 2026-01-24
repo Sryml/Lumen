@@ -12,12 +12,12 @@ import Language
 import BBLib
 import BUIx
 import Raster
-import UtilsWidget
 import BCopy
 import Menu
 import MenuWidget
 
 from Lumenx import printx, Raisex
+from LumenLib import UtilsWidget
 
 # ----------------------------------
 BackImage = BBLib.B_BitMap24()
@@ -78,6 +78,16 @@ def OnChangeMenu():
         Menu.GetMenuWidget("NOTE")[0].SetVisible(1)
     else:
         Menu.GetMenuWidget("NOTE")[0].SetVisible(0)
+
+
+#
+def GetInvStyleOption(this):
+    return this.Options.index(_DATA.menu_config["InventoryStyle"])
+
+
+def SetInvStyle(option):
+    _DATA.menu_config["InventoryStyle"] = option
+    OnChangeMenu()
 
 
 #
@@ -143,11 +153,22 @@ ModMenu = {
             "OnLeave": LeaveMenu,
             "ListDescr": [
                 {
+                    "Name": "InventoryStyle",
+                    "Text": MenuText.GetMenuText("Inventory Style") + ":",
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": "0.208%",
+                    "Kind": MenuWidget.B_MenuItemOption,
+                    "Options": ["Original", "Improved"],
+                    "SelOptionFunc2": GetInvStyleOption,
+                    "Command": SetInvStyle,
+                },
+                {
                     "Name": "Cache",
                     "Text": MenuText.GetMenuText("Cache") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.208%",  # "1em",
+                    "VSep": "0.5em",
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Enabled", "Disabled"],
                     "SelOptionFunc2": GetCacheOption,

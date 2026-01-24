@@ -137,7 +137,7 @@ BackGamepadOption = {"Name"    : MenuText.GetMenuText("BACK"),
 			 }
 
 # -----------------------------------
-import BODLoader
+from LumenLib import BODLoader
 # -----------------------------------
 
 # Map Loading Upong Menu Request---
