@@ -16,7 +16,6 @@ import Language
 import MemPersistence
 
 
-
 NotSave          = []
 ModulesToBeSaved = []
 
@@ -1418,13 +1417,20 @@ for i in range(len(keys)):
         "Saves modules in the global scope."
 
         import string
-        OmitModules=["__builtins__","Scorer","Menu","GameText","GameState","GameStateAux"]
+        OmitModules=["__builtin__","Scorer","Menu","GameText","GameState","GameStateAux"]
         global_mods=self.GetGlobalsAux(types.ModuleType)
         file.write('\n# Modules\n')
         try:
             for i in global_mods:
-                if i[0] not in OmitModules and string.find(i[0],"AnimationSet")==-1 and string.find(i[0],"Widget")==-1:
-                    file.write('import %s\n'%(i[0],))
+                # by Sryml
+                m_name = i[1].__name__
+                if m_name not in OmitModules and string.find(m_name,"AnimationSet")==-1 and string.find(m_name,"Widget")==-1:
+                    idx = string.rfind(m_name,".")
+                    if idx == -1:
+                        file.write('import %s\n'%(m_name,))
+                    else:
+                        file.write('from %s import %s\n' % (m_name[:idx], m_name[idx+1:]))
+
         except IndexError:
             print "SaveModules: i exceeded length"
             return 0
