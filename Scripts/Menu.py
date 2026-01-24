@@ -432,7 +432,7 @@ def SetConfNewPass(name):
 
 
 def SaveConfiguration():
-	cfgfile=open('../../Config/GameCfg.py','w')
+	cfgfile=open(os.path.join(Lumenx.GetLumenRoot(),"Config/GameCfg.py"),'w')
 	cfgfile.write('\n# Configuration settings... be carefull!\n\n\n')
 	cfgfile.write("Bladex.SetBloodLevel("+`Bladex.GetBloodLevel()`+')\n')
 	cfgfile.write("Bladex.SetMutilationLevel("+`Bladex.GetMutilationLevel()`+')\n')
@@ -2758,7 +2758,7 @@ def GetMenuItem(way, tr=1):
 
 def InitMenuKeys():
     try:
-      execfile("../../Config/GameCfg.py")
+      execfile(os.path.join(Lumenx.GetLumenRoot(),"Config/GameCfg.py"))
       print "Menu.py -> Executed GameCfg.py"
     except:
       print "Menu.py -> No GameCfg.py found"

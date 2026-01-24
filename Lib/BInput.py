@@ -10,7 +10,7 @@ from Lumenx import printx
 __CurrentInputActions = "Default"
 __InputActionsSet = {}  # type: dict[str,B_InputActionsPtr]
 __InputActionsNum = 0
-__AutoUniqueization = 0
+__AutoUniqueization = 0 #FIXME: Enabling it will cause some button functions to fail, such as the attack function.
 
 
 def GetInternalName(ID, action_name):

@@ -20,6 +20,7 @@ MAJOR_VER = 2
 
 # private database
 class _DATA:
+    control_character = "Player1"
     config = {}
     config_default = {
         "Language": "English",
@@ -64,8 +65,12 @@ class _DATA:
     mod_root = ""
     lumen_root = ""
     blade_root = ""
-    asset_path = ()
-    asset_path_model = ""
+    asset_path = []
+    asset_path_anim = []
+    asset_path_image = []
+    asset_path_model = []
+    asset_path_sound = []
+    asset_path_other = []
     #
     res_mmps = []
     res_bmps = {}
@@ -98,11 +103,11 @@ def __fn():
     root_paths = []
     if mod_root == lumen_root:
         _DATA.current_mod = ""
-        _DATA.asset_path = (lumen_root, blade_root)
+        _DATA.asset_path = [lumen_root, blade_root]
     else:
         _DATA.current_mod = os.path.basename(mod_root)
         root_paths.append(mod_root)
-        _DATA.asset_path = (mod_root, lumen_root, blade_root)
+        _DATA.asset_path = [mod_root, lumen_root, blade_root]
     # _DATA.current_map = os.path.basename(current_dir)
 
     root_paths.append(lumen_root)
@@ -478,7 +483,7 @@ def AssocKey(action_name, device, key, on_press=1):
     return 1
 
 
-def AutomatedAssets(path, root_priority=""):
+def AutomatedAssets(path, root_priority=[]):
     """AutomatedAssets("../../3DObjs/3dObjs.mmp")\n"""
     if path == "":
         return path
@@ -495,26 +500,39 @@ def AutomatedAssets(path, root_priority=""):
     result = re.match(r"^(\.\.[/\\])*", base_path).group(0)
     # result = string.replace(result, "\\", "/")  # type: ignore
     base_root = os.path.normpath(os.path.join(_DATA.mod_root, result))
+    base_root_len = len(base_root)
     if result:
-        num = len(base_root)
         for root in _DATA.asset_path:
-            if len(root) >= num:
+            num = len(root)
+            if num >= base_root_len:
                 base_root = root
+                base_root_len = num
                 break
         base_path = os.path.relpath(path, base_root)
     #
     new_path = path
-    for root in (root_priority,) + _DATA.asset_path:
+    for root in root_priority:
         if not root:
             continue
         # if root == base_root or os.path.commonprefix([root, base_root]) != root:
-        new_path = os.path.join(root, base_path)
-        if os.path.exists(new_path):
+        _path = os.path.join(root, base_path)
+        if os.path.exists(_path):
+            new_path = _path
             break
         # elif check_ext:
         #     new_path = os.path.splitext(new_path)[0] + check_ext
         #     if os.path.exists(new_path):
         #         return new_path
+    # 如果没有发生break
+    else:
+        if not os.path.exists(new_path):
+            for root in _DATA.asset_path:
+                if len(root) < base_root_len:
+                    continue
+                _path = os.path.join(root, base_path)
+                if os.path.exists(_path):
+                    new_path = _path
+                    break
     #
     return new_path
 
@@ -530,7 +548,7 @@ def BodInspector():
     LoadBar.opened_files_delta = _DATA.opened_files_delta
     if LoadBar.ProgressBarInst and LoadBar.ProgressBarInst.filehook:
         BBLib.RemoveOnOpenInputFileFunc()
-    for root_dir in (_DATA.asset_path_model,) + _DATA.asset_path:
+    for root_dir in _DATA.asset_path_model + _DATA.asset_path:
         if not root_dir:
             continue
         BodLink = os.path.join(root_dir, "BodLink.list")
@@ -636,6 +654,10 @@ def GetBMPFiles():
 
 def GetConfig():
     return _DATA.config
+
+
+def GetControlCharacter():
+    return Bladex.GetEntity(_DATA.control_character)
 
 
 def GetCurrentMap():
@@ -956,6 +978,11 @@ def SetBladeRoot(path):
     _DATA.blade_root = path
 
 
+def SetControlCharacter(ent):
+    if type(ent) == type(Bladex.GetEntity("Camera")):
+        _DATA.control_character = ent.Name
+
+
 def SetCurrentMap(map_dir):
     _DATA.current_map = map_dir
     return Bladex_raw.SetCurrentMap(map_dir)
@@ -1076,6 +1103,7 @@ GetAlphaBMPFiles
 GetBladeRoot
 GetBMPFiles
 GetConfig
+GetControlCharacter
 GetCurrentMap
 GetCurrentMod
 GetEntity
@@ -1105,6 +1133,7 @@ RemoveInputAction
 SaveAnmRaceData
 SaveConfig
 SetBladeRoot
+SetControlCharacter
 SetCurrentMap
 SetCurrentMod
 SetGhostSectorGroupSound
