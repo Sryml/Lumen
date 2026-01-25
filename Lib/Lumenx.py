@@ -310,6 +310,7 @@ __bladex_decorators = [
     "CreateSound",
     "GetCurrentMap",
     "GetEntity",
+    "GetResolution",
     "GetTimeActionHeld",
     "LoadAnmRaceData",
     "LoadLevel",
@@ -488,10 +489,10 @@ def AutomatedAssets(path, root_priority=[]):
     if path == "":
         return path
     #
-    # ext = os.path.splitext(path)[1]
-    # check_ext = ""
-    # if string.lower(ext) in (".wav", ".mp3"):
-    #     check_ext = ".ogg"
+    ext = os.path.splitext(path)[1]
+    check_ext = ""
+    if string.lower(ext) in (".wav", ".mp3"):
+        check_ext = ".ogg"
     #
     base_path = os.path.relpath(path, _DATA.mod_root)
     if base_path is None:
@@ -519,10 +520,11 @@ def AutomatedAssets(path, root_priority=[]):
         if os.path.exists(_path):
             new_path = _path
             break
-        # elif check_ext:
-        #     new_path = os.path.splitext(new_path)[0] + check_ext
-        #     if os.path.exists(new_path):
-        #         return new_path
+        elif check_ext:
+            _path = os.path.splitext(_path)[0] + check_ext
+            if os.path.exists(_path):
+                new_path = _path
+                break
     # 如果没有发生break
     else:
         if not os.path.exists(new_path):
@@ -533,6 +535,11 @@ def AutomatedAssets(path, root_priority=[]):
                 if os.path.exists(_path):
                     new_path = _path
                     break
+                elif check_ext:
+                    _path = os.path.splitext(_path)[0] + check_ext
+                    if os.path.exists(_path):
+                        new_path = _path
+                        break
     #
     return new_path
 
@@ -679,6 +686,10 @@ def GetGameVersion():
     return _DATA.game_version
 
 
+def GetInventoryStyle():
+    return _DATA.config["InventoryStyle"]
+
+
 def GetLumenRoot():
     """Returns the root path of Lumen"""
     return _DATA.lumen_root
@@ -709,6 +720,14 @@ def GetPostloadCB(map_path):
 
 def GetPreloadCB(map_path):
     return _DATA.preload_callbacks.get(map_path, [])
+
+
+def GetResolution():
+    import Raster
+
+    if _DATA.game_version == CLASSIC_VER:
+        return Raster.GetWindowSize()
+    return Bladex_raw.GetResolution()
 
 
 def GetServicePort():
@@ -1108,6 +1127,7 @@ GetCurrentMap
 GetCurrentMod
 GetEntity
 GetGameVersion
+GetInventoryStyle
 GetLumenRoot
 GetMapListItem
 GetMapListPath
@@ -1115,6 +1135,7 @@ GetMMPFiles
 GetModRoot
 GetPostloadCB
 GetPreloadCB
+GetResolution
 GetServicePort
 GetTimeActionHeld
 IsCacheEnabled
