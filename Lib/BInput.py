@@ -1,16 +1,23 @@
-# This file was created automatically by SWIG.
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
 
 # Refactored by Sryml
 # Date: 2024-04-27
 
+# This file was created automatically by SWIG.
 
 import BInputc
+import BCopy
 from Lumenx import printx
 
 __CurrentInputActions = "Default"
 __InputActionsSet = {}  # type: dict[str,B_InputActionsPtr]
 __InputActionsNum = 0
-__AutoUniqueization = 0 #FIXME: Enabling it will cause some button functions to fail, such as the attack function.
+__AutoUniqueization = 0  # FIXME: Enabling it will cause some button functions to fail, such as the attack function.
 
 
 def GetInternalName(ID, action_name):
@@ -198,6 +205,12 @@ class B_InputActionPtr:
     def GetTimeActivated(self):
         val = BInputc.B_InputAction_GetTimeActivated(self.this)
         return val
+
+    def GetAssociatedKeys(self, device):
+        """[LUMEN] Added"""
+        if self.name == "NULL":
+            return []
+        return BCopy.deepcopy(self.action["Devices"].get(device, []))
 
     def CurrentlyActivated(self):
         val = BInputc.B_InputAction_CurrentlyActivated(self.this)
@@ -472,6 +485,10 @@ class B_InputManagerPtr:
         return globals()["__CurrentInputActions"]
         # val = BInputc.B_InputManager_GetInputActionsSet(self.this)
         # return val
+
+    def GetAllInputActionsSet(self):
+        """[LUMEN] Added"""
+        return self.InputActionsSet.keys()
 
     def __repr__(self):
         return "<C B_InputManager instance>"
