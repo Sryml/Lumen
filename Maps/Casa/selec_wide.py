@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Fixed the input set issue in the character selection interface
+#
+
 import Menu
 import Bladex
 import Scorer
@@ -965,6 +975,7 @@ import BInput
 
 InputManager=BInput.GetInputManager()
 LastOne = InputManager.GetInputActionsSet()
+InputManager.AddInputActionsSet("CharacterSelection")
 InputManager.SetInputActionsSet("CharacterSelection")
 
 Bladex.AddInputAction("Retrocede",0)
@@ -989,12 +1000,13 @@ def RedefineKeys():
 	Bladex.AssocKey("Avanza","Gamepad","ButtonLeft")
 	Bladex.AssocKey("Selecciona","Gamepad","ButtonSouth")
 	Bladex.AssocKey("Cancelar","Gamepad","ButtonEast")
-	Bladex.AddBoundFunc("Retrocede",PressKeyX)
-	Bladex.AddBoundFunc("Avanza",PressKeyZ)
-	Bladex.AddBoundFunc("Selecciona",PressKeyEnter)
-	Bladex.AddBoundFunc("Cancelar",PressKeyEsc)
 
 	InputManager.SetInputActionsSet(LastOne)
+
+Bladex.AddBoundFunc("Retrocede",PressKeyX)
+Bladex.AddBoundFunc("Avanza",PressKeyZ)
+Bladex.AddBoundFunc("Selecciona",PressKeyEnter)
+Bladex.AddBoundFunc("Cancelar",PressKeyEsc)
 
 KeybWidget.AdditionalKeysCallBack = RedefineKeys
 
@@ -1007,7 +1019,6 @@ HouseActive = 0
 # funcion callback indica que El Usuario Presiona La Tecla Escape
 def ElUsuarioPresionaLaTeclaEscape(Salio):
     print "Recompute layout"
-    InputManager.SetInputActionsSet("CharacterSelection")
 
     Size_X, Size_Y = Raster.GetUnscaledSize()
     BannerScale = Size_Y / 1080.0

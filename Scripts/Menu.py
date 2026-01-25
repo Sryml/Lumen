@@ -6,6 +6,7 @@
 #
 # Change list:
 # * Refactor text UI
+# * Fixed the input set issue in the character selection interface
 #
 
 # Modified 03/Mar/2000 Rod Wolfson
@@ -1222,6 +1223,7 @@ def ActivateMenu(caller_id = None):
   # Do some python garbage collection
   ObjStore.CheckStore()
 
+  InputManager=BInput.GetInputManager()
   if AppMode=="Game" or AppMode=="Demo":
 
     if AppMode=="Demo":
@@ -1246,7 +1248,6 @@ def ActivateMenu(caller_id = None):
 
     _MainMenu.MenuStack.Push(_MainMenu.wMenu)
 
-    InputManager=BInput.GetInputManager()
     oldInputActionsSet=InputManager.GetInputActionsSet()
     InputManager.SetInputActionsSet("Menu")
 
@@ -1312,7 +1313,6 @@ def ActivateMenu(caller_id = None):
     Bladex.AssocKey("Menu Next Strong","Keyboard","Tab")
     Bladex.AddBoundFunc("Menu Next Strong",_MainMenu.MenuNextItemStrong)
 
-    InputManager=BInput.GetInputManager()
     InputManager.SetInputActionsSet("Menu")
     # if Reference.DEMO_MODE==0:
     #     if netgame.GetNetState() == 0:
@@ -1345,6 +1345,11 @@ def ActivateMenu(caller_id = None):
       MENU_PREACTIVATED=0
       TB_ACTIVATED=0
       Raster.SetTextShadow(2, 2)
+    #
+    if string.lower(Bladex.GetCurrentMap()) == "casa":
+      InputManager.SetInputActionsSet("CharacterSelection")
+    else:
+      InputManager.SetInputActionsSet("Default")
 
   else:
     print "Invalid AppMode"
@@ -1367,6 +1372,7 @@ def PreActivateMenu():
 
 def ClearMenuKeyb():
   InputManager=BInput.GetInputManager()
+  OldIASet = InputManager.GetInputActionsSet()
   InputManager.SetInputActionsSet("Menu")
 
   global _MainMenu
@@ -1387,7 +1393,7 @@ def ClearMenuKeyb():
   _MainMenu=None
   #print "Reference count _MainMenu: (Asignacion -> None)",sys.getrefcount(_MainMenu)
 
-  InputManager.SetInputActionsSet("Default")
+  InputManager.SetInputActionsSet(OldIASet)
 
 
 
