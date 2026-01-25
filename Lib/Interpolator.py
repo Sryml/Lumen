@@ -90,9 +90,13 @@ class Interp:
     self.Actions=[]
     self.name=name
     self.make_persistent=make_persistent
-    Bladex.SetAfterFrameFunc("Interp"+name,self.ExecuteActions)
-    self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
+    self.ObjId = ""
+    suffix = ""
+    if not make_persistent:
+      suffix = "[NPersistent]"
+    Bladex.SetAfterFrameFunc("Interp"+name+suffix,self.ExecuteActions)
     if make_persistent:
+      self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
       ObjStore.ObjectsStore[self.ObjId]=self
 
 
@@ -100,7 +104,9 @@ class Interp:
     self.Kill()
 
   def persistent_id(self):
-    return self.ObjId
+    if self.make_persistent:
+      return self.ObjId
+    return None
 
   def __getstate__(self):
     # Tiene que devolver c䮯 poder guardar el estado de la clase
@@ -115,7 +121,8 @@ class Interp:
     # Toma como par⮥tro lo que devuelve __getstate__() y debe recrear la clase
     if parm[0]==1:
       self.ObjId=parm[1]
-      ObjStore.ObjectsStore[self.ObjId]=self
+      if self.ObjId:
+        ObjStore.ObjectsStore[self.ObjId]=self
       self.Actions=parm[2]
       self.name=parm[3]
       self.make_persistent=parm[4]

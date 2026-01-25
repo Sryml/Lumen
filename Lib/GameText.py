@@ -57,11 +57,19 @@ def MapDescriptor(map):
   # else:
   #   return map
 
+FadeTextInstance = None # type: FadeText # type: ignore
 
 class FadeText(Interpolator.LinearInt):
   def __init__(self,init_val,end_val):
+    # by Sryml
+    global FadeTextInstance
+    if FadeTextInstance is not None:
+      FadeTextInstance.Interpolator.Actions = []
+      FadeTextInstance.Interpolator.__del__ = lambda: None
+    FadeTextInstance = self
+    #
     Interpolator.LinearInt.__init__(self,init_val,end_val)
-    self.Interpolator=Interpolator.Interp("FadeText")
+    self.Interpolator=Interpolator.Interp("FadeText", 0)
     time=Bladex.GetTime()
     self.Interpolator.AddAction(time,time+FADE_TIME,self)
     self.end_val=end_val
