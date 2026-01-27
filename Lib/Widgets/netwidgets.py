@@ -404,14 +404,14 @@ class B_ServerListWidget(ListWidget.B_ListWidget):
 
 		self.SetFocus_Idx(0)
 
-		self.UpArrow=BUIx.B_TextWidget(self,"UpArrow",chr(190),ScorerWidgets.font_server,Language.FontTitle)
+		self.UpArrow=BUIx.B_TextWidget(self,"UpArrow",Language.UpArrow,ScorerWidgets.font_server,Language.FontTitle)
 		self.AddWidget(self.UpArrow,77,0,BUIx.B_FrameWidget.B_FR_AbsoluteLeft,BUIx.B_FrameWidget.B_FR_Left,
 		                                 BUIx.B_FrameWidget.B_FR_AbsoluteTop,BUIx.B_FrameWidget.B_FR_Top)
 		self.UpArrow.SetColor(207,144,49)
 		self.UpArrow.SetAlpha(0.5)
 		self.UpArrow.SetScale(Language.MFontScale["M"])
 
-		self.DownArrow=BUIx.B_TextWidget(self,"DownArrow",chr(191),ScorerWidgets.font_server,Language.FontTitle)
+		self.DownArrow=BUIx.B_TextWidget(self,"DownArrow",Language.DownArrow,ScorerWidgets.font_server,Language.FontTitle)
 		self.AddWidget(self.DownArrow,77,0,BUIx.B_FrameWidget.B_FR_AbsoluteLeft,BUIx.B_FrameWidget.B_FR_Left,
 		                                   BUIx.B_FrameWidget.B_FR_AbsoluteBottom,BUIx.B_FrameWidget.B_FR_Bottom)
 		self.DownArrow.SetColor(207,144,49)

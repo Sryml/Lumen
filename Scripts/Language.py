@@ -75,6 +75,12 @@ elif Lumenx.GetGameVersion() == Lumenx.V109_VER:
 else:
     assert False, "Unsupported game version"
 
+if FontTitle[-4:] == ".fnt":
+    UpArrow = "½"
+    DownArrow = "¾"
+else:
+    UpArrow = chr(189)
+    DownArrow = chr(190)
 
 # if Current == "Chinese":
 #     MapaDeLetras = "../../Data/fontCN32.fnt"
