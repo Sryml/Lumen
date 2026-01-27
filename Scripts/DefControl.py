@@ -26,8 +26,8 @@ Bladex.AssocKey("Throw Release","Keyboard","Q",ON_RELEASE)
 Bladex.AssocKey("Sneak","Keyboard","Shift")
 Bladex.AssocKey("Use","Keyboard","E")
 Bladex.AssocKey("Toggle Weapons","Keyboard","CapsLock")
-Bladex.AssocKey("Cycle Weapons","Mouse","WheelUp")
-Bladex.AssocKey("Cycle Shields","Mouse","WheelDown")
+Bladex.AssocKey("Cycle Weapons","Mouse","F") # "WheelUp"
+Bladex.AssocKey("Cycle Shields","Mouse","R") # "WheelDown"
 Bladex.AssocKey("Cycle Objects","Keyboard","C")
 Bladex.AssocKey("Select Enemy","Keyboard","Tab")
 Bladex.AssocKey("SelectObj","Keyboard","Space")

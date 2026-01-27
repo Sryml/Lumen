@@ -110,6 +110,9 @@ ForeingDict = {
     "italian": "意大利语",
     "russian": "俄语",
     "spanish": "西班牙语",
+    "inventory style": "库存风格",
+    "original": "原版",
+    "improved": "改良的",
     # Blade Arena
     "dives into the lava": "坠入熔岩",
     "flies too high": "飞的太高了",

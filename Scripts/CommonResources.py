@@ -11,6 +11,7 @@ def Init():
     BBLib.ReadMMP('../../3dChars/Bar.mmp')
     BBLib.ReadMMP('../../3dobjs/weapons.mmp')
     BBLib.ReadMMP('../../3dobjs/genericos.mmp')
+    BBLib.ReadMMP('../../Data/UIWidgets.mmp')
 
     
     Bladex.BodInspector()

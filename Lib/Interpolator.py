@@ -66,8 +66,9 @@ class Interp:
     return action
 
   def RemoveAction(self,action):
-    print "Trying to remove action:",action
-    self.Actions.remove(action)
+    # print "Trying to remove action:",action
+    if action in self.Actions:
+      self.Actions.remove(action)
 
   def ExecuteActions(self,time):
     for i in self.Actions:

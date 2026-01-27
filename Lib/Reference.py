@@ -802,12 +802,21 @@ EnemiesScorerData={}
 EnemiesDefaultScorerData={}
 ######################################
 
-def GetObjectFriendlyName(obj_name):
-	try:
-		return DefaultSelectionData[obj_name][2]
-	except:
-		return "No Name"
+def GetObjectFriendlyName(kind):
+	name = "No Name"
+	if kind and DefaultSelectionData.has_key(kind):
+		name = DefaultSelectionData[kind][2]
+	return name
 
+def GetFriendlyNameByEntName(obj_name):
+	name = "No Name"
+	if EntitiesSelectionData.has_key(obj_name):
+		name = EntitiesSelectionData[obj_name][2]
+	else:
+		ent = Bladex.GetEntity(obj_name)
+		if ent:
+			name = GetObjectFriendlyName(ent.Kind)
+	return name
 
 ######################################
 # Throw Tables

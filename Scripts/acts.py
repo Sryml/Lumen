@@ -5,6 +5,8 @@ import BInput
 import string
 import MenuText
 
+from LumenLib import Inventory
+
 def GetKeyList(ActionName):
 	IManager=BInput.GetInputManager()
 	oldInputActionsSet=IManager.GetInputActionsSet()
@@ -117,9 +119,9 @@ def InitBindings (PlayerName):
 
 	if netgame.GetNetState() == 0: # not supported in multiplayer
 		Bladex.AddBoundFunc("SelectObj",SelectObjectFunc)
-		Bladex.AddBoundFunc("Cycle Weapons",CycleWeaponsFunc)
-		Bladex.AddBoundFunc("Cycle Shields",CycleShieldsFunc)
-		Bladex.AddBoundFunc("Cycle Objects",CycleObjectsFunc)
+		Bladex.AddBoundFunc("Cycle Weapons",Inventory.ShowRightInv)
+		Bladex.AddBoundFunc("Cycle Shields",Inventory.ShowLeftInv)
+		Bladex.AddBoundFunc("Cycle Objects",Inventory.ShowObjectInv)
 		Bladex.AddBoundFunc("UnSelectObj",SelectObjectFunc)
 		Bladex.AddBoundFunc("Select Enemy",SelectEnemyFunc)
 		Bladex.AddBoundFunc("Select Previous Enemy",SelectPreviousEnemyFunc)

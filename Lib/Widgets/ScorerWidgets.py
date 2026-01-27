@@ -982,7 +982,7 @@ if netgame.GetNetState() == 0:
         self.CycleFunc()
         #pdb.set_trace()
         if self.widget.wObjects[0].GetVisible():
-          name=Reference.GetObjectFriendlyName(self.widget.wObjects[0].GetBOD())
+          name=Reference.GetFriendlyNameByEntName(self.widget.wObjects[0].GetObjectName())
           power, defence, res, res_max= Reference.GiveObjectPowDefResResMaxData(self.widget.wObjects[0].GetObjectName())
           self.widget.SetText(name, power, defence, res, res_max)
         else:
@@ -1010,7 +1010,7 @@ if netgame.GetNetState() == 0:
       #print "InvControl:CycleElements()"
       self.SetBODs()
       if self.widget.wObjects[0].GetVisible():
-        name=Reference.GetObjectFriendlyName(self.widget.wObjects[0].GetBOD())
+        name=Reference.GetFriendlyNameByEntName(self.widget.wObjects[0].GetObjectName())
         power, defence, res, res_max= Reference.GiveObjectPowDefResResMaxData(self.widget.wObjects[0].GetObjectName())
         self.widget.SetText(name, power, defence, res, res_max)
       else:

@@ -32,11 +32,12 @@ class FontColor:
     Unfocusable = (125, 91, 36)
     Red = (200, 0, 0)
     Green = (0, 200, 0)
-    Blue = (0, 0, 200)
+    Blue = (0, 128, 255)
     Yellow = (210, 210, 0)
-    Cyan = (0, 210, 210)
+    LightBlue = (0, 160, 220)
+    Cyan = (119, 241, 252)
     Magenta = (210, 0, 210)
-    White = (210, 210, 210)
+    White = (200, 200, 200)
     Black = (0, 0, 0)
 
 
@@ -99,10 +100,11 @@ else:
 #     MenuGrasHi="../../Data/letras_menu_gras_hi.bmp"
 
 #
-font_server_behaviour=BUIx.B_FontServer()
-font_behaviour_title=font_server_behaviour.CreateBFont(FontTitle)
-font_behaviour_common=font_server_behaviour.CreateBFont(FontCommon)
+font_server_behaviour = BUIx.B_FontServer()
+font_behaviour_title = font_server_behaviour.CreateBFont(FontTitle)
+font_behaviour_common = font_server_behaviour.CreateBFont(FontCommon)
 #
+
 
 def CheckFallback():
     if not os.path.exists("../../SOUNDS/" + Current + "/kashgar-antepasados.ogg"):

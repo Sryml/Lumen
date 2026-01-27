@@ -23,6 +23,7 @@ import MenuText
 import Language
 from Reference import ENERGY_LOW_LEVEL
 from Reference import DEMO_MODE
+from LumenLib import Inventory
 
 
 FontScale = Language.FontScale
@@ -644,13 +645,16 @@ wEnemiesFrame.AddWidget(wEnemyRight,E_ICON_DISTANCE*5+2*E_CENTRAL_DISTANCE+E_ARR
 wEnemyRight.SetAlpha(1.0)
 wEnemyRight.SetColor(255,255,255)
 
+#
+Inventory.InventoryUI()
+#
 
-RInitAlpha=[1.0,0.3,0.2,0.1,0.05]
-RInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)]
+RInitAlpha=[1.0,0.3,0.2,0.1,0.05] + [0.0] * 11
+RInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)] + [(140,50)] * 11
 wRightHand=ScorerWidgets.B_HandWidget(wFrame,"RightHand",150,150,"Right",
                                       RInitAlpha,RInitPositions)
-LInitAlpha=[1.0,0.3,0.2,0.1]
-LInitPositions=[(5,10),(35,20),(75,30),(110,40)]
+LInitAlpha=[1.0,0.3,0.2,0.1,0.05] + [0.0] * 11
+LInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)] + [(140,50)] * 11
 wLeftHand=ScorerWidgets.B_HandWidget(wFrame,"LefttHand",150,150,"Left",
                                       LInitAlpha,LInitPositions)
 
