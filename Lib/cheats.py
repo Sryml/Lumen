@@ -5,7 +5,9 @@ import CharStats
 import darfuncs
 import BBLib
 import GotoMapVars
+import BInput
 
+InputManager = BInput.GetInputManager()
 # import cheats
 # cheats.ActivateMiscCheats()
 # cheats.ActivateLaserEyes()
@@ -61,6 +63,9 @@ def ActivateWeaponGrow():
 		return
 	else:
 		CHEAT_SCALE = 1
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AddInputAction("BigSword", 0)
 	Bladex.AssocKey("BigSword", "Keyboard", "2", 1)
 	Bladex.AddBoundFunc("BigSword", BigSword)
@@ -76,6 +81,8 @@ def ActivateWeaponGrow():
 	Bladex.AddInputAction("SmallShield", 0)
 	Bladex.AssocKey("SmallShield", "Keyboard", "4", 1)
 	Bladex.AddBoundFunc("SmallShield", SmallShield)
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 
 
 
@@ -162,6 +169,9 @@ def ActivateLaserEyes():
 	else:
 		CHEAT_LASER = 1
 
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AddInputAction("StartLaser", 0)
 	Bladex.AssocKey("StartLaser", "Keyboard", "K", 1)
 	Bladex.AddBoundFunc("StartLaser", ActivateLaser)
@@ -169,6 +179,8 @@ def ActivateLaserEyes():
 	Bladex.AddInputAction("CreateLightSabre", 0)
 	Bladex.AssocKey("CreateLightSabre", "Keyboard", "G", 1)
 	Bladex.AddBoundFunc("CreateLightSabre", CreateLightSabre)
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 	
 	
 	# laser used to the chear
@@ -250,10 +262,15 @@ def ActivateMiscCheats():
 		return
 	else:
 		CHEAT_MISC = 1
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AssocKey("ToggleInvincibility","Keyboard","F10")
 	Bladex.AssocKey("Camera Left","Keyboard","F5")
 	Bladex.AssocKey("Camera Right","Keyboard","F6")
 	Bladex.AssocKey("Change Mov","Keyboard","P")
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 
 
 
@@ -269,6 +286,9 @@ def ActivateGoreCheatsCheats():
 	else:
 		CHEAT_GORE = 1
 
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AddInputAction("SleepyHollow", 0)
 	Bladex.AssocKey("SleepyHollow", "Keyboard", "H", 1)
 	Bladex.AddBoundFunc("SleepyHollow", SleepyHollow)
@@ -280,6 +300,8 @@ def ActivateGoreCheatsCheats():
 	Bladex.AddInputAction("Matrix", 0)
 	Bladex.AssocKey("Matrix", "Keyboard", "X", 1)
 	Bladex.AddBoundFunc("Matrix", Matrix)
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 	
 	BBLib.ReadMMP('../../3dChars/Ork.mmp')
 	BBLib.ReadMMP('../../3dChars/Skl.mmp')
@@ -339,6 +361,9 @@ def ActivateLevelCheats():
 	else:
 		CHEAT_LEVEL = 1
 
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AddInputAction("NextLevel", 0)
 	Bladex.AssocKey("NextLevel", "Keyboard", "F9", 1)
 	Bladex.AddBoundFunc("NextLevel", NextLevel)
@@ -346,6 +371,8 @@ def ActivateLevelCheats():
 	Bladex.AddInputAction("LevelUp", 0)
 	Bladex.AssocKey("LevelUp", "Keyboard", "F8", 1)
 	Bladex.AddBoundFunc("LevelUp", LevelUp)
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 
 
 def NextLevel():
@@ -422,9 +449,14 @@ def DebugArena():
 
 
 def ActivateDebugArena():
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AddInputAction("DebugArena", 0)
 	Bladex.AssocKey("DebugArena", "Keyboard", "H", 1)
 	Bladex.AddBoundFunc("DebugArena", DebugArena)
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 
 
 def Travel():
@@ -440,7 +472,12 @@ def Travel():
 
 
 def ActivateTravel():
+	OldIASet = InputManager.GetInputActionsSet()
+	InputManager.SetInputActionsSet("Default")
+	#
 	Bladex.AddInputAction("Travel", 0)
 	Bladex.AssocKey("Travel", "Keyboard", "T", 1)
 	Bladex.AddBoundFunc("Travel", Travel)
+	#
+	InputManager.SetInputActionsSet(OldIASet)
 

@@ -1140,7 +1140,7 @@ for i in range(len(keys)):
         file.write('MemPersistence.Store("MainChar",%s)\n'%(str(MemPersistence.Get("MainChar")),))
 
         import Reference
-        file.write('Reference.PYTHON_DEBUG=%d\n'%(Reference.PYTHON_DEBUG,))
+        # file.write('Reference.PYTHON_DEBUG=%d\n'%(Reference.PYTHON_DEBUG,))
 
         file.write('if Reference.PYTHON_DEBUG >= 1:\n')
         file.write('############### DEBUG LEVEL ONE ###############\n')
@@ -1149,8 +1149,8 @@ for i in range(len(keys)):
         file.write('if Reference.PYTHON_DEBUG >= 2:\n')
         file.write('############### DEBUG LEVEL TWO ###############\n')
         file.write('  Bladex.SetCallCheck(3)\n')
-        file.write('else:\n')
-        file.write('  Bladex.SetCallCheck(0)\n')
+        # file.write('else:\n')
+        # file.write('  Bladex.SetCallCheck(0)\n')
 
         file.write('__load_bar.Increment("AnmCameras")\n')
         file.write('import AnmCameras\n')

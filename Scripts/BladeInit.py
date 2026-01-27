@@ -170,8 +170,8 @@ if Reference.PYTHON_DEBUG >= 1:
 	if Reference.PYTHON_DEBUG >= 2:
 		############### DEBUG LEVEL TWO ###############
 		Bladex.SetCallCheck(3)
-else:
-	Bladex.SetCallCheck(0)
+# else:
+# 	Bladex.SetCallCheck(0)
 
 import ItemTypes
 import math

@@ -141,6 +141,8 @@ def __fn():
     #
     import Bladex
 
+    Bladex.SetCallCheck(0)
+
     # If it is not the first time to start from Lumen.exe
     if not __main__.__dict__.get("isLumen"):
         f_name = "2ea5b509-3c98-5063-95c2-cae184dc13fd"  # by uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:Port")

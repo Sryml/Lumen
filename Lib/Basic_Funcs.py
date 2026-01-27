@@ -548,6 +548,7 @@ class PlayerPerson:
 		leftback= me.InvLeftBack
 
 		self.UnlinkAll (EntityName, "")  # Dettatch arrows
+		me.LaunchAnmType("rlx_no")
 
 		inv= me.GetInventory()
 		# Right Back
@@ -586,6 +587,7 @@ class PlayerPerson:
 	def RelinkCamera(self):
 		cam=Bladex.GetEntity("Camera")
 		cam.SetPersonView("Player1")
+		cam.Cut()
 
 	def UnlinkAll (self, EntityName,EventName):
 		me = Bladex.GetEntity(EntityName)
