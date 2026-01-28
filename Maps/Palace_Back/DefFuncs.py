@@ -2123,7 +2123,7 @@ def ApareceEspadaMagica(EntityName, EventName):
 	BladeSword.Link(bladeswordadd)
 	inv = Bladex.GetEntity("Player1").GetInventory()
 	# Here increase the number of weapons carryable by 1
-	inv.maxWeapons= 5
+	# inv.maxWeapons= 5
 	Actions.TakeObject("Player1", BladeSword.Name)
 
 	inv.LinkRightHand(BladeSword.Name)
@@ -2234,7 +2234,7 @@ def ChispasTakeSwordBlade(chngtime, dthtime):
 def PickUpSwordBladeTrue(EntityName, EventName):
 	# Here increase the number of weapons carryable by 1
 	inv = Bladex.GetEntity("Player1").GetInventory()
-	inv.maxWeapons= 5
+	# inv.maxWeapons= 5
 	Actions.TakeObject("Player1", bladesword.Name)
 	inv.LinkRightHand(bladesword.Name)
 	#inv.LinkBack("None")
@@ -2737,7 +2737,7 @@ def IniciaPorqueriaDeEscena():
 
 def PickUpLaEspadaFea(EntityName, EventName):
 	inv = Bladex.GetEntity("Player1").GetInventory()
-	inv.maxWeapons= 5
+	# inv.maxWeapons= 5
 	Actions.TakeObject("Player1", bladesword.Name)
 	inv.LinkRightHand(bladesword.Name)
 	#inv.LinkBack("None")

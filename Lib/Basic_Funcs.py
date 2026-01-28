@@ -1,4 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
 #
+# Change list:
+# * Item carrying limit
+#
+
 #
 # Basic funcions that are launch trough the code
 # Both for the main player/s AND the Non Playing Characters !
@@ -145,6 +154,7 @@ class PlayerPerson:
 
 
 	def __init__(self, me):
+		# type: (Bladex._entity.B_Entity_Person) -> None
 
 		# A T E N C I O N
 		# Si poneis nuevos miembros en el __init__, ponerlos tambien en la definicion de la
@@ -211,7 +221,11 @@ class PlayerPerson:
 
 		me.MutilateFunc= self.MutilateFunc
 		inv = me.GetInventory()
-		inv.maxObjects = 20
+		inv.maxWeapons = 16
+		inv.maxShields = 16
+		inv.maxQuivers = 16
+		inv.maxObjects = 32
+		#
 
 		self.Resistances= copy.copy(CharStats.GetCharResistances(me.Kind))
 		self.ResetSounds(self.Name)
@@ -355,7 +369,8 @@ class PlayerPerson:
 
 	def __getstate__(self):
 		# Tiene que devolver c�mo poder guardar el estado de la clase
-
+		me = Bladex.GetEntity(self.Name)
+		inv = me.GetInventory()
 		return (1,{"PlayerPerson":(self.ObjId,
 								   self.NPC,
 								   self.Name,
@@ -381,6 +396,7 @@ class PlayerPerson:
 								   self.ObjectsTaken,
 								   self.Invincibility,
 								   self.LastDamageType,
+								   (inv.maxWeapons, inv.maxShields, inv.maxQuivers, inv.maxObjects),
 								   GameStateAux.SaveNewMembers(self),
 								   PlayerPerson.__save_core_funcs__(self))
 					}
@@ -402,7 +418,7 @@ class PlayerPerson:
 			self.ObjId=parms[0]
 			ObjStore.ObjectsStore[self.ObjId]=self
 			self.NPC=parms[1]
-			self.Name=parms[2]
+			self.Name=parms[2] # type: str
 			me=Bladex.GetEntity(self.Name)
 			self.InventoryActive = me.Name[0:6] != "Player"
 
@@ -417,6 +433,7 @@ class PlayerPerson:
 			me.NewComboFunc=self.StdNewCombo
 			me.BigFallFunc=self.StdBigFall
 			me.AttackFunc= Damage.CalculateFatigue
+			inv = me.GetInventory()
 
 			self.DamageFactorNone=parms[3]
 			self.DamageFactorLight=parms[4]
@@ -440,8 +457,9 @@ class PlayerPerson:
 			self.ObjectsTaken=parms[22]
 			self.Invincibility=parms[23]
 			self.LastDamageType=parms[24]
-			GameStateAux.LoadNewMembers(self,parms[25])
-			PlayerPerson.__load_core_funcs__(self,parms[26])
+			inv.maxWeapons,inv.maxShields,inv.maxQuivers,inv.maxObjects = parms[25]
+			GameStateAux.LoadNewMembers(self,parms[26])
+			PlayerPerson.__load_core_funcs__(self,parms[27])
 
 		else:
 			print "ERROR, Incorrect version"

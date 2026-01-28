@@ -346,7 +346,7 @@ class EntityPersonState(EntityBipedState):
             for name in Actions.GetListOfObjectsAt(inv,i):
                 self.Inventory["Objects"].append(name)
 
-        self.Inventory["maxWeapons"]=inv.maxWeapons
+        # self.Inventory["maxWeapons"]=inv.maxWeapons
         self.Inventory["Weapons"]=[]
         for i in range(inv.nWeapons):
             self.Inventory["Weapons"].append(inv.GetWeapon(i))
@@ -394,7 +394,7 @@ class EntityPersonState(EntityBipedState):
             #inv.AddObject(i)
             file.write('Actions.ExtendedTakeObject(inv,"%s")\n'%(i,))
 
-        file.write('inv.maxWeapons=%d\n'%(self.Inventory["maxWeapons"],))
+        # file.write('inv.maxWeapons=%d\n'%(self.Inventory["maxWeapons"],))
         for i in self.Inventory["Weapons"]:
             file.write('GameStateAux.AddWeaponToInventory(inv,"%s")\n'%(i,))
 

@@ -1,3 +1,13 @@
+#  _    _   _ __  __ _____ _   _
+# | |  | | | |  \/  | ____| \ | |
+# | |  | | | | |\/| |  _| |  \| |
+# | |__| |_| | |  | | |___| |\  |
+# |_____\___/|_|  |_|_____|_| \_|
+#
+# Change list:
+# * Item carrying limit
+#
+
 import Bladex
 import Lumenx
 ### /    Added by Dario    \ ####
@@ -904,6 +914,7 @@ def DropToMakeRoomFor (EntityName, ObjectName):
 
 # Do we have all that we can carry of an object type
 def IsOneTooMany (EntityName, ObjectName):
+	# type: (str, str) -> int
 	me = Bladex.GetEntity(EntityName)
 
 	# Get object type
@@ -928,10 +939,10 @@ def IsOneTooMany (EntityName, ObjectName):
 	#	return FALSE
 	#else:
 	if object_flag == Reference.OBJ_ITEM:
-		ret_val =  inv.nObjects >= inv.maxObjects
+		ret_val =  inv.nKindObjects >= inv.maxObjects
 		if not ret_val:
 			ObjectEntity =  Bladex.GetEntity(ObjectName)
-			for i in range(inv.nObjects):
+			for i in range(inv.nKindObjects):
 				auxname = inv.GetObject(i)
 				if auxname:
 					if Bladex.GetEntity(auxname).Kind == ObjectEntity.Kind:
@@ -1052,16 +1063,15 @@ def UnSheatheArrow(inv):
 	ReportMsg ("Out of Arrows")
 
 def CouldTakeQuiver(inv, QuiverName):
+	# Can the existing quiver be replenished?
+	new_quiver=Bladex.GetEntity(QuiverName)
+	for i in range (inv.nQuivers):
+		quiver_name= inv.GetQuiver(i)
+		quiver= Bladex.GetEntity(quiver_name)
+		if quiver.Data.ArrowType==new_quiver.Data.ArrowType:
+			return quiver.Data.NumberOfArrows() < quiver.Data.MaxArrows
+	# New quiver type
 	ret_val = inv.nQuivers < inv.maxQuivers
-
-	if ret_val:
-		new_quiver=Bladex.GetEntity(QuiverName)
-		for i in range (inv.nQuivers):
-			quiver_name= inv.GetQuiver(i)
-			quiver= Bladex.GetEntity(quiver_name)
-			if quiver.Data.ArrowType==new_quiver.Data.ArrowType:
-				return quiver.Data.NumberOfArrows() < quiver.Data.MaxArrows
-
 	return ret_val
 
 def CouldSheatheArrow(inv, ArrowName):
