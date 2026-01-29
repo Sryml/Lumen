@@ -252,6 +252,17 @@ ConfigurableActions =[
 			#("Quick Save",     "Quick Save",             []),
 			#("Travel Book",    "Travel Book",            []),
 
+			# Inventory
+			("Select Last Inventory",      "Select Last Inventory",           []),
+			("Select Next Inventory",      "Select Next Inventory",           []),
+			("Inventory 1",      "Inventory 1",           []),
+			("Inventory 2",      "Inventory 2",           []),
+			("Inventory 3",      "Inventory 3",           []),
+			("Inventory 4",      "Inventory 4",           []),
+			("Inventory 5",      "Inventory 5",           []),
+			("Inventory 6",      "Inventory 6",           []),
+			("Inventory 7",      "Inventory 7",           []),
+			("Inventory 8",      "Inventory 8",           []),
 
                      ]
 

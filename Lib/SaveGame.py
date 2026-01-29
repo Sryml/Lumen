@@ -22,6 +22,8 @@ import stat
 import Language
 import BCopy
 
+from LumenLib import Inventory
+
 MFontScale = Language.MFontScale
 printx = Lumenx.printx
 EMPTY_SLOT = MenuText.GetMenuText("<Empty Slot>")
@@ -72,7 +74,9 @@ def LoadGameAux(slot_num):
     printx("%s, %s" % (repr(mod_dir), map_dir))
 
     # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:LoadStartTime")
-    lines = ["import sys;import time;b3028472_681f_5be2_8aeb_c7011b166583=time.time();isLumen = 1"]
+    lines = [
+        "import sys;import time;b3028472_681f_5be2_8aeb_c7011b166583=time.time();isLumen = 1"
+    ]
     lumen_root = Lumenx.GetLumenRoot()
     if mod_dir:
         mod_root = os.path.join(lumen_root, Lumenx.ModListPath, mod_dir)
@@ -202,6 +206,12 @@ def ReviveSave(this):
 
     for exec_str in this.MenuDescr["ReviveExecStr"]:
         eval(exec_str)
+    props = MemPersistence.Get("MainChar")
+    if props:
+        maxWeapons = props[2].get("maxWeapons", 4)
+        if maxWeapons < Inventory.MAXWEAPONS:
+            props[2]["maxWeapons"] = Inventory.MAXWEAPONS
+            MemPersistence.Store("MainChar", props)
     Lumenx.LoadLevel(this.MenuDescr["ReviveMapDir"], this.MenuDescr["ReviveModDir"])
 
 
@@ -426,6 +436,7 @@ def CreateSLMenu(menu_class):
                 "ReviveExecStr": exec_str,
                 "ReviveMapDir": map_dir,
                 "ReviveModDir": mod_dir,
+                "Focusable": restartable,
             },
         )
 
@@ -440,8 +451,6 @@ def CreateSLMenu(menu_class):
             load_val["Focusable"] = 0
         elif need_revive:
             load_val["ListDescr"][2]["Focusable"] = 0
-        if not restartable:
-            load_val["ListDescr"][1]["Focusable"] = 0
         #
         SaveListDescr.append(save_val)
         LoadListDescr.append(load_val)

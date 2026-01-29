@@ -20,14 +20,26 @@ import Reference
 from Lumenx import printx
 from LumenLib.UtilsWidget import AdaptResolution
 
+SndInventorySelect = Bladex.CreateSound(
+    "../../Sounds/golpe-generico2.wav", "InventorySelect"
+)
+SndInventorySelect.Volume = 1.7
+
 # -------------------------------
+MAXWEAPONS = 16
+MAXSHIELDS = 16
+MAXQUIVERS = 16
+MAXOBJECTS = 32
+
 VIEW_PERIOD = 2.0
 FADEIN_PERIOD = 0.3
 FADEOUT_PERIOD = 0.3
 
-MAX_PAGES = 7
 INVENTORY = None
-InventoryFadeOutName = "LumenInventoryFadeOut[NPersistent]"
+MAX_PAGES = 7
+INVENTORY_FADEOU_TNAME = "LumenInventoryFadeOut[NPersistent]"
+
+ListenKeys = {}
 
 InvWeaponStar = {}
 InvShieldStar = {}
@@ -42,6 +54,61 @@ InvObjectStar = {
 
 
 # -------------------------------
+def InventorySelectLast():
+    printx("Select Last Inventory")
+
+
+def InventorySelectNext():
+    printx("Select Next Inventory")
+
+
+def InventorySelectByNumber(index):
+    printx("Select Inventory by Number: %d" % index)
+
+
+# -------------------------------
+
+IManager = BInput.GetInputManager()
+OldIASet = IManager.GetInputActionsSet()
+IManager.SetInputActionsSet("Default")
+#
+Bladex.AddInputAction("Select Last Inventory", 0)
+Bladex.AddInputAction("Select Next Inventory", 0)
+Bladex.AddInputAction("Inventory 1", 0)
+Bladex.AddInputAction("Inventory 2", 0)
+Bladex.AddInputAction("Inventory 3", 0)
+Bladex.AddInputAction("Inventory 4", 0)
+Bladex.AddInputAction("Inventory 5", 0)
+Bladex.AddInputAction("Inventory 6", 0)
+Bladex.AddInputAction("Inventory 7", 0)
+Bladex.AddInputAction("Inventory 8", 0)
+
+# Bladex.AssocKey("Select Last Inventory", "Mouse", "WheelUp")
+# Bladex.AssocKey("Select Next Inventory", "Mouse", "WheelDown")
+# Bladex.AssocKey("Inventory 1", "Keyboard", "1")
+# Bladex.AssocKey("Inventory 2", "Keyboard", "2")
+# Bladex.AssocKey("Inventory 3", "Keyboard", "3")
+# Bladex.AssocKey("Inventory 4", "Keyboard", "4")
+# Bladex.AssocKey("Inventory 5", "Keyboard", "5")
+# Bladex.AssocKey("Inventory 6", "Keyboard", "6")
+# Bladex.AssocKey("Inventory 7", "Keyboard", "7")
+# Bladex.AssocKey("Inventory 8", "Keyboard", "8")
+
+Bladex.AddBoundFunc("Select Last Inventory", InventorySelectLast)
+Bladex.AddBoundFunc("Select Next Inventory", InventorySelectNext)
+Bladex.AddBoundFunc("Inventory 1", lambda: InventorySelectByNumber(1))
+Bladex.AddBoundFunc("Inventory 2", lambda: InventorySelectByNumber(2))
+Bladex.AddBoundFunc("Inventory 3", lambda: InventorySelectByNumber(3))
+Bladex.AddBoundFunc("Inventory 4", lambda: InventorySelectByNumber(4))
+Bladex.AddBoundFunc("Inventory 5", lambda: InventorySelectByNumber(5))
+Bladex.AddBoundFunc("Inventory 6", lambda: InventorySelectByNumber(6))
+Bladex.AddBoundFunc("Inventory 7", lambda: InventorySelectByNumber(7))
+Bladex.AddBoundFunc("Inventory 8", lambda: InventorySelectByNumber(8))
+#
+IManager.SetInputActionsSet(OldIASet)
+
+
+# -------------------------------
 def ShowRightInv():
     import Scorer
 
@@ -53,7 +120,7 @@ def ShowRightInv():
         return
     init = 1
     next_page = 0
-    if INVENTORY.main_frame.GetVisible() and INVENTORY.selected_inventory == "Weapon":
+    if INVENTORY.GetVisible() and INVENTORY.selected_inventory == "Weapon":
         init = 0
         next_page = 1
     INVENTORY.selected_inventory = "Weapon"
@@ -69,12 +136,21 @@ def ShowLeftInv():
     #
     if not INVENTORY:
         return
+
     init = 1
     next_page = 0
-    if INVENTORY.main_frame.GetVisible() and INVENTORY.selected_inventory == "Shield":
+    #
+    char = Lumenx.GetControlCharacter()
+    inv = char.GetInventory()
+    if inv.HasBowOnBack or inv.HoldingBow:
+        inventory = "Quiver"
+    else:
+        inventory = "Shield"
+    #
+    if INVENTORY.GetVisible() and INVENTORY.selected_inventory == inventory:
         init = 0
         next_page = 1
-    INVENTORY.selected_inventory = "Shield"
+    INVENTORY.selected_inventory = inventory
     ShowInventory(init, next_page)
 
 
@@ -89,20 +165,71 @@ def ShowObjectInv():
         return
     init = 1
     next_page = 0
-    if INVENTORY.main_frame.GetVisible() and INVENTORY.selected_inventory == "Object":
+    if INVENTORY.GetVisible() and INVENTORY.selected_inventory == "Object":
         init = 0
         next_page = 1
     INVENTORY.selected_inventory = "Object"
     ShowInventory(init, next_page)
 
 
+def RefreshInventory():
+    if not INVENTORY or INVENTORY.GetVisible() == 0 or INVENTORY.IsFadingOut():
+        return
+    ShowInventory(0, 0)
+
+
+def GetEmptySlot(InventorySlot, last_slot, max_items):
+    while InventorySlot[last_slot][1] != "":
+        last_slot = last_slot + 1
+        if last_slot >= max_items:
+            return None
+    return last_slot
+
+
+def SetInvSlot(
+    inv,
+    inv_idx,
+    ent_name,
+    selected_inventory,
+    InventoryStar,
+    InventorySlot,
+    last_slot,
+    max_items,
+):
+    # type: (Bladex._inventory.B_PyInventory, int, str, str, dict, list, int, int) -> int
+    ent = Bladex.GetEntity(ent_name)
+    if not ent:
+        return -1
+    kind = ent.Kind
+    index = InventoryStar.get(kind)
+    if index is None:
+        index = GetEmptySlot(InventorySlot, last_slot, max_items)
+        if index is None:
+            return -1
+    #
+    InventorySlot[index][0] = ent_name
+    InventorySlot[index][1] = kind
+    if selected_inventory == "Quiver":
+        InventorySlot[index][2] = ent.Data.NumberOfArrows()
+        InventorySlot[index][3] = ent.Data.MaxArrows
+    elif selected_inventory == "Object":
+        InventorySlot[index][2] = inv.GetNumberObjectsAt(inv_idx)
+        InventorySlot[index][3] = inv.GetMaxNumberObjectsAt(inv_idx)
+    else:
+        InventorySlot[index][2] = 1
+    return index
+
+
 def ShowInventory(init=1, next_page=0):
-    Bladex.RemoveScheduledFunc(InventoryFadeOutName)
+    if next_page:
+        SndInventorySelect.PlayStereo()
+
+    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
     if init:
         INVENTORY.main_frame.SetAlpha(0.0)
         INVENTORY.main_frame.SetVisible(1)
     else:
-        INVENTORY.interpolator.RemoveAction(INVENTORY.fader.current_action)
+        INVENTORY.CancelFade()
         INVENTORY.main_frame.SetAlpha(1.0)
         # INVENTORY.main_frame.SetVisible(1)
 
@@ -122,21 +249,26 @@ def ShowInventory(init=1, next_page=0):
         nItems = inv.nWeapons
         InventorySlot = BCopy.deepcopy(INVENTORY.InvWeaponSlotBase)
         InventoryStar = InvWeaponStar
+        InventoryQueue = char.Data.InvWeaponQueue  # type: list[str]
     elif selected_inventory == "Shield":
         GetItem = inv.GetShield
         nItems = inv.nShields
         InventorySlot = BCopy.deepcopy(INVENTORY.InvShieldSlotBase)
         InventoryStar = InvShieldStar
+        InventoryQueue = char.Data.InvShieldQueue
     elif selected_inventory == "Quiver":
         GetItem = inv.GetQuiver
         nItems = inv.nQuivers
         InventorySlot = BCopy.deepcopy(INVENTORY.InvQuiverSlotBase)
         InventoryStar = InvQuiverStar
+        InventoryQueue = char.Data.InvQuiverQueue
     elif selected_inventory == "Object":
         GetItem = inv.GetObject
         nItems = inv.nObjects
         InventorySlot = BCopy.deepcopy(INVENTORY.InvObjectSlotBase)
         InventoryStar = InvObjectStar
+        InventoryQueue = char.Data.InvObjectQueue
+        #
         INVENTORY.object_scale = 3.0
     else:
         printx("Invalid Inventory: %s" % selected_inventory)
@@ -150,32 +282,31 @@ def ShowInventory(init=1, next_page=0):
         max_index = nItems - 1
     nPages = min(int(max_index / 8), MAX_PAGES - 1)
 
-    slot_idx = 0
+    # -------------------------------
     max_items = MAX_PAGES * 8
+    last_slot = 0
+    for ent_name in InventoryQueue[:]:
+        for i in range(nItems):
+            if GetItem(i) == ent_name:
+                # fmt: off
+                ret = SetInvSlot(inv,i,ent_name,selected_inventory,InventoryStar,InventorySlot,last_slot,max_items)
+                # fmt: on
+                if ret != -1:
+                    last_slot = ret + 1
+                break
+        else:
+            InventoryQueue.remove(ent_name)
+    #
     for i in range(nItems):
         ent_name = GetItem(i)
-        ent = Bladex.GetEntity(ent_name)
-        if not ent:
+        if ent_name in InventoryQueue:
             continue
-        kind = ent.Kind
-        index = InventoryStar.get(kind)
-        if index is None:
-            while InventorySlot[slot_idx][1] != "":
-                slot_idx = slot_idx + 1
-                if slot_idx >= max_items:
-                    break
-            index = slot_idx
-        #
-        InventorySlot[index][0] = ent_name
-        InventorySlot[index][1] = kind
-        if selected_inventory == "Quiver":
-            InventorySlot[index][2] = ent.Data.NumberOfArrows()
-            InventorySlot[index][3] = ent.Data.MaxArrows
-        elif selected_inventory == "Object":
-            InventorySlot[index][2] = inv.GetNumberObjectsAt(i)
-            InventorySlot[index][3] = inv.GetMaxNumberObjectsAt(i)
-        else:
-            InventorySlot[index][2] = 1
+        # fmt: off
+        ret = SetInvSlot(inv,i,ent_name,selected_inventory,InventoryStar,InventorySlot,last_slot,max_items)
+        # fmt: on
+        InventoryQueue.append(ent_name)
+        if ret != -1:
+            last_slot = ret + 1
 
     # if current_item_name:
     #     for i in range(max_items):
@@ -183,16 +314,19 @@ def ShowInventory(init=1, next_page=0):
     #             focus = i % 8
     #             page = int(i / 8)
     #             break
-    #
+
+    # -------------------------------
+    INVENTORY.page_label.SetText("%d/%d" % (page + 1, nPages + 1))
     inv_range = page * 8, min((page + 1) * 8, max_items)
     for i in range(8):
         slot_idx = inv_range[0] + i
         ent_name, kind, number, max_stack, star_flag = InventorySlot[slot_idx]
 
         frame = INVENTORY.child_frame[i]
-        _, border, name_widget, _, _ = frame.widgets
+        _, border, name_widget, _, _, star_label = frame.widgets
         #
         attack_label, defence_label, res_label, stack_label = border.widgets
+        star_label.SetVisible(0)
         attack_label.SetVisible(0)
         defence_label.SetVisible(0)
         res_label.SetVisible(0)
@@ -202,6 +336,9 @@ def ShowInventory(init=1, next_page=0):
         name_text = ""
         ent = None
         if kind:
+            if star_flag:
+                star_label.SetVisible(1)
+
             if ent_name:
                 ent = Bladex.GetEntity(ent_name)
                 name_text = Reference.GetFriendlyNameByEntName(ent_name)
@@ -212,8 +349,9 @@ def ShowInventory(init=1, next_page=0):
                         Reference.GiveObjectPowDefResResMaxData(ent_name)
                     )
                     if power:
+                        prefix = power >= 0 and "+" or ""
                         attack_label.SetVisible(1)
-                        attack_label.SetText("%+dA" % power)
+                        attack_label.SetText("%s%sA" % (prefix, power))
                     if selected_inventory == "Weapon":
                         if defence:
                             defence_label.SetVisible(1)
@@ -239,7 +377,8 @@ def ShowInventory(init=1, next_page=0):
         frame.RecalcLayout()
         #
         frame.slot_data = [ent_name, kind, number, max_stack, star_flag]
-    #
+
+    # -------------------------------
     if init:
         INVENTORY.FadeIn(FADEIN_PERIOD)
     else:
@@ -247,7 +386,7 @@ def ShowInventory(init=1, next_page=0):
             Bladex.GetTime() + VIEW_PERIOD,
             INVENTORY.FadeOut,
             (FADEOUT_PERIOD,),
-            InventoryFadeOutName,
+            INVENTORY_FADEOU_TNAME,
         )
 
 
@@ -262,7 +401,7 @@ def InvDrawBOD(this, x, y, time):
 
     Raster.SetAlpha(alpha)
     scale = INVENTORY.screen_scale
-    obj_scale = INVENTORY.object_scale
+    obj_scale = Reference.DefaultInvScaleData.get(kind, INVENTORY.object_scale)
     size = INVENTORY.border_size
     Bladex.DrawBOD(
         "UIBorderA3",
@@ -296,10 +435,16 @@ class InventoryUI:
         Bladex.AddScheduledFunc(Bladex.GetTime() + 0.2, self.InitWidgets, ())
 
     def InitWidgets(self):
-        import Scorer
+        import Scorer, darfuncs, Actions
 
         if InventoryUI.inited:
             return
+
+        ent_name = Lumenx.GetControlCharacter().Name + "KeyRing"
+        if not Bladex.GetEntity(ent_name):
+            KeyRing = Bladex.CreateEntity(ent_name, "Llavero", 0, 0, 0)
+            darfuncs.SetHint(KeyRing, "Keys")
+            Actions.TakeObject(Lumenx.GetControlCharacter().Name, ent_name)
 
         parent = Scorer.wFrame
         #
@@ -373,6 +518,33 @@ class InventoryUI:
         name_w, name_h = AdaptResolution((260, 35), (2560, 1440))
         number_w, number_h = AdaptResolution((38, 38), (2560, 1440))
         gap = ((2560 - 130 * 8) / 10.0 / 2560) * main_frame_w
+        # 页数
+        self.page_label = page_label = BUIx.B_TextWidget(
+            main_frame,
+            "InventoryPageLabel",
+            "",
+            ScorerWidgets.font_server,
+            Language.FontCommon,
+        )
+        page_label.SetCanvas(view_size)
+        page_label.SetScale(Language.FontScale["S"])
+        page_label.SetColor(180, 180, 180)
+        page_label.SetAlpha(1)
+        page_label.SetAutoScale(auto_scale)
+        # 钥匙标签
+        self.key_label = key_label = BUIx.B_TextWidget(
+            main_frame,
+            "InventoryKeyLabel",
+            "",
+            ScorerWidgets.font_server,
+            Language.FontCommon,
+        )
+        key_label.SetCanvas(view_size)
+        key_label.SetScale(Language.FontScale["S"])
+        key_label.SetColor(180, 180, 180)
+        key_label.SetAlpha(1)
+        key_label.SetAutoScale(auto_scale)
+        #
         for i in range(8):
             frame = BUIx.B_FrameWidget(
                 main_frame, "InventoryChildFrame_%d" % i, frame_w, frame_h
@@ -457,13 +629,17 @@ class InventoryUI:
             stack_label.SetAlpha(1)
             stack_label.SetAutoScale(auto_scale)
             # 星标
-            # star = BUIx.B_BitmapWidget(
-            #     frame,
-            #     "InventoryStar_%d" % i,
-            #     30,
-            #     30,
-            #     "UIStar",
-            # )
+            star_label = BUIx.B_BitmapWidget(
+                frame,
+                "InventoryStar_%d" % i,
+                number_w * 0.6,
+                number_w * 0.6,
+                "UIStar",
+            )
+            star_label.SetColor(180, 180, 180)
+            star_label.SetAlpha(1)
+            star_label.SetVisible(0)
+            star_label.SetAutoScale(auto_scale)
             #
             name = BUIx.B_TextWidget(
                 frame,
@@ -500,6 +676,15 @@ class InventoryUI:
             number.SetAlpha(1.0)
             number.SetAutoScale(auto_scale)
             #
+            frame.AddWidget(
+                star_label,
+                0.5,
+                0,
+                BUIx.B_FrameWidget.B_FR_HRelative,
+                BUIx.B_FrameWidget.B_FR_HCenter,
+                BUIx.B_FrameWidget.B_FR_AbsoluteTop,
+                BUIx.B_FrameWidget.B_FR_VCenter,
+            )
             frame.AddWidget(border1, 0, 0)
             frame.AddWidget(border2, 0, 0)
             frame.AddWidget(
@@ -576,9 +761,22 @@ class InventoryUI:
             )
             #
             self.child_frame.append(frame)
-            frame.widgets = (border1, border2, name, name_back, number)
+            frame.widgets = (border1, border2, name, name_back, number, star_label)
             border2.widgets = (attack_label, defence_label, res_label, stack_label)
-
+        #
+        main_frame.AddLabel(
+            page_label,
+            1 - gap * 0.5 / main_frame_w,
+            border_h * 0.5 / main_frame_h,
+            BUIx.B_Widget.B_LAB_HCenter,
+            BUIx.B_Widget.B_LAB_VCenter,
+            BUIx.B_Widget.B_FR_HRelative,
+            BUIx.B_Widget.B_FR_HCenter,
+            BUIx.B_Widget.B_FR_VRelative,
+            BUIx.B_Widget.B_FR_VCenter,
+        )
+        main_frame.AddWidget(key_label, 0, 0)
+        #
         for i in range(8):
             n = i % 4
             HIndicator = BUIx.B_FrameWidget.B_FR_AbsoluteLeft
@@ -612,7 +810,18 @@ class InventoryUI:
 
     # -------------------------------
     def ListenDevice(self, x, y, z):
-        pass
+        printx(x, y, z)
+
+    # -------------------------------
+    def GetVisible(self):
+        return self.main_frame.GetVisible()
+
+    def IsFadingOut(self):
+        return self.fader.Execute == self.ExecuteFadeOut
+
+    def CancelFade(self):
+        self.interpolator.RemoveAction(self.fader.current_action)
+        self.fader.Execute = None
 
     # -------------------------------
     def FadeIn(self, period):
@@ -649,11 +858,12 @@ class InventoryUI:
                 Bladex.GetTime() + VIEW_PERIOD,
                 self.FadeOut,
                 (FADEOUT_PERIOD,),
-                InventoryFadeOutName,
+                INVENTORY_FADEOU_TNAME,
             )
         elif self.fader.Execute == self.ExecuteFadeOut:
             self.main_frame.SetAlpha(0)
             self.main_frame.SetVisible(0)
+        self.fader.Execute = None
         # printx("Inventory Fader End")
 
 

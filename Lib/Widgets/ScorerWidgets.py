@@ -1252,11 +1252,12 @@ if netgame.GetNetState() == 0:
   def AddKeyRingToInventory():
     import Actions
     import darfuncs
-    if not Bladex.GetEntity("KeyRing"):
-      KeyRing =Bladex.CreateEntity("KeyRing","Llavero",0,0,0)
+    name = "Player1KeyRing"
+    if not Bladex.GetEntity(name):
+      KeyRing =Bladex.CreateEntity(name,"Llavero",0,0,0)
       KeyRing.Static = 0
       darfuncs.SetHint(KeyRing,"Keys")
-      Actions.TakeObject("Player1","KeyRing")
+      Actions.TakeObject("Player1",name)
 
 
   class InvObjectsControl(InvControl):

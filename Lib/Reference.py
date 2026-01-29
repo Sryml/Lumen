@@ -800,6 +800,8 @@ EntitiesSelectionData={}
 
 EnemiesScorerData={}
 EnemiesDefaultScorerData={}
+
+DefaultInvScaleData = {}
 ######################################
 
 def GetObjectFriendlyName(kind):

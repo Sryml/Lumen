@@ -2,8 +2,11 @@ ON_RELEASE=0
 ON_PRESS=1	# default
 
 
-
+import Bladex
 import BInput
+
+from LumenLib import Inventory
+
 InputManager=BInput.GetInputManager()
 InputManager.SetInputActionsSet("Default")  # Me aseguro de definir las acciones en el grupo correcto
 
@@ -34,6 +37,19 @@ Bladex.AssocKey("SelectObj","Keyboard","Space")
 Bladex.AssocKey("Screen Shot","Keyboard","F2")
 Bladex.AssocKey("Next View","Keyboard","Add")
 Bladex.AssocKey("Last View","Keyboard","Subtract")
+
+# Inventory
+Bladex.AssocKey("Select Last Inventory","Mouse","WheelUp")
+Bladex.AssocKey("Select Next Inventory","Mouse","WheelDown")
+Bladex.AssocKey("Inventory 1","Keyboard","1")
+Bladex.AssocKey("Inventory 2","Keyboard","2")
+Bladex.AssocKey("Inventory 3","Keyboard","3")
+Bladex.AssocKey("Inventory 4","Keyboard","4")
+Bladex.AssocKey("Inventory 5","Keyboard","5")
+Bladex.AssocKey("Inventory 6","Keyboard","6")
+Bladex.AssocKey("Inventory 7","Keyboard","7")
+Bladex.AssocKey("Inventory 8","Keyboard","8")
+
 
 # Mouse stuff
 Bladex.AssocKey("RotateX","Mouse","X_Axis")

@@ -113,6 +113,17 @@ ForeingDict = {
     "inventory style": "库存风格",
     "original": "原版",
     "improved": "改良的",
+    # Inventory
+    "select last inventory": "选择上一个库存",
+    "select next inventory": "选择下一个库存",
+    "inventory 1": "库存1",
+    "inventory 2": "库存2",
+    "inventory 3": "库存3",
+    "inventory 4": "库存4",
+    "inventory 5": "库存5",
+    "inventory 6": "库存6",
+    "inventory 7": "库存7",
+    "inventory 8": "库存8",
     # Blade Arena
     "dives into the lava": "坠入熔岩",
     "flies too high": "飞的太高了",

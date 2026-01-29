@@ -37,6 +37,8 @@ import BInput
 import InitDataField
 import CombosFX
 
+from LumenLib import Inventory
+
 if netgame.GetNetState() != 0:
 	import NetWeapon
 
@@ -221,10 +223,15 @@ class PlayerPerson:
 
 		me.MutilateFunc= self.MutilateFunc
 		inv = me.GetInventory()
-		inv.maxWeapons = 16
-		inv.maxShields = 16
-		inv.maxQuivers = 16
-		inv.maxObjects = 32
+		inv.maxWeapons = Inventory.MAXWEAPONS
+		inv.maxShields = Inventory.MAXSHIELDS
+		inv.maxQuivers = Inventory.MAXQUIVERS
+		inv.maxObjects = Inventory.MAXOBJECTS
+		# Automatically saved by SaveNewMembers
+		self.InvWeaponQueue = []
+		self.InvShieldQueue = []
+		self.InvQuiverQueue = []
+		self.InvObjectQueue = []
 		#
 
 		self.Resistances= copy.copy(CharStats.GetCharResistances(me.Kind))

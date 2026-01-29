@@ -21,14 +21,14 @@ ON_PRESS=1	# default
 
 
 
-Bladex.AssocKey("Swim Up","Keyboard","4")
-Bladex.AssocKey("Swim Down","Keyboard","5")
+Bladex.AssocKey("Swim Up","Keyboard","9") # 4
+Bladex.AssocKey("Swim Down","Keyboard","0") # 5
 Bladex.AssocKey("ToggleStats","Keyboard","T")
 Bladex.AssocKey("ToggleSampling","Keyboard","V")
-Bladex.AssocKey("ToggleProfiling","Keyboard","F3")
-Bladex.AssocKey("Toggle BB","Keyboard","F4")
-Bladex.AssocKey("Camera Left","Keyboard","F5")
-Bladex.AssocKey("Camera Right","Keyboard","F6")
+# Bladex.AssocKey("ToggleProfiling","Keyboard","F3")
+# Bladex.AssocKey("Toggle BB","Keyboard","F4")
+Bladex.AssocKey("Camera Left","Keyboard","F3") # F5
+Bladex.AssocKey("Camera Right","Keyboard","F4") # F6
 Bladex.AssocKey("Change Camera","Keyboard","F7")
 Bladex.AssocKey("Fixed Camera","Keyboard","F8")
 Bladex.AssocKey("Camera Dist","Keyboard","F9")
