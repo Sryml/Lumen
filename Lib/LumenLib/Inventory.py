@@ -34,6 +34,7 @@ MAXOBJECTS = 32
 VIEW_PERIOD = 2.0
 FADEIN_PERIOD = 0.3
 FADEOUT_PERIOD = 0.3
+BORDERANIM_PERIOD = 0.3
 
 INVENTORY = None
 MAX_PAGES = 7
@@ -55,15 +56,53 @@ InvObjectStar = {
 
 # -------------------------------
 def InventorySelectLast():
-    printx("Select Last Inventory")
+    INVENTORY.PrevFocus()
+    SndInventorySelect.PlayStereo()
+    # printx("Select Last Inventory")
+    #
+    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
+    INVENTORY.CancelFade()
+    INVENTORY.main_frame.SetAlpha(1.0)
+    Bladex.AddScheduledFunc(
+        Bladex.GetTime() + VIEW_PERIOD,
+        INVENTORY.FadeOut,
+        (FADEOUT_PERIOD,),
+        INVENTORY_FADEOU_TNAME,
+    )
 
 
 def InventorySelectNext():
-    printx("Select Next Inventory")
+    INVENTORY.NextFocus()
+    SndInventorySelect.PlayStereo()
+    # printx("Select Next Inventory")
+    #
+    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
+    INVENTORY.CancelFade()
+    INVENTORY.main_frame.SetAlpha(1.0)
+    Bladex.AddScheduledFunc(
+        Bladex.GetTime() + VIEW_PERIOD,
+        INVENTORY.FadeOut,
+        (FADEOUT_PERIOD,),
+        INVENTORY_FADEOU_TNAME,
+    )
 
 
 def InventorySelectByNumber(index):
-    printx("Select Inventory by Number: %d" % index)
+    INVENTORY.SetFocus(index)
+    SndInventorySelect.PlayStereo()
+    # printx("Select Inventory by Number: %d" % index)
+    #
+    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
+    INVENTORY.CancelFade()
+    INVENTORY.main_frame.SetAlpha(1.0)
+    Bladex.AddScheduledFunc(
+        Bladex.GetTime() + VIEW_PERIOD,
+        INVENTORY.FadeOut,
+        (FADEOUT_PERIOD,),
+        INVENTORY_FADEOU_TNAME,
+    )
+    #
+    INVENTORY.BorderAnim(BORDERANIM_PERIOD)
 
 
 # -------------------------------
@@ -96,14 +135,14 @@ Bladex.AddInputAction("Inventory 8", 0)
 
 Bladex.AddBoundFunc("Select Last Inventory", InventorySelectLast)
 Bladex.AddBoundFunc("Select Next Inventory", InventorySelectNext)
-Bladex.AddBoundFunc("Inventory 1", lambda: InventorySelectByNumber(1))
-Bladex.AddBoundFunc("Inventory 2", lambda: InventorySelectByNumber(2))
-Bladex.AddBoundFunc("Inventory 3", lambda: InventorySelectByNumber(3))
-Bladex.AddBoundFunc("Inventory 4", lambda: InventorySelectByNumber(4))
-Bladex.AddBoundFunc("Inventory 5", lambda: InventorySelectByNumber(5))
-Bladex.AddBoundFunc("Inventory 6", lambda: InventorySelectByNumber(6))
-Bladex.AddBoundFunc("Inventory 7", lambda: InventorySelectByNumber(7))
-Bladex.AddBoundFunc("Inventory 8", lambda: InventorySelectByNumber(8))
+Bladex.AddBoundFunc("Inventory 1", lambda: InventorySelectByNumber(0))
+Bladex.AddBoundFunc("Inventory 2", lambda: InventorySelectByNumber(1))
+Bladex.AddBoundFunc("Inventory 3", lambda: InventorySelectByNumber(2))
+Bladex.AddBoundFunc("Inventory 4", lambda: InventorySelectByNumber(3))
+Bladex.AddBoundFunc("Inventory 5", lambda: InventorySelectByNumber(4))
+Bladex.AddBoundFunc("Inventory 6", lambda: InventorySelectByNumber(5))
+Bladex.AddBoundFunc("Inventory 7", lambda: InventorySelectByNumber(6))
+Bladex.AddBoundFunc("Inventory 8", lambda: InventorySelectByNumber(7))
 #
 IManager.SetInputActionsSet(OldIASet)
 
@@ -239,7 +278,7 @@ def ShowInventory(init=1, next_page=0):
     # current_item_name = ""
     # if INVENTORY.selected_inventory == "Weapon":
     #     current_item_name = char.InvRightBack or char.InvRight
-    focus = -1
+    focus = 0
     page = 0
 
     INVENTORY.object_scale = 1.0
@@ -250,24 +289,28 @@ def ShowInventory(init=1, next_page=0):
         InventorySlot = BCopy.deepcopy(INVENTORY.InvWeaponSlotBase)
         InventoryStar = InvWeaponStar
         InventoryQueue = char.Data.InvWeaponQueue  # type: list[str]
+        focus_item = inv.GetSelectedWeapon()
     elif selected_inventory == "Shield":
         GetItem = inv.GetShield
         nItems = inv.nShields
         InventorySlot = BCopy.deepcopy(INVENTORY.InvShieldSlotBase)
         InventoryStar = InvShieldStar
         InventoryQueue = char.Data.InvShieldQueue
+        focus_item = inv.GetSelectedShield()
     elif selected_inventory == "Quiver":
         GetItem = inv.GetQuiver
         nItems = inv.nQuivers
         InventorySlot = BCopy.deepcopy(INVENTORY.InvQuiverSlotBase)
         InventoryStar = InvQuiverStar
         InventoryQueue = char.Data.InvQuiverQueue
+        focus_item = inv.GetSelectedQuiver()
     elif selected_inventory == "Object":
         GetItem = inv.GetObject
         nItems = inv.nObjects
         InventorySlot = BCopy.deepcopy(INVENTORY.InvObjectSlotBase)
         InventoryStar = InvObjectStar
         InventoryQueue = char.Data.InvObjectQueue
+        focus_item = inv.GetSelectedObject()
         #
         INVENTORY.object_scale = 3.0
     else:
@@ -280,6 +323,7 @@ def ShowInventory(init=1, next_page=0):
         max_index = max(k[-1], nItems - 1)
     else:
         max_index = nItems - 1
+    max_index = max(max_index, 0)
     nPages = min(int(max_index / 8), MAX_PAGES - 1)
 
     # -------------------------------
@@ -316,6 +360,7 @@ def ShowInventory(init=1, next_page=0):
     #             break
 
     # -------------------------------
+    INVENTORY.SetFocus(-1)
     INVENTORY.page_label.SetText("%d/%d" % (page + 1, nPages + 1))
     inv_range = page * 8, min((page + 1) * 8, max_items)
     for i in range(8):
@@ -324,6 +369,7 @@ def ShowInventory(init=1, next_page=0):
 
         frame = INVENTORY.child_frame[i]
         _, border, name_widget, _, _, star_label = frame.widgets
+        border.SetColor(200, 200, 200)
         #
         attack_label, defence_label, res_label, stack_label = border.widgets
         star_label.SetVisible(0)
@@ -340,6 +386,8 @@ def ShowInventory(init=1, next_page=0):
                 star_label.SetVisible(1)
 
             if ent_name:
+                if ent_name == focus_item:
+                    INVENTORY.SetFocus(i)
                 ent = Bladex.GetEntity(ent_name)
                 name_text = Reference.GetFriendlyNameByEntName(ent_name)
                 # name_widget.SetAlpha(1)
@@ -432,7 +480,12 @@ class InventoryUI:
     inited = 0
 
     def __init__(self):
-        Bladex.AddScheduledFunc(Bladex.GetTime() + 0.2, self.InitWidgets, ())
+        Bladex.AddScheduledFunc(
+            Bladex.GetTime() + 0.2,
+            self.InitWidgets,
+            (),
+            "Inventory.InitWidgets[NPersistent]",
+        )
 
     def InitWidgets(self):
         import Scorer, darfuncs, Actions
@@ -450,15 +503,22 @@ class InventoryUI:
         #
         self.parent = parent
         self.child_frame = []  # type: list[BUIx.B_FrameWidget]
+        self.current_focus = -1
         self.screen_scale = Raster.GetUnscaledSize()[0] / float(Raster.GetSize()[0])
         self.object_scale = 1.0
         # self.current_res = Bladex.GetResolution()
         #
+        self.border_anim = Interpolator.LinearInt(1.0, 0.0)
+        self.border_anim.current_action = None
+        self.border_anim.Execute = self.ExecuteBorderAnim
+        self.border_anim.EndExecute = self.EndExecuteBorderAnim
+
         self.fader = Interpolator.LinearInt(0.0, 1.0)
         self.fader.current_action = None
         self.fader.EndExecute = self.EndExecute
-        self.interpolator = Interpolator.Interp("LumenInventory", 0)
 
+        self.interpolator = Interpolator.Interp("LumenInventory", 0)
+        #
         max_items = MAX_PAGES * 8
         # (name, kind, number, max_stack, star_flag)
         self.InvWeaponSlotBase = []
@@ -561,7 +621,7 @@ class InventoryUI:
                 border_h,
                 "UIBorderA1",
             )
-            border1.SetColor(240, 240, 0)
+            border1.SetColor(255, 255, 30)
             border1.SetAlpha(1.0)
             border1.SetVisible(0)
             border1.SetAutoScale(auto_scale)
@@ -685,7 +745,15 @@ class InventoryUI:
                 BUIx.B_FrameWidget.B_FR_AbsoluteTop,
                 BUIx.B_FrameWidget.B_FR_VCenter,
             )
-            frame.AddWidget(border1, 0, 0)
+            frame.AddWidget(
+                border1,
+                0.5,
+                border_h * 0.5,
+                BUIx.B_FrameWidget.B_FR_HRelative,
+                BUIx.B_FrameWidget.B_FR_HCenter,
+                BUIx.B_FrameWidget.B_FR_AbsoluteTop,
+                BUIx.B_FrameWidget.B_FR_VCenter,
+            )
             frame.AddWidget(border2, 0, 0)
             frame.AddWidget(
                 name,
@@ -823,6 +891,33 @@ class InventoryUI:
         self.interpolator.RemoveAction(self.fader.current_action)
         self.fader.Execute = None
 
+    def CancelBorderAnim(self):
+        self.interpolator.RemoveAction(self.border_anim.current_action)
+        if self.current_focus != -1:
+            border = self.child_frame[self.current_focus].widgets[0]
+            border.SetVisible(0)
+
+    def SetFocus(self, index):
+        self.CancelBorderAnim()
+        if self.current_focus != -1:
+            border = self.child_frame[self.current_focus].widgets[1]
+            border.SetColor(200, 200, 200)
+        self.current_focus = index
+        if index == -1:
+            return
+        border = self.child_frame[index].widgets[1]
+        border.SetColor(255, 255, 30)
+
+    def MoveFocus(self, inc):
+        current_focus = (self.current_focus + inc) % 8
+        self.SetFocus(current_focus)
+
+    def PrevFocus(self):
+        self.MoveFocus(-1)
+
+    def NextFocus(self):
+        self.MoveFocus(1)
+
     # -------------------------------
     def FadeIn(self, period):
         t = Bladex.GetTime()
@@ -865,6 +960,31 @@ class InventoryUI:
             self.main_frame.SetVisible(0)
         self.fader.Execute = None
         # printx("Inventory Fader End")
+
+    # -------------------------------
+    def BorderAnim(self, period):
+        t = Bladex.GetTime()
+        self.interpolator.RemoveAction(self.border_anim.current_action)
+        self.border_anim.current_action = self.interpolator.AddAction(
+            t, t + period, self.border_anim
+        )
+        border = self.child_frame[self.current_focus].widgets[0]
+        border.SetSize(self.border_size[0], self.border_size[1])
+        border.SetVisible(1)
+        border.SetAlpha(1.0)
+
+    def ExecuteBorderAnim(self, value):
+        ret = Interpolator.LinearInt.Execute(self.border_anim, value)
+        border = self.child_frame[self.current_focus].widgets[0]
+        border.SetAlpha(ret)
+        val = (1 - ret) * 0.45 + 1.0
+        border.SetSize(self.border_size[0] * val, self.border_size[1] * val)
+        self.child_frame[self.current_focus].RecalcLayout()
+
+    def EndExecuteBorderAnim(self):
+        self.border_anim.current_action = None
+        border = self.child_frame[self.current_focus].widgets[0]
+        border.SetVisible(0)
 
 
 """
