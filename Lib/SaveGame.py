@@ -291,6 +291,7 @@ def CreateSLMenu(menu_class):
             "FocusCallBack": FocusOnBitmap,
             "FontScale": MFontScale["M"],
             "Command": RestartLevel,
+            "Focusable": string.lower(current_map) != "2dmap",
         }
     )
     #

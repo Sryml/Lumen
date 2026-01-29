@@ -137,10 +137,6 @@ BackGamepadOption = {"Name"    : MenuText.GetMenuText("BACK"),
 			  "Font"    : MenuFontBig
 			 }
 
-# -----------------------------------
-from LumenLib import BODLoader
-# -----------------------------------
-
 # Map Loading Upong Menu Request---
 def Load2DMap(option):
 	Bladex.LoadLevel("2DMap")
@@ -1325,7 +1321,7 @@ def ActivateMenu(caller_id = None):
     #Bladex.ExeMusicEvent(Bladex.GetMusicEvent("MenuMusic"))
     #print "Reference count _MainMenu.wMenu:",sys.getrefcount(_MainMenu.wMenu)
     #print "Reference count _MainMenu:",sys.getrefcount(_MainMenu)
-    Bladex.AddScheduledFunc(Bladex.GetTime(),ClearMenuKeyb,())
+    Bladex.AddScheduledFunc(-1, ClearMenuKeyb,(),"ClearMenuKeyb[NPersistent]")
 
     Bladex.SetAppMode("Game")
 
@@ -1345,11 +1341,6 @@ def ActivateMenu(caller_id = None):
       MENU_PREACTIVATED=0
       TB_ACTIVATED=0
       Raster.SetTextShadow(2, 2)
-    #
-    if string.lower(Bladex.GetCurrentMap()) == "casa":
-      InputManager.SetInputActionsSet("CharacterSelection")
-    else:
-      InputManager.SetInputActionsSet("Default")
 
   else:
     print "Invalid AppMode"
@@ -1393,9 +1384,12 @@ def ClearMenuKeyb():
   _MainMenu=None
   #print "Reference count _MainMenu: (Asignacion -> None)",sys.getrefcount(_MainMenu)
 
-  InputManager.SetInputActionsSet(OldIASet)
+  # InputManager.SetInputActionsSet(OldIASet)
 
-
+  if string.lower(Lumenx.GetCurrentMap()) == "casa": #  and Lumenx.GetCurrentMod() == ""
+    InputManager.SetInputActionsSet("CharacterSelection")
+  else:
+    InputManager.SetInputActionsSet("Default")
 
 
 
@@ -2046,6 +2040,10 @@ Controler_Menu = {"Name":MenuText.GetMenuText("CONTROLS"),
                                            }
                                          ]
                              }
+
+# -----------------------------------
+from LumenLib import BODLoader
+# -----------------------------------
 
 Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                         "VSep":8,

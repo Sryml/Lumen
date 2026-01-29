@@ -294,6 +294,11 @@ class __FunctionDecorator:
             self.RawFunc.new_B_BitmapWidget, (arg0, arg1, arg2, arg3, arg4) + args
         )
 
+    # Traps_C module
+    def LoadMaxPath(self, cam_file_name, start, end):
+        cam_file_name = AutomatedAssets(cam_file_name)
+        return self.RawFunc.LoadMaxPath(cam_file_name, start, end)
+
 
 def __empty_func(*args, **kwargs):
     return "empty_func"
@@ -491,10 +496,13 @@ def AutomatedAssets(path, root_priority=[]):
     if path == "":
         return path
     #
-    ext = os.path.splitext(path)[1]
-    check_ext = ""
-    if string.lower(ext) in (".wav", ".mp3"):
-        check_ext = ".ogg"
+    base, ext = os.path.splitext(path)
+    ext = string.lower(ext)
+    check_ext = ()
+    # if ext in (".wav", ".mp3"):
+    #     check_ext = (".ogg",)
+    # elif ext in (".jpg", ".png", ".bmp") and string.lower(base[-3:]) != "_hi":
+    #     check_ext = ("_hi.jpg", "_hi.png", "_hi.bmp")
     #
     base_path = os.path.relpath(path, _DATA.mod_root)
     if base_path is None:
@@ -523,24 +531,34 @@ def AutomatedAssets(path, root_priority=[]):
             new_path = _path
             break
         elif check_ext:
-            _path = os.path.splitext(_path)[0] + check_ext
-            if os.path.exists(_path):
-                new_path = _path
-                break
+            base = os.path.splitext(_path)[0]
+            for ext in check_ext:
+                _path = base + ext
+                if os.path.exists(_path):
+                    new_path = _path
+                    break
+            else:
+                continue
+            break
     # 如果没有发生break
     else:
         if not os.path.exists(new_path):
             for root in _DATA.asset_path:
                 if len(root) < base_root_len:
                     continue
-                _path = os.path.join(root, base_path)
-                if os.path.exists(_path):
-                    new_path = _path
-                    break
-                elif check_ext:
-                    _path = os.path.splitext(_path)[0] + check_ext
-                    if os.path.exists(_path):
-                        new_path = _path
+                #
+                exists = 0
+                new_path = os.path.join(root, base_path)
+                if check_ext:
+                    base = os.path.splitext(new_path)[0]
+                    for ext in check_ext:
+                        _path = base + ext
+                        if os.path.exists(_path):
+                            new_path = _path
+                            exists = 1
+                            break
+                if not exists:
+                    if os.path.exists(new_path):
                         break
     #
     return new_path
@@ -803,8 +821,12 @@ def LoadLevel(map_dir, mod_dir=""):
         "import Bladex",
         "import sys",
         "import time",
+        "Bladex.SetSaveInfo((1, (0,)))",  # 用于Bladex.GenerateEntityName的计数
         "b3028472_681f_5be2_8aeb_c7011b166583=time.time()",
         "Bladex.SetAppMode('Game')",
+        "Bladex.KillMusic()",
+        "Bladex.ShutDownSoundChannels()",
+        "Bladex.PauseSoundSystem()",
         "Bladex.BeginLoadGame()",
         #
         "isLumen = 1",
@@ -847,6 +869,7 @@ def LoadLevel(map_dir, mod_dir=""):
         # "execfile('%s')" % sys_init,
         "execfile('Cfg.py')",
         "isMenuAppMode =  Bladex.GetAppMode() == 'Menu'",
+        "Bladex.ResumeSoundSystem()",
         "Bladex.DoneLoadGame()",
         "isMenuAppMode and Bladex.SetAppMode('Menu')",
         "print 'Load Time =', round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
@@ -1070,7 +1093,7 @@ for __fn in __bladex_decorators:  # type: ignore
     Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore
 
 # hook other functions
-import BBLibc, BUIxc
+import BBLibc, BUIxc, Traps_C
 
 FunctionDecorator = __FunctionDecorator()
 for obj, name in (
@@ -1086,6 +1109,7 @@ for obj, name in (
     (BUIxc, "B_FontServer_CreateBFont"),
     (BUIxc, "new_B_TextWidget"),
     (BUIxc, "new_B_BitmapWidget"),
+    (Traps_C, "LoadMaxPath"),
 ):
     FunctionDecorator.Decorator(obj, name)
 

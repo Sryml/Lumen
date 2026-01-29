@@ -35,7 +35,7 @@ var_dict = {
 for k,v in var_dict.items():
 	map_name = MenuText.GetMenuText(Lumenx.GetMapListItem(v, mod_dir=""))
 	globals()[k] = map_name
-	globals()[string.upper(k)] = map_name
+	globals()[string.upper(k)] = string.upper(map_name)
 # by Sryml: end
 
 sound1=Bladex.CreateSound('../../Sounds/golpe-madera-pesada.wav', 'Sound1')
@@ -108,45 +108,48 @@ gpmar.Static = 0
 gpmar.UseFunc = None
 Cartelitos.append(gpmar.Name) #16
 #____________________________________
-gpmar = Bladex.CreateEntity(MINE,"GhostPointer",-90134.749000,13900,1985.339000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #5
+if Language.Current == "Chinese":
+	Cartelitas = Cartelitos
+else:
+	gpmar = Bladex.CreateEntity(MINE,"GhostPointer",-90134.749000,13900,1985.339000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #5
 
-gpmar=Bladex.CreateEntity(TELLHA,"GhostPointer",-70379.699000,13900,-1797.824000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #6
+	gpmar=Bladex.CreateEntity(TELLHA,"GhostPointer",-70379.699000,13900,-1797.824000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #6
 
-gpmar = Bladex.CreateEntity(QUEENST,"GhostPointer",-68459.210000,14000,12682.204000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #7
+	gpmar = Bladex.CreateEntity(QUEENST,"GhostPointer",-68459.210000,14000,12682.204000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #7
 
-gpmar = Bladex.CreateEntity(NEJEV,"GhostPointer",-41234.284000,13900,39172.076000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #12
+	gpmar = Bladex.CreateEntity(NEJEV,"GhostPointer",-41234.284000,13900,39172.076000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #12
 
-gpmar = Bladex.CreateEntity(NEMRUT,"GhostPointer",-30310.393000,13900,3890.441000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #11
+	gpmar = Bladex.CreateEntity(NEMRUT,"GhostPointer",-30310.393000,13900,3890.441000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #11
 
-gpmar = Bladex.CreateEntity(ALFARUM,"GhostPointer",-29326.827000,13900,45394.131000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #13
+	gpmar = Bladex.CreateEntity(ALFARUM,"GhostPointer",-29326.827000,13900,45394.131000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #13
 
-gpmar = Bladex.CreateEntity(IANNA,"GhostPointer",28275.839000,13900,37737.520000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #15
+	gpmar = Bladex.CreateEntity(IANNA,"GhostPointer",28275.839000,13900,37737.520000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #15
 
-gpmar = Bladex.CreateEntity(DALGURAK,"GhostPointer",48858.410000,13900,33152.115000)
-gpmar.Static = 0
-gpmar.UseFunc = None
-Cartelitas.append(gpmar.Name) #16
+	gpmar = Bladex.CreateEntity(DALGURAK,"GhostPointer",48858.410000,13900,33152.115000)
+	gpmar.Static = 0
+	gpmar.UseFunc = None
+	Cartelitas.append(gpmar.Name) #16
 #_________________________________________________________________
 # Default Value
 LastMap = 0

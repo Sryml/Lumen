@@ -37,7 +37,7 @@ var_dict = {
 for k,v in var_dict.items():
 	map_name = MenuText.GetMenuText(Lumenx.GetMapListItem(v, mod_dir=""))
 	globals()[k] = map_name
-	globals()[string.upper(k)] = map_name
+	globals()[string.upper(k)] = string.upper(map_name)
 # by Sryml: end
 
 sound1=Bladex.CreateSound('../../Sounds/golpe-madera-pesada.wav', 'Sound1')

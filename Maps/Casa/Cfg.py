@@ -40,13 +40,18 @@ if ContinueLoad:
 	Bladex.SetListenerPosition(2)
 	Menu.GetMenuItem(['GAME','SAVE GAME'])["Focusable"] = 0
 	Menu.GetMenuItem(['GAME','START NEW GAME'])["Name"] = MenuText.GetMenuText("START GAME")
-	Menu.ActivateMenu()
-	
-	if MemPersistence.Get("MapAlreadyLoaded"):
-		MemPersistence.Delete("MapAlreadyLoaded")
-		Menu.LoadPlayerSelect(0)
+	# Menu.ActivateMenu()
 	
 	CurrentPerson = 3
+
+	if MemPersistence.Get("MapAlreadyLoaded"):
+		MemPersistence.Delete("MapAlreadyLoaded")
+		ElUsuarioPresionaLaTeclaEscape(1)
+		Bladex.AddScheduledFunc(-1, InputManager.SetInputActionsSet, ("CharacterSelection",), "CharacterSelection")
+		# InputManager.SetInputActionsSet("CharacterSelection")
+		# Menu.LoadPlayerSelect(0)
+	else:
+		Menu.ActivateMenu()
 	
 	import Demo_Stuff
 	

@@ -33,9 +33,9 @@ Bladex.CloseDebugChannel("DefaultChannel")
 if not os.path.exists("../../AnmPak"):
     os.mkdir("../../AnmPak")
 #
-import Menu
-from LumenLib import BODLoader
+# import Menu
+# from LumenLib import BODLoader
 
-BODLoader.Init()
+# BODLoader.Init()
 
 Lumenx.printx("Executed sys_init.py")
