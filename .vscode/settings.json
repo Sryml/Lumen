@@ -9,6 +9,7 @@
       "reportUnboundVariable": "none",
       "reportOptionalMemberAccess": "none",
       "reportAttributeAccessIssue": "none",
+      "reportMissingModuleSource": "none",
       "reportUnusedExpression": "none"
     },
     "python.autoComplete.extraPaths": [
