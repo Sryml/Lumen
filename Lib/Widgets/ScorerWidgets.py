@@ -281,7 +281,7 @@ if netgame.GetNetState() == 0:
       if self.GetVisible()==0:
         return
 
-      if self.inv.GetSelectedObject() != "KeyRing":
+      if self.inv.GetSelectedObject() != "Player1KeyRing":
         return
 
       if ObjSlTimer < 0:
