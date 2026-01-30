@@ -87,6 +87,28 @@ def GetInvStyleOption(this):
 
 def SetInvStyle(option):
     _DATA.menu_config["InventoryStyle"] = option
+    Menu.GetMenuWidget("InventoryActivatedByFocus")[0].Focusable = option == "Improved"
+    Menu.GetMenuWidget("InventoryActivatedByNumbers")[0].Focusable = (
+        option == "Improved"
+    )
+    OnChangeMenu()
+
+
+def GetInvActivatedByFocusOption(this):
+    return this.Options.index(_DATA.menu_config["InventoryActivatedByFocus"])
+
+
+def SetInvActivatedByFocus(option):
+    _DATA.menu_config["InventoryActivatedByFocus"] = option
+    OnChangeMenu()
+
+
+def GetInvActivatedByNumbersOption(this):
+    return this.Options.index(_DATA.menu_config["InventoryActivatedByNumbers"])
+
+
+def SetInvActivatedByNumbers(option):
+    _DATA.menu_config["InventoryActivatedByNumbers"] = option
     OnChangeMenu()
 
 
@@ -164,11 +186,35 @@ ModMenu = {
                     "Command": SetInvStyle,
                 },
                 {
+                    "Name": "InventoryActivatedByFocus",
+                    "Text": MenuText.GetMenuText("Activated By Focus") + ":",
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "Kind": MenuWidget.B_MenuItemOption,
+                    "Options": ["Weapon", "Shield", "Object"],
+                    "SelOptionFunc2": GetInvActivatedByFocusOption,
+                    "Command": SetInvActivatedByFocus,
+                    "Focusable": _DATA.menu_config["InventoryStyle"] == "Improved",
+                },
+                {
+                    "Name": "InventoryActivatedByNumbers",
+                    "Text": MenuText.GetMenuText("Activated By Numbers") + ":",
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "Kind": MenuWidget.B_MenuItemOption,
+                    "Options": ["Weapon", "Shield", "Object"],
+                    "SelOptionFunc2": GetInvActivatedByNumbersOption,
+                    "Command": SetInvActivatedByNumbers,
+                    "Focusable": _DATA.menu_config["InventoryStyle"] == "Improved",
+                },
+                {
                     "Name": "Cache",
                     "Text": MenuText.GetMenuText("Cache") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.5em",
+                    "VSep": "0.7em",
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Enabled", "Disabled"],
                     "SelOptionFunc2": GetCacheOption,

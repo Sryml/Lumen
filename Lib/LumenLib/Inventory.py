@@ -56,7 +56,15 @@ InvObjectStar = {
 
 # -------------------------------
 def InventorySelectLast():
-    INVENTORY.PrevFocus()
+    if Lumenx.GetInventoryStyle() == "Original" or not INVENTORY:
+        return
+    if not INVENTORY.GetVisible():
+        INVENTORY.selected_inventory = Lumenx.InventoryActivatedByFocus()
+        ShowInventory(init=1, next_page=0)
+        return
+    #
+    if not INVENTORY.PrevFocus():
+        return
     SndInventorySelect.PlayStereo()
     # printx("Select Last Inventory")
     #
@@ -72,7 +80,15 @@ def InventorySelectLast():
 
 
 def InventorySelectNext():
-    INVENTORY.NextFocus()
+    if Lumenx.GetInventoryStyle() == "Original" or not INVENTORY:
+        return
+    if not INVENTORY.GetVisible():
+        INVENTORY.selected_inventory = Lumenx.InventoryActivatedByFocus()
+        ShowInventory(init=1, next_page=0)
+        return
+    #
+    if not INVENTORY.NextFocus():
+        return
     SndInventorySelect.PlayStereo()
     # printx("Select Next Inventory")
     #
@@ -88,7 +104,15 @@ def InventorySelectNext():
 
 
 def InventorySelectByNumber(index):
-    INVENTORY.SetFocus(index)
+    if Lumenx.GetInventoryStyle() == "Original" or not INVENTORY:
+        return
+    if not INVENTORY.GetVisible():
+        INVENTORY.selected_inventory = Lumenx.InventoryActivatedByNumbers()
+        ShowInventory(init=1, next_page=0)
+        return
+    #
+    if not INVENTORY.SetFocus(index):
+        return
     SndInventorySelect.PlayStereo()
     # printx("Select Inventory by Number: %d" % index)
     #
@@ -273,6 +297,7 @@ def ShowInventory(init=1, next_page=0):
         # INVENTORY.main_frame.SetVisible(1)
 
     INVENTORY.screen_scale = Raster.GetUnscaledSize()[0] / float(Raster.GetSize()[0])
+    INVENTORY.object_scale = 1.0
     char = Lumenx.GetControlCharacter()
     inv = char.GetInventory()
     # current_item_name = ""
@@ -281,8 +306,12 @@ def ShowInventory(init=1, next_page=0):
     focus = 0
     page = 0
 
-    INVENTORY.object_scale = 1.0
+    if (
+        inv.HasBowOnBack or inv.HoldingBow
+    ) and INVENTORY.selected_inventory == "Shield":
+        INVENTORY.selected_inventory = "Quiver"
     selected_inventory = INVENTORY.selected_inventory
+
     if selected_inventory == "Weapon":
         GetItem = inv.GetWeapon
         nItems = inv.nWeapons
@@ -368,6 +397,7 @@ def ShowInventory(init=1, next_page=0):
         ent_name, kind, number, max_stack, star_flag = InventorySlot[slot_idx]
 
         frame = INVENTORY.child_frame[i]
+        frame.slot_data = [ent_name, kind, number, max_stack, star_flag]
         _, border, name_widget, _, _, star_label = frame.widgets
         border.SetColor(200, 200, 200)
         #
@@ -423,8 +453,6 @@ def ShowInventory(init=1, next_page=0):
 
         name_widget.SetText(name_text)
         frame.RecalcLayout()
-        #
-        frame.slot_data = [ent_name, kind, number, max_stack, star_flag]
 
     # -------------------------------
     if init:
@@ -621,7 +649,7 @@ class InventoryUI:
                 border_h,
                 "UIBorderA1",
             )
-            border1.SetColor(255, 255, 30)
+            border1.SetColor(230, 230, 30)
             border1.SetAlpha(1.0)
             border1.SetVisible(0)
             border1.SetAutoScale(auto_scale)
@@ -898,25 +926,35 @@ class InventoryUI:
             border.SetVisible(0)
 
     def SetFocus(self, index):
+        if index != -1:
+            slot_data = self.child_frame[index].slot_data
+            if slot_data[0] == "":
+                return 0
+        #
         self.CancelBorderAnim()
-        if self.current_focus != -1:
+        if self.current_focus != index and self.current_focus != -1:
             border = self.child_frame[self.current_focus].widgets[1]
             border.SetColor(200, 200, 200)
         self.current_focus = index
         if index == -1:
-            return
+            return 0
         border = self.child_frame[index].widgets[1]
-        border.SetColor(255, 255, 30)
+        border.SetColor(230, 230, 30)
+        return 1
 
     def MoveFocus(self, inc):
-        current_focus = (self.current_focus + inc) % 8
-        self.SetFocus(current_focus)
+        current_focus = max((self.current_focus + inc), -1) % 8
+        for i in range(8):
+            if self.child_frame[current_focus].slot_data[0] != "":
+                break
+            current_focus = (current_focus + inc) % 8
+        return self.SetFocus(current_focus)
 
     def PrevFocus(self):
-        self.MoveFocus(-1)
+        return self.MoveFocus(-1)
 
     def NextFocus(self):
-        self.MoveFocus(1)
+        return self.MoveFocus(1)
 
     # -------------------------------
     def FadeIn(self, period):
@@ -977,7 +1015,7 @@ class InventoryUI:
         ret = Interpolator.LinearInt.Execute(self.border_anim, value)
         border = self.child_frame[self.current_focus].widgets[0]
         border.SetAlpha(ret)
-        val = (1 - ret) * 0.45 + 1.0
+        val = (1 - ret) * 0.4 + 1.0
         border.SetSize(self.border_size[0] * val, self.border_size[1] * val)
         self.child_frame[self.current_focus].RecalcLayout()
 

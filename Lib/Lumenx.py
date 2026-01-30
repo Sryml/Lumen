@@ -763,6 +763,14 @@ def GetTimeActionHeld(action_name):
     return Bladex_raw.GetTimeActionHeld(action_name)  # type: ignore
 
 
+def InventoryActivatedByFocus():
+    return _DATA.config["InventoryActivatedByFocus"]
+
+
+def InventoryActivatedByNumbers():
+    return _DATA.config["InventoryActivatedByNumbers"]
+
+
 def IsCacheEnabled():
     return _DATA.config["Cache"] == "Enabled"
 
@@ -1164,6 +1172,8 @@ GetPreloadCB
 GetResolution
 GetServicePort
 GetTimeActionHeld
+InventoryActivatedByFocus
+InventoryActivatedByNumbers
 IsCacheEnabled
 LoadAnmRaceData
 LoadComponent

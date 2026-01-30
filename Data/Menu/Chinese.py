@@ -114,6 +114,11 @@ ForeingDict = {
     "original": "原版",
     "improved": "改良的",
     # Inventory
+    "activated by focus": "由焦点激活",
+    "activated by numbers": "由数字激活",
+    "weapon": "武器",
+    "shield": "盾牌",
+    "object": "物品",
     "select last inventory": "选择上一个库存",
     "select next inventory": "选择下一个库存",
     "inventory 1": "库存1",
