@@ -25,14 +25,14 @@ def GetPickFileName(data):
         filename="%s/%s.dat"%("f",data.persistent_id())
     except:
         if type(data) in (types.DictionaryType,types.ListType,types.TupleType):
-            filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetNewId())
+            filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId())
         elif type(data) == types.FunctionType:
-            filename="%s/%s%s.dat"%("f",data.func_name,ObjStore.GetNewId())
+            filename="%s/%s%s.dat"%("f",data.func_name,ObjStore.GetAutoId())
         elif type(data) == types.MethodType:
-            filename="%s/%s%s.dat"%("f",data.im_func.func_name,ObjStore.GetNewId())
+            filename="%s/%s%s.dat"%("f",data.im_func.func_name,ObjStore.GetAutoId())
         else:
 ##            filename="%s/%s.dat"%("f",ObjStore.GetNewId())
-            filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetNewId())
+            filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId()) # -Sryml
 
     return filename
 
@@ -43,7 +43,7 @@ def SavePickDataAux(file,data,assign):
 ##        print "SavePickDataAux() -> Warning: omiting method."
 ##        return
 
-    if(data):
+    if data is not None:
         filename=GetPickFileName(data)
         restorestring='GameStateAux.GetPickledData("%s")'%(filename,)
         file.write(assign%(restorestring,))
@@ -149,7 +149,9 @@ class EntityState:
 class EntitySpotState(EntityState):
     def __init__(self,entity):
         EntityState.__init__(self,entity)
-
+        if entity.Flick == 0:                        # Added.
+            # print entity.Name + " has no Flick"    #
+            self.SpecialProps["Flick"]=0             #      -LeadHead
 
 
 class EntityObjectState(EntityState):
@@ -204,7 +206,7 @@ class EntityFireState(EntityState):
 class EntityCameraState(EntityState):
     def __init__(self,entity):
         EntityState.__init__(self,entity)
-
+        self.SpecialProps["PViewType"]=entity.PViewType
 
 
 
@@ -709,6 +711,7 @@ class WorldState:
 
     def SaveState(self,path):
         print "[SAVE STARTED]"
+        ObjStore.AutoStoreIndex = 0 # -Sryml
         if(self.SaveLState(path)==0):
             print "[SAVE FAILED]: "+path
             Bladex.ShowCriticalWarning("SaveWarning","failed to save"+path);

@@ -28,13 +28,14 @@ DEMO_PLAYERS=("AM", "BR", "KN", "DW")
 DEBUG_INFO   = 0
 PYTHON_DEBUG = 0
 
-def debugprint(Msg):
+def debugprint(*args, **kwargs):
 	if DEBUG_INFO==0:
 		return
-	try:
-		print Msg
-	except TypeError:
-		pass
+	apply(Lumenx.printx, args, kwargs)
+	# try:
+	# 	print Msg
+	# except TypeError:
+	# 	pass
 ######################################
 
 

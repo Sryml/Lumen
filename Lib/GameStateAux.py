@@ -188,7 +188,7 @@ def GetPickledObjects(filename):
 
   global FixDataBase
   for i in FixDataBase:
-    print "Fixing",i
+    Reference.debugprint("Fixing",i)
     func_id=i[0]
     ob_id=func_id[0]
     if ObjStore.ObjectsStore.has_key(ob_id):
@@ -197,10 +197,10 @@ def GetPickledObjects(filename):
       cl_to_assign=None
       if i[4]=="Entity":
         cl_to_assign=Bladex.GetEntity(i[1])
-        print "Found Entity",cl_to_assign
+        Reference.debugprint("Found Entity",cl_to_assign)
       else:
         cl_to_assign=ObjStore.ObjectsStore[i[1]]
-        print "Found class",cl_to_assign
+        Reference.debugprint("Found class",cl_to_assign)
 
       if cl_to_assign:
         if i[4]=="Object":
@@ -213,14 +213,14 @@ def GetPickledObjects(filename):
           exec("cl_to_assign."+i[2]+"=cl."+func_id[1])
           #print "Fixed relationship for function",i
       else:
-        print "Can't fix FixDataBase.",ob_id,"Not found.",i
+        Reference.debugprint("Can't fix FixDataBase.",ob_id,"Not found.",i)
 
 
 
 
 
     else:
-      print "Can't fix FixDataBase.",ob_id,"Not found."
+      Reference.debugprint("Can't fix FixDataBase.",ob_id,"Not found.")
 
   FixDataBase=[]
 

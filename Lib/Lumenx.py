@@ -1099,6 +1099,38 @@ def SetModRoot(path):
 
 ######### Function End
 
+
+# -----------------------------
+# Class Start
+# -----------------------------
+# class CameraData:
+#     def __init__(self, me):
+#         # type: (Bladex._entity.B_Entity_Camera) -> None
+#         me.PViewType = 0
+
+#     def __getstate__(self):
+#         me = Bladex.GetEntity("Camera")
+#         return (me.PViewType, me.Position, me.TPos)
+
+#     def __setstate__(self, parms):
+#         Bladex.AddScheduledFunc(
+#             Bladex.GetTime(), self.Restore, (parms,), "CameraData.Restore[NSAVE]"
+#         )
+
+#     def Restore(self, parms):
+#         me = Bladex.GetEntity("Camera")
+#         me.PViewType = parms[0]
+#         me.SType = 0
+#         me.TType = 0
+#         me.Position = parms[1]
+#         me.TPos = parms[2]
+#         me.SetPersonView(GetControlCharacter().Name)
+
+
+# -----------------------------
+# Class End
+# -----------------------------
+
 # hook Bladex functions
 for __fn in __bladex_decorators:  # type: ignore
     Bladex.__dict__[__fn] = globals()[__fn]  # type: ignore

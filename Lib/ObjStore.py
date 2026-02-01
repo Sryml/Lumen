@@ -7,6 +7,14 @@ ObjectsStore={}
 
 StoreIndex=0 # Que no se me olvide guardar este valor al guardar partida
 
+# -Sryml
+AutoStoreIndex=0
+
+def GetAutoId():
+    global AutoStoreIndex
+    AutoStoreIndex = AutoStoreIndex + 1
+    return str(AutoStoreIndex)
+#
 
 def GetNewId():
     global StoreIndex
@@ -27,7 +35,7 @@ def CheckStore():
     for i in ObjectsStore.keys():
         if sys.getrefcount(ObjectsStore[i]) <= 2: # Thanks Tomash
             # garbage collection, if the only reference to the class is here, delete it
-            Reference.debugprint("CheckStore(): %s deleted by garbage collection, index %s" % (ObjectsStore[i], repr(i))) # by Sryml
+            Reference.debugprint("CheckStore(): %s deleted by garbage collection, index %s" % (ObjectsStore[i], repr(i))) # -Sryml
             del ObjectsStore[i]
 
     # Objetos que ya no son validos

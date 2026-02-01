@@ -256,6 +256,9 @@ class PlayerPerson:
 				self.LevelUpParticleData.append(size)
 				Bladex.SetParticleGVal("LevelUpParticle",i,r,g,b,a,size)
 			Bladex.AddScheduledFunc(Bladex.GetTime()+RestoreEnergyTime, RestoreEnergyFunc,(self.Name,),"PlayerRestoreEnergy")
+			# -Sryml
+			cam = Bladex.GetEntity("Camera")
+			cam.PViewType = 0
 
 
 	def ResetSounds(self, EntityName):

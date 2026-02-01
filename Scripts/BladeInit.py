@@ -15,6 +15,7 @@ Bladex.SetTime(0)
 import string
 import Reference
 import Language
+import Lumenx
 
 from bladeinit0 import *
 #
@@ -76,7 +77,9 @@ execfile("../../Scripts/AutoGenTextures.py")
 
 
 
-
+#
+# cam = Bladex.GetEntity("Camera")
+# cam.Data = Lumenx.CameraData(cam)
 
 #
 # PJ Init
