@@ -105,7 +105,7 @@ def __fn():
         _DATA.current_mod = ""
         _DATA.asset_path = [lumen_root, blade_root]
     else:
-        _DATA.current_mod = os.path.basename(mod_root)
+        _DATA.current_mod = os.path.basename(os.path.abspath(mod_root))
         root_paths.append(mod_root)
         _DATA.asset_path = [mod_root, lumen_root, blade_root]
     # _DATA.current_map = os.path.basename(current_dir)
@@ -119,6 +119,7 @@ def __fn():
         "Stats",
         "Scripts",
         "Scripts/Combos",
+        "Scripts/Combos/%s" % _DATA.config["Language"],
         "Scripts/Biped",
         "Lib",
         "Lib/AnmSets",
@@ -232,13 +233,13 @@ class __FunctionDecorator:
     # builtin module
     def execfile(self, filename, globals=None, locals=None):
         filename = AutomatedAssets(filename)
-        if not (globals and locals):
+        if globals is None or locals is None:
             try:
                 1 / 0
             except ZeroDivisionError:
-                if not globals:
+                if globals is None:
                     globals = sys.exc_info()[2].tb_frame.f_back.f_globals
-                if not locals:
+                if locals is None:
                     locals = sys.exc_info()[2].tb_frame.f_back.f_locals
         return self.RawFunc.execfile(filename, globals, locals)
 
@@ -400,7 +401,9 @@ def AddMapList(map_list, mod_dir):
     new_map_list = {}
     for k, v in map_list.items():
         new_map_list[string.lower(k)] = v
-    _DATA.map_list[mod_dir] = new_map_list
+    if not _DATA.map_list.has_key(mod_dir):
+        _DATA.map_list[mod_dir] = {}
+    _DATA.map_list[mod_dir].update(new_map_list)
 
 
 def AddMusicEventADPCM(

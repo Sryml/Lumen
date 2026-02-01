@@ -1321,7 +1321,7 @@ def ActivateMenu(caller_id = None):
     #Bladex.ExeMusicEvent(Bladex.GetMusicEvent("MenuMusic"))
     #print "Reference count _MainMenu.wMenu:",sys.getrefcount(_MainMenu.wMenu)
     #print "Reference count _MainMenu:",sys.getrefcount(_MainMenu)
-    Bladex.AddScheduledFunc(-1, ClearMenuKeyb,(),"ClearMenuKeyb[NPersistent]")
+    Bladex.AddScheduledFunc(-1, ClearMenuKeyb,(),"ClearMenuKeyb[NSAVE]")
 
     Bladex.SetAppMode("Game")
 

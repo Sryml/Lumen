@@ -11,8 +11,10 @@ ForeingDict = {}
 
 if Language.Current != "English":
     filepath = "../../Data/Menu/" + Language.Current + ".py"
-    if os.path.isfile(filepath):
+    try:
         execfile(filepath)
+    except:
+        pass
 
 
 # Language.Current=Language.Current

@@ -602,14 +602,14 @@ class B_MenuItemOption(B_MenuItemTextNoFX):
         if not self.Options:
             self.Options = ["No option defined"]
 
+        B_MenuItemTextNoFX.__init__(self, Parent, MenuDescr, StackMenu)
+
         SelOption = MenuDescr.get("SelOptionFunc")
         if SelOption is not None:
           self.SelOption = SelOption()
         else:
           SelOption = MenuDescr.get("SelOptionFunc2", lambda x: 0)
           self.SelOption = SelOption(self)
-
-        B_MenuItemTextNoFX.__init__(self, Parent, MenuDescr, StackMenu)
 
         self.OptionText = self.Text
         self.Text = self.OptionText + " < " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
@@ -1223,7 +1223,7 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		self.SetupPanelWidgets()
 
 	def AddButtonTexts(self, language):
-		sys.path.append('../../SCRIPTS/Combos/' + language)
+		# sys.path.append('../../SCRIPTS/Combos/' + language)
 		import PanelButtonsLoca
 		index = 0
 		elem = "Button"

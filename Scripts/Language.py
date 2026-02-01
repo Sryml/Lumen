@@ -60,8 +60,8 @@ Current = BBLib.GetCurrentLanguage()
 # Current = "Chinese"
 
 if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
-    FontTitle = "../../Data/FontTitleC.bmp"
-    FontCommon = "../../Data/FontCommonC.bmp"
+    FontTitle = os.path.join(Lumenx.GetLumenRoot(), "Data/FontTitleC.bmp")
+    FontCommon = os.path.join(Lumenx.GetLumenRoot(), "Data/FontCommonC.bmp")
 elif Lumenx.GetGameVersion() == Lumenx.V109_VER:
     if Current == "English":
         FontTitle = "../../Data/FontTitle_8bpp.fnt"
@@ -70,8 +70,8 @@ elif Lumenx.GetGameVersion() == Lumenx.V109_VER:
         FontTitle = "../../Data/FontCommon_8bpp.fnt"
         FontCommon = "../../Data/FontCommon_8bpp.fnt"
     else:
-        FontTitle = "../../Data/FontTitle.bmp"
-        FontCommon = "../../Data/FontCommon.bmp"
+        FontTitle = os.path.join(Lumenx.GetLumenRoot(), "Data/FontTitle.bmp")
+        FontCommon = os.path.join(Lumenx.GetLumenRoot(), "Data/FontCommon.bmp")
 else:
     assert False, "Unsupported game version"
 

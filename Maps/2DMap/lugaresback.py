@@ -108,7 +108,7 @@ gpmar.Static = 0
 gpmar.UseFunc = None
 Cartelitos.append(gpmar.Name) #16
 #____________________________________
-if Language.Current == "Chinese":
+if Monolith == MONOLITH:
 	Cartelitas = Cartelitos
 else:
 	gpmar = Bladex.CreateEntity(MINE,"GhostPointer",-90134.749000,13900,1985.339000)

@@ -94,7 +94,7 @@ class Interp:
     self.ObjId = ""
     suffix = ""
     if not make_persistent:
-      suffix = "[NPersistent]"
+      suffix = "[NSAVE]"
     Bladex.SetAfterFrameFunc("Interp"+name+suffix,self.ExecuteActions)
     if make_persistent:
       self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar

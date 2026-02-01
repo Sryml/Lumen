@@ -113,6 +113,7 @@ ForeingDict = {
     "inventory style": "库存风格",
     "original": "原版",
     "improved": "改良的",
+    "developer features": "开发者功能",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",

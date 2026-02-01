@@ -761,7 +761,7 @@ class WorldState:
             
 
         file.write('############################################################\n')
-        file.write('#   Blade Game State %s\n'%(filename,))
+        file.write('#   Blade Game State %s\n'%(aux_dir+"/"+os.path.basename(filename),))
         file.write('#   Do not modify\n')
         file.write('#   File created %s \n'%(time.asctime(time.gmtime(time.time())),))
         file.write('############################################################\n\n\n\n')
@@ -1383,7 +1383,7 @@ for i in range(len(keys)):
         #print "SaveScheduledFuncs(). There are ",n_sched_funcs,"functions."
         for i in range(n_sched_funcs):
             f=Bladex.GetScheduledFunc(i)
-            if f and f[2] not in exclude_funcs and string.find(f[2],"[NPersistent]") == -1: # by Sryml
+            if f and f[2] not in exclude_funcs and string.find(f[2],"[NSAVE]") == -1: # by Sryml
                 func_string='GameStateAux.LoadFunctionAux(%s)'%(GameStateAux.SaveFunctionAux(f[0]),)
                 filename=GetPickFileName(f[1])
                 func_parms='GameStateAux.GetPickledData("%s")'%(filename,)
@@ -1405,7 +1405,7 @@ for i in range(len(keys)):
         #print "SaveAfterFrameFuncs(). There are ",n_afrm_funcs,"functions."
         for i in range(n_afrm_funcs):
             f_name=Bladex.GetAfterFrameFuncName(i)
-            if f_name and f_name not in exclude_funcs and string.find(f_name,"[NPersistent]") == -1: # by Sryml
+            if f_name and f_name not in exclude_funcs and string.find(f_name,"[NSAVE]") == -1: # by Sryml
                 f=Bladex.GetAfterFrameFunc(f_name)
                 filename=GetPickFileName(f)
                 func_string='GameStateAux.GetPickledData("%s")'%(filename,)

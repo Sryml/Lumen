@@ -13,11 +13,22 @@ import BBLib
 import BUIx
 import Raster
 import BCopy
+import shutil
+import Reference
 import Menu
 import MenuWidget
 
+import os
+import string
+import traceback
+import typing
+
 from Lumenx import printx, Raisex
 from LumenLib import UtilsWidget
+
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
 
 # ----------------------------------
 BackImage = BBLib.B_BitMap24()
@@ -95,6 +106,7 @@ def SetInvStyle(option):
 
 
 def GetInvActivatedByFocusOption(this):
+    this.Focusable = _DATA.menu_config["InventoryStyle"] == "Improved"
     return this.Options.index(_DATA.menu_config["InventoryActivatedByFocus"])
 
 
@@ -104,6 +116,7 @@ def SetInvActivatedByFocus(option):
 
 
 def GetInvActivatedByNumbersOption(this):
+    this.Focusable = _DATA.menu_config["InventoryStyle"] == "Improved"
     return this.Options.index(_DATA.menu_config["InventoryActivatedByNumbers"])
 
 
@@ -143,7 +156,45 @@ def GetLanguage(this):
 
 # ----------------------------------
 def Init():
-    pass
+    lumen_root = Lumenx.GetLumenRoot()
+    ModListPath = os.path.join(Lumenx.GetLumenRoot(), "Mods")
+    for mod_dir in os.listdir(ModListPath):
+        mod_root = os.path.join(ModListPath, mod_dir)
+        if not os.path.isdir(mod_root):
+            continue
+        BLModInfo = os.path.join(mod_root, "BLModInfo.py")
+        if not os.path.isfile(BLModInfo):
+            continue
+        #
+        Reference.debugprint("[BODLoader] Found mod: " + mod_dir)
+        mod_dir = string.lower(mod_dir)
+        name_space = {}
+        try:
+            execfile(BLModInfo, name_space, name_space)
+            Lumenx.AddMapList(name_space["MapList"], mod_dir)
+        except:
+            traceback.print_exc()
+        # 复制引擎需要的文件
+        os.makedirs(os.path.join(mod_root, "Data/ControlFonts"), exist_ok=True)
+        os.makedirs(os.path.join(mod_root, "Sounds"), exist_ok=True)
+        for file in (
+            "Data/ControlFonts/glyphs_gamepad_font.png",
+            "Data/ControlFonts/glyphs_keyboard_font.bmp",
+            "Data/ControlFonts/glyphs_playstation_font.png",
+            "Data/ControlFonts/glyphs_steamDeck_font.bmp",
+            "Data/ControlFonts/glyphs_xbox_font.png",
+            #
+            "Data/FontTitle_8bpp.fnt",
+            "Data/FontTitle_8bpp_0.png",
+            "Data/FontCommon_8bpp.fnt",
+            "Data/FontCommon_8bpp_0.png",
+            #
+            "Sounds/M-FUEGO-ANTORCHA3.wav",
+        ):
+            dst = os.path.join(mod_root, file)
+            if not os.path.exists(dst):
+                shutil.copy(os.path.join(lumen_root, file), dst)
+        #
 
 
 # ----------------------------------
@@ -175,11 +226,22 @@ ModMenu = {
             "OnLeave": LeaveMenu,
             "ListDescr": [
                 {
+                    "Name": "Basic Clone",
+                    "Text": MenuText.GetMenuText("Basic Clone") + ":",
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": "0.208%",
+                    "Kind": MenuWidget.B_MenuItemOption,
+                    "Options": ["Default"],
+                    "SelOptionFunc2": GetBasicCloneOption,
+                    "Command": SetBasicClone,
+                },
+                {
                     "Name": "InventoryStyle",
                     "Text": MenuText.GetMenuText("Inventory Style") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.208%",
+                    "VSep": "1em",
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Original", "Improved"],
                     "SelOptionFunc2": GetInvStyleOption,
@@ -195,7 +257,6 @@ ModMenu = {
                     "Options": ["Weapon", "Shield", "Object"],
                     "SelOptionFunc2": GetInvActivatedByFocusOption,
                     "Command": SetInvActivatedByFocus,
-                    "Focusable": _DATA.menu_config["InventoryStyle"] == "Improved",
                 },
                 {
                     "Name": "InventoryActivatedByNumbers",
@@ -207,14 +268,13 @@ ModMenu = {
                     "Options": ["Weapon", "Shield", "Object"],
                     "SelOptionFunc2": GetInvActivatedByNumbersOption,
                     "Command": SetInvActivatedByNumbers,
-                    "Focusable": _DATA.menu_config["InventoryStyle"] == "Improved",
                 },
                 {
                     "Name": "Cache",
                     "Text": MenuText.GetMenuText("Cache") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.7em",
+                    "VSep": "1em",
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Enabled", "Disabled"],
                     "SelOptionFunc2": GetCacheOption,
@@ -226,14 +286,12 @@ ModMenu = {
             ],
         },
         {
-            "Name": "Basic Clone",
-            "Text": MenuText.GetMenuText("Basic Clone") + ":",
+            "Name": "Developer Features",
+            "Text": MenuText.GetMenuText("Developer Features"),
             "Font": Language.FontTitle,
             "VSep": "1em",
-            "Kind": MenuWidget.B_MenuItemOption,
-            "Options": [],
-            "SelOptionFunc2": GetBasicCloneOption,
-            "Command": SetBasicClone,
+            "OnLeave": LeaveMenu,
+            "ListDescr": [],
         },
         NoteLabel,
         BackOption,
@@ -241,3 +299,5 @@ ModMenu = {
     ],
 }
 # return ModMenu
+# -------------------------------------
+Init()
