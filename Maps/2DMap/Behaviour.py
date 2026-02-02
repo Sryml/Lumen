@@ -41,7 +41,7 @@ font_behaviour=font_server_behaviour.CreateBFont(Language.FontTitle)
 #------- LABEL SHOWING-------------
 def LabelEntity(entity,text,dx,dy):
 	if entity:
-		scale = Language.FontScale["L"] * 0.78
+		scale = Language.FontScale["M"]
 		Zcreen=Raster.GetSize()
 		text_wh=(font_behaviour.GetTextWidth(text)*scale,font_behaviour.GetHeight("H")*scale)
 		# FIXME: Due to some reason this is not working, re-enalbel next line later.
@@ -104,11 +104,19 @@ def NameWrittingFuct(time):
 	for ThisGP in Cartelitos:
 		if (lugares.MapStatus[a] or GotoMapVars.VisitedMaps[a]):
 			# Visible Bad shields and Simple Blade Sword
+			Ent = Bladex.GetEntity(ThisGP)
 			if (a == CurrentSelected):
-				thispos = Bladex.GetEntity(ThisGP).Position
-				ShowLabelEntity2(Bladex.GetEntity(Cartelitas[a]))
+				thispos = Ent.Position
+				Raster.SetTextAlpha(1)
+				Raster.SetTextColor(255, 254, 125)
+				Ent = Bladex.GetEntity(Cartelitas[a])
+			elif GotoMapVars.VisitedMaps[a]:
+				Raster.SetTextAlpha(0.3)
+				Raster.SetTextColor(255,255,255)
 			else:
-				ShowLabelEntity(Bladex.GetEntity(ThisGP))
+				Raster.SetTextAlpha(1)
+				Raster.SetTextColor(200,200,200)
+			LabelEntity(Ent, Ent.Name, 0, 0)
 		a = a + 1
 
 	cam = Bladex.GetEntity("Camera")
