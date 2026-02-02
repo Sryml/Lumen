@@ -38,13 +38,13 @@ BadShield.append(o.Name)
 
 ###	PRIMER MAPA ENANO
 
-o=Bladex.CreateEntity("Kazel-Zalam","Escudo8",-103963.620000,13900,-1505.120000)
+o=Bladex.CreateEntity("Kazel-Zalam","Escudo8",-103963.620000,13900,-1505 - 2500.0)
 o.Scale=8
 o.Orientation=0.997564,0.069756,0.000000,0.000000
 o.RemoveFromWorld()
 GoodShield.append(o.Name)
 
-o=Bladex.CreateEntity("Kazel-Zalam","Escudon",-103963.620000,13900,-1505.120000)
+o=Bladex.CreateEntity("Kazel-Zalam","Escudon",-103963.620000,13900,-1505 - 2500.0)
 o.Scale=6
 o.Orientation=0.997564,0.069756,0.000000,0.000000
 o.RemoveFromWorld()
@@ -169,13 +169,13 @@ BadShield.append(o.Name)
 
 ###	A ELEGIR ENTRE ESTOS DOS
 
-o=Bladex.CreateEntity("Orlok","Escudo8",-13828.658000,13900,23751.465000)
+o=Bladex.CreateEntity("Orlok","Escudo8",-13828.658000,13900,23751 - 2300.0)
 o.Scale=8
 o.Orientation=0.997564,0.069756,0.000000,0.000000
 o.RemoveFromWorld()
 GoodShield.append(o.Name)
 
-o=Bladex.CreateEntity("Orlok","Escudon",-13828.658000,13900,23751.465000)
+o=Bladex.CreateEntity("Orlok","Escudon",-13828.658000,13900,23751 - 2300.0)
 o.Scale=6
 o.Orientation=0.997564,0.069756,0.000000,0.000000
 o.RemoveFromWorld()

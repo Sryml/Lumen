@@ -13,8 +13,8 @@ def Ldm():
 	qLoadAnims("Ldm","window","Ldm_window","Little_Demon")
 
 def Knight_Traitor(): # by Sryml
-	qLoadAnims("Tkn","sleep_wall","Tkn_sleep_wall","Traitor_Knight")
-	qLoadAnims("Tkn","alarm01","Tkn_alarm01","Traitor_Knight")
+	qLoadAnims("Tkn","sleep_wall","Tkn_sleep_wall","Knight_Traitor")
+	qLoadAnims("Tkn","alarm01","Tkn_alarm01","Knight_Traitor")
 
 def Knight():
 	qLoadAnims("Kgt","tablilla_hielo","Kgt_tablilla_hielo","Knight_N")

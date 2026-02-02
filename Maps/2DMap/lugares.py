@@ -140,7 +140,7 @@ gpmar.Static = 0
 gpmar.UseFunc = None
 Cartelitos.append(gpmar.Name)
 
-gpmar = Bladex.CreateEntity(Khazel,"GhostPointer",-103963.620000,13900,-1505.120000)
+gpmar = Bladex.CreateEntity(Khazel,"GhostPointer",-103963.620000,13900,-1505 - 2500.0)
 gpmar.Static = 0
 gpmar.UseFunc = None
 Cartelitos.append(gpmar.Name)
@@ -175,7 +175,7 @@ gpmar.Static = 0
 gpmar.UseFunc = None
 Cartelitos.append(gpmar.Name) #9
 
-gpmar = Bladex.CreateEntity(Orlok,"GhostPointer",-13828.658000,13900,23751.465000)
+gpmar = Bladex.CreateEntity(Orlok,"GhostPointer",-13828.658000,13900,23751 - 2300.0)
 gpmar.Static = 0
 gpmar.UseFunc = None
 Cartelitos.append(gpmar.Name) #10
