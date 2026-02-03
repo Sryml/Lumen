@@ -42,7 +42,7 @@ BORDERANIM_PERIOD = 0.3
 
 INVENTORY = None
 MAX_PAGES = 7
-INVENTORY_FADEOU_TNAME = "LumenInventoryFadeOut[NPersistent]"
+INVENTORY_FADEOU_TNAME = "LumenInventoryFadeOut[NSAVE]"
 
 ListenKeys = {}
 
@@ -57,6 +57,13 @@ InvObjectStar = {
     "Llavero": 7,
 }
 
+CHANGE_ANIM = [
+    "attack_chg_r_l",
+    "chg_r_l",
+    "attack_chg_r",
+    "chg_r",
+]
+
 
 # -------------------------------
 def InventorySelectLast():
@@ -67,7 +74,7 @@ def InventorySelectLast():
         ShowInventory(init=1, next_page=0)
         return
     #
-    ShowInventory(init=0, next_page=0)  # refresh
+    ShowInventory(init=0, next_page=0, update_focus=0)  # refresh
     if not INVENTORY.PrevFocus():
         return
     SndInventorySelect.PlayStereo()
@@ -92,7 +99,7 @@ def InventorySelectNext():
         ShowInventory(init=1, next_page=0)
         return
     #
-    ShowInventory(init=0, next_page=0)  # refresh
+    ShowInventory(init=0, next_page=0, update_focus=0)  # refresh
     if not INVENTORY.NextFocus():
         return
     SndInventorySelect.PlayStereo()
@@ -119,7 +126,7 @@ def InventorySelectByNumber(index):
         ShowInventory(init=1, next_page=0)
         return
     #
-    ShowInventory(init=0, next_page=0)  # refresh
+    ShowInventory(init=0, next_page=0, update_focus=0)  # refresh
     if not INVENTORY.SetFocus(index):
         return
     SndInventorySelect.PlayStereo()
@@ -285,6 +292,8 @@ def SetInvSlot(
         index = GetEmptySlot(InventorySlot, last_slot, max_items)
         if index is None:
             return -1
+        else:
+            last_slot = index
     #
     InventorySlot[index][0] = ent_name
     InventorySlot[index][1] = kind
@@ -296,10 +305,10 @@ def SetInvSlot(
         InventorySlot[index][3] = inv.GetMaxNumberObjectsAt(inv_idx)
     else:
         InventorySlot[index][2] = 1
-    return index
+    return last_slot
 
 
-def ShowInventory(init=1, next_page=0):
+def ShowInventory(init=1, next_page=0, update_focus=1):
     import ScorerWidgets
 
     if next_page != 0:
@@ -313,7 +322,7 @@ def ShowInventory(init=1, next_page=0):
     else:
         INVENTORY.CancelFade()
         INVENTORY.main_frame.SetAlpha(1.0)
-        # INVENTORY.main_frame.SetVisible(1)
+        INVENTORY.main_frame.SetVisible(1)
 
     INVENTORY.screen_scale = Raster.GetUnscaledSize()[0] / float(Raster.GetSize()[0])
     INVENTORY.object_scale = 1.0
@@ -354,7 +363,11 @@ def ShowInventory(init=1, next_page=0):
             focus_item_wp = inv.GetBow()
         else:
             focus_item_wp = char.InvRightBack or char.InvRight
-        if focus_item_wp and focus_item_wp != inv.GetSelectedWeapon():
+        if (
+            focus_item_wp
+            and focus_item_wp != inv.GetSelectedWeapon()
+            and string.lower(char.AnimName) not in CHANGE_ANIM
+        ):
             for i in range(inv.nWeapons):
                 if inv.GetWeapon(i) == focus_item_wp:
                     for _ in range(i):
@@ -373,7 +386,7 @@ def ShowInventory(init=1, next_page=0):
         CycleItem = inv.CycleObjects
         GetSelectedItem = inv.GetSelectedObject
         GetItem = inv.GetObject
-        nItems = inv.nObjects
+        nItems = inv.nKindObjects
         InventorySlot = BCopy.deepcopy(INVENTORY.InvObjectSlotBase)
         InventoryStar = InvObjectStar
         InventoryQueue = char.Data.InvObjectQueue
@@ -384,44 +397,49 @@ def ShowInventory(init=1, next_page=0):
         printx("Invalid Inventory: %s" % selected_inventory)
         return
     INVENTORY.inv_operations = [inv, CycleItem, GetSelectedItem, GetItem, nItems]
-    #
-    if InventoryStar:
-        k = list(InventoryStar.values())
-        k.sort()
-        max_index = max(k[-1], nItems - 1)
-    else:
-        max_index = nItems - 1
-    max_index = max(max_index, 0)
-    nPages = min(int(max_index / 8) + 1, MAX_PAGES)
-    if next_page != 0:
-        INVENTORY.current_page = (INVENTORY.current_page + next_page) % nPages
-    page = INVENTORY.current_page
 
     # -------------------------------
     max_items = MAX_PAGES * 8
     last_slot = 0
-    for ent_name in InventoryQueue[:]:
+    kind_flag = selected_inventory == "Object"
+    for name in InventoryQueue[:]:
+        ret = last_slot
         for i in range(nItems):
-            if GetItem(i) == ent_name:
+            ent_name = GetItem(i)
+            ent = Bladex.GetEntity(ent_name)
+            check_name = ""
+            if kind_flag and ent:
+                check_name = ent.Kind
+            elif not kind_flag:
+                check_name = ent_name
+            if check_name == name:
                 # fmt: off
                 ret = SetInvSlot(inv,i,ent_name,selected_inventory,InventoryStar,InventorySlot,last_slot,max_items)
                 # fmt: on
-                if ret != -1:
-                    last_slot = ret + 1
                 break
         else:
-            InventoryQueue.remove(ent_name)
+            InventoryQueue.remove(name)
+        if ret == -1:
+            break
+        last_slot = ret
     #
     for i in range(nItems):
         ent_name = GetItem(i)
-        if ent_name in InventoryQueue:
+        ent = Bladex.GetEntity(ent_name)
+        check_name = ""
+        if kind_flag and ent:
+            check_name = ent.Kind
+        elif not kind_flag:
+            check_name = ent_name
+        if check_name in InventoryQueue:
             continue
         # fmt: off
         ret = SetInvSlot(inv,i,ent_name,selected_inventory,InventoryStar,InventorySlot,last_slot,max_items)
         # fmt: on
-        InventoryQueue.append(ent_name)
-        if ret != -1:
-            last_slot = ret + 1
+        InventoryQueue.append(check_name)
+        if ret == -1:
+            break
+        last_slot = ret
 
     # if current_item_name:
     #     for i in range(max_items):
@@ -431,10 +449,23 @@ def ShowInventory(init=1, next_page=0):
     #             break
 
     # -------------------------------
-    if init or next_page:
-        INVENTORY.SetFocus(-1)
+    # if init or next_page:
+    #     INVENTORY.SetFocus(-1)
+    #
+    if InventoryStar:
+        k = list(InventoryStar.values())
+        k.sort()
+        max_index = max(k[-1], last_slot)
+    else:
+        max_index = last_slot
+    nPages = min(int(max_index / 8) + 1, MAX_PAGES)
+    if next_page != 0:
+        INVENTORY.current_page = (INVENTORY.current_page + next_page) % nPages
+    page = INVENTORY.current_page
     INVENTORY.page_label.SetText("%d/%d" % (page + 1, nPages))
+
     inv_range = page * 8, min((page + 1) * 8, max_items)
+    has_valid_focus = 0
     for i in range(8):
         slot_idx = inv_range[0] + i
         ent_name, kind, number, max_stack, star_flag = InventorySlot[slot_idx]
@@ -442,7 +473,7 @@ def ShowInventory(init=1, next_page=0):
         frame = INVENTORY.child_frame[i]
         frame.slot_data = [ent_name, kind, number, max_stack, star_flag]
         _, border, name_widget, _, _, star_label = frame.widgets
-        border.SetColor(200, 200, 200)
+        # border.SetColor(200, 200, 200)
         #
         attack_label, defence_label, res_label, stack_label = border.widgets
         star_label.SetVisible(0)
@@ -459,8 +490,8 @@ def ShowInventory(init=1, next_page=0):
                 star_label.SetVisible(1)
 
             if ent_name:
-                if (init or next_page) and ent_name == focus_item:
-                    INVENTORY.SetFocus(i)
+                if update_focus and ent_name == focus_item:
+                    has_valid_focus = INVENTORY.SetFocus(i)
                 ent = Bladex.GetEntity(ent_name)
                 name_text = Reference.GetFriendlyNameByEntName(ent_name)
                 # name_widget.SetAlpha(1)
@@ -501,6 +532,8 @@ def ShowInventory(init=1, next_page=0):
         frame.RecalcLayout()
 
     # -------------------------------
+    if update_focus and not has_valid_focus:
+        INVENTORY.SetFocus(-1)
     if init:
         INVENTORY.FadeIn(FADEIN_PERIOD)
     else:
@@ -522,16 +555,16 @@ def InvDrawBOD(this, x, y, time):
     ent_name, kind, number, max_stack, star_flag = this.slot_data
 
     Raster.SetAlpha(alpha)
-    scale = INVENTORY.screen_scale
+    screen_scale = INVENTORY.screen_scale
     obj_scale = Reference.DefaultInvScaleData.get(kind, INVENTORY.object_scale)
     size = INVENTORY.border_size
     Bladex.DrawBOD(
         "UIBorderA3",
-        x * scale,
-        y * scale,
-        size[0] * scale,
-        size[1] * scale,
-        0.0225 * scale,
+        x * screen_scale,
+        y * screen_scale,
+        size[0] * screen_scale,
+        size[1] * screen_scale,
+        0.02214 * screen_scale,
         1,
     )
     if kind:
@@ -539,11 +572,11 @@ def InvDrawBOD(this, x, y, time):
             Raster.SetAlpha(alpha * 0.45)
         Bladex.DrawBOD(
             kind,
-            x * scale,
-            y * scale,
-            size[0] * scale,
-            size[1] * scale,
-            0.0225 * scale * obj_scale,
+            x * screen_scale,
+            y * screen_scale,
+            size[0] * screen_scale,
+            size[1] * screen_scale,
+            0.02214 * screen_scale * obj_scale,
             1,
         )
         if kind == "Llavero":
@@ -564,11 +597,11 @@ def InvDrawBOD(this, x, y, time):
                 if key.Data.Used > 0:
                     Bladex.DrawBOD(
                         key.Kind,
-                        (x - 10) * scale,
-                        (y - i * 13 - 9) * scale,
+                        (x - 10) * screen_scale,
+                        (y - i * 13 - 9) * screen_scale,
                         0,
                         0,
-                        0.0375 * scale,
+                        0.0369 * screen_scale,
                         1,
                     )
                     key_label.SetText(Reference.GetFriendlyNameByEntName(key.Name))
@@ -586,7 +619,7 @@ class InventoryUI:
             Bladex.GetTime() + 0.2,
             self.InitWidgets,
             (),
-            "Inventory.InitWidgets[NPersistent]",
+            "Inventory.InitWidgets[NSAVE]",
         )
 
     def InitWidgets(self):
@@ -654,9 +687,18 @@ class InventoryUI:
 
         view_size = parent.GetSize()
         #
+        scale = 0.82
+        # bod_scale = scale * 1.2 # for InvDrawBOD
         main_frame_w, main_frame_h = AdaptResolution(
-            (2560, 380), (2560, 1440), view_size
+            (2560, 345), (2560, 1440), view_size
         )
+        frame_w, frame_h = AdaptResolution((130 * scale, 345), (2560, 1440), view_size)
+        self.border_size = border_w, border_h = frame_w, frame_w
+        name_w, name_h = AdaptResolution((260 * scale, 33 * scale), (2560, 1440))
+        number_w, number_h = AdaptResolution((37 * scale, 37 * scale), (2560, 1440))
+        # gap = ((2560 - 130 * scale * 8) / 13.2 / 2560) * main_frame_w
+        gap = border_w * 1.16
+        #
         self.main_frame = main_frame = BUIx.B_FrameWidget(
             parent, "InventoryFrame", main_frame_w, main_frame_h
         )
@@ -674,14 +716,6 @@ class InventoryUI:
             BUIx.B_FrameWidget.B_FR_AbsoluteBottom,
             BUIx.B_FrameWidget.B_FR_Bottom,
         )
-        #
-        frame_w, frame_h = AdaptResolution((130, 380), (2560, 1440), view_size)
-        self.border_size = border_w, border_h = AdaptResolution(
-            (130, 130), (2560, 1440), view_size
-        )
-        name_w, name_h = AdaptResolution((260, 35), (2560, 1440))
-        number_w, number_h = AdaptResolution((38, 38), (2560, 1440))
-        gap = ((2560 - 130 * 8) / 10.0 / 2560) * main_frame_w
         # 页数
         self.page_label = page_label = BUIx.B_TextWidget(
             main_frame,
@@ -939,7 +973,7 @@ class InventoryUI:
         #
         main_frame.AddLabel(
             page_label,
-            1 - gap * 0.5 / main_frame_w,
+            0.5 + (gap * 4.5 + border_w * 4) / main_frame_w,
             border_h * 0.5 / main_frame_h,
             BUIx.B_Widget.B_LAB_HCenter,
             BUIx.B_Widget.B_LAB_VCenter,
@@ -952,17 +986,18 @@ class InventoryUI:
         #
         for i in range(8):
             n = i % 4
-            HIndicator = BUIx.B_FrameWidget.B_FR_AbsoluteLeft
+            # HIndicator = BUIx.B_FrameWidget.B_FR_HRelative
             HAnchor = BUIx.B_FrameWidget.B_FR_Left
-            if i > 3:
-                i = 7 - n
-                HIndicator = BUIx.B_FrameWidget.B_FR_AbsoluteRight
+            D = 1
+            if i < 4:
+                i = 3 - i
                 HAnchor = BUIx.B_FrameWidget.B_FR_Right
+                D = -1
             main_frame.AddWidget(
                 self.child_frame[i],
-                (n + 1) * gap + n * frame_w,
+                0.5 + ((n + 1) * gap + n * frame_w) / main_frame_w * D,
                 0,
-                HIndicator,
+                BUIx.B_FrameWidget.B_FR_HRelative,
                 HAnchor,
                 BUIx.B_FrameWidget.B_FR_AbsoluteTop,
                 BUIx.B_FrameWidget.B_FR_Top,
@@ -986,6 +1021,7 @@ class InventoryUI:
         printx(x, y, z)
 
     # -------------------------------
+
     def GetVisible(self):
         return self.main_frame.GetVisible()
 
@@ -1004,31 +1040,38 @@ class InventoryUI:
 
     def SetFocus(self, index):
         char = Lumenx.GetControlCharacter()
-        if self.selected_inventory == "Weapon" and string.lower(char.AnimName) in (
-            "attack_chg_r_l",
-            "chg_r_l",
-            "attack_chg_r",
-            "chg_r",
+        if (
+            self.selected_inventory == "Weapon"
+            and string.lower(char.AnimName) in CHANGE_ANIM
         ):
             return 0
-        #
+        last_empty = 0
+        # 如果上一个槽为空，重置颜色
+        if self.current_focus != -1:
+            last_frame = self.child_frame[self.current_focus]
+            if last_frame.slot_data[0] == "":
+                last_empty = 1
+                last_frame.widgets[1].SetColor(200, 200, 200)
+        # 如果目标槽不为-1且空，返回0
         if index != -1:
             slot_data = self.child_frame[index].slot_data
             item_name = slot_data[0]
             if item_name == "":
+                if last_empty:
+                    self.current_focus = -1
                 return 0
-        #
         self.CancelBorderAnim()
+        # 如果上一个槽不为-1且与目标槽不同，重置颜色
         if self.current_focus != index and self.current_focus != -1:
             border = self.child_frame[self.current_focus].widgets[1]
             border.SetColor(200, 200, 200)
         self.current_focus = index
+        # 仅清除焦点，直接返回
         if index == -1:
             return 0
 
         border = self.child_frame[index].widgets[1]
         border.SetColor(240, 240, 30)
-        #
         _, CycleItem, GetSelectedItem, GetItem, nItems = self.inv_operations
         if item_name != GetSelectedItem():
             for i in range(nItems):
