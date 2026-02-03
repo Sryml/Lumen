@@ -34,6 +34,7 @@ import Torchs
 import ItemTypes
 
 from Lumenx import AutomatedAssets
+from LumenLib import Inventory
 
 #
 # Fade out values -> For Enric
@@ -605,22 +606,23 @@ def StdUse (EntityName):
 
 
 	###Reference.debugprint (EntityName + ": In StdUse")
-	TryWithAnother = 1
-	if (me.Name[0:6]=="Player") and (me.Data.InventoryActive):
-		inv = me.GetInventory()
-		object_name = inv.GetSelectedObject()
-		if object_name:
-			###Reference.debugprint (EntityName + ": Using "+object_name)
-			object = Bladex.GetEntity(object_name)
-			if object and object.CanUse:
-				me.Data.obj_used=object
-				InitDataField.Initialise(object)
-				object.Data.UsedBy = EntityName
-				object.UseFunc(object_name, USE_FROM_INV)
-				TryWithAnother = 0
+	success = Inventory.InventoryUse(me)
+	# TryWithAnother = 1
+	# if (me.Name[0:6]=="Player") and (me.Data.InventoryActive):
+	# 	inv = me.GetInventory()
+	# 	object_name = inv.GetSelectedObject()
+	# 	if object_name:
+	# 		###Reference.debugprint (EntityName + ": Using "+object_name)
+	# 		object = Bladex.GetEntity(object_name)
+	# 		if object and object.CanUse:
+	# 			me.Data.obj_used=object
+	# 			InitDataField.Initialise(object)
+	# 			object.Data.UsedBy = EntityName
+	# 			object.UseFunc(object_name, USE_FROM_INV)
+	# 			TryWithAnother = 0
 
 
-	if TryWithAnother:
+	if not success:
 		if me.Data and me.Data.selected_entity:
 			if IsValidForUsing (me.Data.selected_entity[0], EntityName):
 				object_flag= Reference.GiveObjectFlag(me.Data.selected_entity[0])

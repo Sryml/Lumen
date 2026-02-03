@@ -9,6 +9,8 @@ import netgame
 import BUIx
 import Language
 
+from LumenLib import Inventory
+
 Label_Opacity=1.0
 Label_r=128
 Label_g=128
@@ -27,6 +29,10 @@ SHADOW = 1.0/1280
 stime=-2.0
 
 def SelectObject():
+	INVENTORY = Inventory.INVENTORY
+	if INVENTORY and INVENTORY.GetVisible() and not INVENTORY.IsFadingOut():
+		INVENTORY.Hide()
+	#
 	global stime
 	time=Bladex.GetTime()
 	if(time-stime>0.2):

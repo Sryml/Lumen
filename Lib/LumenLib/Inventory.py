@@ -16,9 +16,10 @@ import BInput
 import BCopy
 import Interpolator
 import Reference
+import InitDataField
+
 import string
 import types
-
 import typing
 
 from Lumenx import printx
@@ -63,6 +64,67 @@ CHANGE_ANIM = [
     "attack_chg_r",
     "chg_r",
 ]
+
+
+# -------------------------------
+
+
+def InvObjectUse(me, inv):
+    # type: (Bladex._entity.B_Entity_Person, Bladex._inventory.B_PyInventory) -> int
+    import Actions
+
+    EntityName = me.Name
+    object_name = inv.GetSelectedObject()
+    if object_name:
+        object = Bladex.GetEntity(object_name)
+        if object and object.CanUse:
+            me.Data.obj_used = object
+            InitDataField.Initialise(object)
+            object.Data.UsedBy = EntityName
+            object.UseFunc(object_name, Actions.USE_FROM_INV)  # type: ignore
+            return 1
+    return 0
+
+
+def InventoryUse(me):
+    # type: (Bladex._entity.B_Entity_Person) -> int
+    import Actions, ScorerActions
+
+    EntityName = me.Name
+    inv = me.GetInventory()
+    if Lumenx.GetInventoryStyle() == "Original":
+        if hasattr(me.Data, "InventoryActive") and me.Data.InventoryActive:
+            return InvObjectUse(me, inv)
+        return 0
+    # -------------------------------
+    focus = INVENTORY.current_focus
+    if not INVENTORY.GetVisible() or focus == -1:
+        return 0
+    item_name = INVENTORY.child_frame[focus].slot_data[0]
+    if item_name == "" or (not inv.CarringObject(item_name)):
+        return 0
+
+    SndInventorySelect.PlayStereo()
+    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
+    INVENTORY.CancelFade()
+    INVENTORY.main_frame.SetAlpha(1.0)
+    Bladex.AddScheduledFunc(
+        Bladex.GetTime() + VIEW_PERIOD,
+        INVENTORY.FadeOut,
+        (FADEOUT_PERIOD,),
+        INVENTORY_FADEOU_TNAME,
+    )
+    #
+    INVENTORY.BorderAnim(BORDERANIM_PERIOD)
+    #
+    if INVENTORY.selected_inventory == "Weapon":
+        ScorerActions.CB_WeaponOutX(EntityName, cycle=0)
+    elif INVENTORY.selected_inventory in ("Shield", "Quiver"):
+        ScorerActions.CB_ShieldOutX(EntityName, cycle=0)
+    else:
+        return InvObjectUse(me, inv)
+    #
+    return 1
 
 
 # -------------------------------
@@ -129,26 +191,8 @@ def InventorySelectByNumber(index):
     ShowInventory(init=0, next_page=0, update_focus=0)  # refresh
     if not INVENTORY.SetFocus(index):
         return
-    SndInventorySelect.PlayStereo()
     # printx("Select Inventory by Number: %d" % index)
-    #
-    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
-    INVENTORY.CancelFade()
-    INVENTORY.main_frame.SetAlpha(1.0)
-    Bladex.AddScheduledFunc(
-        Bladex.GetTime() + VIEW_PERIOD,
-        INVENTORY.FadeOut,
-        (FADEOUT_PERIOD,),
-        INVENTORY_FADEOU_TNAME,
-    )
-    #
-    INVENTORY.BorderAnim(BORDERANIM_PERIOD)
-    #
-    char = Lumenx.GetControlCharacter()
-    if INVENTORY.selected_inventory == "Weapon":
-        ScorerActions.CB_WeaponOutX(char.Name, cycle=0)
-    elif INVENTORY.selected_inventory in ("Shield", "Quiver"):
-        ScorerActions.CB_ShieldOutX(char.Name, cycle=0)
+    InventoryUse(Lumenx.GetControlCharacter())
 
 
 # -------------------------------
@@ -261,7 +305,7 @@ def ShowObjectInv():
 def RefreshInventory():
     if not INVENTORY or INVENTORY.GetVisible() == 0 or INVENTORY.IsFadingOut():
         return
-    ShowInventory(0, 0)
+    ShowInventory(0, 0, 0)
 
 
 def GetEmptySlot(InventorySlot, last_slot, max_items):
@@ -584,6 +628,7 @@ def InvDrawBOD(this, x, y, time):
 
             inv = INVENTORY.inv_operations[0]  # type: Bladex._inventory.B_PyInventory
             key_label = INVENTORY.key_label
+            n = 0
             for i in range(inv.nKeys):
                 key = Bladex.GetEntity(inv.GetKey(i))
                 if type(key.Data) is types.IntType:
@@ -598,14 +643,15 @@ def InvDrawBOD(this, x, y, time):
                     Bladex.DrawBOD(
                         key.Kind,
                         (x - 10) * screen_scale,
-                        (y - i * 13 - 9) * screen_scale,
+                        (y - n * 13 - 9) * screen_scale,
                         0,
                         0,
                         0.0369 * screen_scale,
                         1,
                     )
                     key_label.SetText(Reference.GetFriendlyNameByEntName(key.Name))
-                    key_label.DefDraw(x, y - i * 13 - 14, time)
+                    key_label.DefDraw(x, y - n * 13 - 14, time)
+                    n = n + 1
         # -------------------------------
     this.DefDraw(x, y, time)
     #
@@ -1021,6 +1067,10 @@ class InventoryUI:
         printx(x, y, z)
 
     # -------------------------------
+    def Hide(self):
+        Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
+        self.CancelFade()
+        self.main_frame.SetVisible(0)
 
     def GetVisible(self):
         return self.main_frame.GetVisible()
@@ -1149,12 +1199,12 @@ class InventoryUI:
         border = self.child_frame[self.current_focus].widgets[0]
         border.SetSize(self.border_size[0], self.border_size[1])
         border.SetVisible(1)
-        border.SetAlpha(1.0)
+        border.SetAlpha(0.8)
 
     def ExecuteBorderAnim(self, value):
         ret = Interpolator.LinearInt.Execute(self.border_anim, value)
         border = self.child_frame[self.current_focus].widgets[0]
-        border.SetAlpha(ret)
+        border.SetAlpha(ret * 0.8)
         val = (1 - ret) * 0.4 + 1.0
         border.SetSize(self.border_size[0] * val, self.border_size[1] * val)
         self.child_frame[self.current_focus].RecalcLayout()
