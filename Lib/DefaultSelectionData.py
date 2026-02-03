@@ -23,7 +23,7 @@ if netgame.GetNetState() != 2:
 execfile("../../Data/ObjIds/"+Language.Current+".py")
 
 
-
+SHADOW = 1.0/1280
 stime=-2.0
 
 def SelectObject():
@@ -84,22 +84,30 @@ def SelectPreviousEnemy():
 def LabelEntity(entity_name,text,dx,dy):
 	entity=Bladex.GetEntity(entity_name)
 	if entity:
-		screen=Bladex.GetScreenRect()
-		text_wh=Bladex.GetTextWH(text)
-		text_pos=Bladex.GetScreenXY(entity.Rel2AbsPoint(0.0,0.0,0.0))
-		text_x=text_pos[0]-text_wh[0]/2.0+dx
-		text_y=text_pos[1]-text_wh[1]/2.0+dy
-		if(text_x<screen[0]):
-			text_x=screen[0]
-		if(text_x+text_wh[0]>screen[2]):
-			text_x=screen[2]-text_wh[0]
-		if(text_y<screen[1]):
-			text_y=screen[1]
-		if(text_y+text_wh[1]>screen[3]):
-			text_y=screen[3]-text_wh[1]
+		# screen=Bladex.GetScreenRect()
+		# text_wh=Bladex.GetTextWH(text)
+		scale = Language.FontScale["M"] * 1.12
+		Zcreen = Raster.GetSize()
+		text_wh = (
+			font_behaviour.GetTextWidth(text) * scale,
+			font_behaviour.GetHeight("H") * scale,
+		)
+		text_pos = Bladex.GetScreenXY(entity.Rel2AbsPoint(0.0, 0.0, 0.0))
+		text_x = (text_pos[0] + dx) * Zcreen[0] + (Zcreen[0] * 0.5)
+		text_y = (text_pos[1] + dy) * Zcreen[0] + (Zcreen[1] * 0.5)
+		if text_x < 0:
+			text_x = 0
+		elif text_x + text_wh[0] > Zcreen[0]:
+			text_x = Zcreen[0] - text_wh[0]
+		if text_y < 0:
+			text_y = 0
+		elif text_y + text_wh[1] * 2 > Zcreen[1]:
+			text_y = Zcreen[1] - text_wh[1] * 2
+
 		Raster.SetFont(font_behaviour.GetPointer())
-		Raster.SetTextScale(Language.FontScale["S"] * 0.83, Language.FontScale["S"] * 0.83)
-		Bladex.WriteText(text_x,text_y,text)
+		Raster.SetPosition(text_x, text_y)
+		Raster.SetTextScale(scale, scale)
+		Raster.WriteText(text)
 
 
 
@@ -113,19 +121,19 @@ def ShowLabelEntity(pj,time):
 	if(itime<=0.5):
 		Raster.SetTextColor(0,0,0)
 		Raster.SetTextAlpha(Label_Opacity*2.0*itime)
-		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],1.0/640.0,1.0/640.0)
+		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],SHADOW,SHADOW)
 		Raster.SetTextColor(Label_r,Label_g,Label_b)
 		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],0,0)
 	elif(itime<=1.0):
 		Raster.SetTextColor(0,0,0)
 		Raster.SetTextAlpha(Label_Opacity)
-		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],1.0/640.0,1.0/640.0)
+		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],SHADOW,SHADOW)
 		Raster.SetTextColor(Label_r,Label_g,Label_b)
 		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],0,0)
 	elif(itime<2.0):
 		Raster.SetTextColor(0,0,0)
 		Raster.SetTextAlpha(Label_Opacity*(2.0-itime))
-		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],1.0/640.0,1.0/640.0)
+		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],SHADOW,SHADOW)
 		Raster.SetTextColor(Label_r,Label_g,Label_b)
 		LabelEntity(pj.Data.selected_entity[0],pj.Data.selected_entity[1][2],0,0)
 
