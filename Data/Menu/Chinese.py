@@ -130,6 +130,7 @@ ForeingDict = {
     "inventory 6": "库存6",
     "inventory 7": "库存7",
     "inventory 8": "库存8",
+    "res": "耐久",
     # Blade Arena
     "dives into the lava": "坠入熔岩",
     "flies too high": "飞的太高了",

@@ -29,10 +29,6 @@ SHADOW = 1.0/1280
 stime=-2.0
 
 def SelectObject():
-	INVENTORY = Inventory.INVENTORY
-	if INVENTORY and INVENTORY.GetVisible() and not INVENTORY.IsFadingOut():
-		INVENTORY.Hide()
-	#
 	global stime
 	time=Bladex.GetTime()
 	if(time-stime>0.2):

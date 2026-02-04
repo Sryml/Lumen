@@ -32,6 +32,9 @@ class MainCharState(GameState.EntityPersonState):
 		self.Props["Combos"]=Bladex.GetCombos("Player1")
 		self.Props["PViewType"]=cam.PViewType
 		self.Props["ObjectsTaken"]=entity.Data.ObjectsTaken
+		# -Sryml
+		self.Props["InventoryQueue"]=(entity.Data.InvWeaponQueue,entity.Data.InvShieldQueue,entity.Data.InvQuiverQueue,entity.Data.InvObjectQueue)
+		#
 
 
 		GameState.EntityPersonState.__init__(self,entity)
@@ -110,18 +113,18 @@ class MainCharState(GameState.EntityPersonState):
 
 
 	def GetProps(self):
-		temp={}
-		temp["Life"]=self.Props["Life"]
-		temp["Level"]=self.Props["Level"]
-		temp["PartialLevel"]=self.Props["PartialLevel"]
-		temp["Energy"]=self.Props["Energy"]
-		temp["Armor"]=self.Props["Armor"]
-		temp["Combos"]=self.Props["Combos"]
-		temp["Saves"]=self.Props["Saves"]
-		temp["PViewType"]=self.Props["PViewType"]
-		temp["ObjectsTaken"]=self.Props["ObjectsTaken"]
+		# temp={}
+		# temp["Life"]=self.Props["Life"]
+		# temp["Level"]=self.Props["Level"]
+		# temp["PartialLevel"]=self.Props["PartialLevel"]
+		# temp["Energy"]=self.Props["Energy"]
+		# temp["Armor"]=self.Props["Armor"]
+		# temp["Combos"]=self.Props["Combos"]
+		# temp["Saves"]=self.Props["Saves"]
+		# temp["PViewType"]=self.Props["PViewType"]
+		# temp["ObjectsTaken"]=self.Props["ObjectsTaken"]
 
-		return (self.CreationProps,temp,self.Inventory)
+		return (self.CreationProps,self.Props,self.Inventory)
 
 def CreateEntAux(obj_tuple,obj_kind,props=1):
 	import ItemTypes
@@ -162,6 +165,12 @@ def CreateMainCharWithProps(props):
 	char.SetMesh(Props["Armor"][0])
 	char.Data.armour_level       = Props["Armor"][1]
 	char.Data.armour_prot_factor = Props["Armor"][2]
+	# -Sryml
+	char.Data.InvWeaponQueue = Props["InventoryQueue"][0]
+	char.Data.InvShieldQueue = Props["InventoryQueue"][1]
+	char.Data.InvQuiverQueue = Props["InventoryQueue"][2]
+	char.Data.InvObjectQueue = Props["InventoryQueue"][3]
+	#
 	Reference.TimesSaved         = Props["Saves"]
 	Bladex.SetCombos("Player1",Props["Combos"])
 	if cam: cam.PViewType=Props["PViewType"]

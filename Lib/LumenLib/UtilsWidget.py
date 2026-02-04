@@ -13,17 +13,18 @@ import Lumenx
 from Lumenx import printx
 
 
-def AdaptResolution(img_size, canvas, view_size=(), keep_h=1):
-    # type: (tuple, tuple, tuple, int) -> tuple[int, int]
+def AdaptResolution(img_size, canvas, view_size=(), keep_h=1, min_scale=None):
+    # type: (tuple, tuple, tuple, int, float|None) -> tuple[int, int]
     import Scorer
 
     if not view_size:
         view_size = Scorer.wFrame.GetSize()
     vw, vh = float(view_size[0]), float(view_size[1])
-    if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
-        min_scale = 0.5
-    else:
-        min_scale = 0.5 / (Raster.GetUnscaledSize()[1] / vh)
+    if min_scale is None:
+        if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+            min_scale = 0.5
+        else:
+            min_scale = 0.5 / (Raster.GetUnscaledSize()[1] / vh)
 
     f = max(float(view_size[keep_h]) / canvas[keep_h], min_scale)
     w, h = int(img_size[0] * f), int(img_size[1] * f)

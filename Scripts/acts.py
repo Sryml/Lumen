@@ -119,6 +119,7 @@ def InitBindings (PlayerName):
 
 	if netgame.GetNetState() == 0: # not supported in multiplayer
 		Bladex.AddBoundFunc("SelectObj",SelectObjectFunc)
+		Bladex.AddBoundFunc("SelectObj",Inventory.HideInventory)
 		Bladex.AddBoundFunc("Cycle Weapons",Inventory.ShowRightInv)
 		Bladex.AddBoundFunc("Cycle Shields",Inventory.ShowLeftInv)
 		Bladex.AddBoundFunc("Cycle Objects",Inventory.ShowObjectInv)

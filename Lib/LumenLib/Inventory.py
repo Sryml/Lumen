@@ -17,6 +17,7 @@ import BCopy
 import Interpolator
 import Reference
 import InitDataField
+import MenuText
 
 import string
 import types
@@ -66,7 +67,18 @@ CHANGE_ANIM = [
 ]
 
 
+IManager = BInput.GetInputManager()
+
 # -------------------------------
+Reference.DefaultInvScaleData["BotellaSagrada"] = 2.9
+Reference.DefaultInvScaleData["Fetiche"] = 2.9
+Reference.DefaultInvScaleData["Pergamino2"] = 2.7
+# -------------------------------
+
+
+def HideInventory():
+    if INVENTORY and INVENTORY.GetVisible() and not INVENTORY.IsFadingOut():
+        INVENTORY.Hide()
 
 
 def InvObjectUse(me, inv):
@@ -97,17 +109,21 @@ def InventoryUse(me):
             return InvObjectUse(me, inv)
         return 0
     # -------------------------------
+    if not INVENTORY:
+        return 0
+
     focus = INVENTORY.current_focus
     if not INVENTORY.GetVisible() or focus == -1:
         return 0
     item_name = INVENTORY.child_frame[focus].slot_data[0]
     if item_name == "" or (not inv.CarringObject(item_name)):
+        ShowInventory(init=0, next_page=0, update_focus=1)  # refresh
         return 0
 
-    SndInventorySelect.PlayStereo()
     Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
     INVENTORY.CancelFade()
     INVENTORY.main_frame.SetAlpha(1.0)
+    SndInventorySelect.PlayStereo()
     Bladex.AddScheduledFunc(
         Bladex.GetTime() + VIEW_PERIOD,
         INVENTORY.FadeOut,
@@ -139,12 +155,12 @@ def InventorySelectLast():
     ShowInventory(init=0, next_page=0, update_focus=0)  # refresh
     if not INVENTORY.PrevFocus():
         return
-    SndInventorySelect.PlayStereo()
     # printx("Select Last Inventory")
     #
     Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
     INVENTORY.CancelFade()
     INVENTORY.main_frame.SetAlpha(1.0)
+    SndInventorySelect.PlayStereo()
     Bladex.AddScheduledFunc(
         Bladex.GetTime() + VIEW_PERIOD,
         INVENTORY.FadeOut,
@@ -164,12 +180,12 @@ def InventorySelectNext():
     ShowInventory(init=0, next_page=0, update_focus=0)  # refresh
     if not INVENTORY.NextFocus():
         return
-    SndInventorySelect.PlayStereo()
     # printx("Select Next Inventory")
     #
     Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
     INVENTORY.CancelFade()
     INVENTORY.main_frame.SetAlpha(1.0)
+    SndInventorySelect.PlayStereo()
     Bladex.AddScheduledFunc(
         Bladex.GetTime() + VIEW_PERIOD,
         INVENTORY.FadeOut,
@@ -197,7 +213,6 @@ def InventorySelectByNumber(index):
 
 # -------------------------------
 
-IManager = BInput.GetInputManager()
 OldIASet = IManager.GetInputActionsSet()
 IManager.SetInputActionsSet("Default")
 #
@@ -355,10 +370,11 @@ def SetInvSlot(
 def ShowInventory(init=1, next_page=0, update_focus=1):
     import ScorerWidgets
 
+    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
+
     if next_page != 0:
         SndInventorySelect.PlayStereo()
 
-    Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
     if init:
         INVENTORY.current_page = 0
         INVENTORY.main_frame.SetAlpha(0.0)
@@ -436,7 +452,7 @@ def ShowInventory(init=1, next_page=0, update_focus=1):
         InventoryQueue = char.Data.InvObjectQueue
         focus_item = GetSelectedItem()
         #
-        INVENTORY.object_scale = 3.0
+        INVENTORY.object_scale = 3.2
     else:
         printx("Invalid Inventory: %s" % selected_inventory)
         return
@@ -548,7 +564,7 @@ def ShowInventory(init=1, next_page=0, update_focus=1):
                         Reference.GiveObjectPowDefResResMaxData(ent_name)
                     )
                     if power:
-                        prefix = power >= 0 and "+" or ""
+                        prefix = power >= 0 and "+" or ""  # 浮点数的正负号
                         attack_label.SetVisible(1)
                         attack_label.SetText("%s%sA" % (prefix, power))
                     if selected_inventory == "Weapon":
@@ -587,6 +603,7 @@ def ShowInventory(init=1, next_page=0, update_focus=1):
             (FADEOUT_PERIOD,),
             INVENTORY_FADEOU_TNAME,
         )
+    # -------------------------------
 
 
 # -------------------------------
@@ -742,6 +759,16 @@ class InventoryUI:
         self.border_size = border_w, border_h = frame_w, frame_w
         name_w, name_h = AdaptResolution((260 * scale, 33 * scale), (2560, 1440))
         number_w, number_h = AdaptResolution((37 * scale, 37 * scale), (2560, 1440))
+        #
+        UIScaleFactor = Bladex.GetUIScaleFactor()
+        if UIScaleFactor != 0:
+            f = (1.2, 1.316)[UIScaleFactor - 1]
+            main_frame_w, main_frame_h = main_frame_w * f, main_frame_h * f
+            frame_w, frame_h = frame_w * f, frame_h * f
+            self.border_size = border_w, border_h = border_w * f, border_h * f
+            name_w, name_h = name_w * f, name_h * f
+            number_w, number_h = number_w * f, number_h * f
+        #
         # gap = ((2560 - 130 * scale * 8) / 13.2 / 2560) * main_frame_w
         gap = border_w * 1.16
         #
@@ -762,6 +789,19 @@ class InventoryUI:
             BUIx.B_FrameWidget.B_FR_AbsoluteBottom,
             BUIx.B_FrameWidget.B_FR_Bottom,
         )
+        # 详情标签
+        self.detail_label = detail_label = BUIx.B_TextWidget(
+            main_frame,
+            "InventoryDetailLabel",
+            "",
+            ScorerWidgets.font_server,
+            Language.FontCommon,
+        )
+        detail_label.SetCanvas(view_size)
+        detail_label.SetScale(Language.FontScale["M"] * 0.8)
+        detail_label.SetAlpha(1)
+        detail_label.SetAutoScale(auto_scale)
+        detail_label.SetDrawFunc(self.DrawDetail)
         # 页数
         self.page_label = page_label = BUIx.B_TextWidget(
             main_frame,
@@ -1029,6 +1069,17 @@ class InventoryUI:
             BUIx.B_Widget.B_FR_VCenter,
         )
         main_frame.AddWidget(key_label, 0, 0)
+        main_frame.AddWidget(
+            detail_label,
+            0.5,
+            0,
+            # BUIx.B_Widget.B_LAB_HCenter,
+            # BUIx.B_Widget.B_LAB_VCenter,
+            BUIx.B_Widget.B_FR_HRelative,
+            BUIx.B_Widget.B_FR_HCenter,
+            BUIx.B_Widget.B_FR_VRelative,
+            BUIx.B_Widget.B_FR_Top,
+        )
         #
         for i in range(8):
             n = i % 4
@@ -1062,11 +1113,86 @@ class InventoryUI:
 
         return wrapped
 
+    def DrawDetail(self, x, y, time):
+        selected_inventory = self.selected_inventory
+        if selected_inventory not in ("Weapon", "Shield"):
+            return
+        focus = self.current_focus
+        if focus == -1:
+            return
+        ent_name, kind, number, max_stack, star_flag = self.child_frame[focus].slot_data
+        if not ent_name:
+            return
+        #
+        label = self.detail_label
+        name_text = Reference.GetFriendlyNameByEntName(ent_name)
+        power, defence, res, res_max = Reference.GiveObjectPowDefResResMaxData(ent_name)
+        n = 0
+        offset_y = 13
+        scale = Language.FontScale["M"] * 0.8
+        # NAME
+        width = Language.font_behaviour_common.GetTextWidth(name_text) * scale
+        label.SetColor(170, 170, 170)
+        label.SetText(name_text)
+        label.DefDraw(x - width * 0.5, y, time)
+        n = n + 1
+        # DEF POW
+        def_text = ""
+        pow_text = ""
+        if defence is not None:
+            prefix = ""
+            if defence < 0:
+                def_color = Language.FontColor.Red
+            else:
+                def_color = Language.FontColor.LightBlue
+                prefix = "+"
+            def_text = "%s%s %s" % (prefix, defence, MenuText.GetMenuText("DEF"))
+        if power is not None:
+            prefix = ""
+            if power < 0:
+                pow_color = Language.FontColor.Red
+            else:
+                pow_color = Language.FontColor.LightBlue
+                prefix = "+"
+            pow_text = "%s%s %s" % (prefix, power, MenuText.GetMenuText("POW"))
+        if def_text:
+            width = Language.font_behaviour_common.GetTextWidth(def_text) * scale
+            label.SetColor(def_color[0], def_color[1], def_color[2])
+            label.SetText(def_text)
+            label.DefDraw(x - width - 2, y + n * offset_y, time)
+
+            width = Language.font_behaviour_common.GetTextWidth(pow_text) * scale
+            label.SetColor(pow_color[0], pow_color[1], pow_color[2])
+            label.SetText(pow_text)
+            label.DefDraw(x + 2, y + n * offset_y, time)
+        else:
+            width = Language.font_behaviour_common.GetTextWidth(pow_text) * scale
+            label.SetColor(pow_color[0], pow_color[1], pow_color[2])
+            label.SetText(pow_text)
+            label.DefDraw(x - width * 0.5, y + n * offset_y, time)
+        n = n + 1
+        # RES
+        if (res is not None) and (res_max is not None):
+            res_text = "%s: %s / %s" % (
+                MenuText.GetMenuText("RES"),  # "RESISTANCE"
+                res,
+                res_max,
+            )
+            r, g, b = Language.FontColor.Cyan
+            width = Language.font_behaviour_common.GetTextWidth(res_text) * scale
+            label.SetColor(r, g, b)
+            label.SetText(res_text)
+            label.DefDraw(x - width * 0.5, y + n * offset_y, time)
+            n = n + 1
+        #
+        # self.main_frame.RecalcLayout()
+
     # -------------------------------
     def ListenDevice(self, x, y, z):
         printx(x, y, z)
 
     # -------------------------------
+
     def Hide(self):
         Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
         self.CancelFade()
@@ -1148,9 +1274,9 @@ class InventoryUI:
 
     # -------------------------------
     def FadeIn(self, period):
-        t = Bladex.GetTime()
         self.fader.Execute = self.ExecuteFadeIn
         self.interpolator.RemoveAction(self.fader.current_action)
+        t = Bladex.GetTime()
         self.fader.current_action = self.interpolator.AddAction(
             t, t + period, self.fader
         )
@@ -1160,9 +1286,9 @@ class InventoryUI:
         self.main_frame.SetAlpha(ret)
 
     def FadeOut(self, period):
-        t = Bladex.GetTime()
         self.fader.Execute = self.ExecuteFadeOut
         self.interpolator.RemoveAction(self.fader.current_action)
+        t = Bladex.GetTime()
         self.fader.current_action = self.interpolator.AddAction(
             t, t + period, self.fader
         )
@@ -1186,13 +1312,14 @@ class InventoryUI:
         elif self.fader.Execute == self.ExecuteFadeOut:
             self.main_frame.SetAlpha(0)
             self.main_frame.SetVisible(0)
+            # printx("Inventory Fadeout End")
         self.fader.Execute = None
         # printx("Inventory Fader End")
 
     # -------------------------------
     def BorderAnim(self, period):
-        t = Bladex.GetTime()
         self.interpolator.RemoveAction(self.border_anim.current_action)
+        t = Bladex.GetTime()
         self.border_anim.current_action = self.interpolator.AddAction(
             t, t + period, self.border_anim
         )
