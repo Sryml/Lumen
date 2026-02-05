@@ -59,10 +59,10 @@ MenuFontSmall=Language.FontTitle
 MenuFontMed=Language.FontTitle
 MenuFontBig=Language.FontTitle
 
-GamepadButtonVSep = -1400
-BackOptionVSep = -1000
-BackGamepadOptionVSep = -1250
-NoteOptionVSep = -1100 # Added by Sryml
+NoteOptionVSep = "0.76f" # Added by Sryml
+BackOptionVSep = "0.792f"
+BackGamepadOptionVSep = "0.854f"
+GamepadButtonVSep = "0.917f"
 
 Character = -1
 
@@ -1260,6 +1260,7 @@ def ActivateMenu(caller_id = None):
 
 
     # Teclas de los men�s.
+    Bladex.AssocKey("Menu Next","Mouse","WheelDown") #
     Bladex.AssocKey("Menu Next","Keyboard","S")
     Bladex.AssocKey("Menu Next","Keyboard","Down")
     Bladex.AssocKey("Menu Next","Gamepad","JoyDown")
@@ -1267,6 +1268,7 @@ def ActivateMenu(caller_id = None):
     Bladex.AddBoundFunc("Menu Next",_MainMenu.MenuNextItem)
 
     
+    Bladex.AssocKey("Menu Prev","Mouse","WheelUp") #
     Bladex.AssocKey("Menu Prev","Keyboard","W")
     Bladex.AssocKey("Menu Prev","Keyboard","Up")
     Bladex.AssocKey("Menu Prev","Gamepad","JoyUp")
@@ -1609,15 +1611,15 @@ class MainMenu:
 
 
 
-CtrlsPosition=(70, BUIx.B_FrameWidget.B_FR_AbsoluteLeft, BUIx.B_FrameWidget.B_FR_Left)
+CtrlsPosition=(130, BUIx.B_FrameWidget.B_FR_AbsoluteLeft, BUIx.B_FrameWidget.B_FR_Left)
 def AuxCtrlDef(action_menu_name,action_name,kFlags):
     res = {"Name":MenuText.GetMenuText(action_menu_name),
-             "Position" :CtrlsPosition,
+            #  "Position" :CtrlsPosition,
              "Action"   :action_name,
              "Kind"     :KeybWidget.ControlMenuItem,
              "kFlags"   :kFlags,
-             "VSep" : 34,
-             "Size" :(200,300),
+            #  "VSep" : 34,
+            #  "Size" :(200,300),
              "FontScale":MFontScale["M"],
             }
     # if Language.Current == "Chinese":
@@ -1661,7 +1663,7 @@ def GoTo2d(menu_class):
 vsepexit=120
 
 if Reference.DEMO_MODE:
-    QuitMenu  =            {"VSep":-1000,
+    QuitMenu  =            {"VSep":BackOptionVSep,
                             "Size":(640,480),
                             "Name"     :MenuText.GetMenuText("EXIT"),
                             "Font"     :MenuFontBig,
@@ -1694,7 +1696,7 @@ if Reference.DEMO_MODE:
                            }
 
 else:
-    QuitMenu  =            {"VSep":-1000,
+    QuitMenu  =            {"VSep":BackOptionVSep,
                             "Size":(640,480),
                             "Name"     :MenuText.GetMenuText("EXIT"),
                             "Font"     :MenuFontBig,
@@ -1935,6 +1937,8 @@ Controler_Menu = {"Name":MenuText.GetMenuText("CONTROLS"),
                                                       "Kind":KeybWidget.B_KeybListWidget,
                                                       "VSep":100,
                                                       "Size":(750,380),
+                                                      "iFocus": 1,
+                                                      "FontScale":MFontScale["L"],
                                                       "ListDescr":KeybActions
                                                      },
                                                       BackOption,
@@ -2490,6 +2494,7 @@ else:
                                        "Name":"SAVE GAME",
                                        "Text":MenuText.GetMenuText("SAVE GAME"),
                                        "Font":MenuFontBig,
+                                      #  "VSep": "1em",
                                        "Size":(1424, 801),
                                        #"Kind":MenuWidget.B_VariableFocusTextMenuItem,
                                        #"Command":SaveGame1

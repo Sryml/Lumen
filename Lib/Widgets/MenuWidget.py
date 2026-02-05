@@ -253,7 +253,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
     def AddMenuElement(
         self,
         menu_element,
-        sep=0,
+        vsep=0,
         HPos=0.5,
         HIndicator=B_FrameWidget.B_FR_HRelative,
         HAnchor=B_FrameWidget.B_FR_HCenter,
@@ -262,47 +262,45 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
         import Menu
         B_MenuFocusManager.AddMenuElement(self, menu_element)
 
-        if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
-            self.AddWidget(  # type: ignore
-                menu_element,
-                HPos,
-                self.VertPos + sep,
-                HIndicator,
-                HAnchor,
-                VIndicator,
-                B_FrameWidget.B_FR_Top,
-            )
-        else:
-            if sep in (Menu.BackOptionVSep, Menu.BackGamepadOptionVSep, Menu.GamepadButtonVSep, Menu.NoteOptionVSep):
-                YPos = BackButtonY
-                if sep == Menu.BackGamepadOptionVSep:
-                    YPos = BackGamepadButtonY
-                elif sep == Menu.GamepadButtonVSep:
-                    YPos = AcceptBackY
-                    menu_element.SetScale(0.7)
-                elif sep == Menu.NoteOptionVSep:
-                    YPos = NoteOptionY
-                self.AddWidget(  # type: ignore
-                    menu_element,
-                    HPos,
-                    YPos,
-                    HIndicator,
-                    HAnchor,
-                    B_FrameWidget.B_FR_VRelative,
-                    B_FrameWidget.B_FR_Top,
-                )
-            else:
-                self.AddWidget(  # type: ignore
-                    menu_element,
-                    HPos,
-                    self.VertPos + sep,
-                    HIndicator,
-                    HAnchor,
-                    B_FrameWidget.B_FR_AbsoluteTop,
-                    B_FrameWidget.B_FR_Top,
-                )
+        if vsep == Menu.GamepadButtonVSep:
+            menu_element.SetScale(0.7)
 
-        self.VertPos = self.VertPos + menu_element.GetSize()[1] + sep
+        #
+        # scale_prime = 1.6
+        YPos = 0
+        is_floating = 0
+        Height = self.GetSize()[1]
+        if type(vsep) == types.StringType:
+          try:
+            if vsep[-1] == "%":
+              YPos = int(float(vsep[:-1]) * Height) # type: ignore
+            elif vsep[-1] == "f":
+              YPos = int(float(vsep[:-1]) * Height) # type: ignore
+              is_floating = 1
+            elif vsep[-2:] == "em":
+              YPos = int(menu_element.GetSize()[1] * self.ViewScale * float(vsep[:-2]))
+            else:
+              YPos = int(vsep)
+          except:
+            printx("Invalid VSep value:", vsep)
+            traceback.print_exc()
+        else:
+            YPos = vsep
+        #
+        if not is_floating:
+            YPos = self.VertPos + YPos
+            self.VertPos = YPos + (menu_element.GetSize()[1] * self.ViewScale)
+        #
+        self.AddWidget(  # type: ignore
+            menu_element,
+            HPos,
+            YPos,
+            HIndicator,
+            HAnchor,
+            VIndicator,
+            B_FrameWidget.B_FR_Top,
+        )
+
 # -----------------------------------------
 # by Sryml: end
 # -----------------------------------------
@@ -413,6 +411,9 @@ class B_MenuTree(B_MenuFrameWidget):
     def __init__(self, Parent, Menudesc, StackMenu, VertPos=0):
         vw, vh = Raster.GetSize()
         Width, Height = Menudesc.get("Size", (vw, vh))
+        self.ViewScale = 1.0
+        if Menudesc.get("AdjustScale",0) == 1:
+            self.ViewScale = Height / float(vh)
 
         SizeFor = Menudesc.get("SizeFor")
         if Width == "auto" and Height != "auto":
@@ -450,19 +451,6 @@ class B_MenuTree(B_MenuFrameWidget):
                     ValidIndex = ValidIndex + 1
 
             vsep = i.get("VSep", 0)
-            if type(vsep) == types.StringType:
-              try:
-                if vsep[-1] == "%":
-                  vsep = int(float(vsep[:-1]) * Height) # type: ignore
-                elif vsep[-2:] == "em":
-                  vsep = int(wSubMenu.GetSize()[1] * float(vsep[:-2]))
-                else:
-                  printx("Invalid VSep value:", vsep)
-                  vsep = 0
-              except:
-                vsep = 0
-                traceback.print_exc()
-
             HPos = 0.5
             HIndicator = B_FrameWidget.B_FR_HRelative
             HAnchor = B_FrameWidget.B_FR_HCenter
@@ -474,8 +462,8 @@ class B_MenuTree(B_MenuFrameWidget):
                 HIndicator = PosDscr[1]
                 HAnchor = PosDscr[2]
 
-            B_MenuFrameWidget.AddMenuElement(
-                self, wSubMenu, vsep, HPos, HIndicator, HAnchor, VIndicator
+            self.AddMenuElement(
+                wSubMenu, vsep, HPos, HIndicator, HAnchor, VIndicator
             )
 
         if Menudesc.has_key("iFocus"):

@@ -65,8 +65,8 @@ class B_ControlItemText(MenuWidget.B_MenuItemText):
     if self.GetVisible()==0:
       return
 
-    x=x+20
-    y=y+20
+    # x=x+20
+    # y=y+20
 
     #self.SetAlpha(0.5)
 
@@ -251,7 +251,7 @@ class ControlMenuItem(B_ControlItemTexts):
 
   def EndDefineKey(self):
     self.SetStatusText(MenuText.GetMenuText(DefInfoText))
-    self.IManager.SetInputActionsSet(self.oldInputActionsSet)
+    # self.IManager.SetInputActionsSet(self.oldInputActionsSet)
     keyb=self.IManager.GetAttachedDevice("Keyboard")
     if keyb.this!="NULL":
       keyb.RemoveListener(self.ListenerName)
@@ -274,6 +274,8 @@ class ControlMenuItem(B_ControlItemTexts):
 
 
   def Reactivate(self, time):
+    self.IManager.SetInputActionsSet(self.oldInputActionsSet)
+    self.ReadyToEscape = 1
     self.CanActivate = 1
     Bladex.RemoveAfterFrameFunc("Reactivate")
 
@@ -282,7 +284,6 @@ class ControlMenuItem(B_ControlItemTexts):
     if z==1.0:
       if x=="Esc":
         self.EndDefineKey()
-        self.ReadyToEscape = 0
       elif x not in self.KeyBounded:
         if x=="Backspace":
           self.ReadyToEscape = 0
@@ -407,7 +408,7 @@ class B_KeybListWidget(ListWidget.B_ListWidget):
     self.StatusText.SetColor(252,247,167)
     self.StatusText.SetAlpha(1)
     self.StatusText.SetScale(Language.MFontScale["S"])
-    self.AddLabel(self.StatusText,0.5,25,BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_Bottom,
+    self.AddLabel(self.StatusText,0.5,30,BUIx.B_Widget.B_LAB_HCenter,BUIx.B_Widget.B_LAB_Bottom,
                   BUIx.B_Widget.B_FR_HRelative,BUIx.B_Widget.B_LAB_HCenter,
                   BUIx.B_Widget.B_FR_AbsoluteTop,BUIx.B_Widget.B_FR_Top)
     self.DownArrow.SetAlpha(1) # Parche, no funciona la llamada a AdjustScrollArrows() en AddMenuElement(),
@@ -427,7 +428,7 @@ class B_KeybListWidget(ListWidget.B_ListWidget):
   def Draw(self,x,y,time):
     #pdb.set_trace()
     Raster.SetTextShadow(0, 0)
-    self.SetClipDraw(1)
+    # self.SetClipDraw(1)
     self.DefDraw(x,y,time)
 
   def SetStatusText(self,text):

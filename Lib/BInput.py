@@ -207,7 +207,9 @@ class B_InputActionPtr:
         return val
 
     def GetAssociatedKeys(self, device):
-        """[LUMEN] Added"""
+        """[LUMEN] Added\n
+        device: [Keyboard, Mouse, Gamepad]
+        """
         if self.name == "NULL":
             return []
         return BCopy.deepcopy(self.action["Devices"].get(device, []))
