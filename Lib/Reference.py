@@ -944,7 +944,7 @@ StackObjects  = {
 #
 # Some items can be carried in the long travels arround the whole world.
 #
-TravelObjects = [ 'Pocima100','Pocima200', 'PowerPotion', 'PocimaTodo' ]
+TravelObjects = [ 'Pocima100','Pocima200', 'PowerPotion', 'PocimaTodo', 'Corona', 'Brazalete' ]
 
 #
 # enemies that can walk inside the lava
