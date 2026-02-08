@@ -166,10 +166,11 @@ def CreateMainCharWithProps(props):
 	char.Data.armour_level       = Props["Armor"][1]
 	char.Data.armour_prot_factor = Props["Armor"][2]
 	# -Sryml
-	char.Data.InvWeaponQueue = Props["InventoryQueue"][0]
-	char.Data.InvShieldQueue = Props["InventoryQueue"][1]
-	char.Data.InvQuiverQueue = Props["InventoryQueue"][2]
-	char.Data.InvObjectQueue = Props["InventoryQueue"][3]
+	if Props.has_key("InventoryQueue"):
+		char.Data.InvWeaponQueue = Props["InventoryQueue"][0]
+		char.Data.InvShieldQueue = Props["InventoryQueue"][1]
+		char.Data.InvQuiverQueue = Props["InventoryQueue"][2]
+		char.Data.InvObjectQueue = Props["InventoryQueue"][3]
 	#
 	Reference.TimesSaved         = Props["Saves"]
 	Bladex.SetCombos("Player1",Props["Combos"])

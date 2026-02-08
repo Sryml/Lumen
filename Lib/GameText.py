@@ -15,6 +15,11 @@ import os
 import Interpolator
 import string
 
+#
+import typing
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
 
 Textos={}
 MapList = {}
@@ -32,20 +37,30 @@ current_language=None
 
 def SetLanguage(lang):
   global current_language
-  global MapList
+  # global MapList
   global ComboNames
   if lang != current_language:
     current_language= lang
     print "Setting language",lang
     # by Sryml
-    root = "../../Data/Text/" + lang
-    files = ["casa.py","Combos.py","map2D.py","tutor.py"]
-    for i in range(1,18):
-       files.append("M%d.py" % i)
+    lumen_root = Lumenx.GetLumenRoot()
+    root = "Data/Locale/" + lang
+    # files = []
+    # for i in range(1,18):
+    #    files.append("M%d.py" % i)
+    # files = files + ["Combos.py","tutor.py"] # "map2D.py", "casa.py"
     # print "Executing files: ",files
-    for name in files:
-      filepath = os.path.join(root, name)
-      execfile(filepath)
+    for file in ["Combos.py","GTexts.py"]:
+      filepath = os.path.join(lumen_root, root, file)
+      execfile(filepath, globals(), globals())
+
+    if Lumenx.GetCurrentMod() != "":
+      filepath = os.path.join(Lumenx.GetModRoot(), root, "Combos.py")
+      if os.path.isfile(filepath):
+        name_space = {}
+        execfile(filepath, name_space, name_space)
+        for k in ComboNames.keys():
+          ComboNames[k].update(name_space["ComboNames"].get(k, {}))
     #
 
 

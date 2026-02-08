@@ -92,7 +92,7 @@ def LoadGameAux(slot_num):
         lines.append("sys.path.append('%s/Lib')" % new_mod_root)
         lines.append("sys.path.append('%s/Lib/PythonLib')" % new_mod_root)
 
-    scr_name = "../../Data/Menu/Save/" + Language.Current + "/Cerrando_hi.jpg"
+    scr_name = "../../Data/Locale/" + Language.Current + "/Image/Cerrando_hi.jpg"
     SplashImage.ShowImage(scr_name, 0)
     Bladex.BeginLoadGame()
     prev_map_root = os.path.normpath(os.getcwd() + "\\..")

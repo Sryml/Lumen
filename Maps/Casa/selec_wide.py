@@ -23,7 +23,7 @@ import KeybWidget
 import Language
 import GameText
 
-execfile ("../../data/text/"+Language.Current+"/casa.py")
+execfile ("../../Data/Locale/"+Language.Current+"/casa.py")
 
 Bladex.LoadSampledAnimation("../../Anm/Kgt_seleccion.BMV","Kgt_seleccion",1,"Knight_N")
 #Bladex.LoadSampledAnimation("../../Anm/Gladius.BMV","Gladius",1,"GladiusSeleccion")

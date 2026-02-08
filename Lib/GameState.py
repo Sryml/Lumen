@@ -737,7 +737,7 @@ class WorldState:
             pass
 
         import LoadBar
-        load_bar=LoadBar.AutoProgressBar(26,"Saving ","../../Data/Menu/Save/"+Language.Current+"/Guardando_hi.jpg")
+        load_bar=LoadBar.AutoProgressBar(26,"Saving ","../../Data/Locale/"+Language.Current+"/Image/Guardando_hi.jpg")
         load_bar.Increment("AutoBODs")
         self.SaveAutoBODs(temp_dir)
 ##        self.SaveFunctions(temp_dir)
@@ -792,7 +792,7 @@ class WorldState:
         file.write('Bladex.PauseSoundSystem()\n')
 
         file.write('Bladex.BeginLoadGame()\n')
-        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/10 + 40,'"../../Data/Menu/Save/" + Language.Current + "/Cargando_hi.jpg"')) # by Sryml
+        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/10 + 40,'"../../Data/Locale/" + Language.Current + "/Image/Cargando_hi.jpg"')) # by Sryml
         file.write('GameStateAux.aux_dir="%s"\n'%(aux_dir,))
 
         # file.write('InNewMap=0\n')

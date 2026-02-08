@@ -1,4 +1,6 @@
 import Bladex
+import Lumenx
+import os
 import Select
 import Raster
 import Actions
@@ -22,8 +24,10 @@ if netgame.GetNetState() != 2:
 	font_behaviour=font_server_behaviour.CreateBFont(Language.FontTitle)
 ######ARMAS
 
-execfile("../../Data/ObjIds/"+Language.Current+".py")
-
+filepath = "Data/Locale/"+Language.Current+"/ObjIds.py"
+execfile(os.path.join(Lumenx.GetLumenRoot(), filepath))
+if Lumenx.GetCurrentMod() != "":
+	execfile(os.path.join(Lumenx.GetModRoot(), filepath))
 
 SHADOW = 1.0/1280
 stime=-2.0

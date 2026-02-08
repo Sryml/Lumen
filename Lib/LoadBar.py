@@ -133,7 +133,7 @@ class BackImageBar:
       if not os.path.exists(background_image):
         print "Missing BackImage :"
         print background_image
-        background_image = "../../Data/Menu/Save/EnglishUS/Cargando_hi.jpg"
+        background_image = "../../Data/Locale/English/Image/Cargando_hi.jpg"
 
       if back_image.ReadFromFile(background_image):
         w,h=back_image.GetDimension()

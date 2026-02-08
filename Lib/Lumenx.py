@@ -891,7 +891,7 @@ def LoadLevel(map_dir, mod_dir=""):
     import SplashImage
     import Language
 
-    scr_name = "../../Data/Menu/Save/" + Language.Current + "/Cerrando_hi.jpg"
+    scr_name = "../../Data/Locale/" + Language.Current + "/Image/Cerrando_hi.jpg"
     SplashImage.ShowImage(scr_name, 0)
     #
     Bladex.BeginLoadGame()

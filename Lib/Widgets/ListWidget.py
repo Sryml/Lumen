@@ -42,7 +42,7 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         MenuWidget.B_MenuTree.__init__(self, Parent, Menudesc, StackMenu, VertPos)
         self.SetAutoScale(0)
         self.SetClipDraw(1)
-        
+
         self.nElements = len(self.MenuItems)
         self.ListSize = self.VertPos
         # self.Position = 0
@@ -142,36 +142,6 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         self.WidgetsHeights.append(widget_height)
         if self.MaxItems == 0 and self.VertPos >= self.GetSize()[1]:
             self.MaxItems = len(self.MenuItems) - 1
-
-    def AddMenuElement2(
-        self,
-        widget,
-        sep=0,
-        HPos=0.5,
-        HIndicator=BUIx.B_FrameWidget.B_FR_HRelative,
-        HAnchor=BUIx.B_FrameWidget.B_FR_HCenter,
-    ):
-        MenuWidget.B_MenuFocusManager.AddMenuElement(self, widget)
-        self.AddWidget(
-            widget,
-            117,
-            self.ListSize,
-            BUIx.B_FrameWidget.B_FR_AbsoluteLeft,
-            BUIx.B_FrameWidget.B_FR_Left,
-            BUIx.B_FrameWidget.B_FR_AbsoluteTop,
-            BUIx.B_FrameWidget.B_FR_Top,
-        )
-        self.WidgetsVPos.append(self.ListSize)
-        widget_height = widget.GetSize()[1]
-        self.WidgetsHeights.append(widget_height)
-        self.ListSize = self.ListSize + widget_height
-        if self.MaxItems == 0 and self.ListSize >= self.GetSize()[1]:
-            self.MaxItems = len(self.WidgetsHeights) - 1
-            # print "MaxItems:", self.MaxItems
-        #  self.DoScroll(-1*widget_height)
-        #  print "Calling ScrollUp(): ListSize=",self.ListSize,"widget_height=",widget_height
-        # self.SetFocus(widget) #
-        # self.AdjustScrollArrows()  #No Funciona (?)
 
     def NextFocus(self):
         # curr_focus=self.GetFocus()

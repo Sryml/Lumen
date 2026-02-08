@@ -1,6 +1,9 @@
 import Language
 import string
 import os
+import Lumenx
+
+#
 import typing
 
 if typing.TYPE_CHECKING:
@@ -10,11 +13,8 @@ if typing.TYPE_CHECKING:
 ForeingDict = {}
 
 if Language.Current != "English":
-    filepath = "../../Data/Menu/" + Language.Current + ".py"
-    try:
-        execfile(filepath)
-    except:
-        pass
+    filepath = "Data/Locale/" + Language.Current + "/MTexts.py"
+    execfile(os.path.join(Lumenx.GetLumenRoot(), filepath), globals(), globals())
 
 
 # Language.Current=Language.Current
