@@ -178,9 +178,10 @@ class B_MenuFocusManager:
     try:
       menu_element=self.MenuItems[menu_element_idx]
       self.SetFocus(menu_element)
-      if menu_element.FocusCallBack:
+      if hasattr(menu_element, "FocusCallBack") and menu_element.FocusCallBack:
         menu_element.FocusCallBack(menu_element) # Added by Sryml
     except:
+      traceback.print_exc()
       print "Error setting focus to index",menu_element_idx
 
 
@@ -192,7 +193,7 @@ class B_MenuFocusManager:
       list=self.MenuItems[index+1:]+self.MenuItems[:index]
       for i in list:
         if self.SetFocus(i):
-          if i.FocusCallBack: # by Sryml
+          if hasattr(i, "FocusCallBack") and i.FocusCallBack: # by Sryml
             i.FocusCallBack(i)
           return
     except:
@@ -214,7 +215,7 @@ class B_MenuFocusManager:
 
       for i in list:
         if self.SetFocus(i):
-          if i.FocusCallBack: # by Sryml
+          if hasattr(i, "FocusCallBack") and i.FocusCallBack: # by Sryml
             i.FocusCallBack(i)
           return
 
@@ -258,6 +259,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
         HIndicator=B_FrameWidget.B_FR_HRelative,
         HAnchor=B_FrameWidget.B_FR_HCenter,
         VIndicator=B_FrameWidget.B_FR_AbsoluteTop,
+        VAnchor=B_FrameWidget.B_FR_Top
     ):
         import Menu
         B_MenuFocusManager.AddMenuElement(self, menu_element)
@@ -268,7 +270,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
         #
         # scale_prime = 1.6
         YPos = 0
-        is_floating = 0
+        is_floating = self.Menudesc.get("Floating", 0)
         Height = self.GetSize()[1]
         if type(vsep) == types.StringType:
           try:
@@ -298,7 +300,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
             HIndicator,
             HAnchor,
             VIndicator,
-            B_FrameWidget.B_FR_Top,
+            VAnchor,
         )
 
 # -----------------------------------------
@@ -336,10 +338,12 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
 class B_MenuTreeItem:
   def __init__(self,MenuDescr,StackMenu):
     #print "MenuTreeItem.__init__()"
+    self.Focusable = MenuDescr.get("Focusable", 1)
+    self.FocusCallBack = MenuDescr.get("FocusCallBack") # by Sryml
+
     self.SetAlpha(0.5)
     self.StackMenu=StackMenu
     self.MenuDescr=MenuDescr
-    self.FocusCallBack = MenuDescr.get("FocusCallBack") # by Sryml
 
   def __del__(self):
     #print "MenuTreeItem.__del__()"
@@ -363,27 +367,27 @@ class B_MenuTreeItem:
       except KeyError:
         pass
 
-  def ActivateItem(self,activate):
-    if activate==1:
-      NewFrame=self.CreateFrame()
-      if NewFrame:
-        self.StackMenu.Push(NewFrame)
-        return 1
-      else:
-        try:
-          command=self.MenuDescr["Command"]
-          command(self)
+  def ActivateItem(self, activate):
+      if activate == 1:
+          if not self.AcceptsFocus():
+              return 0
+          self.MenuDescr.get("Command", lambda x: 0)(self)
+          NewFrame = self.CreateFrame()
+          if NewFrame:
+              self.StackMenu.Push(NewFrame)
           return 1
-        except:
+      elif activate == 0:
+          w = self.StackMenu.Top()
+          try:
+              w.FinalRelease()
+          except:
+              pass
+          self.StackMenu.Pop()
+
+  def AcceptsFocus(self):
+      if self.GetVisible() == 0:
           return 0
-    elif activate==0:
-      w=self.StackMenu.Top()
-      try:
-        w.FinalRelease()
-      except:
-        pass
-      self.StackMenu.Pop()
-      #del(w)
+      return self.Focusable
 
 
   def CreateFrame(self):
@@ -409,6 +413,7 @@ class B_MenuTreeItem:
 # -----------------------------------------
 class B_MenuTree(B_MenuFrameWidget):
     def __init__(self, Parent, Menudesc, StackMenu, VertPos=0):
+        self.FocusCallBack = Menudesc.get("FocusCallBack")
         vw, vh = Raster.GetSize()
         Width, Height = Menudesc.get("Size", (vw, vh))
         self.ViewScale = 1.0
@@ -438,7 +443,9 @@ class B_MenuTree(B_MenuFrameWidget):
         )
 
         self.Menudesc = Menudesc
+        self.CreateMenuElements(Parent, Menudesc, StackMenu)
 
+    def CreateMenuElements(self, Parent, Menudesc, StackMenu):
         ValidIndex = 0
         isValidIndex = 0
         for i in Menudesc["ListDescr"]:
@@ -455,6 +462,7 @@ class B_MenuTree(B_MenuFrameWidget):
             HIndicator = B_FrameWidget.B_FR_HRelative
             HAnchor = B_FrameWidget.B_FR_HCenter
             VIndicator = i.get("VIndicator", B_FrameWidget.B_FR_AbsoluteTop)
+            VAnchor = i.get("VAnchor", B_FrameWidget.B_FR_Top)
 
             PosDscr = i.get("Position", i.get("PositionEx"))
             if PosDscr:
@@ -463,7 +471,7 @@ class B_MenuTree(B_MenuFrameWidget):
                 HAnchor = PosDscr[2]
 
             self.AddMenuElement(
-                wSubMenu, vsep, HPos, HIndicator, HAnchor, VIndicator
+                wSubMenu, vsep, HPos, HIndicator, HAnchor, VIndicator, VAnchor
             )
 
         if Menudesc.has_key("iFocus"):
@@ -479,11 +487,10 @@ class B_MenuTree(B_MenuFrameWidget):
         printx("B_MenuTree widget with Frame", self.Name())
 
 
-class B_MenuItemTextNoFX(B_TextWidget, B_MenuTreeItem):
+class B_MenuItemTextNoFX(B_MenuTreeItem, B_TextWidget):
     def __init__(
         self, Parent, MenuDescr, StackMenu, font_server=ScorerWidgets.font_server
     ):
-        self.Focusable = MenuDescr.get("Focusable", 1)
         self.Text = MenuDescr.get("Text", MenuDescr["Name"])
         self.Color = MenuDescr.get("Color", None)
         self.Alpha = MenuDescr.get("Alpha", 1.0)
@@ -541,33 +548,33 @@ class B_MenuItemTextNoFX(B_TextWidget, B_MenuTreeItem):
         else:
             self.DefDraw(x, y, time)
 
-    def ActivateItem(self, activate):
-        if activate == 1:
-            if not self.AcceptsFocus():
-                return 0
-            self.MenuDescr.get("Command", lambda x: 0)(self)
-            NewFrame = self.CreateFrame()
-            if NewFrame:
-                self.StackMenu.Push(NewFrame)
-            return 1
-            # else:
-                # command = self.MenuDescr.get("Command")
-                # if command:
-                #     command(self)
-                #     return 1
-                # return 0
-        elif activate == 0:
-            w = self.StackMenu.Top()
-            try:
-                w.FinalRelease()
-            except:
-                pass
-            self.StackMenu.Pop()
+    # def ActivateItem(self, activate):
+    #     if activate == 1:
+    #         if not self.AcceptsFocus():
+    #             return 0
+    #         self.MenuDescr.get("Command", lambda x: 0)(self)
+    #         NewFrame = self.CreateFrame()
+    #         if NewFrame:
+    #             self.StackMenu.Push(NewFrame)
+    #         return 1
+    #         # else:
+    #             # command = self.MenuDescr.get("Command")
+    #             # if command:
+    #             #     command(self)
+    #             #     return 1
+    #             # return 0
+    #     elif activate == 0:
+    #         w = self.StackMenu.Top()
+    #         try:
+    #             w.FinalRelease()
+    #         except:
+    #             pass
+    #         self.StackMenu.Pop()
 
-    def AcceptsFocus(self):
-        if self.GetVisible() == 0:
-            return 0
-        return self.Focusable
+    # def AcceptsFocus(self):
+    #     if self.GetVisible() == 0:
+    #         return 0
+    #     return self.Focusable
 
     def FinalRelease(self):
         self.Parent = None
@@ -640,12 +647,11 @@ class B_MenuItemOption(B_MenuItemTextNoFX):
       self.Text = self.OptionText + " < " + MenuText.GetMenuText(self.Options[self.SelOption]) + " >"
 
 
-class B_MenuSpin(SpinWidget.B_SpinWidget,B_MenuTreeItem):
+class B_MenuSpin(B_MenuTreeItem, SpinWidget.B_SpinWidget):
   def __init__(self,Parent,MenuDescr,StackMenu,font_server=ScorerWidgets.font_server):
     w,h = MenuDescr.get("Size",(300,19))
     defaultValue = MenuDescr.get("DefaultValue", -1)
 
-    self.Focusable = MenuDescr.get("Focusable", 1)
     self.Text = MenuDescr.get("Text", MenuDescr["Name"])
     self.Color = MenuDescr.get("Color", None)
     self.Alpha = MenuDescr.get("Alpha", 1.0)
@@ -711,12 +717,12 @@ class B_MenuSpin(SpinWidget.B_SpinWidget,B_MenuTreeItem):
     if self.SetValueEnd is not None:
       self.SetValueEnd(self.GetValue())
 
-  def AcceptsFocus(self):
-      if self.GetVisible() == 0:
-          return 0
-      return self.Focusable
+  # def AcceptsFocus(self):
+  #     if self.GetVisible() == 0:
+  #         return 0
+  #     return self.Focusable
 
-class B_MenuItemText(TextFXWidget.B_TextFXWidget,B_MenuTreeItem):
+class B_MenuItemText(B_MenuTreeItem, TextFXWidget.B_TextFXWidget):
   def __init__(self,Parent,MenuDescr,StackMenu,font_server=ScorerWidgets.font_server):
     #print "B_MenuItemText.__init__()",MenuDescr["Name"]
     Font = MenuDescr.get("Font", Language.FontCommon)
@@ -892,7 +898,7 @@ class B_MenuItemPage(B_MenuFrameWidget):
 
 
 
-class B_MenuItemPages(BUIx.B_TextWidget,B_MenuTreeItem):
+class B_MenuItemPages(B_MenuTreeItem, BUIx.B_TextWidget):
   def __init__(self,Parent,MenuDescr,StackMenu):
     Font = MenuDescr.get("Font", Language.FontCommon)
     Scale = MenuDescr.get("FontScale", Language.MFontScale["L"])
@@ -1014,9 +1020,9 @@ class B_BackImageWidget(BUIx.B_RectWidget):
 		self.vidw = 1
 		self.vidh = 1
 		BUIx.B_RectWidget.__init__(self,Parent,MenuDescr["Name"],self.vidw,self.vidh)
-		self.Selected=0
-		self.Solid=0
-		self.Border=0
+		# self.Selected=0
+		# self.Solid=0
+		# self.Border=0
 		self.Dimension = self.image.GetDimension()
 		self.SetDrawFunc(self.Draw)
 

@@ -100,6 +100,7 @@ ForeingDict = {
     "You already have 3 keys assigned to that action" : "你已经为该操作分配了3个键位。",
     "mods": "模组",
     "all mods": "所有模组",
+    "total mods": "总模组数",
     "cache": "缓存",
     "basic clone": "基础克隆",
     "note: current changes are not saved and will be saved when exiting this menu.": "注意：当前更改尚未保存，离开此菜单时将自动保存。",
@@ -117,6 +118,7 @@ ForeingDict = {
     "original": "原版",
     "improved": "改良的",
     "developer features": "开发者功能",
+    "pages": "页",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",

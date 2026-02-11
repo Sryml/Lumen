@@ -32,8 +32,6 @@ if typing.TYPE_CHECKING:
 
 class B_ListWidget(MenuWidget.B_MenuTree):
     def __init__(self, Parent, Menudesc, StackMenu, VertPos=0):
-        self.FocusCallBack = Menudesc.get("FocusCallBack")
-
         self.WidgetsVPos = []
         self.WidgetsHeights = []
         self.MaxItems = 0
@@ -133,10 +131,11 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         HIndicator=BUIx.B_FrameWidget.B_FR_HRelative,
         HAnchor=BUIx.B_FrameWidget.B_FR_HCenter,
         VIndicator=BUIx.B_FrameWidget.B_FR_AbsoluteTop,
+        VAnchor=BUIx.B_FrameWidget.B_FR_Top,
     ):
         self.WidgetsVPos.append(self.VertPos)
         MenuWidget.B_MenuFrameWidget.AddMenuElement(
-            self, menu_element, vsep, HPos, HIndicator, HAnchor, VIndicator
+            self, menu_element, vsep, HPos, HIndicator, HAnchor, VIndicator, VAnchor
         )
         widget_height = menu_element.GetSize()[1] * self.ViewScale
         self.WidgetsHeights.append(widget_height)

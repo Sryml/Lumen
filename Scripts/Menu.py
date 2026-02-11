@@ -669,7 +669,7 @@ def SetBrightnessValue(v):
 
 def setFXVolume(v):
   Bladex.SetSoundVolume(v * 0.1)
-  SndCorreGema.PlayStereo()
+  # SndCorreGema.PlayStereo()
 
 def setMusicVolume(v):
   sound_cfg_changed=1
@@ -1469,6 +1469,7 @@ class MainMenu:
   def MenuNextItemStrong(self):
     w=self.MenuStack.Top()
     w.NextFocus()
+    SndCorreGema.PlayStereo()
 
   def MenuNextItem(self):
   	global TBUDSoundAble
@@ -1506,6 +1507,7 @@ class MainMenu:
         w.IncMenuItem()
       except AttributeError:
          pass
+    SndCorreGema.PlayStereo()
       #print "cant increase any more"#Seems not 2 be working this way
 
   def MenuDecItem(self):
@@ -1519,6 +1521,7 @@ class MainMenu:
         w.DecMenuItem()
       except AttributeError:
          pass
+    SndCorreGema.PlayStereo()
       #print "cant decrease any more"#Seems not 2 be working this way
 
 
@@ -2780,6 +2783,11 @@ def InitMenuKeys():
     oldInputActionsSet=InputManager.GetInputActionsSet()
 
     InputManager.SetInputActionsSet("Menu")
+
+    Bladex.AddInputAction("Menu_Control",0)
+    Bladex.AssocKey("Menu_Control","Keyboard","LCtrl")
+    # Bladex.AddBoundFunc("Menu_Control", Menu_Control)
+    
     #Bladex.AddInputAction("Deactivate Menu",0)
     #Bladex.AssocKey("Deactivate Menu","Keyboard","Esc")
     #Bladex.AddBoundFunc("Deactivate Menu",ActivateMenu)

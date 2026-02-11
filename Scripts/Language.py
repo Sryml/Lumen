@@ -106,9 +106,9 @@ else:
 #     MenuGrasHi="../../Data/letras_menu_gras_hi.bmp"
 
 #
-font_server_behaviour = BUIx.B_FontServer()
-font_behaviour_title = font_server_behaviour.CreateBFont(FontTitle)
-font_behaviour_common = font_server_behaviour.CreateBFont(FontCommon)
+font_server = BUIx.B_FontServer()
+font_behaviour_title = font_server.CreateBFont(FontTitle)
+font_behaviour_common = font_server.CreateBFont(FontCommon)
 #
 
 
