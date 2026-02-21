@@ -119,6 +119,8 @@ ForeingDict = {
     "improved": "改良的",
     "developer features": "开发者功能",
     "pages": "页",
+    "press <ctrl + up/down> to turn pages": "按 <Ctrl键 + 上/下键> 翻页",
+    "main menu": "主菜单",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",

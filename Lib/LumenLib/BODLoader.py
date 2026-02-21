@@ -18,6 +18,7 @@ import shutil
 import Reference
 import Menu
 import MenuWidget
+import MemPersistence
 
 import os
 import string
@@ -55,6 +56,9 @@ class _DATA:
     menu_config = BCopy.deepcopy(Lumenx.GetConfig())
     mod_info = {}
     mod_list = []
+    selected_map = "M1"
+    character = "Knight"
+    character_skin = 0
 
 
 # ----------------------------------
@@ -95,6 +99,104 @@ NoteLabel = {
 
 
 # ----------------------------------
+def GetCharType(this):
+    return this.Options.index(_DATA.character)
+
+
+def SetCharType(option):
+    _DATA.character_skin = 0
+    _DATA.character = option
+    Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
+        UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
+    )
+
+
+def NextSkin(this):
+    _DATA.character_skin = (_DATA.character_skin + 1) % len(
+        UtilsWidget.CHARACTER[_DATA.character]
+    )
+    Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
+        UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
+    )
+
+
+def PreviousSkin(this):
+    _DATA.character_skin = (_DATA.character_skin - 1) % len(
+        UtilsWidget.CHARACTER[_DATA.character]
+    )
+    Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
+        UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
+    )
+
+
+def StartGame(this):
+    character = UtilsWidget.CHARACTER
+    MemPersistence.Store(
+        "SelectedChar",
+        (
+            character[_DATA.character][0],
+            character[_DATA.character][_DATA.character_skin],
+        ),
+    )
+    Lumenx.LoadLevel(_DATA.selected_map, Lumenx.GetCurrentModMenu())
+
+
+SelectCharOption = [
+    {
+        "Name": "Character",
+        "Text": "",
+        "VSep": Menu.FirstOptionVSep,
+        # "FontScale": Language.MFontScale["M"],
+        "Kind": MenuWidget.B_MenuItemOption,
+        "Options": ["Knight", "Dwarf", "Amazon", "Barbarian"],
+        "SelOptionFunc2": GetCharType,
+        "Command": SetCharType,
+    },
+    {
+        "Name": "CharPreview",
+        "Kind": UtilsWidget.B_BitmapWidget,
+        "VSep": "0.015%",
+        "GetImageName": lambda this: UtilsWidget.CHARACTER[_DATA.character][
+            _DATA.character_skin
+        ],
+        "Size": (200, 200),
+        "FitHeight": "0.19%",
+        "Focusable": 0,
+    },
+    {
+        "Name": "Character Skin",
+        "Text": "< " + MenuText.GetMenuText("Next Skin") + " >",
+        "VSep": "0.015%",
+        # "FontScale": Language.MFontScale["M"],
+        "Command": NextSkin,
+        "LeftCommand": NextSkin,
+        "RightCommand": PreviousSkin,
+    },
+    # {
+    #     "Name": "Map",
+    #     "Text": MenuText.GetMenuText("Map") + ": ",
+    #     "VSep": "0.015%",
+    #     # "FontScale": Language.MFontScale["M"],
+    #     "Kind": MenuWidget.B_MenuItemOption,
+    #     "Options": ["Knight", "Dwarf", "Amazon", "Barbarian"],
+    #     "SelOptionFunc": GetCharType,
+    #     "Command": SetCharType,
+    # },
+    {
+        "Name": "Start",
+        "Text": MenuText.GetMenuText("Start"),
+        "VSep": "0.015%",
+        "Command": StartGame,
+    },
+    BackOptionCommon,
+    {
+        "Name": "BackColor",
+        "Kind": UtilsWidget.B_BackColor,
+    },
+]
+
+
+# ----------------------------------
 def InitMenu(this):
     global DESCR_WRAPPED
     if not DESCR_WRAPPED:
@@ -115,6 +217,14 @@ def OnChangeMenu():
         Menu.GetMenuWidget("NOTE")[0].SetVisible(1)
     else:
         Menu.GetMenuWidget("NOTE")[0].SetVisible(0)
+
+
+def OnEnterModMenu(this):
+    import SaveGame
+
+    _DATA.character = "Knight"
+    _DATA.character_skin = 0
+    SaveGame.CreateSLMenu(this)
 
 
 #
@@ -192,7 +302,7 @@ def GetModInfo(mod_dir):
 
 def AddMod(mod_dir, mod_root, BLModInfo):
     mod_dir = string.lower(mod_dir)
-    name_space = {}
+    name_space = {"MOD_ROOT": mod_root}
 
     execfile(BLModInfo, name_space, name_space)
     CloneEnvironment = name_space["CloneEnvironment"]
@@ -246,14 +356,18 @@ def AddMod(mod_dir, mod_root, BLModInfo):
         size = UtilsWidget.ResizeImage(img.GetDimension(), (464, 261))
         show = (img, size[0], size[1])
 
-    mod_info = {
-        "Name": name_space["ModName"],
-        "Desc": GameText.Textos.get(name_space["ModDesc"], ""),
-        "Version": name_space["ModVersion"],
-        "Author": name_space["ModAuthor"],
-        "AuthorInfo": name_space["ModAuthorInfo"],
-        "Show": show,
-    }
+    mod_info = name_space.get("ModMenu", {})
+    mod_info.update(
+        {
+            "Name": name_space["ModName"],
+            "ModDir": mod_dir,
+            "Desc": GameText.Textos.get(name_space["ModDesc"], ""),
+            "Version": name_space["ModVersion"],
+            "Author": name_space["ModAuthor"],
+            "AuthorInfo": name_space["ModAuthorInfo"],
+            "Show": show,
+        }
+    )
     _DATA.mod_list.append(mod_dir)
     _DATA.mod_info[mod_dir] = mod_info
 
@@ -342,7 +456,7 @@ ModMenu = {
             "Text": MenuText.GetMenuText("ALL MODS"),
             "Font": Language.FontTitle,
             # "Size": (640, 480),
-            "VSep": "0.208%",
+            "VSep": Menu.FirstOptionVSep,
             "ListDescr": [
                 {
                     "Name": "Total Mods",
@@ -383,7 +497,7 @@ ModMenu = {
                     "Text": MenuText.GetMenuText("Basic Clone") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.208%",
+                    "VSep": Menu.FirstOptionVSep,
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Default"],
                     "SelOptionFunc2": GetBasicCloneOption,
@@ -453,4 +567,4 @@ ModMenu = {
 }
 # return ModMenu
 # -------------------------------------
-Init()
+# Init()

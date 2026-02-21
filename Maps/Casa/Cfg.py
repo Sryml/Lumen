@@ -36,6 +36,7 @@ if ContinueLoad:
 	import Menu
 	import MenuWidget
 	
+	Menu.DefaultInputActionsSet = "CharacterSelection"
 	Scorer.SetVisible(0)
 	Bladex.SetListenerPosition(2)
 	Menu.GetMenuItem(['GAME','SAVE GAME'])["Focusable"] = 0

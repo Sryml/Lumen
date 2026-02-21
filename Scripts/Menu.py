@@ -59,6 +59,7 @@ MenuFontSmall=Language.FontTitle
 MenuFontMed=Language.FontTitle
 MenuFontBig=Language.FontTitle
 
+FirstOptionVSep = "0.208%"
 NoteOptionVSep = "0.76f" # Added by Sryml
 BackOptionVSep = "0.792f"
 BackGamepadOptionVSep = "0.854f"
@@ -69,6 +70,7 @@ Character = -1
 TBUDSoundAble = 1
 
 EscapeFunction = None
+DefaultInputActionsSet = "Default"
 
 # SOUNDS FOR MENU->
 SndCorreGema=Bladex.CreateSound("../../Sounds/golpe-generico2.wav","Risoto1") # by Sryml
@@ -1365,7 +1367,7 @@ def PreActivateMenu():
 
 def ClearMenuKeyb():
   InputManager=BInput.GetInputManager()
-  OldIASet = InputManager.GetInputActionsSet()
+  # OldIASet = InputManager.GetInputActionsSet()
   InputManager.SetInputActionsSet("Menu")
 
   global _MainMenu
@@ -1387,11 +1389,7 @@ def ClearMenuKeyb():
   #print "Reference count _MainMenu: (Asignacion -> None)",sys.getrefcount(_MainMenu)
 
   # InputManager.SetInputActionsSet(OldIASet)
-
-  if string.lower(Lumenx.GetCurrentMap()) == "casa": #  and Lumenx.GetCurrentMod() == ""
-    InputManager.SetInputActionsSet("CharacterSelection")
-  else:
-    InputManager.SetInputActionsSet("Default")
+  InputManager.SetInputActionsSet(DefaultInputActionsSet)
 
 
 
@@ -2498,7 +2496,8 @@ else:
                                        "Text":MenuText.GetMenuText("SAVE GAME"),
                                        "Font":MenuFontBig,
                                       #  "VSep": "1em",
-                                       "Size":(1424, 801),
+                                       "Size":("auto", 1080),
+                                       "AdjustScale": 1,
                                        #"Kind":MenuWidget.B_VariableFocusTextMenuItem,
                                        #"Command":SaveGame1
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Savegame Slot 1:"),
@@ -2530,7 +2529,8 @@ else:
                                        "Name":"LOAD GAME",
                                        "Text":MenuText.GetMenuText("LOAD GAME"),
                                        "Font":MenuFontBig,
-                                       "Size":(1424, 801),
+                                       "Size":("auto", 1080),
+                                       "AdjustScale": 1,
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Load Game at Slot 1:"),
                                                       "Font":MenuFontBig,
                                                       "VSep"     : 200,
@@ -2786,6 +2786,7 @@ def InitMenuKeys():
 
     Bladex.AddInputAction("Menu_Control",0)
     Bladex.AssocKey("Menu_Control","Keyboard","LCtrl")
+    Bladex.AssocKey("Menu_Control","Keyboard","RCtrl")
     # Bladex.AddBoundFunc("Menu_Control", Menu_Control)
     
     #Bladex.AddInputAction("Deactivate Menu",0)
@@ -2801,6 +2802,7 @@ def InitMenuKeys():
     Bladex.AddBoundFunc("Activate Menu",PreActivateMenu)
 
     InputManager.SetInputActionsSet(oldInputActionsSet)
+    BODLoader.Init() #
     print "Activadas!"
 
     if Reference.DEMO_MODE==1:

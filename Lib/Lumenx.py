@@ -59,6 +59,7 @@ class _DATA:
     game_version = 1
     current_map = ""
     current_mod = ""
+    current_mod_menu = ""
     # map_list_path = "Maps"
     postload_callbacks = {}
     preload_callbacks = {}
@@ -265,9 +266,9 @@ class __FunctionDecorator:
         path = AutomatedAssets(path)
         return self.RawFunc.ReadBOD(path)
 
-    def ReadMMP(self, path):
+    def ReadMMP(self, path, save=1):
         path = string.replace(path, "\\", "/")
-        if path not in _DATA.res_mmps:
+        if save and path not in _DATA.res_mmps:
             _DATA.res_mmps.append(path)
         path = AutomatedAssets(path)
         return self.RawFunc.ReadMMP(path)
@@ -698,6 +699,10 @@ def GetCurrentMod():
     return _DATA.current_mod
 
 
+def GetCurrentModMenu():
+    return _DATA.current_mod_menu
+
+
 def GetEntity(arg):
     ret = Bladex_raw.GetEntity(arg)
     if ret and ret.Kind == "Entity Camera":
@@ -916,15 +921,15 @@ def Raisex(exc, msg=""):
     return "raise %s, %s" % (exc, repr(msg))
 
 
-def ReadAlphaBitMap(file_name, internal_name):
-    if _DATA.res_alpha_bmps.get(internal_name) is None:
+def ReadAlphaBitMap(file_name, internal_name, save=1):
+    if save and _DATA.res_alpha_bmps.get(internal_name) is None:
         _DATA.res_alpha_bmps[internal_name] = file_name
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadAlphaBitMap(file_name, internal_name)
 
 
-def ReadBitMap(file_name, internal_name):
-    if _DATA.res_bmps.get(internal_name) is None:
+def ReadBitMap(file_name, internal_name, save=1):
+    if save and _DATA.res_bmps.get(internal_name) is None:
         _DATA.res_bmps[internal_name] = file_name
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.ReadBitMap(file_name, internal_name)
@@ -1045,6 +1050,10 @@ def SetCurrentMap(map_dir):
 
 def SetCurrentMod(mod_dir):
     _DATA.current_mod = mod_dir
+
+
+def SetCurrentModMenu(mod_dir):
+    _DATA.current_mod_menu = mod_dir
 
 
 def SetGhostSectorGroupSound(
@@ -1194,6 +1203,7 @@ GetConfig
 GetControlCharacter
 GetCurrentMap
 GetCurrentMod
+GetCurrentModMenu
 GetEntity
 GetGameVersion
 GetInventoryStyle
@@ -1228,6 +1238,7 @@ SetBladeRoot
 SetControlCharacter
 SetCurrentMap
 SetCurrentMod
+SetCurrentModMenu
 SetGhostSectorGroupSound
 SetGhostSectorSound
 SetLumenRoot

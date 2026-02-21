@@ -9,6 +9,7 @@ import Raster
 import Bladex
 import Lumenx
 import BUIx
+import BBLib
 import BInput
 import Language
 import MenuWidget
@@ -17,6 +18,7 @@ import GameText
 
 import string
 import math
+import types
 
 from Lumenx import printx
 
@@ -31,6 +33,29 @@ if typing.TYPE_CHECKING:
 # ----------------------------------
 B_Widget = BUIx.B_Widget
 IManager = BInput.GetInputManager()
+LUMEN_ROOT = Lumenx.GetLumenRoot()
+GameVersion = Lumenx.GetGameVersion()
+
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Amazon_L.bmp", "Amazon_N", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/AmzSkin1.bmp", "AmzSkin1", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/AmzSkin2.bmp", "AmzSkin2", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Barbarian.bmp", "Barbarian_N", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/BarSkin1.bmp", "BarSkin1", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/BarSkin2.bmp", "BarSkin2", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Dwarf_N.bmp", "Dwarf_N", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/DwfSkin1.bmp", "DwfSkin1", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/DwfSkin2.bmp", "DwfSkin2", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Knight_N.bmp", "Knight_N", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Kgtskin1.bmp", "KgtSkin1", save=0)
+Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Kgtskin2.bmp", "KgtSkin2", save=0)
+
+CHARACTER = {
+    # Name: [Kind, Skins...]
+    "Knight": ["Knight_N", "KgtSkin1", "KgtSkin2"],
+    "Barbarian": ["Barbarian_N", "BarSkin1", "BarSkin2"],
+    "Dwarf": ["Dwarf_N", "DwfSkin1", "DwfSkin2"],
+    "Amazon": ["Amazon_N", "AmzSkin1", "AmzSkin2"],
+}
 
 
 # ----------------------------------
@@ -59,7 +84,7 @@ def AdaptResolution(img_size, canvas, view_size=(), keep_h=1, min_scale=None):
         view_size = Scorer.wFrame.GetSize()
     vw, vh = float(view_size[0]), float(view_size[1])
     if min_scale is None:
-        if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+        if GameVersion == Lumenx.CLASSIC_VER:
             min_scale = 0.5
         else:
             min_scale = 0.5 / (Raster.GetUnscaledSize()[1] / vh)
@@ -89,7 +114,7 @@ def WrapWord(Word, CurrentWidth, MaxWidth, FontScale, font_behaviour):
     current_width = CurrentWidth
     for c in Word:
         width = font_behaviour.GetTextWidth(c) * FontScale
-        if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+        if GameVersion == Lumenx.CLASSIC_VER:
             width = int(width)
         if current_width + width > MaxWidth:
             lines.append(current_line)
@@ -103,7 +128,7 @@ def WrapWord(Word, CurrentWidth, MaxWidth, FontScale, font_behaviour):
 
 def WrapText(Text, MaxWidth, FontScale, font_behaviour):
     space_w = font_behaviour.GetTextWidth(" ") * FontScale
-    if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+    if GameVersion == Lumenx.CLASSIC_VER:
         space_w = int(space_w)
 
     ret_lines = []
@@ -115,7 +140,7 @@ def WrapText(Text, MaxWidth, FontScale, font_behaviour):
             if word == "":
                 width = space_w
             else:
-                if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+                if GameVersion == Lumenx.CLASSIC_VER:
                     width = 0
                     for c in word:
                         width = width + int(font_behaviour.GetTextWidth(c) * FontScale)
@@ -305,7 +330,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
                 x + (border_w - w) * 0.5,
                 y + border_h * 0.1091 + (261 * self.border_scale - h) * 0.5,
             )
-            if Lumenx.GetGameVersion() == Lumenx.CLASSIC_VER:
+            if GameVersion == Lumenx.CLASSIC_VER:
                 Raster.DrawImage(rw, rh, "RGB", "Normal", img.GetData())
             else:
                 Raster.DrawResizeImage(rw, rh, "RGB", "Normal", img.GetData(), w, h)
@@ -390,7 +415,7 @@ class B_GridWidget(MenuWidget.B_MenuTree):
             self.FocusCol = idx % self.GridSize[0]
             index = self.CalcIndex()
         self.SetFocus_Idx(index, update_page=1)
-        self.page_lable.SetText(
+        self.wPageLable.SetText(
             "%s/%s %s"
             % (self.FocusPage + 1, self.MaxPages, MenuText.GetMenuText("Pages"))
         )
@@ -450,7 +475,30 @@ class B_ModGridWidget(B_GridWidget):
             self.SetFocus_Idx(0)
         self.MaxPages = int((self.nItems - 1) / float(self.MaxItems)) + 1
         #
-        self.page_lable = BUIx.B_TextWidget(
+        self.wNoteLabel = BUIx.B_TextWidget(
+            self,
+            Menudesc["Name"] + "NoteLabel",
+            MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+            Language.font_server,
+            Language.FontCommon,
+        )
+        r, g, b = Language.FontColor.Unfocusable
+        self.wNoteLabel.SetScale(Language.MFontScale["S"] * 0.8)
+        self.wNoteLabel.SetAlpha(1)
+        self.wNoteLabel.SetColor(r, g, b)
+        self.AddLabel(
+            self.wNoteLabel,
+            0,
+            8,
+            B_Widget.B_LAB_Left,
+            B_Widget.B_LAB_Bottom,
+            B_Widget.B_FR_AbsoluteRight,
+            B_Widget.B_FR_Left,
+            B_Widget.B_FR_AbsoluteTop,
+            B_Widget.B_FR_Top,
+        )
+
+        self.wPageLable = BUIx.B_TextWidget(
             self,
             Menudesc["Name"] + "PageLable",
             "1/%s %s" % (self.MaxPages, MenuText.GetMenuText("Pages")),
@@ -458,11 +506,11 @@ class B_ModGridWidget(B_GridWidget):
             Language.FontCommon,
         )
         r, g, b = Language.FontColor.Unfocusable
-        self.page_lable.SetScale(Language.MFontScale["S"] * 0.8)
-        self.page_lable.SetAlpha(1)
-        self.page_lable.SetColor(r, g, b)
+        self.wPageLable.SetScale(Language.MFontScale["S"] * 0.8)
+        self.wPageLable.SetAlpha(1)
+        self.wPageLable.SetColor(r, g, b)
         self.AddLabel(
-            self.page_lable,
+            self.wPageLable,
             0,
             8,
             B_Widget.B_LAB_Right,
@@ -481,11 +529,116 @@ class B_ModGridWidget(B_GridWidget):
         ModList = BODLoader.GetModList()
         for index in range(len(ModList)):
             mod_dir = ModList[index]
-            menu_element = ModGridItem(self, BODLoader.GetModInfo(mod_dir), StackMenu)
+            Menudescr = BODLoader.GetModInfo(mod_dir)
+            menu_element = ModGridItem(self, Menudescr, StackMenu)
             MenuWidget.B_MenuFocusManager.AddMenuElement(self, menu_element)
             col = index % self.GridSize[0]
             row = int(index / self.GridSize[0]) % self.GridSize[1]
             self.AddWidget(menu_element, (border_w + gap) * col, (border_h + gap) * row)
+
+
+# ----------------------------------
+class B_ImagesWidget(MenuWidget.B_MenuTreeItem, BUIx.B_RectWidget):
+    def __init__(self, Parent, MenuDescr, StackMenu):
+        self.OverlayColor = MenuDescr.get("OverlayColor", (0, 0, 0))
+        self.OverlayAlpha = MenuDescr.get("OverlayAlpha", 0.0)
+        self.Channel = MenuDescr.get("Channel", "RGB")
+        FitHeight = MenuDescr.get("FitHeight", 0)
+
+        self.Images = {}  # type: dict[str, BBLib.B_BitMap24]
+        Images = MenuDescr["ImageList"]  # type: list
+        for i in Images:
+            self.Images[i[0]] = BBLib.B_BitMap24()
+            self.Images[i[0]].ReadFromFile(i[1])
+        self.CurrentImage = MenuDescr.get("ImageName", Images[0][0])
+
+        vidw, vidh = self.Images[self.CurrentImage].GetDimension()
+        if GameVersion != Lumenx.CLASSIC_VER:
+            try:
+                if isinstance(FitHeight, types.StringType):
+                    if FitHeight[-1] == "%":
+                        FitHeight = int(Parent.GetSize()[1] * float(FitHeight[:-1]))
+                    else:
+                        FitHeight = int(FitHeight)
+            except:
+                pass
+            if FitHeight != 0:
+                vidw = int(float(vidw) / vidh * FitHeight)
+                vidh = FitHeight
+
+        self.vidw, self.vidh = vidw, vidh
+
+        BUIx.B_RectWidget.__init__(
+            self, Parent, MenuDescr["Name"], vidw, vidh
+        )
+        MenuWidget.B_MenuTreeItem.__init__(self, MenuDescr, StackMenu)
+        self.SetDrawFunc(self.Draw)
+
+    def ChangeImage(self, name):
+        if self.Images.has_key(name):
+            self.CurrentImage = name
+
+    def Draw(self, x, y, time):
+        Raster.SetPosition(x, y)
+        Dimension = self.Images[self.CurrentImage].GetDimension()
+        if GameVersion == Lumenx.CLASSIC_VER:
+            Raster.DrawImage(
+                Dimension[0],
+                Dimension[1],
+                self.Channel,
+                "Normal",
+                self.Images[self.CurrentImage].GetData(),
+            )
+        else:
+            Raster.DrawResizeImage(
+                Dimension[0],
+                Dimension[1],
+                self.Channel,
+                "Normal",
+                self.Images[self.CurrentImage].GetData(),
+                self.vidw,
+                self.vidh,
+            )
+        #
+        if self.OverlayAlpha != 0:
+            r, g, b = self.OverlayColor
+            Raster.SetFillColor(r, g, b)
+            Raster.SetAlpha(self.OverlayAlpha)
+            Raster.SolidRectangle(x, y, x + self.vidw, y + self.vidh)
+        self.DefDraw(x, y, time)
+
+
+class B_BitmapWidget(MenuWidget.B_MenuTreeItem, BUIx.B_BitmapWidget):
+    def __init__(self, Parent, MenuDescr, StackMenu):
+        Color = MenuDescr.get("Color", (255, 255, 255))
+        Alpha = MenuDescr.get("Alpha", 1.0)
+        FitHeight = MenuDescr.get("FitHeight", 0)
+
+        ImageName = MenuDescr["GetImageName"](self)
+        vidw, vidh = MenuDescr["Size"]
+        try:
+            if isinstance(FitHeight, types.StringType):
+                if FitHeight[-1] == "%":
+                    FitHeight = int(Parent.GetSize()[1] * float(FitHeight[:-1]))
+                else:
+                    FitHeight = int(FitHeight)
+        except:
+            pass
+        if FitHeight != 0:
+            vidw = int(float(vidw) / vidh * FitHeight)
+            vidh = FitHeight
+
+        BUIx.B_BitmapWidget.__init__(
+            self,
+            Parent,
+            MenuDescr["Name"] + ImageName,
+            vidw,
+            vidh,
+            ImageName,
+        )
+        MenuWidget.B_MenuTreeItem.__init__(self, MenuDescr, StackMenu)
+        self.SetAlpha(Alpha)
+        self.SetColor(Color[0], Color[1], Color[2])
 
 
 # ----------------------------------

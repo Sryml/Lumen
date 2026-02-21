@@ -341,7 +341,7 @@ class B_MenuTreeItem:
     self.Focusable = MenuDescr.get("Focusable", 1)
     self.FocusCallBack = MenuDescr.get("FocusCallBack") # by Sryml
 
-    self.SetAlpha(0.5)
+    self.SetAlpha(1)
     self.StackMenu=StackMenu
     self.MenuDescr=MenuDescr
 
