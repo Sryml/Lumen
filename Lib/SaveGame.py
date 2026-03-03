@@ -194,8 +194,7 @@ def FocusOnBitmap(menu_class=0, parametro=0):
     w = Menu.GetMenuWidget("GameList", menu_class.Parent)[0]
     w.ChangeImage(clave)
     label = Menu.GetMenuWidget("Current Selection", menu_class.Parent)[0]
-    if label:
-        label.Text = MenuText.GetMenuText("Current Selection") + ": " + clave
+    label.Text = MenuText.GetMenuText("Current Selection") + ": " + clave
 
 
 # called when the menu is called
@@ -259,7 +258,6 @@ def CreateSLMenu(menu_class):
     import Menu
 
     ModDir = menu_class.Menudesc.get("ModDir", "")
-    Lumenx.SetCurrentModMenu(ModDir)
 
     SaveMenu = Menu.GetMenuWidget("SAVE GAME", menu_class)[0]
     LoadMenu = Menu.GetMenuWidget("LOAD GAME", menu_class)[0]

@@ -56,8 +56,8 @@ class _DATA:
     menu_config = BCopy.deepcopy(Lumenx.GetConfig())
     mod_info = {}
     mod_list = []
-    selected_map = "M1"
-    character = "Knight"
+    selected_map = ""
+    character = ""
     character_skin = 0
 
 
@@ -129,71 +129,116 @@ def PreviousSkin(this):
     )
 
 
+def GetSelectedMap(this):
+    _DATA.selected_map = this.Options[0]
+    return 0
+
+
+def SetSelectedMap(option):
+    _DATA.selected_map = option
+
+
 def StartGame(this):
-    character = UtilsWidget.CHARACTER
-    MemPersistence.Store(
-        "SelectedChar",
-        (
-            character[_DATA.character][0],
-            character[_DATA.character][_DATA.character_skin],
-        ),
-    )
-    Lumenx.LoadLevel(_DATA.selected_map, Lumenx.GetCurrentModMenu())
+    map_dir = ""
+    mod_dir = Lumenx.GetCurrentModMenu()
+    MapList = Lumenx.GetMapList(mod_dir)
+    for k, v in MapList.items():
+        if v == _DATA.selected_map:
+            map_dir = k
+            break
+    if map_dir:
+        character = UtilsWidget.CHARACTER
+        MemPersistence.Store(
+            "SelectedChar",
+            (
+                character[_DATA.character][0],
+                character[_DATA.character][_DATA.character_skin],
+            ),
+        )
+        Lumenx.LoadLevel(map_dir, mod_dir)
 
 
-SelectCharOption = [
-    {
-        "Name": "Character",
-        "Text": "",
-        "VSep": Menu.FirstOptionVSep,
-        # "FontScale": Language.MFontScale["M"],
-        "Kind": MenuWidget.B_MenuItemOption,
-        "Options": ["Knight", "Dwarf", "Amazon", "Barbarian"],
-        "SelOptionFunc2": GetCharType,
-        "Command": SetCharType,
-    },
-    {
-        "Name": "CharPreview",
-        "Kind": UtilsWidget.B_BitmapWidget,
-        "VSep": "0.015%",
-        "GetImageName": lambda this: UtilsWidget.CHARACTER[_DATA.character][
-            _DATA.character_skin
-        ],
-        "Size": (200, 200),
-        "FitHeight": "0.19%",
-        "Focusable": 0,
-    },
-    {
-        "Name": "Character Skin",
-        "Text": "< " + MenuText.GetMenuText("Next Skin") + " >",
-        "VSep": "0.015%",
-        # "FontScale": Language.MFontScale["M"],
-        "Command": NextSkin,
-        "LeftCommand": NextSkin,
-        "RightCommand": PreviousSkin,
-    },
-    # {
-    #     "Name": "Map",
-    #     "Text": MenuText.GetMenuText("Map") + ": ",
-    #     "VSep": "0.015%",
-    #     # "FontScale": Language.MFontScale["M"],
-    #     "Kind": MenuWidget.B_MenuItemOption,
-    #     "Options": ["Knight", "Dwarf", "Amazon", "Barbarian"],
-    #     "SelOptionFunc": GetCharType,
-    #     "Command": SetCharType,
-    # },
-    {
-        "Name": "Start",
-        "Text": MenuText.GetMenuText("Start"),
-        "VSep": "0.015%",
-        "Command": StartGame,
-    },
-    BackOptionCommon,
-    {
-        "Name": "BackColor",
-        "Kind": UtilsWidget.B_BackColor,
-    },
-]
+def SetStartGameOption(this):
+    options = []
+    map_name = []
+    mod_dir = Lumenx.GetCurrentModMenu()
+
+    optional_map = this.MenuDescr.get("OptionalMap", [])
+    banner = this.MenuDescr.get("Banner")
+    if banner:
+        options.append(banner)
+
+    for map_dir in optional_map:
+        name = Lumenx.GetMapListItem(map_dir, mod_dir)
+        if name:
+            map_name.append(name)
+
+    if not map_name:
+        options = options + [
+            BackOptionCommon,
+            {
+                "Name": "BackColor",
+                "Kind": UtilsWidget.B_BackColor,
+            },
+        ]
+    else:
+        options = options + [
+            {
+                "Name": "Character",
+                "Text": "",
+                "VSep": Menu.FirstOptionVSep,
+                "FontScale": Language.MFontScale["M"],
+                "Kind": MenuWidget.B_MenuItemOption,
+                "Options": ["Sargon", "Naglfar", "Zoe", "Tukaram"],
+                "SelOptionFunc2": GetCharType,
+                "Command": SetCharType,
+            },
+            {
+                "Name": "CharPreview",
+                "Kind": UtilsWidget.B_BitmapWidget,
+                "VSep": "0.01%",
+                "GetImageName": lambda this: UtilsWidget.CHARACTER[_DATA.character][
+                    _DATA.character_skin
+                ],
+                "Size": (200, 200),
+                "FitHeight": "0.19%",
+                "Focusable": 0,
+            },
+            {
+                "Name": "Character Skin",
+                "Text": "< " + MenuText.GetMenuText("Next Skin") + " >",
+                "VSep": "0.01%",
+                "FontScale": Language.MFontScale["M"],
+                "Command": NextSkin,
+                "LeftCommand": NextSkin,
+                "RightCommand": PreviousSkin,
+            },
+            {
+                "Name": "Map",
+                "Text": MenuText.GetMenuText("Map") + ": ",
+                "VSep": "0.015%",
+                "FontScale": Language.MFontScale["M"],
+                "Kind": MenuWidget.B_MenuItemOption,
+                "Options": map_name,
+                "SelOptionFunc2": GetSelectedMap,
+                "Command": SetSelectedMap,
+                "Focusable": len(map_name) > 1,
+            },
+            {
+                "Name": "Start",
+                "Text": MenuText.GetMenuText("Start"),
+                "FontScale": Language.MFontScale["M"],
+                "VSep": "0.015%",
+                "Command": StartGame,
+            },
+            BackOptionCommon,
+            {
+                "Name": "BackColor",
+                "Kind": UtilsWidget.B_BackColor,
+            },
+        ]
+    #
+    this.MenuDescr["ListDescr"] = options
 
 
 # ----------------------------------
@@ -222,8 +267,14 @@ def OnChangeMenu():
 def OnEnterModMenu(this):
     import SaveGame
 
-    _DATA.character = "Knight"
+    Lumenx.SetCurrentModMenu(this.Menudesc.get("ModDir", ""))
+
+    _DATA.character = "Sargon"
     _DATA.character_skin = 0
+    #
+    start_game = Menu.GetMenuWidget("START GAME", this)[0]
+    SetStartGameOption(start_game)
+    #
     SaveGame.CreateSLMenu(this)
 
 

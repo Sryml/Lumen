@@ -51,10 +51,10 @@ Lumenx.ReadBitMap(LUMEN_ROOT + "/Data/net/Kgtskin2.bmp", "KgtSkin2", save=0)
 
 CHARACTER = {
     # Name: [Kind, Skins...]
-    "Knight": ["Knight_N", "KgtSkin1", "KgtSkin2"],
-    "Barbarian": ["Barbarian_N", "BarSkin1", "BarSkin2"],
-    "Dwarf": ["Dwarf_N", "DwfSkin1", "DwfSkin2"],
-    "Amazon": ["Amazon_N", "AmzSkin1", "AmzSkin2"],
+    "Sargon": ["Knight_N", "KgtSkin1", "KgtSkin2"],
+    "Tukaram": ["Barbarian_N", "BarSkin1", "BarSkin2"],
+    "Naglfar": ["Dwarf_N", "DwfSkin1", "DwfSkin2"],
+    "Zoe": ["Amazon_N", "AmzSkin1", "AmzSkin2"],
 }
 
 

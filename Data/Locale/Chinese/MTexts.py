@@ -121,6 +121,12 @@ ForeingDict = {
     "pages": "页",
     "press <ctrl + up/down> to turn pages": "按 <Ctrl键 + 上/下键> 翻页",
     "main menu": "主菜单",
+    "map": "地图",
+    "maps": "地图",
+    "sargon": "萨贡",
+    "naglfar": "纳戈尔法",
+    "zoe": "佐伊",
+    "tukaram": "托卡拉姆",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",

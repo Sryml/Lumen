@@ -723,6 +723,11 @@ def GetLumenRoot():
     return _DATA.lumen_root
 
 
+def GetMapList(mod_dir):
+    mod_dir = string.lower(mod_dir)
+    return _DATA.map_list.get(mod_dir, {})
+
+
 def GetMapListItem(map_dir, mod_dir):
     mod_dir = string.lower(mod_dir)
     map_dir = string.lower(map_dir)
@@ -1208,6 +1213,7 @@ GetEntity
 GetGameVersion
 GetInventoryStyle
 GetLumenRoot
+GetMapList
 GetMapListItem
 GetMapListPath
 GetMMPFiles
