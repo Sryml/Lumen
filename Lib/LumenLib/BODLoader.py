@@ -34,6 +34,13 @@ if typing.TYPE_CHECKING:
     execfile = lambda filename, globals=None, locals=None: None
 
 # ----------------------------------
+LUMEN_ROOT = Lumenx.GetLumenRoot()
+
+f = open(LUMEN_ROOT + "/version", "r")
+VERSION = string.strip(f.readline())
+VERSION_DATE = string.strip(f.readline())
+f.close()
+
 BackImage = BBLib.B_BitMap24()
 BackImageBanner = BBLib.B_BitMap24()
 BackImage.ReadFromFile("../../Data/menu_mod.jpg")
@@ -48,8 +55,6 @@ DESC_MAXLINES = 5
 DESCR_WRAPPED = 0
 #
 
-LUMEN_ROOT = Lumenx.GetLumenRoot()
-
 
 # private database
 class _DATA:
@@ -59,6 +64,7 @@ class _DATA:
     selected_map = ""
     character = ""
     character_skin = 0
+    skin_available = 1
 
 
 # ----------------------------------
@@ -109,6 +115,9 @@ def SetCharType(option):
     Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
         UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
     )
+    Menu.GetMenuWidget("Character Skin")[0].Focusable = (
+        len(UtilsWidget.CHARACTER[_DATA.character]) > 1 and _DATA.skin_available
+    )
 
 
 def NextSkin(this):
@@ -142,11 +151,17 @@ def StartGame(this):
     map_dir = ""
     mod_dir = Lumenx.GetCurrentModMenu()
     MapList = Lumenx.GetMapList(mod_dir)
-    for k, v in MapList.items():
-        if v == _DATA.selected_map:
-            map_dir = k
-            break
-    if map_dir:
+    default_map = 0
+    if string.lower(_DATA.selected_map) == "default":
+        default_map = 1
+    else:
+        for k, v in MapList.items():
+            if v == _DATA.selected_map:
+                map_dir = k
+                break
+    if map_dir or default_map:
+        MemPersistence.Delete("MainChar")
+        #
         character = UtilsWidget.CHARACTER
         MemPersistence.Store(
             "SelectedChar",
@@ -155,7 +170,16 @@ def StartGame(this):
                 character[_DATA.character][_DATA.character_skin],
             ),
         )
-        Lumenx.LoadLevel(map_dir, mod_dir)
+        if not default_map:
+            Lumenx.LoadLevel(map_dir, mod_dir)
+        else:
+            maps = {
+                "Sargon": "ragnar_m2",
+                "Naglfar": "dwarf_m3",
+                "Zoe": "ruins_m4",
+                "Tukaram": "barb_m1",
+            }
+            Lumenx.LoadLevel(maps[_DATA.character], mod_dir)
 
 
 def SetStartGameOption(this):
@@ -163,8 +187,23 @@ def SetStartGameOption(this):
     map_name = []
     mod_dir = Lumenx.GetCurrentModMenu()
 
+    _DATA.skin_available = this.MenuDescr.get("SkinAvailable", 1)
     optional_map = this.MenuDescr.get("OptionalMap", [])
+    optional_char = this.MenuDescr.get(
+        "OptionalChar", ["Sargon", "Naglfar", "Zoe", "Tukaram"]
+    )
     banner = this.MenuDescr.get("Banner")
+    background = this.MenuDescr.get(
+        "Background",
+        {
+            "Name": "BackColor",
+            "Kind": UtilsWidget.B_BackColor,
+        },
+    )
+    startgame_command = this.MenuDescr.get("StartGameCommand", StartGame)
+
+    _DATA.character = optional_char[0]
+    _DATA.character_skin = 0
     if banner:
         options.append(banner)
 
@@ -173,15 +212,21 @@ def SetStartGameOption(this):
         if name:
             map_name.append(name)
 
-    if not map_name:
-        options = options + [
-            BackOptionCommon,
-            {
-                "Name": "BackColor",
-                "Kind": UtilsWidget.B_BackColor,
-            },
-        ]
-    else:
+    if map_name:
+        if len(map_name) > 1:
+            map_option = {
+                "Name": "Map",
+                "Text": MenuText.GetMenuText("Map") + ": ",
+                "VSep": "0.015%",
+                "FontScale": Language.MFontScale["M"],
+                "Kind": MenuWidget.B_MenuItemOption,
+                "Options": map_name,
+                "SelOptionFunc2": GetSelectedMap,
+                "Command": SetSelectedMap,
+            }
+        else:
+            map_option = None
+
         options = options + [
             {
                 "Name": "Character",
@@ -189,9 +234,10 @@ def SetStartGameOption(this):
                 "VSep": Menu.FirstOptionVSep,
                 "FontScale": Language.MFontScale["M"],
                 "Kind": MenuWidget.B_MenuItemOption,
-                "Options": ["Sargon", "Naglfar", "Zoe", "Tukaram"],
+                "Options": optional_char,
                 "SelOptionFunc2": GetCharType,
                 "Command": SetCharType,
+                "Focusable": len(optional_char) > 1,
             },
             {
                 "Name": "CharPreview",
@@ -212,32 +258,23 @@ def SetStartGameOption(this):
                 "Command": NextSkin,
                 "LeftCommand": NextSkin,
                 "RightCommand": PreviousSkin,
+                "Focusable": len(UtilsWidget.CHARACTER[_DATA.character]) > 1
+                and _DATA.skin_available,
             },
-            {
-                "Name": "Map",
-                "Text": MenuText.GetMenuText("Map") + ": ",
-                "VSep": "0.015%",
-                "FontScale": Language.MFontScale["M"],
-                "Kind": MenuWidget.B_MenuItemOption,
-                "Options": map_name,
-                "SelOptionFunc2": GetSelectedMap,
-                "Command": SetSelectedMap,
-                "Focusable": len(map_name) > 1,
-            },
+            map_option,
             {
                 "Name": "Start",
                 "Text": MenuText.GetMenuText("Start"),
                 "FontScale": Language.MFontScale["M"],
                 "VSep": "0.015%",
-                "Command": StartGame,
-            },
-            BackOptionCommon,
-            {
-                "Name": "BackColor",
-                "Kind": UtilsWidget.B_BackColor,
+                "Command": startgame_command,
             },
         ]
     #
+    options = options + [
+        BackOptionCommon,
+        background,
+    ]
     this.MenuDescr["ListDescr"] = options
 
 
@@ -268,14 +305,15 @@ def OnEnterModMenu(this):
     import SaveGame
 
     Lumenx.SetCurrentModMenu(this.Menudesc.get("ModDir", ""))
-
-    _DATA.character = "Sargon"
-    _DATA.character_skin = 0
     #
     start_game = Menu.GetMenuWidget("START GAME", this)[0]
     SetStartGameOption(start_game)
     #
     SaveGame.CreateSLMenu(this)
+
+
+def OnLeaveModMenu(this):
+    Lumenx.SetCurrentModMenu("")
 
 
 #
@@ -417,6 +455,8 @@ def AddMod(mod_dir, mod_root, BLModInfo):
             "Author": name_space["ModAuthor"],
             "AuthorInfo": name_space["ModAuthorInfo"],
             "Show": show,
+            "OnLeaveMode": "to_parent",
+            "OnLeave": OnLeaveModMenu,
         }
     )
     _DATA.mod_list.append(mod_dir)
@@ -613,6 +653,15 @@ ModMenu = {
         },
         NoteLabel,
         BackOption,
+        {
+            "Name": "Version",
+            "Text": "%s: %s (%s)"
+            % (MenuText.GetMenuText("Version"), VERSION, VERSION_DATE),
+            "Font": Language.FontCommon,
+            "FontScale": Language.MFontScale["S"],
+            "VSep": "0.959f",
+            "Focusable": 0,
+        },
         BackImageBannerItem,
     ],
 }

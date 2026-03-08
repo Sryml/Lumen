@@ -1218,6 +1218,7 @@ def CheckWeapons():
 				print ent.Kind+"("+ent.Name+") was not created as a weapon"
 
 TimesSaved = 0
+SpecialsTB = 0
 
 def SaveData(filename):
   import cPickle
@@ -1226,7 +1227,7 @@ def SaveData(filename):
   funcfile=open(filename,"wt")
   p=cPickle.Pickler(funcfile)
   p.persistent_id=GameStateAux.persistent_id
-  d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData)
+  d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB)
   p.dump(d)
   funcfile.close()
 
@@ -1244,10 +1245,12 @@ def LoadData(filename):
   global EntitiesSelectionData
   global TimesSaved
   global EntitiesObjectData
+  global SpecialsTB
 
   EntitiesSelectionData = d[0]
   TimesSaved            = d[1]
   EntitiesObjectData    = d[2]
+  SpecialsTB = d[3]
 
 import GameState
 GameState.ModulesToBeSaved.append(__import__(__name__))

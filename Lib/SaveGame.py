@@ -65,28 +65,33 @@ def LoadGameAux(slot_num):
     import SplashImage
 
     # by Sryml: start
-    save_dir = "../../Save/SaveGame%s_files" % (slot_num,)
+    mod_dir = Lumenx.GetCurrentModMenu()
+    if mod_dir:
+        mod_root = os.path.join(LUMEN_ROOT, Lumenx.ModListPath, mod_dir)
+        new_lumen_root = "..\\..\\..\\.."
+    else:
+        mod_root = LUMEN_ROOT
+        new_lumen_root = "..\\.."
+
+    save_dir = "%s/Save/SaveGame%s_files" % (
+        mod_root,
+        slot_num,
+    )
     save_file = os.path.join(save_dir, "SaveGame%s.py" % (slot_num,))
     file_data_aux = open("%s/%saux" % (save_dir, "aux"), "rt")
     lines = file_data_aux.readlines()
     file_data_aux.close()
     map_dir = string.strip(lines[2])
-    mod_dir = string.strip(lines[3])
+    # mod_dir = string.strip(lines[3])
+    map_path = os.path.join(mod_root, "Maps", map_dir)
+    save_file = os.path.relpath(save_file, map_path)
+
     printx("%s, %s" % (repr(mod_dir), map_dir))
 
     # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:LoadStartTime")
     lines = [
         "import sys;import time;b3028472_681f_5be2_8aeb_c7011b166583=time.time();isLumen = 1"
     ]
-    lumen_root = LUMEN_ROOT
-    if mod_dir:
-        mod_root = os.path.join(lumen_root, Lumenx.ModListPath, mod_dir)
-        new_lumen_root = "..\\..\\..\\.."
-    else:
-        mod_root = lumen_root
-        new_lumen_root = "..\\.."
-    map_path = os.path.join(mod_root, "Maps", map_dir)
-    #
     new_mod_root = "..\\.."
     new_blade_root = new_lumen_root + "\\.."
     if new_mod_root != new_lumen_root:
@@ -357,7 +362,9 @@ def CreateSLMenu(menu_class):
                 if not os.path.isfile(save_file):
                     save_file = os.path.join(save_dir, "SaveGame.py")  # major save
             #
-            if os.path.isfile(save_file):
+            if os.path.isfile(save_file) and (
+                string.lower(mod_dir) == string.lower(ModDir)
+            ):
                 f = open(save_file, "r")
                 line = f.readline()
                 while line:

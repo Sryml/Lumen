@@ -29,6 +29,7 @@ class MainCharState(GameState.EntityPersonState):
 		self.Props["Energy"]=entity.Energy
 		self.Props["Armor"]=(entity.MeshName,entity.Data.armour_level,entity.Data.armour_prot_factor)
 		self.Props["Saves"]=Reference.TimesSaved
+		self.Props["SpecialsTB"]=Reference.SpecialsTB
 		self.Props["Combos"]=Bladex.GetCombos("Player1")
 		self.Props["PViewType"]=cam.PViewType
 		self.Props["ObjectsTaken"]=entity.Data.ObjectsTaken
@@ -173,6 +174,7 @@ def CreateMainCharWithProps(props):
 		char.Data.InvObjectQueue = Props["InventoryQueue"][3]
 	#
 	Reference.TimesSaved         = Props["Saves"]
+	Reference.SpecialsTB         = Props.get("SpecialsTB", 0)
 	Bladex.SetCombos("Player1",Props["Combos"])
 	if cam: cam.PViewType=Props["PViewType"]
 	else: print "Camera not available for setting PViewType"

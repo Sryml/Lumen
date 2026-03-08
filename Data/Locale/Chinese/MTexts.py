@@ -127,6 +127,7 @@ ForeingDict = {
     "naglfar": "纳戈尔法",
     "zoe": "佐伊",
     "tukaram": "托卡拉姆",
+    "version": "版本",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",

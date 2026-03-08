@@ -449,6 +449,9 @@ class B_MenuTree(B_MenuFrameWidget):
         ValidIndex = 0
         isValidIndex = 0
         for i in Menudesc["ListDescr"]:
+            if not i:
+              continue
+            
             m_class = i.get("Kind", B_MenuItemTextNoFX)
             wSubMenu = m_class(self, i, StackMenu)
             if not isValidIndex:
@@ -1107,6 +1110,11 @@ def SetGamepadDisconnectFunc(isDisconnect):
 
     Scorer.wMessageFrame.RecalcLayout()
 
+SndCorreGema=Bladex.CreateSound("../../Sounds/golpe-generico2.wav","Chanje")
+SndCorreGema.Volume=2.0
+SndCorreGema.MinDistance=1000000.0
+SndCorreGema.MaxDistance=2000000
+
 class B_BackWeapon(BUIx.B_FrameWidget):
 
 	#def __init__(self,Parent,MenuDescr,StackMenu):
@@ -1170,7 +1178,8 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		if not self.MapText.ReadFromFile("../../Data/TB/" + language + "/" + char.Kind + "/" + Bladex.GetCurrentMap() + "_hi.jpg"):
 			if not self.MapText.ReadFromFile("../../Data/TB/" + language + "/"  + Bladex.GetCurrentMap() + "_hi.jpg"):
 				if not self.MapText.ReadFromFile("../../Data/TB/" + language + "/" + char.Kind + "/" + Bladex.GetCurrentMap() + ".jpg"):
-					self.MapText.ReadFromFile("../../Data/TB/" + language + "/"  + Bladex.GetCurrentMap() + ".jpg")
+					if not self.MapText.ReadFromFile("../../Data/TB/" + language + "/"  + Bladex.GetCurrentMap() + ".jpg"):
+						self.MapText.ReadFromFile("../../Data/EmptyMapText.jpg")
 
 		if string.lower(Bladex.GetCurrentMap()) == "tower_m16":
 			inv = Bladex.GetEntity("Player1").GetInventory()
@@ -1202,11 +1211,6 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		self.Solid=0
 		self.Border=0
 		self.SetDrawFunc(self.Draw)
-
-		self.SndCorreGema=Bladex.CreateSound("../../Sounds/golpe-generico2.wav","Chanje")
-		self.SndCorreGema.Volume=2.0
-		self.SndCorreGema.MinDistance=1000000.0
-		self.SndCorreGema.MaxDistance=2000000
 
 		if self.addone == 0:
 			while not self.TextsAvail[self.Text]:
@@ -1250,7 +1254,7 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		self.AddButtonTexts(PanelFillerCommon.GetLanguageFallback())
 
 	def GetCurrentImage(self):
-		import GotoMapVars
+		import GotoMapVars, Reference
 		currImage = self.image
 		char = Bladex.GetEntity("Player1")
 		Map = string.lower(Bladex.GetCurrentMap())
@@ -1270,7 +1274,7 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		if Map in GotoMapVars.BackLevelNames:
 			Specials = 0
 		else:
-			if (Map in GotoMapVars.LevelNames and GotoMapVars.LevelNames.index(Map) > 6) or ((char.Kind == "Dwarf_N") and HaveCrush):
+			if (Map in GotoMapVars.LevelNames and GotoMapVars.LevelNames.index(Map) > 6) or ((char.Kind == "Dwarf_N") and HaveCrush) or Reference.SpecialsTB:
 				Specials = 0
 		if self.image < Specials:
 			currImage = (self.NumImages - (1 + self.addone))
@@ -1350,12 +1354,12 @@ class B_BackWeapon(BUIx.B_FrameWidget):
 		return 1
 
 	def IncMenuItem(self):
-		self.SndCorreGema.PlayStereo()
+		SndCorreGema.PlayStereo()
 		self.image = self.image + 1
 		self.SetupPanelWidgets()
 
 	def DecMenuItem(self):
-		self.SndCorreGema.PlayStereo()
+		SndCorreGema.PlayStereo()
 		self.image = self.image - 1
 		self.SetupPanelWidgets()
 

@@ -811,12 +811,18 @@ def LoadLevel(map_dir, mod_dir=""):
         return
 
     map_list_path = "Maps"
+    lumen_root = _DATA.lumen_root
 
+    mod_dir = string.lower(mod_dir)
     if mod_dir:
-        mod_root = os.path.join(_DATA.lumen_root, ModListPath, mod_dir)
+        for filename in os.listdir(os.path.join(lumen_root, ModListPath)):
+            if string.lower(filename) == mod_dir:
+                mod_dir = filename
+                break
+        mod_root = os.path.join(lumen_root, ModListPath, mod_dir)
         new_lumen_root = "..\\..\\..\\.."
     else:
-        mod_root = _DATA.lumen_root
+        mod_root = lumen_root
         new_lumen_root = "..\\.."
 
     map_dir = string.lower(map_dir)
