@@ -294,6 +294,19 @@ def LeaveMenu(this):
             Lumenx.LoadLevel("Casa")
 
 
+def EnterCurrentMod(this):
+    options = ("MODS", "ALL MODS")
+    for name in options:
+        frame = Menu._MainMenu.MenuStack.Top()
+        w, idx = Menu.GetMenuWidget(name, frame)
+        frame.SetFocus_Idx(idx)
+        w.ActivateItem(1)
+    w = Menu.GetMenuWidget("MODS LIST")[0]
+    sw, idx = Menu.GetMenuWidget(_DATA.mod_info[Lumenx.GetCurrentMod()]["Name"], w)
+    w.SetFocus_Idx(idx, update_page=1)
+    sw.ActivateItem(1)
+
+
 def OnChangeMenu():
     if _DATA.menu_config != Lumenx.GetConfig():
         Menu.GetMenuWidget("NOTE")[0].SetVisible(1)
@@ -391,7 +404,7 @@ def GetModInfo(mod_dir):
 
 def AddMod(mod_dir, mod_root, BLModInfo):
     mod_dir = string.lower(mod_dir)
-    name_space = {"MOD_ROOT": mod_root}
+    name_space = {"MOD_ROOT": mod_root, "MOD_DIR": mod_dir}
 
     execfile(BLModInfo, name_space, name_space)
     CloneEnvironment = name_space["CloneEnvironment"]

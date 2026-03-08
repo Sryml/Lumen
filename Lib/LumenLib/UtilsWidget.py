@@ -372,6 +372,13 @@ class B_GridWidget(MenuWidget.B_MenuTree):
                 i.SetVisible(1)
             for i in self.MenuItems[end:]:
                 i.SetVisible(0)
+            #
+            self.FocusRow = int(index / self.GridSize[0]) % self.GridSize[1]
+            self.FocusCol = index % self.GridSize[0]
+            self.wPageLable.SetText(
+                "%s/%s %s"
+                % (self.FocusPage + 1, self.MaxPages, MenuText.GetMenuText("Pages"))
+            )
         MenuWidget.B_MenuTree.SetFocus_Idx(self, index)
 
     #
@@ -415,10 +422,6 @@ class B_GridWidget(MenuWidget.B_MenuTree):
             self.FocusCol = idx % self.GridSize[0]
             index = self.CalcIndex()
         self.SetFocus_Idx(index, update_page=1)
-        self.wPageLable.SetText(
-            "%s/%s %s"
-            % (self.FocusPage + 1, self.MaxPages, MenuText.GetMenuText("Pages"))
-        )
 
     def PrevFocus(self):
         action = IManager.GetInputActions().Find("Menu_Control")
@@ -568,9 +571,7 @@ class B_ImagesWidget(MenuWidget.B_MenuTreeItem, BUIx.B_RectWidget):
 
         self.vidw, self.vidh = vidw, vidh
 
-        BUIx.B_RectWidget.__init__(
-            self, Parent, MenuDescr["Name"], vidw, vidh
-        )
+        BUIx.B_RectWidget.__init__(self, Parent, MenuDescr["Name"], vidw, vidh)
         MenuWidget.B_MenuTreeItem.__init__(self, MenuDescr, StackMenu)
         self.SetDrawFunc(self.Draw)
 

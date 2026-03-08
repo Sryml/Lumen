@@ -137,10 +137,7 @@ def SaveGameToDisk(menu_class):
     global SaveGameString
 
     # Back to game
-    Menu._MainMenu.DeActivateMenuItem()
-    Menu._MainMenu.DeActivateMenuItem()
-    Menu._MainMenu.DeActivateMenuItem()
-    Menu._MainMenu.DeActivateMenuItem()
+    Menu.BackToGame(None)
 
     clave = menu_class.MenuDescr["Clave"]
     save_dir = "../../Save/SaveGame%s_files" % (clave,)

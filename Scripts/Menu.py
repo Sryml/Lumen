@@ -109,6 +109,8 @@ def GetMenuWidget(name, Frame=None):
         item = CurrFrame.MenuItems[i]
         if hasattr(item, "MenuDescr") and item.MenuDescr["Name"] == name:
             return (item, i)
+        elif hasattr(item, "Menudesc") and item.Menudesc["Name"] == name:
+            return (item, i)
     return (None, -1)
 # -----------------------------------------
 # by Sryml: end
@@ -117,6 +119,10 @@ def GetMenuWidget(name, Frame=None):
 def BackMenu(option):
 	_MainMenu.DeActivateMenuItem()
 
+def BackToGame(this):
+    for i in range(_MainMenu.MenuStack.nItems()):
+        _MainMenu.DeActivateMenuItem()
+        
 
 GamepadButton = {
 			"Name"    : "${ignore:Accept}${ignore:\" - " + MenuText.GetMenuText("Accept") + " / }${ignore:Return}${ignore:\" - " + MenuText.GetMenuText("Back") + "\"}",
@@ -2707,13 +2713,23 @@ else:
                        }
                      ]
         }
+  #
+  if Lumenx.GetCurrentMod():
+    Desc1["ListDescr"][0]["VSep"] = 8
+    Desc1["ListDescr"].insert(0, {
+        "Name": "CURRENT MOD",
+        "Text": MenuText.GetMenuText("CURRENT MOD"),
+        "VSep":FirstOptionVSep,
+        "Font":MenuFontBig,
+        "Command":BODLoader.EnterCurrentMod,
+    })
   ########## RODRIGO!! AQUI ESTA COMO SE HACE
-  if "Casa" != Bladex.GetCurrentMap():
+  elif "Casa" != Bladex.GetCurrentMap():
     Desc1["ListDescr"].insert(1,
                                            {"Name":MenuText.GetMenuText("BACK TO GAME"),
                                             "VSep":8,
                                             "Font":MenuFontBig,
-                                            "Command":BackMenu,
+                                            "Command":BackToGame,
                                            })
     ########## ENJOY!
 

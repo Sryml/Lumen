@@ -141,9 +141,10 @@ def __fn():
         for p in paths:
             sys.path.append(os.path.join(root, p))
     #
-    import Bladex
+    import Bladex, string
 
     Bladex.SetCallCheck(0)
+    _DATA.current_mod = string.lower(_DATA.current_mod)
 
     # If it is not the first time to start from Lumen.exe
     if not __main__.__dict__.get("isLumen"):
@@ -815,10 +816,10 @@ def LoadLevel(map_dir, mod_dir=""):
 
     mod_dir = string.lower(mod_dir)
     if mod_dir:
-        for filename in os.listdir(os.path.join(lumen_root, ModListPath)):
-            if string.lower(filename) == mod_dir:
-                mod_dir = filename
-                break
+        # for filename in os.listdir(os.path.join(lumen_root, ModListPath)):
+        #     if string.lower(filename) == mod_dir:
+        #         mod_dir = filename
+        #         break
         mod_root = os.path.join(lumen_root, ModListPath, mod_dir)
         new_lumen_root = "..\\..\\..\\.."
     else:
