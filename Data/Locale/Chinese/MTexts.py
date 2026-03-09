@@ -129,6 +129,12 @@ ForeingDict = {
     "tukaram": "托卡拉姆",
     "version": "版本",
     "current mod": "当前模组",
+    "talk": "对话",
+    "journal": "日志",
+    "blade": "刀",
+    "spear": "矛",
+    "sword": "剑",
+    "hammer": "锤",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",
