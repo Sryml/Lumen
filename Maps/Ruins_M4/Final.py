@@ -103,7 +103,7 @@ libromag=Bladex.CreateEntity("LibroMagico","Libroabierto",6000.0,-2795.0,0.0,"Ph
 libromag.Scale=1.5
 libromag.Orientation=0.5,0.5,-0.5,0.5
 import MenuText
-Reference.EntitiesSelectionData["LibroMagico"]=(4.0, 3000.0 , MenuText.GetMenuText("Book of Txaulapatok"))
+Reference.EntitiesSelectionData["LibroMagico"]=(4.0, 3000.0 , "Book of Txaulapatok")
 
 libromagdin=Objects.CreateDinamicObject("LibroMagico")
 libromagdin.Timer="Timer60"

@@ -5,6 +5,8 @@
 # |_____\___/|_|  |_|_____|_| \_|
 #
 
+import MenuText
+
 import string
 
 from Lumenx import printx
@@ -125,6 +127,22 @@ class Dictionary:
             return args[0]
         else:
             printx(KeyError, key)
+
+
+class EntitiesSelectionDict(Dictionary):
+    def __init__(self, dict=None, **kwargs):
+        self.data_raw = {}
+        apply(Dictionary.__init__, (self, dict), kwargs)
+
+    def __setitem__(self, key, value):
+        Dictionary.__setitem__(
+            self, key, (value[0], value[1], MenuText.GetMenuText(value[2]))
+        )
+        self.data_raw[key] = value
+
+    def __delitem__(self, key):
+        Dictionary.__delitem__(self, key)
+        del self.data_raw[key]
 
 
 # -------------------------------

@@ -151,7 +151,8 @@ def LoadPlayerSelect(option):
 	global EscapeFunction
 
 	if "Casa" != Bladex.GetCurrentMap():
-		MemPersistence.Store("MapAlreadyLoaded","pepepotamo")
+		if Lumenx.GetCurrentMod() == "":
+			MemPersistence.Store("MapAlreadyLoaded","pepepotamo")
 		Bladex.LoadLevel("Casa")
 	else:
 		aux = EscapeFunction

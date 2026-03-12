@@ -32,11 +32,11 @@ Torchs.SetUsable("antorchaen10",3,6,-1)
 
 
 import MenuText
-Reference.EntitiesSelectionData["palangana1"]=(9,4000.0,MenuText.GetMenuText("Bowl"))
-Reference.EntitiesSelectionData["palangana2"]=(9,4000.0,MenuText.GetMenuText("Bowl"))
-Reference.EntitiesSelectionData["palangana3"]=(9,4000.0,MenuText.GetMenuText("Bowl"))
-Reference.EntitiesSelectionData["palangana4"]=(9,4000.0,MenuText.GetMenuText("Bowl"))
-Reference.EntitiesSelectionData["palangana5"]=(9,4000.0,MenuText.GetMenuText("Bowl"))
+Reference.EntitiesSelectionData["palangana1"]=(9,4000.0,"Bowl")
+Reference.EntitiesSelectionData["palangana2"]=(9,4000.0,"Bowl")
+Reference.EntitiesSelectionData["palangana3"]=(9,4000.0,"Bowl")
+Reference.EntitiesSelectionData["palangana4"]=(9,4000.0,"Bowl")
+Reference.EntitiesSelectionData["palangana5"]=(9,4000.0,"Bowl")
 
 
 Torchs.SetUsable("palangana1",3,3,-1)

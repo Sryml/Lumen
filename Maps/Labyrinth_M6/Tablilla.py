@@ -84,7 +84,7 @@ pulruna.Scale=1.2
 pulruna.Orientation=0.707107,0.707107,0.000000,0.000000 # 0.500000,0.500000,-0.500000,0.500000
 pulruna.UseFunc=LanzaEmpujaPulsadorRuna
 import MenuText
-Reference.EntitiesSelectionData[pulruna.Name]=(9.0,2000.0,MenuText.GetMenuText("Rune"))
+Reference.EntitiesSelectionData[pulruna.Name]=(9.0,2000.0,"Rune")
 
 pulrunadin=Objects.CreateDinamicObject("PulsadorRuna")
 

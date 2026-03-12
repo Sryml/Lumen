@@ -274,14 +274,14 @@ tab1=Bladex.CreateEntity("Taburete1","Taburete",322787.088000,-5338.100000,11922
 tab1.Static=0
 tab1.Scale=1.000000
 tab1.Orientation=0.707107,0.707107,0.000000,0.000000
-Reference.EntitiesSelectionData[tab1.Name]=(6.0,4000.0,MenuText.GetMenuText("Stool"))
+Reference.EntitiesSelectionData[tab1.Name]=(6.0,4000.0,"Stool")
 
 
 tab2=Bladex.CreateEntity("Taburete2","Taburete",328161.349, -5336.24, 121469.378)
 tab2.Static=0
 tab2.Scale=1.000000
 tab2.Orientation=0.707107,0.707107,0.000000,0.000000
-Reference.EntitiesSelectionData[tab2.Name]=(6.0,4000.0,MenuText.GetMenuText("Stool"))
+Reference.EntitiesSelectionData[tab2.Name]=(6.0,4000.0,"Stool")
 
 
 o=Bladex.CreateEntity("NoName0","Hoguera",334579.748000,-5279.980000,109773.413000)

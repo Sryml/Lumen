@@ -330,7 +330,7 @@ class EmptyClass:
 
 def SetHint(gp,Name,OnUseData="",Priority=8.0,Distance=4000.0):
 	import MenuText
-	Reference.EntitiesSelectionData[gp.Name]=(Priority,Distance,MenuText.GetMenuText(Name))
+	Reference.EntitiesSelectionData[gp.Name]=(Priority,Distance,Name)
 	
 	if type(OnUseData)==type(""):
 		if OnUseData != "":

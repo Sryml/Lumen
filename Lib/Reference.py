@@ -4,6 +4,8 @@ import math
 import netgame
 import os
 
+from LumenLib import BUtils
+
 PI = math.pi
 TWOPI = PI*2.0
 #
@@ -797,7 +799,7 @@ DefaultObjectData['Tablilla5']=          [OBJ_TABLET]
 DefaultObjectData['Tablilla6']=          [OBJ_TABLET]
 
 DefaultSelectionData={}
-EntitiesSelectionData={}
+EntitiesSelectionData=BUtils.EntitiesSelectionDict()
 
 EnemiesScorerData={}
 EnemiesDefaultScorerData={}
@@ -1227,7 +1229,7 @@ def SaveData(filename):
   funcfile=open(filename,"wt")
   p=cPickle.Pickler(funcfile)
   p.persistent_id=GameStateAux.persistent_id
-  d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB)
+  d=(EntitiesSelectionData.data_raw,TimesSaved,EntitiesObjectData,SpecialsTB)
   p.dump(d)
   funcfile.close()
 
@@ -1247,7 +1249,7 @@ def LoadData(filename):
   global EntitiesObjectData
   global SpecialsTB
 
-  EntitiesSelectionData = d[0]
+  EntitiesSelectionData = BUtils.EntitiesSelectionDict(d[0])
   TimesSaved            = d[1]
   EntitiesObjectData    = d[2]
   SpecialsTB = d[3]

@@ -352,7 +352,7 @@ def EmpujaPulsadorRuna(ent_name, event):
 	char.DelAnmEventFunc("Activate")
 	char.Data.obj_used=None
 	import MenuText
-	Reference.EntitiesSelectionData["PulsadorRuna"]=(9.0,10.0, MenuText.GetMenuText("Rune"))
+	Reference.EntitiesSelectionData["PulsadorRuna"]=(9.0,10.0, "Rune")
 
 def LanzaEmpujaPulsadorRuna(obj_name, use_from):
 	pulruna.UseFunc=""

@@ -283,8 +283,9 @@ def InitMenu(this):
     global DESCR_WRAPPED
     if not DESCR_WRAPPED:
         DESCR_WRAPPED = 1
-        if string.lower(Lumenx.GetCurrentMap()) == "casa":
+        if Bladex.GetStringValue("BODLoader.DescrWrap") is None:
             DescrWrap()
+            Bladex.SetStringValue("BODLoader.DescrWrap", "")
 
 
 def LeaveMenu(this):
@@ -488,6 +489,7 @@ def AddMod(mod_dir, mod_root, BLModInfo):
 
 
 def Init():
+    Bladex.DeleteStringValue("BODLoader.DescrWrap")
     ModListPath = os.path.join(Lumenx.GetLumenRoot(), "Mods")
     for mod_dir in os.listdir(ModListPath):
         mod_root = os.path.join(ModListPath, mod_dir)
