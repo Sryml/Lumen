@@ -134,12 +134,7 @@ import acts
 acts.InitBindings("Player1")
 acts.SetNoConfigurableActions()
 
-try:
-  execfile("../../Config/Control.py")
-  print "BladeInit -> Executed Control.py"
-except:
-  execfile("../../Scripts/DefControl.py")
-  print "BladeInit -> Executed DefControl.py"
+Lumenx.AssocControl()
 
 
 #

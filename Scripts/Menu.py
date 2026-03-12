@@ -27,11 +27,9 @@ import string
 import ObjStore
 import KeybWidget
 if netgame.GetNetState() == 0:
-##  import Scorer
-##  import TabWidget
+  # import Scorer
+  # import TabWidget
   import Credits
-else:
-  import NetScorer
 
 
 import Raster
@@ -1303,12 +1301,14 @@ def ActivateMenu(caller_id = None):
     Bladex.AssocKey("Menu Supr","Gamepad","ButtonNorth")
     Bladex.AddBoundFunc("Menu Supr",_MainMenu.MenuSuprItem)
 
+    Bladex.AssocKey("Menu ActivateItem","Mouse","LeftButton")
     Bladex.AssocKey("Menu ActivateItem","Keyboard","Enter")
     Bladex.AssocKey("Menu ActivateItem","Gamepad","ButtonSouth")
     Bladex.AddBoundFunc("Menu ActivateItem",_MainMenu.ActivateMenuItem)
 
 
     #Bladex.AssocKey("Menu DeActivateItem","Keyboard","Backspace")
+    Bladex.AssocKey("Menu DeActivateItem","Mouse","RightButton")
     Bladex.AssocKey("Menu DeActivateItem","Keyboard","Esc")
     Bladex.AssocKey("Menu DeActivateItem","Keyboard","F1")
     Bladex.AssocKey("Menu DeActivateItem","Gamepad","ButtonStart")
@@ -1340,6 +1340,7 @@ def ActivateMenu(caller_id = None):
       import Scorer
       Scorer.ActivateScorer()
     else:
+      import NetScorer
       NetScorer.ActivateScorer()
 
     Raster.SetTextMode(3)
@@ -2818,7 +2819,7 @@ def InitMenuKeys():
     Bladex.AddBoundFunc("Activate Menu",PreActivateMenu)
 
     InputManager.SetInputActionsSet(oldInputActionsSet)
-    BODLoader.Init() #
+    # BODLoader.Init() #
     print "Activadas!"
 
     if Reference.DEMO_MODE==1:

@@ -30,12 +30,12 @@ sys.setcheckinterval(100)  # type: ignore
 
 Bladex.CloseDebugChannel("DefaultChannel")
 
-if not os.path.exists("../../AnmPak"):
-    os.mkdir("../../AnmPak")
+os.makedirs("../../AnmPak", exist_ok=True)
+os.makedirs("../../Config", exist_ok=True)
 #
-# import Menu
-# from LumenLib import BODLoader
+import Menu
+from LumenLib import BODLoader
 
-# BODLoader.Init()
+BODLoader.Init()
 
 Lumenx.printx("Executed sys_init.py")

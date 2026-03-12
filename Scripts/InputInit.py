@@ -1,5 +1,5 @@
 
-
+import Bladex
 import DefaultSelectionData
 
 
@@ -85,6 +85,22 @@ Bladex.AddInputAction("TurnInRelax",0)
 Bladex.AddInputAction("ToggleProfiling",0)
 
 Bladex.AddInputAction("LaunchTravel",0)
+
+# Inventory
+Bladex.AddInputAction("Select Last Inventory", 0)
+Bladex.AddInputAction("Select Next Inventory", 0)
+Bladex.AddInputAction("Inventory 1", 0)
+Bladex.AddInputAction("Inventory 2", 0)
+Bladex.AddInputAction("Inventory 3", 0)
+Bladex.AddInputAction("Inventory 4", 0)
+Bladex.AddInputAction("Inventory 5", 0)
+Bladex.AddInputAction("Inventory 6", 0)
+Bladex.AddInputAction("Inventory 7", 0)
+Bladex.AddInputAction("Inventory 8", 0)
+
+# Talk System
+Bladex.AddInputAction("TSStartConversation", 0)
+Bladex.AddInputAction("TSEnableJournal", 0)
 
 #####################################
 # Specials Gamepad Tricks

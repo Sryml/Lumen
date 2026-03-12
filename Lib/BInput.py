@@ -208,7 +208,8 @@ class B_InputActionPtr:
 
     def GetAssociatedKeys(self, device):
         """[LUMEN] Added\n
-        device: [Keyboard, Mouse, Gamepad]
+        device: [Keyboard, Mouse, Gamepad]\n
+        returns: List of tuples (key, on_press)
         """
         if self.name == "NULL":
             return []

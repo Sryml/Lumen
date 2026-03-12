@@ -23,6 +23,9 @@ import Bladex
 import acts
 import netwidgets
 import Language
+import Lumenx
+
+import os
 
 AdditionalKeysCallBack = None
 
@@ -291,8 +294,10 @@ class ControlMenuItem(B_ControlItemTexts):
         self.IManager.SetInputActionsSet("Default")
         if keyb.IsBinded(x):
           self.SetStatusText(MenuText.GetMenuText("The key <")+x+MenuText.GetMenuText("> is already used!"))
+          self.IManager.SetInputActionsSet("MenuRedefine")
         elif len(self.KeyBounded)>=3:
           self.SetStatusText(MenuText.GetMenuText("You already have 3 keys assigned to that action"))
+          self.IManager.SetInputActionsSet("MenuRedefine")
         else:
           self.IAction.AddEvent(keyb,x,1)
           for k in self.Extras:
@@ -309,13 +314,13 @@ class ControlMenuItem(B_ControlItemTexts):
           self.EndDefineKey()
 
   def ListenMouseDevice(self,x,y,z):
-    if (x!="X_Axis") and (x!="Y_Axis") and (x!="Z_Axis"):
+    if (x!="X_Axis") and (x!="Y_Axis") and (x!="Z_Axis") and z==1.0:
       if x not in self.KeyBounded:
         keyb=self.IManager.GetAttachedDevice("Mouse")
         self.IManager.SetInputActionsSet("Default")
         if keyb.IsBinded(x) or len(self.KeyBounded)>=3:
           self.SetStatusText(MenuText.GetMenuText("The mouse action <")+x+MenuText.GetMenuText("> is already used!"))
-          pass
+          self.IManager.SetInputActionsSet("MenuRedefine")
         else:
           self.IAction.AddEvent(keyb,x,1)
           for k in self.Extras:
@@ -450,7 +455,14 @@ def NewAction(cfgfile,Action,key,adaction,device):
 
 
 def SaveListConfig():
-    cfgfile=open('../../Config/Control.py','w')
+    from LumenLib import BODLoader
+
+    mod_info = BODLoader.GetModInfo(Lumenx.GetCurrentMod())
+    if mod_info.get("PrivateControl") == 1:
+      ControlFile = "../../Config/Control.py"
+    else:
+      ControlFile = os.path.join(Lumenx.GetLumenRoot(), "Config/Control.py")
+    cfgfile=open(ControlFile,'w')
     cfgfile.write('\n\n# File generated automatically\n')
     cfgfile.write('# DO NOT EDIT: Changes will be lost\n\n\n')
 

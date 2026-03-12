@@ -23,7 +23,7 @@ ON_PRESS=1	# default
 
 Bladex.AssocKey("Swim Up","Keyboard","9") # 4
 Bladex.AssocKey("Swim Down","Keyboard","0") # 5
-Bladex.AssocKey("ToggleStats","Keyboard","T")
+# Bladex.AssocKey("ToggleStats","Keyboard","T")
 Bladex.AssocKey("ToggleSampling","Keyboard","V")
 # Bladex.AssocKey("ToggleProfiling","Keyboard","F3")
 # Bladex.AssocKey("Toggle BB","Keyboard","F4")

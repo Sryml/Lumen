@@ -407,7 +407,7 @@ def AddMod(mod_dir, mod_root, BLModInfo):
     name_space = {"MOD_ROOT": mod_root, "MOD_DIR": mod_dir}
 
     execfile(BLModInfo, name_space, name_space)
-    CloneEnvironment = name_space["CloneEnvironment"]
+    CloneEnvironment = name_space.get("CloneEnvironment", 1)
     MapList = name_space.get("MapList", {})
     Lumenx.AddMapList(MapList, mod_dir)
     #
@@ -424,7 +424,7 @@ def AddMod(mod_dir, mod_root, BLModInfo):
         GameText.Textos.update(name_space.get("Textos", {}))
         MenuText.ForeingDict.update(name_space.get("ForeingDict", {}))
 
-    # 复制引擎需要的文件
+    # XXX 需要优化，通过IPC调用外部python程序复制引擎需要的文件
     if CloneEnvironment:
         os.makedirs(os.path.join(mod_root, "Data/ControlFonts"), exist_ok=True)
         os.makedirs(os.path.join(mod_root, "Sounds"), exist_ok=True)
@@ -443,8 +443,8 @@ def AddMod(mod_dir, mod_root, BLModInfo):
             "Sounds/M-FUEGO-ANTORCHA3.wav",
         ):
             dst = os.path.join(mod_root, file)
-            if not os.path.exists(dst):
-                shutil.copy(os.path.join(LUMEN_ROOT, file), dst)
+            # if not os.path.exists(dst):
+            shutil.copy(os.path.join(LUMEN_ROOT, file), dst)
 
     #
     if string.lower(name_space["ModVersion"][0]) == "v":
@@ -467,6 +467,17 @@ def AddMod(mod_dir, mod_root, BLModInfo):
             "Version": name_space["ModVersion"],
             "Author": name_space["ModAuthor"],
             "AuthorInfo": name_space["ModAuthorInfo"],
+            #
+            "AssetAnimation": name_space.get("AssetAnimation", []),
+            "AssetImage": name_space.get("AssetImage", []),
+            "AssetModel": name_space.get("AssetModel", []),
+            "AssetSound": name_space.get("AssetSound", []),
+            "AssetOther": name_space.get("AssetOther", []),
+            #
+            "GameBasics": name_space.get("GameBasics", 0),
+            "PrivateControl": name_space.get("PrivateControl", 0),
+            "CloneEnvironment": CloneEnvironment,
+            #
             "Show": show,
             "OnLeaveMode": "to_parent",
             "OnLeave": OnLeaveModMenu,

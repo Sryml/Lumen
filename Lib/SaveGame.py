@@ -17,7 +17,6 @@ import os
 import time
 import string
 import Reference
-import AuxFuncs
 import stat
 import Language
 import BCopy
@@ -111,7 +110,7 @@ def LoadGameAux(slot_num):
         "sys.path.append('%s/Lib/PythonLib')" % new_blade_root,
         "sys.path.append('%s/Lib/PythonLib/Plat-Win')" % new_blade_root,
         "import Lumenx",
-        "execfile('../../Scripts/sys_init.py')",
+        # "execfile('../../Scripts/sys_init.py')",
         "InNewMap = %d"
         % (string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
         "execfile(%s)" % (repr(string.replace(save_file, "\\", "/")),),

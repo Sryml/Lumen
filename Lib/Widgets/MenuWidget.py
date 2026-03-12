@@ -145,7 +145,7 @@ class B_MenuFocusManager:
   def AddMenuElement(self,menu_element):
     #print "B_MenuFocusManager.AddMenuElement()  (init)->",menu_element, sys.getrefcount(self)
     self.MenuItems.append(menu_element)
-    self.Focus=menu_element
+    # self.Focus=menu_element
     #print "B_MenuFocusManager.AddMenuElement()  (end)->", sys.getrefcount(self)
 
 

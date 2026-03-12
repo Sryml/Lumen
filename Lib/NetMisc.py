@@ -25,7 +25,6 @@ import netgame
 import Bladex
 import string
 import os
-import cheats
 import BInput
 
 Caracteres = {	 "Knight"     :[0,"Knight_N"
@@ -382,6 +381,7 @@ def SavePlayerConfiguration(xx=0):
 	if netgame.GetNetState() == 0:
 		import GameText
 		import Lumenx
+		import cheats
 		if Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod()):
 			InputManager=BInput.GetInputManager()
 			oldIAS = InputManager.GetInputActionsSet()

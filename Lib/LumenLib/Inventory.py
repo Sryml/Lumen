@@ -212,47 +212,6 @@ def InventorySelectByNumber(index):
 
 
 # -------------------------------
-
-OldIASet = IManager.GetInputActionsSet()
-IManager.SetInputActionsSet("Default")
-#
-Bladex.AddInputAction("Select Last Inventory", 0)
-Bladex.AddInputAction("Select Next Inventory", 0)
-Bladex.AddInputAction("Inventory 1", 0)
-Bladex.AddInputAction("Inventory 2", 0)
-Bladex.AddInputAction("Inventory 3", 0)
-Bladex.AddInputAction("Inventory 4", 0)
-Bladex.AddInputAction("Inventory 5", 0)
-Bladex.AddInputAction("Inventory 6", 0)
-Bladex.AddInputAction("Inventory 7", 0)
-Bladex.AddInputAction("Inventory 8", 0)
-
-# Bladex.AssocKey("Select Last Inventory", "Mouse", "WheelUp")
-# Bladex.AssocKey("Select Next Inventory", "Mouse", "WheelDown")
-# Bladex.AssocKey("Inventory 1", "Keyboard", "1")
-# Bladex.AssocKey("Inventory 2", "Keyboard", "2")
-# Bladex.AssocKey("Inventory 3", "Keyboard", "3")
-# Bladex.AssocKey("Inventory 4", "Keyboard", "4")
-# Bladex.AssocKey("Inventory 5", "Keyboard", "5")
-# Bladex.AssocKey("Inventory 6", "Keyboard", "6")
-# Bladex.AssocKey("Inventory 7", "Keyboard", "7")
-# Bladex.AssocKey("Inventory 8", "Keyboard", "8")
-
-Bladex.AddBoundFunc("Select Last Inventory", InventorySelectLast)
-Bladex.AddBoundFunc("Select Next Inventory", InventorySelectNext)
-Bladex.AddBoundFunc("Inventory 1", lambda: InventorySelectByNumber(0))
-Bladex.AddBoundFunc("Inventory 2", lambda: InventorySelectByNumber(1))
-Bladex.AddBoundFunc("Inventory 3", lambda: InventorySelectByNumber(2))
-Bladex.AddBoundFunc("Inventory 4", lambda: InventorySelectByNumber(3))
-Bladex.AddBoundFunc("Inventory 5", lambda: InventorySelectByNumber(4))
-Bladex.AddBoundFunc("Inventory 6", lambda: InventorySelectByNumber(5))
-Bladex.AddBoundFunc("Inventory 7", lambda: InventorySelectByNumber(6))
-Bladex.AddBoundFunc("Inventory 8", lambda: InventorySelectByNumber(7))
-#
-IManager.SetInputActionsSet(OldIASet)
-
-
-# -------------------------------
 def ShowRightInv():
     import Scorer
 

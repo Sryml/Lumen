@@ -131,6 +131,7 @@ ForeingDict = {
     "current mod": "当前模组",
     "talk": "对话",
     "journal": "日志",
+    "j o u r n a l": "日 志",
     "blade": "刀",
     "spear": "矛",
     "sword": "剑",

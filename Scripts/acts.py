@@ -1,6 +1,5 @@
 import Bladex
 import Lumenx
-import Actions
 import BInput
 import string
 import MenuText
@@ -86,6 +85,8 @@ def InitBindings (PlayerName):
 	#Bladex.UnBindAll()
 	import netgame
 	import NetActions
+	import Actions
+	import Talk
 	if netgame.GetNetState() == 0:
 		import DefaultSelectionData
 		import Scorer
@@ -199,6 +200,23 @@ def InitBindings (PlayerName):
 	Bladex.AddBoundFunc("ToggleProfiling",Actions.ToggleProfiling)
 	Bladex.AddBoundFunc("ToggleInvincibility",Actions.ToggleInvincibility)
 
+	# Inventory
+	Bladex.AddBoundFunc("Select Last Inventory", Inventory.InventorySelectLast)
+	Bladex.AddBoundFunc("Select Next Inventory", Inventory.InventorySelectNext)
+	Bladex.AddBoundFunc("Inventory 1", lambda: Inventory.InventorySelectByNumber(0))
+	Bladex.AddBoundFunc("Inventory 2", lambda: Inventory.InventorySelectByNumber(1))
+	Bladex.AddBoundFunc("Inventory 3", lambda: Inventory.InventorySelectByNumber(2))
+	Bladex.AddBoundFunc("Inventory 4", lambda: Inventory.InventorySelectByNumber(3))
+	Bladex.AddBoundFunc("Inventory 5", lambda: Inventory.InventorySelectByNumber(4))
+	Bladex.AddBoundFunc("Inventory 6", lambda: Inventory.InventorySelectByNumber(5))
+	Bladex.AddBoundFunc("Inventory 7", lambda: Inventory.InventorySelectByNumber(6))
+	Bladex.AddBoundFunc("Inventory 8", lambda: Inventory.InventorySelectByNumber(7))
+
+	# Talk System
+	Bladex.AddBoundFunc("TSStartConversation", Talk.StartConversation)
+	Bladex.AddBoundFunc("TSEnableJournal", Talk.EnableJournal)
+
+
 def SetNoConfigurableActions():
 	Bladex.AssocKey("LaunchTravel","Keyboard","F1")
 	Bladex.AssocKey("LaunchTravel","Gamepad","ButtonBack")
@@ -264,6 +282,9 @@ ConfigurableActions =[
 			("Inventory 6",      "Inventory 6",           []),
 			("Inventory 7",      "Inventory 7",           []),
 			("Inventory 8",      "Inventory 8",           []),
+			# Talk System
+			("Talk",      "TSStartConversation",           []),
+			("Journal",   "TSEnableJournal",               []),
 
                      ]
 

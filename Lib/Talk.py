@@ -5,31 +5,32 @@
 
 import Bladex
 import Lumenx
-import Scorer
 import ScorerWidgets
 import BUIx
 import Raster
 import Language
 import BInput
 import GameText
-import Actions
 import B3DLib
-import GameStateAux
 import ObjStore
-import Enm_Def
-import DefaultSelectionData
-import Menu
-import KeybWidget  # Must be after import Menu
+
+# import Menu
+# import KeybWidget  # Must be after import Menu
 import MenuText
-import acts
-import BBLib
 
 import os
 import string
 import re
 import whrandom
+import typing
 
 from LumenLib import UtilsWidget
+
+printx = Lumenx.printx
+
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
 
 ###########################################################################
 # Global configuration
@@ -47,13 +48,12 @@ if os.path.exists("../../Data/TSCustom.py"):
 ######### modified by sryml >>> start
 CLASSIC_VER = Lumenx.CLASSIC_VER
 MAJOR_VER = Lumenx.MAJOR_VER
-printx = Lumenx.printx
-GetGameVersion = Lumenx.GetGameVersion
+GameVersion = Lumenx.GetGameVersion()
 FontScale = Language.FontScale.copy()
 
 CurrentResolution = ()
 
-if GetGameVersion() == CLASSIC_VER:
+if GameVersion == CLASSIC_VER:
     vw, vh = Raster.GetSize()
     s = int(100 * (2.5 * (vh / 1440.0)))
     TSFontScale = FontScale["M"]
@@ -85,7 +85,7 @@ HUDBrightness = 1.0
 jMaxLines = "auto"  # type: int # type: ignore
 jTextVsep = "0em"  # Vertical Separation
 jTextMargin = {
-    "top": 0.076,
+    "top": 0.016,  # 0.076,
     "right": 0.107,
     "bottom": 0.075,
     "left": 0.107,
@@ -105,17 +105,17 @@ SeeEvent = 1
 NoWarning = 1
 
 
-rh, rv = Raster.GetSize()
+# rh, rv = Raster.GetSize()
 
 
 if Language.Current == "Spanish":
     JournalTitle = "D I A R I O"
-    KBTalkLabel = "Hablar"
-    KBJournalLabel = "Diario"
+    # KBTalkLabel = "Hablar"
+    # KBJournalLabel = "Diario"
 else:
     JournalTitle = "J O U R N A L"
-    KBTalkLabel = "Talk"
-    KBJournalLabel = "Journal"
+    # KBTalkLabel = "Talk"
+    # KBJournalLabel = "Journal"
 
 
 ###########################################################################
@@ -124,104 +124,12 @@ else:
 AnimFPS_T = 1.0 / AnimFPS
 
 
-######### added by sryml >>> start
-
-def WrapWord(Word, CurrentWidth, MaxWidth):
-    lines = []
-    current_line = ""
-    current_width = CurrentWidth
-    for c in Word:
-        width = font_behaviour.GetTextWidth(c) * TSFontScale_
-        if GetGameVersion == CLASSIC_VER:
-            width = int(width)
-        if current_width + width > MaxWidth:
-            lines.append(current_line)
-            current_line = c
-            current_width = width
-        else:
-            current_line = current_line + c
-            current_width = current_width + width
-    return lines, current_line, current_width
-
-
-def WrapText(Text, MaxWidth):
-    space_w = font_behaviour.GetTextWidth(" ") * TSFontScale_
-    if GetGameVersion == CLASSIC_VER:
-        space_w = int(space_w)
-
-    ret_lines = []
-    for text in string.split(Text, "\n"):  # type: ignore
-        # text = pre_lines[i]
-        lines = []
-        current_line = ""
-        current_width = 0
-        for word in string.split(text, " "):  # type: ignore
-            if word == "":
-                width = space_w
-            else:
-                if GetGameVersion == CLASSIC_VER:
-                    width = 0
-                    for c in word:
-                        width = width + int(
-                            font_behaviour.GetTextWidth(c) * TSFontScale_
-                        )
-                else:
-                    width = font_behaviour.GetTextWidth(word) * TSFontScale_
-
-            if width > MaxWidth:
-                wrap_word, current_line_new, current_width_new = WrapWord(
-                    word, current_width, MaxWidth
-                )
-                lines.append(current_line + wrap_word[0])
-                lines = lines + wrap_word[1:]
-                current_line = current_line_new + " "
-                current_width = current_width_new + space_w
-            elif current_width + width > MaxWidth:
-                lines.append(current_line)
-                current_line = word + " "
-                current_width = width + (word == "" and 0 or space_w)
-            else:
-                current_line = current_line + word + " "
-                current_width = current_width + width + (word == "" and 0 or space_w)
-        lines.append(current_line[:-1])
-        ret_lines = ret_lines + lines
-        # pre_lines[i] = string.join(lines, "\n")  # type: ignore
-
-    return ret_lines
-
-    
-def AdaptResolution(img_size, canvas, view_size=(), keep_h=1):
-    # type: (tuple, tuple, tuple, int) -> tuple[int, int]
-    if not view_size:
-        view_size = Scorer.wFrame.GetSize()
-    vw, vh = float(view_size[0]), float(view_size[1])
-    if GetGameVersion() == CLASSIC_VER:
-        max_scale = 0.5
-    else:
-        max_scale = 0.5 / (Raster.GetUnscaledSize()[1] / vh)
-
-    f = max(float(view_size[keep_h]) / canvas[keep_h], max_scale)
-    w, h = int(img_size[0] * f), int(img_size[1] * f)
-
-    if w > vw and h > vh:
-        f = min(vw / w, vh / h)
-        w = int(w * f)
-        h = int(h * f)
-    elif w > vw:
-        f = vw / w
-        w = int(vw)
-        h = int(h * f)
-    elif h > vh:
-        f = vh / h
-        h = int(vh)
-        w = int(w * f)
-    return w, h
-
+#########
 
 
 def DynamicLayout():
     global CurrentResolution
-    if GetGameVersion() == CLASSIC_VER or CurrentResolution == Bladex.GetResolution():
+    if GameVersion == CLASSIC_VER or CurrentResolution == Bladex.GetResolution():
         return
 
     CurrentResolution = Bladex.GetResolution()
@@ -229,7 +137,7 @@ def DynamicLayout():
     TSWidgets.InitWidgets()
 
 
-######### added by sryml >>> end
+#########
 
 
 def findall(pattern, source):
@@ -289,6 +197,8 @@ def copy2(src, dst):
 
 
 def SelectNPC():
+    import Enm_Def
+
     pj = Bladex.GetEntity("Player1")
     pjp = pj.Position
     enemyList = []
@@ -306,186 +216,21 @@ def SelectNPC():
 # Keyboard
 ###########################################################################
 
-Defined_Key_Talk = 0
-Defined_Key_Journal = 0
-KEY_TALK = "T"
-KEY_JOURNAL = "J"
 
+# KEY_TALK = "T"
+# KEY_JOURNAL = "J"
 
-def UnBindKey(KeyName):
-    IManager = BInput.GetInputManager()
-    keyb = IManager.GetAttachedDevice("Keyboard")
-    if not keyb.IsBinded(KeyName):
-        return
-
-    IActions = IManager.GetInputActions()
-
-    for i in range(0, IActions.nElements()):
-        IAction = IActions.GetAction(i)
-
-        if IAction.Name() == "NULL":
-            continue
-
-        for j in range(IAction.nInputEvents()):
-            IEvent = IAction.GetnInputEvent(j)
-            IDevice = IEvent.GetDevice()
-            if IDevice == "Keyboard" and IEvent.GetKey() == KeyName:
-                IAction.RemoveEvent(keyb, KeyName, 1)
-
-
-def GetKey(line):
-    import re
-
-    return re.split('"*"', line)[5]
-
-
-def GetKeyBindings():
-    try:
-        import string
-
-        f = open("../../Config/Control.py", "r")
-        if not f:
-            return
-        line = "tmp"
-        while line != "":
-            line = f.readline()
-            idx = string.find(line, '"TSStartConversation"')  # type: ignore
-            if idx != -1:
-                global KEY_TALK, Defined_Key_Talk
-                KEY_TALK = GetKey(line)
-                Defined_Key_Talk = 1
-            idx = string.find(line, '"TSEnableJournal"')  # type: ignore
-            if idx != -1:
-                global KEY_JOURNAL, Defined_Key_Journal
-                KEY_JOURNAL = GetKey(line)
-                Defined_Key_Journal = 1
-        f.close()
-    except:
-        pass
-
-
-GetKeyBindings()
-
-
-def NewKeyMenu(name, action, defkey):
-    # Add to configurable list
-    t = (name, action, [])
-    if t not in acts.ConfigurableActions:
-        acts.ConfigurableActions.append(t)
-
-    # Add to key configs
-    key_ = ""
-    DeactivateInput = 0
-
-    IManager = BInput.GetInputManager()
-    keyb = IManager.GetAttachedDevice("Keyboard")
-    IActions = IManager.GetInputActions()
-
-    for i in range(IActions.nElements()):
-        IAction = IActions.GetAction(i)
-        for j in range(IAction.nInputEvents()):
-            IEvent = IAction.GetnInputEvent(j)
-            IDevice = IEvent.GetDevice()
-            if IDevice == "Keyboard":
-                key_ = IEvent.GetKey()
-                break
-        if key_:
-            break
-
-    if key_ and not keyb.IsBinded(key_):
-        Bladex.ActivateInput()
-        DeactivateInput = 1
-
-    oldSet = IManager.GetInputActionsSet()
-    IManager.SetInputActionsSet("Default")
-
-    UnBindKey(defkey)
-    Bladex.AssocKey(action, "Keyboard", defkey, 1)
-
-    IManager.SetInputActionsSet(oldSet)
-
-    if DeactivateInput:
-        Bladex.DeactivateInput()
-
-    if GetGameVersion() == CLASSIC_VER:
-        KeybList = "KeybList"
-        # VSep = 0
-    else:
-        KeybList = "Keyboard settings"
-        # VSep = 34
-
-    MItem = Menu.GetMenuItem(["CONTROLS", "KEYBOARD", KeybList])
-    if not MItem:
-        MItem = Menu.GetMenuItem(["CONTROLS", "LAYOUT", KeybList])
-    MItem["ListDescr"].append(
-        {
-            "Name": MenuText.GetMenuText(name),
-            # "Position": Menu.CtrlsPosition,
-            "Action": action,
-            "Kind": KeybWidget.ControlMenuItem,
-            "kFlags": [],
-            "FontScale": Language.MFontScale["M"],
-            # "VSep": VSep,
-            # "Size": (200, 300),
-        }
-    )
-
-
-Bladex.AddScheduledFunc(
-    Bladex.GetTime() + 0.1, NewKeyMenu, (KBTalkLabel, "TSStartConversation", KEY_TALK)
-)  # Prevent being overwritten by DebugControl.py when loading archives.
-if Defined_Key_Talk == 0:
-    #   UnBindKey (KEY_TALK)
-    if not os.path.exists("../../Config/Control.py"):
-        try:
-            copy2("../../Scripts/DefControl.py", "../../Config/Control.py")
-            os.chmod("../../Config/Control.py", 511)
-        except:
-            pass
-    try:
-        f = open("../../Config/Control.py", "a")
-        text = 'Bladex.AssocKey("%s","%s","%s")\n' % (
-            "TSStartConversation",
-            "Keyboard",
-            KEY_TALK,
-        )
-        f.write(text)
-        f.close()
-    except:
-        pass
-
-Bladex.AddScheduledFunc(
-    Bladex.GetTime() + 0.1, NewKeyMenu, (KBJournalLabel, "TSEnableJournal", KEY_JOURNAL)
-)  # Prevent being overwritten by DebugControl.py when loading archives.
-if Defined_Key_Journal == 0:
-    #   UnBindKey (KEY_JOURNAL)
-    if not os.path.exists("../../Config/Control.py"):
-        try:
-            copy2("../../Scripts/DefControl.py", "../../Config/Control.py")
-            os.chmod("../../Config/Control.py", 511)
-        except:
-            pass
-    try:
-        f = open("../../Config/Control.py", "a")
-        text = 'Bladex.AssocKey("%s","%s","%s")\n' % (
-            "TSEnableJournal",
-            "Keyboard",
-            KEY_JOURNAL,
-        )
-        f.write(text)
-        f.close()
-    except:
-        pass
 
 InputManager = BInput.GetInputManager()
 CurrentIAS = InputManager.GetInputActionsSet()
-InputManager.SetInputActionsSet("Default")
-Bladex.AddInputAction("TSStartConversation", 0)
-Bladex.AddInputAction("TSEnableJournal", 0)
+# InputManager.SetInputActionsSet("Default")
 
 
 def StartConversation():
     # modified by sryml
+    if not ClsTSWidgets.inited:
+        return
+
     DynamicLayout()
     pj = Bladex.GetEntity("Player1")
     personName = None
@@ -510,16 +255,13 @@ def StartConversation():
         GameText.WriteTextAux(TSDB.ImAlone(), 4.0, 255, 255, 255, [])
 
 
-Bladex.AddBoundFunc("TSStartConversation", StartConversation)
-
-
 def EnableJournal():
     # modified by sryml
+    if not ClsTSWidgets.inited or (not TSDB.JrlTxt):
+        return
+
     DynamicLayout()
     TSWidgets.jEnable()
-
-
-Bladex.AddBoundFunc("TSEnableJournal", EnableJournal)
 
 
 InputManager.AddInputActionsSet("TalkSystem")
@@ -641,7 +383,7 @@ Bladex.AssocKey("TSJPrev", "Mouse", "LeftButton")
 Bladex.AssocKey("TSJNext", "Mouse", "RightButton")
 Bladex.AssocKey("TSJCancelar", "Keyboard", "Esc")
 
-Bladex.AssocKey("TSDisableJournal", "Keyboard", KEY_JOURNAL)
+# Bladex.AssocKey("TSDisableJournal", "Keyboard", KEY_JOURNAL)
 
 
 def jPressKeyUp():
@@ -976,6 +718,8 @@ class ClsTS:
             TSDB.Dlg[person][dlgId]["Answers"] = answers
 
     def SeeFunc(self, EntityName):
+        import Actions
+
         tk = Bladex.GetEntity(EntityName)
         if tk.Life < 0:
             return
@@ -1163,6 +907,9 @@ class ClsTSjText:
         self.LineSup = min(self.MaxLines, self.NLines)
 
     def ShowText(self):
+        if self.MaxLines < 1:
+            return
+
         for i in range(1, self.MaxLines + 1):
             currentLine = self.LineInf + i - 1
             if Debug:
@@ -1246,15 +993,20 @@ class ClsTSWidgets:
     jTitleWidget = 0
     jMoreWidget = 0
     BitMapIdx = 0
+    inited = 0
 
     def __init__(self):
         # modified by sryml
 
         # Since the reissue version will change the size of Scorer.wFrame after loading the game, the scheduled function ensures that the widgets are added based on the final size.
-        Bladex.AddScheduledFunc(Bladex.GetTime() + 0.2, self.InitWidgets, ())
+        Bladex.AddScheduledFunc(
+            Bladex.GetTime() + 0.2, self.InitWidgets, (), Lumenx.GetNSaveName()
+        )
 
     def Reset(self):
         # added by sryml
+        import Scorer
+
         Scorer.wFrame.RemoveWidget(self.MainFrame.Name())
         self.MainFrame = None
         self.DialogFrame = None
@@ -1269,6 +1021,8 @@ class ClsTSWidgets:
 
     def InitWidgets(self):
         # added by sryml
+        import Scorer
+
         global CurrentResolution
         UIScaleFactor = Bladex.GetUIScaleFactor()
         if UIScaleFactor != 0:
@@ -1277,7 +1031,7 @@ class ClsTSWidgets:
             scale = 1.0
         vw, vh = Scorer.wFrame.GetSize()
         auto_scale = 1
-        if GetGameVersion() != CLASSIC_VER:
+        if GameVersion != CLASSIC_VER:
             CurrentResolution = Bladex.GetResolution()
             auto_scale = 0
 
@@ -1285,9 +1039,11 @@ class ClsTSWidgets:
             Scorer.wFrame, "TS_MainFrame", vw, vh
         )
         MainFrame.SetAutoScale(1)
-        Scorer.wFrame.AddWidget(MainFrame, 0,0)
+        Scorer.wFrame.AddWidget(MainFrame, 0, 0)
 
-        w, h = UtilsWidget.AdaptResolution((178 / 4.0 / 1.2, 256 / 4.0 / 1.2), (640, 480), keep_h=1)
+        w, h = UtilsWidget.AdaptResolution(
+            (178 / 4.0 / 1.2, 256 / 4.0 / 1.2), (640, 480), keep_h=1
+        )
         w, h = w * scale, h * scale
         self.jNewEntry = BUIx.B_BitmapWidget(
             MainFrame, "jNewEntry", w, h, "TSWarning", TSmmp
@@ -1317,17 +1073,17 @@ class ClsTSWidgets:
             BUIx.B_FrameWidget.B_FR_Top,
         )
 
-        text_tmp = BUIx.B_TextWidget(
+        text_ref = self.text_ref = BUIx.B_TextWidget(
             DialogFrame,
             "text_tmp",
             "T",
             ScorerWidgets.font_server,
             TSFont,
         )
-        text_tmp.SetCanvas((vw, vh))
-        text_tmp.SetScale(TSFontScale)
+        text_ref.SetCanvas((vw, vh))
+        text_ref.SetScale(TSFontScale)
 
-        h = text_tmp.GetSize()[1]
+        h = text_ref.GetSize()[1]
         vsep = (h + h * float(TextVsep[:-2])) / dialogframe_h
         maxlines = int((1 - TextMargin["top"] - TextMargin["bottom"]) / vsep)
         if MaxLines == "auto" or MaxLines > maxlines:
@@ -1398,7 +1154,7 @@ class ClsTSWidgets:
             BUIx.B_FrameWidget.B_FR_VCenter,
         )
 
-        h = text_tmp.GetSize()[1]
+        h = text_ref.GetSize()[1]
         vsep = (h + h * float(jTextVsep[:-2])) / journalframe_h
         maxlines = int((1 - jTextMargin["top"] - jTextMargin["bottom"]) / vsep) - 2
         if jMaxLines == "auto" or jMaxLines > maxlines:
@@ -1408,10 +1164,10 @@ class ClsTSWidgets:
             JournalFrame, "jTitleWidget", "", ScorerWidgets.font_server, TSFont
         )
         self.jTitleWidget.SetCanvas((vw, vh))
-        self.jTitleWidget.SetScale(TSFontScale)
+        self.jTitleWidget.SetScale(TSFontScale * 1.1)
         self.jTitleWidget.SetAlpha(1.0)
         self.jTitleWidget.SetAutoScale(auto_scale)
-        self.jTitleWidget.SetText(JournalTitle)
+        self.jTitleWidget.SetText(MenuText.GetMenuText(JournalTitle))
         self.jTitleWidget.SetColor(ColorjTitle[0], ColorjTitle[1], ColorjTitle[2])
         JournalFrame.AddWidget(
             self.jTitleWidget,
@@ -1435,7 +1191,7 @@ class ClsTSWidgets:
             JournalFrame.AddWidget(
                 textWidget,
                 jTextMargin["left"],
-                jTextMargin["top"] + vsep * i,
+                jTextMargin["top"] + vsep * (i + 1),
                 BUIx.B_FrameWidget.B_FR_HRelative,
                 BUIx.B_FrameWidget.B_FR_Left,
                 BUIx.B_FrameWidget.B_FR_VRelative,
@@ -1485,6 +1241,9 @@ class ClsTSWidgets:
             BUIx.B_FrameWidget.B_FR_VRelative,
             BUIx.B_FrameWidget.B_FR_VCenter,
         )
+        #
+        ClsTSWidgets.inited = 1
+        printx("Talk System Widgets initialized")
 
     def SlideFrame(self, OnOff, time=AnimFPS_T):
         # modified by sryml
@@ -1520,6 +1279,9 @@ class ClsTSWidgets:
             self.jNewEntry.SetBitmap(BitMapName)
 
     def Enable(self):
+        import Scorer
+        import Actions
+
         IManager = BInput.GetInputManager()
         self.LastIAS = IManager.GetInputActionsSet()
         Bladex.RemoveBoundFunc("Attack", "Attack")
@@ -1555,6 +1317,8 @@ class ClsTSWidgets:
         Bladex.AddBoundFunc("Attack", "Attack")
 
     def Hide(self):
+        import Scorer
+
         self.DialogFrame.SetVisible(0)
         pj = Bladex.GetEntity("Player1")
         pj.SetActiveEnemy(None)  # type: ignore
@@ -1568,10 +1332,35 @@ class ClsTSWidgets:
 
         TSJ.PlayStereo()
         TSjText.LoadJournalText()
+
         IManager = BInput.GetInputManager()
+        device_obj = IManager.GetAttachedDevice("Keyboard")
         self.LastIAS = IManager.GetInputActionsSet()
         Bladex.RemoveBoundFunc("Attack", "Attack")
+
+        IAction = IManager.GetInputActions().Find("TSEnableJournal")
+        keys = list(map(lambda x: x[0], IAction.GetAssociatedKeys("Keyboard")))
+
         IManager.SetInputActionsSet("TSJournal")
+        IAction = IManager.GetInputActions().Find("TSDisableJournal")
+        keys2 = list(map(lambda x: x[0], IAction.GetAssociatedKeys("Keyboard")))
+
+        keys.sort()
+        keys2.sort()
+        sync = 1
+        if len(keys) != len(keys2):
+            sync = 0
+        else:
+            for i in range(len(keys)):
+                if keys[i] != keys2[i]:
+                    sync = 0
+                    break
+        if not sync:
+            IAction.RemoveAllDeviceEvents("Keyboard")
+            for key in keys:
+                if not device_obj.IsBinded(key):
+                    Bladex.AssocKey("TSDisableJournal", "Keyboard", key)
+        #
         Bladex.RemoveBoundFunc("Attack", "Attack")
         Bladex.RemoveScheduledFunc("TS_ShowJournal")
         self.JournalFrame.SetVisible(1)

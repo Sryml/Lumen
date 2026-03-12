@@ -21,6 +21,7 @@ import math
 import types
 
 from Lumenx import printx
+from LumenLib import BUtils
 
 # ----------------------------------
 import typing
@@ -112,7 +113,7 @@ def WrapWord(Word, CurrentWidth, MaxWidth, FontScale, font_behaviour):
     lines = []
     current_line = ""
     current_width = CurrentWidth
-    for c in Word:
+    for c in BUtils.parse_utf8_string(Word):
         width = font_behaviour.GetTextWidth(c) * FontScale
         if GameVersion == Lumenx.CLASSIC_VER:
             width = int(width)
@@ -390,6 +391,9 @@ class B_GridWidget(MenuWidget.B_MenuTree):
         )
 
     def ChangeRow(self, val):
+        if self.nItems == 0:
+            return
+        
         self.FocusRow = (self.FocusRow + val) % self.GridSize[1]
         index = self.CalcIndex()
         if index >= self.nItems:
@@ -403,6 +407,9 @@ class B_GridWidget(MenuWidget.B_MenuTree):
         self.SetFocus_Idx(index)
 
     def ChangeCol(self, val):
+        if self.nItems == 0:
+            return
+        
         self.FocusCol = (self.FocusCol + val) % self.GridSize[0]
         index = self.CalcIndex()
         if index >= self.nItems:
@@ -414,6 +421,9 @@ class B_GridWidget(MenuWidget.B_MenuTree):
         self.SetFocus_Idx(index)
 
     def ChangePage(self, val):
+        if self.nItems == 0:
+            return
+        
         self.FocusPage = (self.FocusPage + val) % self.MaxPages
         index = self.CalcIndex()
         if index >= self.nItems:

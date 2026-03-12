@@ -79,6 +79,7 @@ class _DATA:
     #
     bod_inspector_loaded = 0
     opened_files_delta = 0  # 修正量
+    nsave_num = 0
 
 
 ######### Initialization #########
@@ -98,7 +99,7 @@ def __fn():
     f.close()
     for k in _DATA.config_default.keys():
         if not _DATA.config.has_key(k):
-            _DATA.config[k] = copy.deepcopy(_DATA.config_default[k])
+            _DATA.config[k] = _DATA.config_default[k]
 
     #
     root_paths = []
@@ -483,6 +484,27 @@ def AddPreloadCB(map_path, fn):
     _DATA.preload_callbacks[map_path] = list_
 
 
+def AssocControl():
+    from LumenLib import BODLoader
+
+    DefControl = 1
+    ControlFile = os.path.join(GetLumenRoot(), "Config/Control.py")
+    mod_info = BODLoader.GetModInfo(GetCurrentMod())
+    if mod_info.get("PrivateControl") == 1:
+        if os.path.isfile("../../Config/Control.py"):
+            DefControl = 0
+            ControlFile = "../../Config/Control.py"
+    elif os.path.isfile(ControlFile):
+        DefControl = 0
+
+    if DefControl:
+        execfile("../../Scripts/DefControl.py")
+        printx("BladeInit -> Executed DefControl.py")
+    else:
+        execfile(ControlFile)
+        printx("BladeInit -> Executed Control.py")
+
+
 def AssocKey(action_name, device, key, on_press=1):
     val = BInput.GetInputManager().AssocKey(
         action_name, device, key, on_press, dict_only=1
@@ -748,6 +770,11 @@ def GetModRoot():
     return _DATA.mod_root
 
 
+def GetNSaveName():
+    _DATA.nsave_num = _DATA.nsave_num + 1
+    return "[NSAVE]%d" % _DATA.nsave_num
+
+
 def GetPostloadCB(map_path):
     return _DATA.postload_callbacks.get(map_path, [])
 
@@ -849,6 +876,7 @@ def LoadLevel(map_dir, mod_dir=""):
         "import Bladex",
         "import sys",
         "import time",
+        "Bladex.SetTime(0.0)",
         "Bladex.SetSaveInfo((1, (0,)))",  # 用于Bladex.GenerateEntityName的计数
         "b3028472_681f_5be2_8aeb_c7011b166583=time.time()",
         "Bladex.SetAppMode('Game')",
@@ -903,6 +931,7 @@ def LoadLevel(map_dir, mod_dir=""):
         "print 'Load Time =', round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
         "del b3028472_681f_5be2_8aeb_c7011b166583",
         "del isMenuAppMode",
+        "Bladex.SetTime(0.0)",
     ]
     #
     import SplashImage
@@ -1200,6 +1229,7 @@ AddMusicEventMP3
 AddMusicEventWAV
 AddPostloadCB
 AddPreloadCB
+AssocControl
 AssocKey
 AutomatedAssets
 BodInspector
@@ -1225,6 +1255,7 @@ GetMapListItem
 GetMapListPath
 GetMMPFiles
 GetModRoot
+GetNSaveName
 GetPostloadCB
 GetPreloadCB
 GetResolution
