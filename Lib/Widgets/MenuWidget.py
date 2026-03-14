@@ -445,6 +445,18 @@ class B_MenuTree(B_MenuFrameWidget):
         self.Menudesc = Menudesc
         self.CreateMenuElements(Parent, Menudesc, StackMenu)
 
+    def ActivateItem(self, activate):
+        import Menu
+
+        if activate == 0:
+            StackMenu = Menu._MainMenu.MenuStack
+            w = StackMenu.Top()
+            try:
+                w.FinalRelease()
+            except:
+                pass
+            StackMenu.Pop()
+
     def CreateMenuElements(self, Parent, Menudesc, StackMenu):
         ValidIndex = 0
         isValidIndex = 0
@@ -550,34 +562,6 @@ class B_MenuItemTextNoFX(B_MenuTreeItem, B_TextWidget):
                 self.Parent.RecalcLayout()
         else:
             self.DefDraw(x, y, time)
-
-    # def ActivateItem(self, activate):
-    #     if activate == 1:
-    #         if not self.AcceptsFocus():
-    #             return 0
-    #         self.MenuDescr.get("Command", lambda x: 0)(self)
-    #         NewFrame = self.CreateFrame()
-    #         if NewFrame:
-    #             self.StackMenu.Push(NewFrame)
-    #         return 1
-    #         # else:
-    #             # command = self.MenuDescr.get("Command")
-    #             # if command:
-    #             #     command(self)
-    #             #     return 1
-    #             # return 0
-    #     elif activate == 0:
-    #         w = self.StackMenu.Top()
-    #         try:
-    #             w.FinalRelease()
-    #         except:
-    #             pass
-    #         self.StackMenu.Pop()
-
-    # def AcceptsFocus(self):
-    #     if self.GetVisible() == 0:
-    #         return 0
-    #     return self.Focusable
 
     def FinalRelease(self):
         self.Parent = None

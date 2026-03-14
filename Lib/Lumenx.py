@@ -94,8 +94,11 @@ def __fn():
     _DATA.blade_root = blade_root = os.path.normpath(lumen_root + "/..")
     _DATA.mod_root = mod_root = "..\\.."
     #
-    f = open(lumen_root + "/Config/Lumen.cfg")
-    _DATA.config = eval(f.read())
+    f = open(lumen_root + "/Config/Lumen.cfg", "a+")
+    try:
+        _DATA.config = eval(f.read())
+    except:
+        pass
     f.close()
     for k in _DATA.config_default.keys():
         if not _DATA.config.has_key(k):
@@ -139,6 +142,8 @@ def __fn():
     sys.path = ["."]
 
     for root in root_paths:
+        if root != blade_root:
+            sys.path.append(root)
         for p in paths:
             sys.path.append(os.path.join(root, p))
     #
@@ -209,6 +214,7 @@ import BInput
 if typing.TYPE_CHECKING:
     apply = lambda fn, args=(), kwds={}: None
     execfile = lambda filename, globals=None, locals=None: None
+    cmp = lambda x, y: None
 
 
 #

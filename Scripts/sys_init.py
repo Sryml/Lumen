@@ -31,7 +31,7 @@ sys.setcheckinterval(100)  # type: ignore
 Bladex.CloseDebugChannel("DefaultChannel")
 
 os.makedirs("../../AnmPak", exist_ok=True)
-os.makedirs("../../Config", exist_ok=True)
+
 #
 import Menu
 from LumenLib import BODLoader

@@ -203,6 +203,8 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
 
         desc_margin = BODLoader.DESC_MARGIN
 
+        self.CheckBoxBmp = Parent.CheckBoxBmp
+        self.CheckMarkBmp = Parent.CheckMarkBmp
         self.border_scale = Parent.border_scale
         border_size = Parent.border_size
         BUIx.B_FrameWidget.__init__(
@@ -313,6 +315,23 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         )
         self.AddWidget(self.wBorder, 0, 0)
 
+    def ActivateItem(self, activate):
+        if activate == 1:
+            if self.MenuDescr["Installed"] != -1 and self.MenuDescr["Enabled"] == 0:
+                return
+
+        MenuWidget.B_MenuTreeItem.ActivateItem(self, activate)
+
+    def AuxActivateItem(self):
+        from LumenLib import BODLoader
+
+        BODLoader.SetInstallMod(self.MenuDescr["ModDir"])
+
+    def SuprMenuItem(self):
+        from LumenLib import BODLoader
+
+        BODLoader.SetEnableMod(self.MenuDescr["ModDir"])
+
     def Draw(self, x, y, time):
         if self.GetHasFocus():
             r, g, b = Language.FontColor.Focused
@@ -321,20 +340,43 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         self.wTitle.SetColor(r, g, b)
         #
         self.DefDraw(x, y, time)
-        #
+        # 展示图
         img, w, h = self.MenuDescr["Show"]
+        border_w, border_h = self.GetSize()
         if img is not None:
             rw, rh = img.GetDimension()
             w, h = w * self.border_scale, h * self.border_scale
-            border_w, border_h = self.GetSize()
             Raster.SetPosition(
                 x + (border_w - w) * 0.5,
-                y + border_h * 0.1091 + (261 * self.border_scale - h) * 0.5,
+                y + border_h * 0.110 + (261 * self.border_scale - h) * 0.5,
             )
             if GameVersion == Lumenx.CLASSIC_VER:
                 Raster.DrawImage(rw, rh, "RGB", "Normal", img.GetData())
             else:
                 Raster.DrawResizeImage(rw, rh, "RGB", "Normal", img.GetData(), w, h)
+        # 启用标记
+        if self.MenuDescr["Installed"] != -1:
+            w, h = 34 * self.border_scale, 34 * self.border_scale
+            Enabled = self.MenuDescr["Enabled"]
+            if self.MenuDescr["Installed"] == 0:
+                r, g, b = 39, 39, 39
+            elif Enabled == 0:
+                r, g, b = 165, 165, 165
+            else:
+                r, g, b = 0, 190, 0
+
+            Raster.SetPosition(
+                x + (border_w - w * 0.96),
+                y + border_h * 0.113,
+            )
+            Raster.SetPenColor(50, 50, 50)
+            Raster.DrawBitmap(self.CheckBoxBmp, w, h)
+            Raster.SetPosition(
+                x + (border_w - w * 0.96),
+                y + border_h * 0.113,
+            )
+            Raster.SetPenColor(r, g, b)
+            Raster.DrawBitmap(self.CheckMarkBmp, w, h)
 
 
 class B_GridWidget(MenuWidget.B_MenuTree):
@@ -348,18 +390,6 @@ class B_GridWidget(MenuWidget.B_MenuTree):
         self.FocusPage = 0
         self.FocusRow = 0
         self.FocusCol = 0
-
-    def ActivateItem(self, activate):
-        import Menu
-
-        if activate == 0:
-            StackMenu = Menu._MainMenu.MenuStack
-            w = StackMenu.Top()
-            try:
-                w.FinalRelease()
-            except:
-                pass
-            StackMenu.Pop()
 
     #
     def SetFocus_Idx(self, index, update_page=0):
@@ -377,8 +407,13 @@ class B_GridWidget(MenuWidget.B_MenuTree):
             self.FocusRow = int(index / self.GridSize[0]) % self.GridSize[1]
             self.FocusCol = index % self.GridSize[0]
             self.wPageLable.SetText(
-                "%s/%s %s"
-                % (self.FocusPage + 1, self.MaxPages, MenuText.GetMenuText("Pages"))
+                "%s/%s %s\n%s"
+                % (
+                    self.FocusPage + 1,
+                    self.MaxPages,
+                    MenuText.GetMenuText("Pages"),
+                    MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+                )
             )
         MenuWidget.B_MenuTree.SetFocus_Idx(self, index)
 
@@ -393,7 +428,7 @@ class B_GridWidget(MenuWidget.B_MenuTree):
     def ChangeRow(self, val):
         if self.nItems == 0:
             return
-        
+
         self.FocusRow = (self.FocusRow + val) % self.GridSize[1]
         index = self.CalcIndex()
         if index >= self.nItems:
@@ -409,7 +444,7 @@ class B_GridWidget(MenuWidget.B_MenuTree):
     def ChangeCol(self, val):
         if self.nItems == 0:
             return
-        
+
         self.FocusCol = (self.FocusCol + val) % self.GridSize[0]
         index = self.CalcIndex()
         if index >= self.nItems:
@@ -423,7 +458,7 @@ class B_GridWidget(MenuWidget.B_MenuTree):
     def ChangePage(self, val):
         if self.nItems == 0:
             return
-        
+
         self.FocusPage = (self.FocusPage + val) % self.MaxPages
         index = self.CalcIndex()
         if index >= self.nItems:
@@ -474,6 +509,8 @@ class B_ModGridWidget(B_GridWidget):
         self.gap = gap = AdaptResolution(
             (BODLoader.BORDER_GAP, BODLoader.BORDER_GAP), (3840, 2160), Parent.GetSize()
         )[0]
+        self.CheckBoxBmp = Raster.BmpHandle("CheckBox")
+        self.CheckMarkBmp = Raster.BmpHandle("CheckMark")
         size = (
             GridSize[0] * border_size[0] + (GridSize[0] - 1) * gap,
             GridSize[1] * border_size[1] + (GridSize[1] - 1) * gap,
@@ -488,25 +525,50 @@ class B_ModGridWidget(B_GridWidget):
             self.SetFocus_Idx(0)
         self.MaxPages = int((self.nItems - 1) / float(self.MaxItems)) + 1
         #
-        self.wNoteLabel = BUIx.B_TextWidget(
+        # self.wNoteLabel = BUIx.B_TextWidget(
+        #     self,
+        #     Menudesc["Name"] + "NoteLabel",
+        #     MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+        #     Language.font_server,
+        #     Language.FontCommon,
+        # )
+        # r, g, b = Language.FontColor.Unfocusable
+        # self.wNoteLabel.SetScale(Language.MFontScale["S"] * 0.8)
+        # self.wNoteLabel.SetAlpha(1)
+        # self.wNoteLabel.SetColor(r, g, b)
+        # self.AddLabel(
+        #     self.wNoteLabel,
+        #     0,
+        #     8,
+        #     B_Widget.B_LAB_Left,
+        #     B_Widget.B_LAB_Bottom,
+        #     B_Widget.B_FR_AbsoluteRight,
+        #     B_Widget.B_FR_Left,
+        #     B_Widget.B_FR_AbsoluteTop,
+        #     B_Widget.B_FR_Top,
+        # )
+        #
+        self.wInstallLabel = BUIx.B_TextWidget(
             self,
-            Menudesc["Name"] + "NoteLabel",
-            MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+            Menudesc["Name"] + "InstallLabel",
+            MenuText.GetMenuText(
+                "Press Space to install/uninstall, Backspace to enable/disable"
+            ),
             Language.font_server,
             Language.FontCommon,
         )
         r, g, b = Language.FontColor.Unfocusable
-        self.wNoteLabel.SetScale(Language.MFontScale["S"] * 0.8)
-        self.wNoteLabel.SetAlpha(1)
-        self.wNoteLabel.SetColor(r, g, b)
+        self.wInstallLabel.SetScale(Language.MFontScale["S"])
+        self.wInstallLabel.SetAlpha(1)
+        self.wInstallLabel.SetColor(r, g, b)
         self.AddLabel(
-            self.wNoteLabel,
-            0,
+            self.wInstallLabel,
+            0.5,
             8,
-            B_Widget.B_LAB_Left,
+            B_Widget.B_LAB_HCenter,
             B_Widget.B_LAB_Bottom,
-            B_Widget.B_FR_AbsoluteRight,
-            B_Widget.B_FR_Left,
+            B_Widget.B_FR_HRelative,
+            B_Widget.B_FR_HCenter,
             B_Widget.B_FR_AbsoluteTop,
             B_Widget.B_FR_Top,
         )
@@ -514,7 +576,12 @@ class B_ModGridWidget(B_GridWidget):
         self.wPageLable = BUIx.B_TextWidget(
             self,
             Menudesc["Name"] + "PageLable",
-            "1/%s %s" % (self.MaxPages, MenuText.GetMenuText("Pages")),
+            "1/%s %s\n%s"
+            % (
+                self.MaxPages,
+                MenuText.GetMenuText("Pages"),
+                MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+            ),
             Language.font_server,
             Language.FontCommon,
         )
@@ -522,6 +589,7 @@ class B_ModGridWidget(B_GridWidget):
         self.wPageLable.SetScale(Language.MFontScale["S"] * 0.8)
         self.wPageLable.SetAlpha(1)
         self.wPageLable.SetColor(r, g, b)
+        self.wPageLable.SetJustification(BUIx.B_TextWidget.B_TEXT_Right)
         self.AddLabel(
             self.wPageLable,
             0,
@@ -624,8 +692,14 @@ class B_BitmapWidget(MenuWidget.B_MenuTreeItem, BUIx.B_BitmapWidget):
         Color = MenuDescr.get("Color", (255, 255, 255))
         Alpha = MenuDescr.get("Alpha", 1.0)
         FitHeight = MenuDescr.get("FitHeight", 0)
+        Localization = MenuDescr.get("Localization", 0)
 
         ImageName = MenuDescr["GetImageName"](self)
+        if Localization:
+            LocaleImageName = "%s_%s" % (ImageName, Language.Current)
+            if Raster.BmpName(Raster.BmpHandle(LocaleImageName)):
+                ImageName = LocaleImageName
+
         vidw, vidh = MenuDescr["Size"]
         try:
             if isinstance(FitHeight, types.StringType):

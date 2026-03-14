@@ -25,6 +25,7 @@ import string
 import traceback
 import time
 import typing
+import pprint
 
 from Lumenx import printx, Raisex
 from LumenLib import UtilsWidget
@@ -104,6 +105,8 @@ NoteLabel = {
 }
 
 
+# ----------------------------------
+# Start Game Option
 # ----------------------------------
 def GetCharType(this):
     return this.Options.index(_DATA.character)
@@ -279,6 +282,8 @@ def SetStartGameOption(this):
 
 
 # ----------------------------------
+# Menu Option
+# ----------------------------------
 def InitMenu(this):
     global DESCR_WRAPPED
     if not DESCR_WRAPPED:
@@ -321,7 +326,8 @@ def OnEnterModMenu(this):
     Lumenx.SetCurrentModMenu(this.Menudesc.get("ModDir", ""))
     #
     start_game = Menu.GetMenuWidget("START GAME", this)[0]
-    SetStartGameOption(start_game)
+    if start_game:
+        SetStartGameOption(start_game)
     #
     SaveGame.CreateSLMenu(this)
 
@@ -394,6 +400,8 @@ def GetLanguage(this):
 
 
 # ----------------------------------
+# Function
+# ----------------------------------
 def GetModList():
     return _DATA.mod_list
 
@@ -403,7 +411,105 @@ def GetModInfo(mod_dir):
     return _DATA.mod_info.get(mod_dir, {})
 
 
+def GetBackToGameItem(
+    VSep=Menu.LastOptionVSep,
+    Font=Language.FontTitle,
+    FontScale=Language.MFontScale["L"],
+):
+    ret = {
+        "Name": "BACK TO GAME",
+        "Text": MenuText.GetMenuText("BACK TO GAME"),
+        "VSep": VSep,
+        "Font": Font,
+        "FontScale": FontScale,
+        "Command": Menu.BackToGame,
+    }
+
+    return ret
+
+
+def IsModInstalled(mod_dir):
+    return _DATA.mod_info[mod_dir]["Installed"]
+
+
+def IsModEnabled(mod_dir):
+    return _DATA.mod_info[mod_dir]["Enabled"]
+
+
+def SetInstallMod(mod_dir):
+    mod_info = _DATA.mod_info[mod_dir]
+    if mod_info["Installed"] != -1:
+        Installed = not mod_info["Installed"]
+        mod_info["Installed"] = Installed
+        mod_info["Enabled"] = Installed
+
+        EnableMod(Installed, mod_info)
+        SaveModInfo()
+
+
+def SetEnableMod(mod_dir):
+    mod_info = _DATA.mod_info[mod_dir]
+    if mod_info["Installed"] == 1:
+        Enabled = not mod_info["Enabled"]
+        mod_info["Enabled"] = Enabled
+
+        EnableMod(Enabled, mod_info)
+        SaveModInfo()
+
+
+# def GetEnableOption(
+#     VSep=Menu.FirstOptionVSep,
+#     Font=Language.FontCommon,
+#     FontScale=Language.MFontScale["M"],
+# ):
+#     ret = {
+#         "Name": "ENABLE MOD",
+#         "Text": MenuText.GetMenuText("Enable Mod") + ": ",
+#         "Font": Font,
+#         "VSep": VSep,
+#         "Kind": MenuWidget.B_MenuItemOption,
+#         "Options": ["No", "Yes"],
+#         "SelOptionFunc2": GetEnableMod,
+#         "Command2": SetEnableMod,
+#     }
+#     if FontScale is not None:
+#         ret["FontScale"] = FontScale
+#     return ret
+
+
+# def InstallMod(Installed, mod_info):
+#     if Installed == 1:
+#         LoadMod(mod_info)
+#     else:
+#         EnableMod(0, mod_info)
+
+
+def LoadMod(mod_info):
+    # Reference.debugprint("[BODLoader] Load mod: %s" % mod_info["Name"])
+    EnableMod(mod_info["Enabled"], mod_info)
+
+
+def EnableMod(Enabled, mod_info):
+    mod_dir = mod_info["ModDir"]
+    mod_root = os.path.join(LUMEN_ROOT, "Mods", mod_dir)
+    if Enabled:
+        exec_file = os.path.join(mod_root, "BLModInit.py")
+    else:
+        exec_file = os.path.join(mod_root, "BLModShut.py")
+
+    if os.path.isfile(exec_file):
+        try:
+            execfile(exec_file, {}, {})
+            if Enabled:
+                Reference.debugprint("[BODLoader] Enabled mod: %s" % mod_info["Name"])
+            else:
+                Reference.debugprint("[BODLoader] Disabled mod: %s" % mod_info["Name"])
+        except:
+            traceback.print_exc()
+
+
 def AddMod(mod_dir, mod_root, BLModInfo):
+    os.makedirs(os.path.join(mod_root, "Config"), exist_ok=True)
     mod_dir = string.lower(mod_dir)
     name_space = {"MOD_ROOT": mod_root, "MOD_DIR": mod_dir}
 
@@ -459,6 +565,17 @@ def AddMod(mod_dir, mod_root, BLModInfo):
         size = UtilsWidget.ResizeImage(img.GetDimension(), (464, 261))
         show = (img, size[0], size[1])
 
+    BLModInit = os.path.join(mod_root, "BLModInit.py")
+    Enabled = _DATA.mod_info.get(mod_dir, {}).get("Enabled", 0)
+    Installed = _DATA.mod_info.get(mod_dir, {}).get("Installed", -1)
+    if not os.path.isfile(BLModInit):
+        Installed = -1
+    elif Installed == -1:
+        Installed = 0
+    # BLModInit文件被用户意外删除的情况
+    if Installed != 1:
+        Enabled = 0
+
     mod_info = name_space.get("ModMenu", {})
     mod_info.update(
         {
@@ -482,15 +599,51 @@ def AddMod(mod_dir, mod_root, BLModInfo):
             "Show": show,
             "OnLeaveMode": "to_parent",
             "OnLeave": OnLeaveModMenu,
+            #
+            "Installed": Installed,
+            "Enabled": Enabled,
+            # "DisableCallback": name_space.get("DisableCallback", None),
         }
     )
     _DATA.mod_list.append(mod_dir)
     _DATA.mod_info[mod_dir] = mod_info
 
 
+def SaveModInfo():
+    save_keys = (
+        "Name",
+        # "ModDir",
+        "Desc",
+        "Version",
+        "Author",
+        "AuthorInfo",
+        "Installed",
+        "Enabled",
+    )
+    mod_info = {}
+    for mod_dir in _DATA.mod_list:
+        info = {}
+        for key in _DATA.mod_info[mod_dir].keys():
+            if key in save_keys:
+                info[key] = _DATA.mod_info[mod_dir][key]
+        mod_info[mod_dir] = info
+    #
+    pp = pprint.PrettyPrinter(indent=4)
+    f = open(os.path.join(LUMEN_ROOT, "Config/BLData.cfg"), "w")
+    f.write(pp.pformat(mod_info))
+    f.close()
+
+
 def Init():
+    f = open(os.path.join(LUMEN_ROOT, "Config/BLData.cfg"), "a+")
+    try:
+        _DATA.mod_info = eval(f.read())
+    except:
+        pass
+    f.close()
     Bladex.DeleteStringValue("BODLoader.DescrWrap")
-    ModListPath = os.path.join(Lumenx.GetLumenRoot(), "Mods")
+    #
+    ModListPath = os.path.join(LUMEN_ROOT, "Mods")
     for mod_dir in os.listdir(ModListPath):
         mod_root = os.path.join(ModListPath, mod_dir)
         if not os.path.isdir(mod_root):
@@ -516,22 +669,20 @@ def Init():
 
     _DATA.mod_list.sort(compare)  # type: ignore
     #
+    nMods = len(_DATA.mod_list)
     ModMenu["ListDescr"][0]["ListDescr"][0]["Text"] = (
-        MenuText.GetMenuText("Total Mods") + ": " + str(len(GetModList()))
+        MenuText.GetMenuText("Total Mods") + ": " + str(nMods)
     )
-    # 描述包装
-    # if Language.Current == "English":
-    #     Bladex.SetAfterFrameFunc("[BODLoader]DescrWrap[NSAVE]", DescrWrapAfterFrame)
 
-
-# def DescrWrapAfterFrame(t):
-#     if not globals().has_key("DescrWrap_Start"):
-#         globals()["DescrWrap_Start"] = time.time()
-#         return
-#     if time.time() - globals()["DescrWrap_Start"] < 0.3:
-#         return
-#     Bladex.RemoveAfterFrameFunc("[BODLoader]DescrWrap[NSAVE]")
-#     DescrWrap()
+    for k in _DATA.mod_info.keys():
+        if k not in _DATA.mod_list:
+            del _DATA.mod_info[k]
+    SaveModInfo()
+    #
+    for mod_info in _DATA.mod_info.values():
+        Installed = mod_info["Installed"]
+        if Installed == 1:
+            LoadMod(mod_info)
 
 
 def DescrWrap():
@@ -557,7 +708,8 @@ def DescrWrap():
 
 
 # ----------------------------------
-# def GetModMenu():
+# Menu Tree
+# ----------------------------------
 
 ModMenu = {
     "Name": "MODS",
@@ -691,6 +843,5 @@ ModMenu = {
         BackImageBannerItem,
     ],
 }
-# return ModMenu
+
 # -------------------------------------
-# Init()

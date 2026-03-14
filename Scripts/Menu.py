@@ -58,7 +58,8 @@ MenuFontMed=Language.FontTitle
 MenuFontBig=Language.FontTitle
 
 FirstOptionVSep = "0.208%"
-NoteOptionVSep = "0.76f" # Added by Sryml
+LastOptionVSep = "0.73f"
+NoteOptionVSep = "0.76f"
 BackOptionVSep = "0.792f"
 BackGamepadOptionVSep = "0.854f"
 GamepadButtonVSep = "0.917f"
@@ -1261,6 +1262,7 @@ def ActivateMenu(caller_id = None):
     Bladex.AddInputAction("Menu Dec",0)
     Bladex.AddInputAction("Menu ActivateItem",0)
     Bladex.AddInputAction("Menu DeActivateItem",0)
+    Bladex.AddInputAction("Menu AuxActivateItem",0)
     Bladex.AddInputAction("Menu Supr",0)
     Bladex.AddInputAction("Menu Next Strong",0)
     Bladex.AddInputAction("MenuToggleHiRes",0)
@@ -1316,6 +1318,9 @@ def ActivateMenu(caller_id = None):
     Bladex.AssocKey("Menu DeActivateItem","Gamepad","ButtonBack")
     Bladex.AssocKey("Menu DeActivateItem","Gamepad","ButtonEast")
     Bladex.AddBoundFunc("Menu DeActivateItem",_MainMenu.DeActivateMenuItem)
+
+    Bladex.AssocKey("Menu AuxActivateItem","Keyboard","Space")
+    Bladex.AddBoundFunc("Menu AuxActivateItem",_MainMenu.AuxActivateItem)
 
     Bladex.AssocKey("Menu Next Strong","Keyboard","Tab")
     Bladex.AddBoundFunc("Menu Next Strong",_MainMenu.MenuNextItemStrong)
@@ -1388,6 +1393,7 @@ def ClearMenuKeyb():
   Bladex.RemoveInputAction("Menu Dec")
   Bladex.RemoveInputAction("Menu ActivateItem")
   Bladex.RemoveInputAction("Menu DeActivateItem")
+  Bladex.RemoveInputAction("Menu AuxActivateItem")
   Bladex.RemoveInputAction("Menu Supr")
   Bladex.RemoveInputAction("Menu Next Strong")
   Bladex.RemoveInputAction("MenuToggleHiRes")
@@ -1472,6 +1478,19 @@ class MainMenu:
 
       SndNewMenu.PlayStereo()
 
+  def AuxActivateItem(self):
+    if Bladex.GetAppMode()=="Menu":
+      wActiveMenuElement=self.MenuStack.Top().GetFocus()
+      try:
+        sw=wActiveMenuElement.GetFocus()
+        sw.AuxActivateItem()
+      except:
+        try:
+          wActiveMenuElement.AuxActivateItem()
+        except:
+          pass
+      SndCorreGema.PlayStereo()
+
   def MenuNextItemStrong(self):
     w=self.MenuStack.Top()
     w.NextFocus()
@@ -1532,7 +1551,7 @@ class MainMenu:
 
 
   def MenuSuprItem(self):
-    print "MenuSuprItem(self)"
+    # print "MenuSuprItem(self)"
     w=self.MenuStack.Top().GetFocus()
     try:
       sw=w.GetFocus()
@@ -1542,6 +1561,7 @@ class MainMenu:
         w.SuprMenuItem()
       except AttributeError:
          pass
+    SndCorreGema.PlayStereo()
 
 
   def CommandPrb(self):
