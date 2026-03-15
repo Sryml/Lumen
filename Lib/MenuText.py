@@ -3,6 +3,8 @@ import string
 import os
 import Lumenx
 
+from LumenLib import BUtils
+
 #
 import typing
 
@@ -10,11 +12,14 @@ if typing.TYPE_CHECKING:
     apply = lambda fn, args=(), kwds={}: None
     execfile = lambda filename, globals=None, locals=None: None
 
-ForeingDict = {}
+ForeingDict = BUtils.Dictionary()
 
 if Language.Current != "English":
+    name_space = {}
     filepath = "Data/Locale/" + Language.Current + "/MTexts.py"
-    execfile(os.path.join(Lumenx.GetLumenRoot(), filepath), globals(), globals())
+    execfile(os.path.join(Lumenx.GetLumenRoot(), filepath), name_space, name_space)
+    ForeingDict.update(name_space.get("ForeingDict", {}))
+    del name_space
 
 
 # Language.Current=Language.Current

@@ -5,8 +5,6 @@
 # |_____\___/|_|  |_|_____|_| \_|
 #
 
-import MenuText
-
 import string
 
 from Lumenx import printx
@@ -17,6 +15,7 @@ import typing
 if typing.TYPE_CHECKING:
     apply = lambda fn, args=(), kwds={}: None
     execfile = lambda filename, globals=None, locals=None: None
+    cmp = lambda x, y: None
 
 
 # -------------------------------
@@ -25,9 +24,19 @@ if typing.TYPE_CHECKING:
 class Dictionary:
     def __init__(self, dict=None, **kwargs):
         """初始化字典"""
+        self.update_callbacks = []
         self.data = {}
         apply(self.update, (dict,), kwargs)
 
+    # -------------------------------
+    def __getstate__(self):
+        return {"%s" % (self.__class__.__name__): self.data}
+
+    def __setstate__(self, state):
+        self.update_callbacks = []
+        self.data = state["%s" % (self.__class__.__name__)]
+
+    # -------------------------------
     def __repr__(self):
         """返回对象的字符串表示"""
         items = []
@@ -55,11 +64,13 @@ class Dictionary:
     def __setitem__(self, key, value):
         """设置 key-value 对"""
         self.data[key] = value
+        self.CallUpdateCallbacks(key, value)
 
     def __delitem__(self, key):
         """删除 key"""
         del self.data[key]
 
+    # -------------------------------
     def has_key(self, key):
         """检查 key 是否存在（Python 1.5 方法）"""
         return self.data.has_key(key)
@@ -128,17 +139,45 @@ class Dictionary:
         else:
             printx(KeyError, key)
 
+    # -------------------------------
+    def AddUpdateCallback(self, callback):
+        """添加更新回调"""
+        self.update_callbacks.append(callback)
+
+    def RemoveUpdateCallback(self, callback):
+        """移除更新回调"""
+        if callback in self.update_callbacks:
+            self.update_callbacks.remove(callback)
+
+    def CallUpdateCallbacks(self, key, value):
+        """调用更新回调"""
+        for callback in self.update_callbacks:
+            callback(key, value)
+
 
 class EntitiesSelectionDict(Dictionary):
     def __init__(self, dict=None, **kwargs):
         self.data_raw = {}
         apply(Dictionary.__init__, (self, dict), kwargs)
 
+    # -------------------------------
+    def __getstate__(self):
+        state = Dictionary.__getstate__(self)
+        state.update({"%s" % (self.__class__.__name__): self.data_raw})
+        return state
+
+    def __setstate__(self, state):
+        self.data_raw = state["%s" % (self.__class__.__name__)]
+
+    # -------------------------------
     def __setitem__(self, key, value):
-        Dictionary.__setitem__(
-            self, key, (value[0], value[1], MenuText.GetMenuText(value[2]))
-        )
+        import MenuText
+
         self.data_raw[key] = value
+        new_value = value
+        if len(value) == 3:
+            new_value = (value[0], value[1], MenuText.GetMenuText(value[2]))
+        Dictionary.__setitem__(self, key, new_value)
 
     def __delitem__(self, key):
         Dictionary.__delitem__(self, key)
