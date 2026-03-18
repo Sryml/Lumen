@@ -13,6 +13,7 @@ import Lumenx
 import Bladex
 import os
 import Interpolator
+import Language
 import string
 
 #
@@ -118,15 +119,15 @@ def AbortText():
 
 
 
-def WriteTextAux(txt,duration,init_r,init_g,init_b,next_text,ypos=None,patch=None):
+def WriteTextAux(txt,duration,init_r,init_g,init_b,next_text,ypos=None,patch=None,font_scale=Language.FontScale["L"] * 0.83):
   import Scorer
 ##  if not patch:
-  if Scorer.VISIBLE==0:
-    Scorer.wFrame.SetSize(10,10)
-    Scorer.wFrame.RecalcLayout()
+  # if Scorer.VISIBLE==0:
+  #   Scorer.wFrame.SetSize(10,10)
+  #   Scorer.wFrame.RecalcLayout()
   
   Scorer.wGameText.SetColor(init_r,init_g,init_b)
-
+  Scorer.wGameText.SetScale(font_scale)
   Scorer.wGameText.SetText(txt)
   if ypos!=None:
     Scorer.wFrame.MoveWidgetTo("GameTextWidget",0.5,ypos);

@@ -342,6 +342,7 @@ __bladex_decorators = [
     "SetCurrentMap",
     "SetGhostSectorGroupSound",
     "SetGhostSectorSound",
+    "ShowCriticalWarning",
 ]
 for __fn in __bladex_decorators:  # type: ignore
     Bladex_raw.__dict__[__fn] = Bladex.__dict__.get(__fn, __empty_func)  # type: ignore
@@ -1152,6 +1153,9 @@ def SetMapListPath(path):
 def SetModRoot(path):
     _DATA.mod_root = path
 
+def ShowCriticalWarning(msg):
+    """Compatible with classic version"""
+    return Bladex_raw.ShowCriticalWarning(msg)
 
 ######### Function End
 
@@ -1294,4 +1298,5 @@ SetGhostSectorSound
 SetLumenRoot
 SetMapListPath
 SetModRoot
+ShowCriticalWarning
 """

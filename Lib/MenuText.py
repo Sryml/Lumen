@@ -26,11 +26,12 @@ if Language.Current != "English":
 
 
 def GetMenuText(item):
+    # type: (str) -> str
     if Language.Current != "English":
         TrWord = ForeingDict.get(item, None)
         if TrWord is None:
             TrWord = ForeingDict.get(string.lower(item), item)
-        return TrWord
+        return TrWord # type: ignore
     return item
 
 

@@ -14,7 +14,10 @@ import GameStateAux
 import ObjStore
 import Language
 import MemPersistence
+import LoadBar
+import traceback
 
+from Lumenx import printx
 
 NotSave          = []
 ModulesToBeSaved = []
@@ -706,38 +709,58 @@ class WorldState:
         #print "__name__",__name__
 
     def GetState(self):
-        self.EntitiesState.GetState()
-        self.MapState.GetState()
+        try:
+            self.EntitiesState.GetState()
+            self.MapState.GetState()
+        except:
+            traceback.print_exc()
 
-    def SaveState(self,path):
-        print "[SAVE STARTED]"
+    def SaveState(self,save_dir):
+        printx("[SAVE STARTED]")
         ObjStore.AutoStoreIndex = 0 # -Sryml
-        if(self.SaveLState(path)==0):
-            print "[SAVE FAILED]: "+path
-            Bladex.ShowCriticalWarning("SaveWarning","failed to save"+path);
-            return
+        load_bar=LoadBar.AutoProgressBar(26,"Saving ","../../Data/Locale/"+Language.Current+"/Image/Guardando_hi.jpg")
+        save_success = 1
+        try:
+            self.SaveLState(save_dir, load_bar)
+        except:
+            import SaveGame
+            try:
+                shutil.rmtree(save_dir)
+                if SaveGame.SAVE_BACKUP:
+                    os.rename("../../Save/SaveBackup/%s" % os.path.basename(save_dir),save_dir)
+            except:
+                pass
+            printx("[SAVE FAILED]: "+save_dir)
+            save_success = 0
+        else:
+            printx("[SAVE COMPLETED]")
+        # if(self.SaveLState(path)==0):
+        #     printx("[SAVE FAILED]: "+path)
+        #     Bladex.ShowCriticalWarning("SaveWarning","failed to save"+path);
+        #     return
+        load_bar.Clear()
+        if save_success == 0:
+            Bladex.ShowCriticalWarning("SaveWarning","failed to save " + save_dir)
 
-        print "[SAVE COMPLETED]"
-
-    def SaveLState(self,aux_dir):
+    def SaveLState(self,aux_dir,load_bar):
+        # type: (str, LoadBar.AutoProgressBar) -> ...
         import os
         import SaveGame
          
         saveNumber = string.split(os.path.basename(aux_dir), "_")[0][8:]
         save_root = os.path.dirname(aux_dir)
 
-        temp_dir = save_root + "/SaveGame_Temp"
+        # temp_dir = save_root + "/SaveGame_Temp"
+        temp_dir = aux_dir
         filename = temp_dir + "/SaveGame%s.py" % (saveNumber,)
         
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
-        try:
-            os.mkdir(temp_dir)
-        except:
-            pass
+        # if os.path.exists(temp_dir):
+        #     shutil.rmtree(temp_dir)
+        # try:
+        #     os.mkdir(temp_dir)
+        # except:
+        #     pass
 
-        import LoadBar
-        load_bar=LoadBar.AutoProgressBar(26,"Saving ","../../Data/Locale/"+Language.Current+"/Image/Guardando_hi.jpg")
         load_bar.Increment("AutoBODs")
         self.SaveAutoBODs(temp_dir)
 ##        self.SaveFunctions(temp_dir)
@@ -1178,38 +1201,44 @@ for i in range(len(keys)):
         file.close()
 
         #Move temp file
-        imageTempPath = save_root + "/Temp.BMP"
-        imagePath = aux_dir + "/Screenshot.BMP"
+        # imageTempPath = save_root + "/Temp.BMP"
+        # imagePath = aux_dir + "/Screenshot.BMP"
         # svTempPath = "../../Save/Temp.sv"
         # if os.path.isfile(svTempPath)==0:
         #     print "Sv file "+svTempPath +" doesn't exist"
         #     return 0
-        if os.path.isfile(imageTempPath)==0:
-            print "Image "+imageTempPath +" doesn't exist"
-            return 0
+        # if os.path.isfile(imageTempPath)==0:
+        #     print "Image "+imageTempPath +" doesn't exist"
+        #     return 0
 
 
-        print "Removing Old folder"
+        # printx("Removing Old folder")
+        printx("Clear outdated files")
         oldFilename = "../../Save/SaveGame%s.py" % saveNumber
         oldImagePath = "../../Save/%s.BMP" % saveNumber
         oldSvPath = "../../Save/%s.sv" % saveNumber
-        if os.path.isdir(aux_dir)==1:
-            shutil.rmtree(aux_dir)
-        if os.path.isfile(oldFilename)==1:
-            os.remove(oldFilename)
-        if os.path.isfile(oldImagePath)==1:
-            os.remove(oldImagePath)
-        if os.path.isfile(oldSvPath)==1:
-            os.remove(oldSvPath)
-        print "Removed Old folder"
+        # if os.path.isdir(aux_dir)==1:
+        #     shutil.rmtree(aux_dir)
+        for i in (oldFilename,oldImagePath,oldSvPath):
+            try:
+                if os.path.isfile(i)==1:
+                    os.remove(i)
+            except:
+                printx("Error removing file "+i)
+        # if os.path.isfile(oldFilename)==1:
+        #     os.remove(oldFilename)
+        # if os.path.isfile(oldImagePath)==1:
+        #     os.remove(oldImagePath)
+        # if os.path.isfile(oldSvPath)==1:
+        #     os.remove(oldSvPath)
+        # printx("Removed Old folder")
 
-        os.rename(temp_dir, aux_dir)
-        print filename
+        # os.rename(temp_dir, aux_dir)
+        printx(filename)
         # os.rename(tempfilename,filename)
  
-        os.rename(imageTempPath,imagePath)
+        # os.rename(imageTempPath,imagePath)
         # os.rename(svTempPath, svPath)
-        load_bar.Clear()
         return 1
 
 

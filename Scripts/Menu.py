@@ -119,8 +119,9 @@ def BackMenu(option):
 	_MainMenu.DeActivateMenuItem()
 
 def BackToGame(this):
-    for i in range(_MainMenu.MenuStack.nItems()):
-        _MainMenu.DeActivateMenuItem()
+    if _MainMenu:
+        for i in range(_MainMenu.MenuStack.nItems()):
+            _MainMenu.DeActivateMenuItem()
         
 
 GamepadButton = {

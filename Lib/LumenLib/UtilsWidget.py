@@ -323,14 +323,20 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         MenuWidget.B_MenuTreeItem.ActivateItem(self, activate)
 
     def AuxActivateItem(self):
+        import Menu
         from LumenLib import BODLoader
 
         BODLoader.SetInstallMod(self.MenuDescr["ModDir"])
+        w = Menu.GetMenuWidget("MODS LIST")[0]
+        w.SetStateLabel(self)
 
     def SuprMenuItem(self):
+        import Menu
         from LumenLib import BODLoader
 
         BODLoader.SetEnableMod(self.MenuDescr["ModDir"])
+        w = Menu.GetMenuWidget("MODS LIST")[0]
+        w.SetStateLabel(self)
 
     def Draw(self, x, y, time):
         if self.GetHasFocus():
@@ -354,7 +360,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
                 Raster.DrawImage(rw, rh, "RGB", "Normal", img.GetData())
             else:
                 Raster.DrawResizeImage(rw, rh, "RGB", "Normal", img.GetData(), w, h)
-        # 启用标记
+        # 状态标记
         if self.MenuDescr["Installed"] != -1:
             w, h = 34 * self.border_scale, 34 * self.border_scale
             Enabled = self.MenuDescr["Enabled"]
@@ -407,15 +413,38 @@ class B_GridWidget(MenuWidget.B_MenuTree):
             self.FocusRow = int(index / self.GridSize[0]) % self.GridSize[1]
             self.FocusCol = index % self.GridSize[0]
             self.wPageLable.SetText(
-                "%s/%s %s\n%s"
+                "%s/%s %s\n\n%s\n%s"
                 % (
                     self.FocusPage + 1,
                     self.MaxPages,
                     MenuText.GetMenuText("Pages"),
                     MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+                    MenuText.GetMenuText(
+                        "Space to install/uninstall\nBackspace to enable/disable"
+                    ),
                 )
             )
+        #
         MenuWidget.B_MenuTree.SetFocus_Idx(self, index)
+        self.SetStateLabel(self.MenuItems[index])
+
+    def SetStateLabel(self, item):
+        txt = MenuText.GetMenuText("Mod State") + ": "
+        if item.MenuDescr["Installed"] == -1:
+            txt = txt + MenuText.GetMenuText("No Installation Required")
+            r, g, b = (0, 180, 0)
+        elif item.MenuDescr["Installed"] == 0:
+            txt = txt + MenuText.GetMenuText("Not Installed")
+            r, g, b = Language.FontColor.Unfocusable
+        else:
+            if item.MenuDescr["Enabled"] == 0:
+                txt = txt + MenuText.GetMenuText("Disabled")
+                r, g, b = Language.FontColor.Unfocusable
+            else:
+                txt = txt + MenuText.GetMenuText("Enabled")
+                r, g, b = (0, 180, 0)
+        self.wStateLabel.SetText(txt)
+        self.wStateLabel.SetColor(r, g, b)
 
     #
     def CalcIndex(self):
@@ -521,8 +550,6 @@ class B_ModGridWidget(B_GridWidget):
         # self.SetBorder(1)
         # self.SetBorderColor(200, 200, 0)
         self.nItems = len(self.MenuItems)
-        if self.nItems:
-            self.SetFocus_Idx(0)
         self.MaxPages = int((self.nItems - 1) / float(self.MaxItems)) + 1
         #
         # self.wNoteLabel = BUIx.B_TextWidget(
@@ -548,23 +575,22 @@ class B_ModGridWidget(B_GridWidget):
         #     B_Widget.B_FR_Top,
         # )
         #
-        self.wInstallLabel = BUIx.B_TextWidget(
+
+        self.wStateLabel = BUIx.B_TextWidget(
             self,
-            Menudesc["Name"] + "InstallLabel",
-            MenuText.GetMenuText(
-                "Press Space to install/uninstall, Backspace to enable/disable"
-            ),
+            Menudesc["Name"] + "StateLabel",
+            "",
             Language.font_server,
             Language.FontCommon,
         )
         r, g, b = Language.FontColor.Unfocusable
-        self.wInstallLabel.SetScale(Language.MFontScale["S"])
-        self.wInstallLabel.SetAlpha(1)
-        self.wInstallLabel.SetColor(r, g, b)
+        self.wStateLabel.SetScale(Language.MFontScale["S"])
+        self.wStateLabel.SetAlpha(1)
+        self.wStateLabel.SetColor(r, g, b)
         self.AddLabel(
-            self.wInstallLabel,
+            self.wStateLabel,
             0.5,
-            8,
+            10,
             B_Widget.B_LAB_HCenter,
             B_Widget.B_LAB_Bottom,
             B_Widget.B_FR_HRelative,
@@ -573,14 +599,43 @@ class B_ModGridWidget(B_GridWidget):
             B_Widget.B_FR_Top,
         )
 
+        # self.wInstallLabel = BUIx.B_TextWidget(
+        #     self,
+        #     Menudesc["Name"] + "InstallLabel",
+        #     MenuText.GetMenuText(
+        #         "Press Space to install/uninstall, Backspace to enable/disable"
+        #     ),
+        #     Language.font_server,
+        #     Language.FontCommon,
+        # )
+        # r, g, b = Language.FontColor.Unfocusable
+        # self.wInstallLabel.SetScale(Language.MFontScale["S"] * 0.92)
+        # self.wInstallLabel.SetAlpha(1)
+        # self.wInstallLabel.SetColor(r, g, b)
+        # self.AddLabel(
+        #     self.wInstallLabel,
+        #     0.5,
+        #     self.wStateLabel.GetSize()[1] + 14,
+        #     B_Widget.B_LAB_HCenter,
+        #     B_Widget.B_LAB_Bottom,
+        #     B_Widget.B_FR_HRelative,
+        #     B_Widget.B_FR_HCenter,
+        #     B_Widget.B_FR_AbsoluteTop,
+        #     B_Widget.B_FR_Top,
+        # )
+
         self.wPageLable = BUIx.B_TextWidget(
             self,
             Menudesc["Name"] + "PageLable",
-            "1/%s %s\n%s"
+            "%s/%s %s\n\n%s\n%s"
             % (
+                1,
                 self.MaxPages,
                 MenuText.GetMenuText("Pages"),
                 MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
+                MenuText.GetMenuText(
+                    "Space to install/uninstall\nBackspace to enable/disable"
+                ),
             ),
             Language.font_server,
             Language.FontCommon,
@@ -593,7 +648,7 @@ class B_ModGridWidget(B_GridWidget):
         self.AddLabel(
             self.wPageLable,
             0,
-            8,
+            10,
             B_Widget.B_LAB_Right,
             B_Widget.B_LAB_Bottom,
             B_Widget.B_FR_AbsoluteLeft,
@@ -601,6 +656,9 @@ class B_ModGridWidget(B_GridWidget):
             B_Widget.B_FR_AbsoluteTop,
             B_Widget.B_FR_Top,
         )
+        #
+        if self.nItems:
+            self.SetFocus_Idx(0)
 
     def CreateMenuElements(self, Parent, Menudesc, StackMenu):
         from LumenLib import BODLoader

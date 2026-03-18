@@ -20,6 +20,7 @@ import Reference
 import stat
 import Language
 import BCopy
+import shutil
 
 from LumenLib import Inventory, UtilsWidget
 
@@ -29,6 +30,8 @@ printx = Lumenx.printx
 EMPTY_SLOT = MenuText.GetMenuText("<Empty Slot>")
 DATE_FORMAT = MenuText.GetMenuText("%d/%m %H:%M")
 EMPTY_IMAGE = "../../Data/Empty.BMP"
+SAVE_BACKUP = 0
+
 SaveCounter = []
 
 for i in range(2):
@@ -126,36 +129,56 @@ def LoadGameFromDisk(menu_class):
     LoadGameAux(menu_class.MenuDescr["Clave"])
 
 
-def SaveGameToDisk(menu_class):
+def SaveGameToDisk(menu_class, clave=1):
     import Menu
     import Scorer
     import MenuText
     import GameText
     import GotoMapVars
 
-    global SaveGameString
+    # global SaveGameString
+    global SAVE_BACKUP
+    SAVE_BACKUP = 0
 
     # Back to game
     Menu.BackToGame(None)
 
-    clave = menu_class.MenuDescr["Clave"]
+    save_success = 1
+    if menu_class:
+        clave = menu_class.MenuDescr["Clave"]
+    bak_dir = "../../Save/SaveBackup"
     save_dir = "../../Save/SaveGame%s_files" % (clave,)
+    save_bak = "%s/%s" % (bak_dir, os.path.basename(save_dir))
+    try:
+        os.makedirs(bak_dir, exist_ok=True)
+        if os.path.exists(save_bak):
+            shutil.rmtree(save_bak)
+        if os.path.exists(save_dir):
+            os.rename(save_dir, save_bak)
+            SAVE_BACKUP = 1
+        os.makedirs(save_dir, exist_ok=True)
+        # save Screen shoot
+        Scorer.SetVisible(0)
+        Bladex.SaveScreenShot(
+            "%s/%s" % (save_dir, "Screenshot.BMP"), 480, 270
+        )  # 160, 120
+        SaveGameString = (
+            "import GameState;state=GameState.WorldState();state.GetState();state.SaveState(%s);state=None;GameState=None;"
+            % repr(save_dir)
+        )
 
-    # save Screen shoot
-    Scorer.SetVisible(0)
-    Bladex.SaveScreenShot("../../Save/Temp.BMP", 480, 270)  # 160, 120
-    SaveGameString = (
-        "import GameState;state=GameState.WorldState();state.GetState();state.SaveState(%s);state=None;GameState=None;"
-        % repr(save_dir)
-    )
-
-    # Save the game
-    Bladex.PauseSoundSystem()
-    Bladex.StopTime()
-    Bladex.SetRunString(
-        SaveGameString
-        + "Scorer.SetVisible(1);Bladex.RestartTime();Bladex.ResumeSoundSystem()"
-    )
+        # Save the game
+        Bladex.PauseSoundSystem()
+        Bladex.StopTime()
+        Bladex.SetRunString(
+            SaveGameString
+            + "Scorer.SetVisible(1);Bladex.RestartTime();Bladex.ResumeSoundSystem()"
+        )
+    except:
+        save_success = 0
+    #
+    if save_success == 0:
+        Bladex.ShowCriticalWarning("SaveWarning", "failed to save " + save_dir)
 
 
 def GetBack(menu_class):
