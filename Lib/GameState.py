@@ -715,10 +715,13 @@ class WorldState:
         except:
             traceback.print_exc()
 
-    def SaveState(self,save_dir):
+    def SaveState(self,save_dir,quick=0):
         printx("[SAVE STARTED]")
         ObjStore.AutoStoreIndex = 0 # -Sryml
-        load_bar=LoadBar.AutoProgressBar(26,"Saving ","../../Data/Locale/"+Language.Current+"/Image/Guardando_hi.jpg")
+        if quick:
+            load_bar = LoadBar.QuickProgressBar()
+        else:
+            load_bar=LoadBar.AutoProgressBar(26,"Saving ","../../Data/Locale/"+Language.Current+"/Image/Guardando_hi.jpg")
         save_success = 1
         try:
             self.SaveLState(save_dir, load_bar)
@@ -743,7 +746,7 @@ class WorldState:
             Bladex.ShowCriticalWarning("SaveWarning","failed to save " + save_dir)
 
     def SaveLState(self,aux_dir,load_bar):
-        # type: (str, LoadBar.AutoProgressBar) -> ...
+        # type: (str, ...) -> ...
         import os
         import SaveGame
          

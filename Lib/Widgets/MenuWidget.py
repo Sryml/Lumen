@@ -177,12 +177,16 @@ class B_MenuFocusManager:
   def SetFocus_Idx(self,menu_element_idx):
     try:
       menu_element=self.MenuItems[menu_element_idx]
-      self.SetFocus(menu_element)
+      ret = self.SetFocus(menu_element)
+      if ret == 0:
+        return 0
       if hasattr(menu_element, "FocusCallBack") and menu_element.FocusCallBack:
         menu_element.FocusCallBack(menu_element) # Added by Sryml
+      return 1
     except:
       traceback.print_exc()
       print "Error setting focus to index",menu_element_idx
+      return 0
 
 
 
@@ -490,7 +494,8 @@ class B_MenuTree(B_MenuFrameWidget):
             )
 
         if Menudesc.has_key("iFocus"):
-            self.SetFocus_Idx(Menudesc["iFocus"])
+            if self.SetFocus_Idx(Menudesc["iFocus"]) == 0:
+                self.SetFocus_Idx(ValidIndex)
         else:
             self.SetFocus_Idx(ValidIndex)
 

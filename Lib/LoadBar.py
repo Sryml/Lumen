@@ -18,6 +18,16 @@ INTERVAL = 10
 ProgressBarInst = None
 opened_files_delta = 0
 
+class QuickProgressBar:
+  def __init__(self, *args, **kwargs):
+    pass
+
+  def Increment(self, *args):
+    pass
+
+  def Clear(self):
+    pass
+
 class BaseProgressBar:
   "Clase base de las barras de progreso de carga"
 

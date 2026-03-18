@@ -87,6 +87,7 @@ def InitBindings (PlayerName):
 	import NetActions
 	import Actions
 	import Talk
+	import SaveGame
 	if netgame.GetNetState() == 0:
 		import DefaultSelectionData
 		import Scorer
@@ -216,8 +217,14 @@ def InitBindings (PlayerName):
 	Bladex.AddBoundFunc("TSStartConversation", Talk.StartConversation)
 	Bladex.AddBoundFunc("TSEnableJournal", Talk.EnableJournal)
 
+	#
+	Bladex.AddBoundFunc("Quick Save", SaveGame.QuickSave)
+	Bladex.AddBoundFunc("Quick Load", SaveGame.QuickLoad)
+
 
 def SetNoConfigurableActions():
+	Bladex.AssocKey("Quick Save","Keyboard","F5")
+	Bladex.AssocKey("Quick Load","Keyboard","F6")
 	Bladex.AssocKey("LaunchTravel","Keyboard","F1")
 	Bladex.AssocKey("LaunchTravel","Gamepad","ButtonBack")
 

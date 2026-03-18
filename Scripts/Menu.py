@@ -1226,7 +1226,8 @@ def ActivateMenu(caller_id = None):
     print "Error getting AppMode",x
 
   # Do some python garbage collection
-  ObjStore.CheckStore()
+  if caller_id == None:
+    ObjStore.CheckStore()
 
   InputManager=BInput.GetInputManager()
   if AppMode=="Game" or AppMode=="Demo":

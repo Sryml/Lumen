@@ -62,12 +62,13 @@ def ElUsuarioPresionaLaTeclaEscape(Salio):
     return 1
 
 
-def LoadGameAux(slot_num):
+def LoadGameAux(clave, mod_dir=None):
     import Language
     import SplashImage
 
     # by Sryml: start
-    mod_dir = Lumenx.GetCurrentModMenu()
+    if mod_dir is None:
+        mod_dir = Lumenx.GetCurrentModMenu()
     if mod_dir:
         mod_root = os.path.join(LUMEN_ROOT, Lumenx.ModListPath, mod_dir)
         new_lumen_root = "..\\..\\..\\.."
@@ -77,15 +78,20 @@ def LoadGameAux(slot_num):
 
     save_dir = "%s/Save/SaveGame%s_files" % (
         mod_root,
-        slot_num,
+        clave,
     )
-    save_file = os.path.join(save_dir, "SaveGame%s.py" % (slot_num,))
+    save_file = os.path.join(save_dir, "SaveGame%s.py" % (clave,))
+    if not os.path.isfile(save_file):
+        return 0
+
     file_data_aux = open("%s/%saux" % (save_dir, "aux"), "rt")
     lines = file_data_aux.readlines()
     file_data_aux.close()
     map_dir = string.strip(lines[2])
     # mod_dir = string.strip(lines[3])
     map_path = os.path.join(mod_root, "Maps", map_dir)
+    if not os.path.isdir(map_path):
+        return 0
     save_file = os.path.relpath(save_file, map_path)
 
     printx("%s, %s" % (repr(mod_dir), map_dir))
@@ -122,6 +128,7 @@ def LoadGameAux(slot_num):
     ]
 
     Bladex.CloseLevel(string.join(lines, ";"), new_map_dir)
+    return 1
     # by Sryml: end
 
 
@@ -129,7 +136,7 @@ def LoadGameFromDisk(menu_class):
     LoadGameAux(menu_class.MenuDescr["Clave"])
 
 
-def SaveGameToDisk(menu_class, clave=1):
+def SaveGameToDisk(menu_class=None, clave="1", quick=0):
     import Menu
     import Scorer
     import MenuText
@@ -144,7 +151,7 @@ def SaveGameToDisk(menu_class, clave=1):
     Menu.BackToGame(None)
 
     save_success = 1
-    if menu_class:
+    if menu_class is not None:
         clave = menu_class.MenuDescr["Clave"]
     bak_dir = "../../Save/SaveBackup"
     save_dir = "../../Save/SaveGame%s_files" % (clave,)
@@ -163,8 +170,8 @@ def SaveGameToDisk(menu_class, clave=1):
             "%s/%s" % (save_dir, "Screenshot.BMP"), 480, 270
         )  # 160, 120
         SaveGameString = (
-            "import GameState;state=GameState.WorldState();state.GetState();state.SaveState(%s);state=None;GameState=None;"
-            % repr(save_dir)
+            "import GameState;state=GameState.WorldState();state.GetState();state.SaveState(%s,%d);state=None;GameState=None;"
+            % (repr(save_dir), quick)
         )
 
         # Save the game
@@ -179,6 +186,28 @@ def SaveGameToDisk(menu_class, clave=1):
     #
     if save_success == 0:
         Bladex.ShowCriticalWarning("SaveWarning", "failed to save " + save_dir)
+
+
+def QuickSave():
+    import Actions
+
+    if string.lower(Lumenx.GetCurrentMap()) not in ("casa", "2dmap"):
+        SaveGameToDisk(clave="1", quick=1)
+        Actions.ReportMsg(MenuText.GetMenuText("Quick Save"))
+
+
+def QuickLoad():
+    import Menu
+
+    # Menu.ActivateMenu("QuickLoad")
+    Bladex.AddScheduledFunc(-1, LoadGameAux, ("1", Lumenx.GetCurrentMod()))
+    # try:
+    #     success = LoadGameAux("1", mod_dir=Lumenx.GetCurrentMod())
+    # except:
+    #     success = 0
+
+    # if success == 0:
+    #     Menu.BackToGame(None)
 
 
 def GetBack(menu_class):
@@ -197,17 +226,6 @@ def GetBack(menu_class):
 #     ("7", "../../Save/7.BMP"),
 #     ("8", "../../Save/8.BMP"),
 # )
-
-SAVEGAMEIMAGE = "0"
-LOADGAMEIMAGE = "0"
-
-
-def GetSaveGameImage():
-    return SAVEGAMEIMAGE
-
-
-def GetLoadGameImage():
-    return LOADGAMEIMAGE
 
 
 def FocusOnBitmap(menu_class=0, parametro=0):
@@ -422,10 +440,10 @@ def CreateSLMenu(menu_class):
                 if lasttime < filetime:
                     lasttime = filetime
                     load_item_focus = slot_num + 2
-                if firstime > filetime:
+                if slot_num != 1 and firstime > filetime:
                     firstime = filetime
                     save_item_focus = slot_num + 1
-        if not save_exists and first_empty_slot == -1:
+        if not save_exists and first_empty_slot == -1 and slot_num != 1:
             first_empty_slot = slot_num + 1
         # ----------------------------------
         SaveBitmaps.append((clave, screenshot, slot_name))
@@ -482,7 +500,17 @@ def CreateSLMenu(menu_class):
 
         # ----------------------------------
         if slot_num == 1:
+            save_val["Text"] = "[%s] %s" % (
+                MenuText.GetMenuText("Quick Save"),
+                save_val["Text"],
+            )
+            save_val["Focusable"] = 0
             save_val["VSep"] = "0.8em"
+            #
+            load_val["Text"] = "[%s] %s" % (
+                MenuText.GetMenuText("Quick Save"),
+                load_val["Text"],
+            )
             load_val["VSep"] = "0.8em"
         if not save_exists:
             del save_val["ListDescr"]

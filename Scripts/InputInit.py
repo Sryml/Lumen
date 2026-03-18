@@ -86,6 +86,9 @@ Bladex.AddInputAction("ToggleProfiling",0)
 
 Bladex.AddInputAction("LaunchTravel",0)
 
+Bladex.AddInputAction("Quick Save",0)
+Bladex.AddInputAction("Quick Load",0)
+
 # Inventory
 Bladex.AddInputAction("Select Last Inventory", 0)
 Bladex.AddInputAction("Select Next Inventory", 0)
