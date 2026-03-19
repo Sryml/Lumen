@@ -679,6 +679,9 @@ class B_ModGridWidget(B_GridWidget):
 # ----------------------------------
 class B_ImagesWidget(MenuWidget.B_MenuTreeItem, BUIx.B_RectWidget):
     def __init__(self, Parent, MenuDescr, StackMenu):
+        self.ViewScale = 1.0
+        self.Canvas = Parent.GetSize()
+
         self.OverlayColor = MenuDescr.get("OverlayColor", (0, 0, 0))
         self.OverlayAlpha = MenuDescr.get("OverlayAlpha", 0.0)
         self.Channel = MenuDescr.get("Channel", "RGB")
@@ -696,7 +699,7 @@ class B_ImagesWidget(MenuWidget.B_MenuTreeItem, BUIx.B_RectWidget):
             try:
                 if isinstance(FitHeight, types.StringType):
                     if FitHeight[-1] == "%":
-                        FitHeight = int(Parent.GetSize()[1] * float(FitHeight[:-1]))
+                        FitHeight = int(self.Canvas[1] * float(FitHeight[:-1]))
                     else:
                         FitHeight = int(FitHeight)
             except:
@@ -716,8 +719,11 @@ class B_ImagesWidget(MenuWidget.B_MenuTreeItem, BUIx.B_RectWidget):
             self.CurrentImage = name
 
     def Draw(self, x, y, time):
-        Raster.SetPosition(x, y)
+        ViewScale = Raster.GetSize()[1] / float(self.Canvas[1])
         Dimension = self.Images[self.CurrentImage].GetDimension()
+        vidw, vidh = self.vidw * ViewScale, self.vidh * ViewScale
+        x_offset = (self.vidw - vidw) * 0.5
+        Raster.SetPosition(x + x_offset, y)
         if GameVersion == Lumenx.CLASSIC_VER:
             Raster.DrawImage(
                 Dimension[0],
@@ -733,15 +739,15 @@ class B_ImagesWidget(MenuWidget.B_MenuTreeItem, BUIx.B_RectWidget):
                 self.Channel,
                 "Normal",
                 self.Images[self.CurrentImage].GetData(),
-                self.vidw,
-                self.vidh,
+                vidw,
+                vidh,
             )
         #
         if self.OverlayAlpha != 0:
             r, g, b = self.OverlayColor
             Raster.SetFillColor(r, g, b)
             Raster.SetAlpha(self.OverlayAlpha)
-            Raster.SolidRectangle(x, y, x + self.vidw, y + self.vidh)
+            Raster.SolidRectangle(x, y, x + vidw, y + vidh)
         self.DefDraw(x, y, time)
 
 

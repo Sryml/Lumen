@@ -273,6 +273,10 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
 
         #
         # scale_prime = 1.6
+        if hasattr(menu_element, "ViewScale"):
+          ViewScale = menu_element.ViewScale
+        else:
+          ViewScale = self.ViewScale
         YPos = 0
         is_floating = self.Menudesc.get("Floating", 0)
         Height = self.GetSize()[1]
@@ -284,7 +288,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
               YPos = int(float(vsep[:-1]) * Height) # type: ignore
               is_floating = 1
             elif vsep[-2:] == "em":
-              YPos = int(menu_element.GetSize()[1] * self.ViewScale * float(vsep[:-2]))
+              YPos = int(menu_element.GetSize()[1] * ViewScale * float(vsep[:-2]))
             else:
               YPos = int(vsep)
           except:
@@ -295,7 +299,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
         #
         if not is_floating:
             YPos = self.VertPos + YPos
-            self.VertPos = YPos + (menu_element.GetSize()[1] * self.ViewScale)
+            self.VertPos = YPos + (menu_element.GetSize()[1] * ViewScale)
         #
         self.AddWidget(  # type: ignore
             menu_element,
@@ -496,6 +500,9 @@ class B_MenuTree(B_MenuFrameWidget):
         if Menudesc.has_key("iFocus"):
             if self.SetFocus_Idx(Menudesc["iFocus"]) == 0:
                 self.SetFocus_Idx(ValidIndex)
+        # elif Menudesc.has_key("NameFocus"):
+        #     if self.SetFocus_Idx(Menudesc["NameFocus"]) == 0:
+        #         self.SetFocus_Idx(ValidIndex)
         else:
             self.SetFocus_Idx(ValidIndex)
 

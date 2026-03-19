@@ -310,6 +310,9 @@ def EnterCurrentMod(this):
     w = Menu.GetMenuWidget("MODS LIST")[0]
     sw, idx = Menu.GetMenuWidget(_DATA.mod_info[Lumenx.GetCurrentMod()]["Name"], w)
     w.SetFocus_Idx(idx, update_page=1)
+    if Bladex.GetEntity("Player1").Life <= 0:
+        Menu.GetMenuItem(["BACK TO GAME"],sw.MenuDescr)["Focusable"] = 0
+        # sw.MenuDescr["NameFocus"] = "LOAD GAME"
     sw.ActivateItem(1)
 
 

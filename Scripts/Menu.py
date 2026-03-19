@@ -2527,7 +2527,6 @@ else:
                                        "Font":MenuFontBig,
                                       #  "VSep": "1em",
                                        "Size":("auto", 1080),
-                                       "AdjustScale": 1,
                                        #"Kind":MenuWidget.B_VariableFocusTextMenuItem,
                                        #"Command":SaveGame1
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Savegame Slot 1:"),
@@ -2560,7 +2559,6 @@ else:
                                        "Text":MenuText.GetMenuText("LOAD GAME"),
                                        "Font":MenuFontBig,
                                        "Size":("auto", 1080),
-                                       "AdjustScale": 1,
                                        "ListDescr":[ {"Name"     : MenuText.GetMenuText("Load Game at Slot 1:"),
                                                       "Font":MenuFontBig,
                                                       "VSep"     : 200,
@@ -2750,7 +2748,8 @@ else:
   ########## RODRIGO!! AQUI ESTA COMO SE HACE
   elif "Casa" != Bladex.GetCurrentMap():
     Desc1["ListDescr"].insert(1,
-                                           {"Name":MenuText.GetMenuText("BACK TO GAME"),
+                                           {"Name":"BACK TO GAME",
+                                            "Text":MenuText.GetMenuText("BACK TO GAME"),
                                             "VSep":8,
                                             "Font":MenuFontBig,
                                             "Command":BackToGame,
@@ -2769,27 +2768,23 @@ def BackMap():
 # Xample by Dario and co
 #    Menu.GetMenuItem(['Game','Save Current'])["Kind"] = MenuWidget.B_MenuItemTextNoFocus
 #    Menu.GetMenuItem(['Options','Game Options','Gore','Password:'])
-def GetMenuItem(way, tr=1):
+def GetMenuItem(way, MenuLevel={}):
 	global Desc1
 
 	idx          = 0
 	continueflag = 1
-	MenuLevel    = Desc1
+	if MenuLevel == {}:
+		MenuLevel    = Desc1
 	ReturnValue  = {}
 
 	while(continueflag):
 		continueflag = 0
-		# by Sryml
-		if tr:
-			name = MenuText.GetMenuText(way[idx])
-		else:
-			name = way[idx]
-    #
+		name = way[idx]
 		for val in MenuLevel["ListDescr"]:
 			if val.has_key("Name"):
 				#print "see",val["Name"]
 
-				if name == val["Name"]:
+				if name == val["Name"] or MenuText.GetMenuText(name) == val["Name"]:
 					idx = idx + 1
 					if len(way)==idx:
 						ReturnValue = val

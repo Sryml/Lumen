@@ -330,8 +330,8 @@ def CreateSLMenu(menu_class):
             "Name": "GameList",
             "Kind": UtilsWidget.B_ImagesWidget,
             "ImageList": SaveBitmaps,
-            "FitHeight": "0.15%",
-            "VSep": "0.01%",
+            "FitHeight": "0.2%",
+            "VSep": "0.019%",
             "Focusable": 0,
             "Channel": "BGR",
         },
@@ -349,7 +349,7 @@ def CreateSLMenu(menu_class):
             "Name": "Restart",
             "Text": '%s "%s"'
             % (MenuText.GetMenuText("Restart"), MenuText.GetMenuText(restart_text)),
-            "VSep": "0.4em",
+            "VSep": "0.012%",
             "Clave": "0",
             "FocusCallBack": FocusOnBitmap,
             "FontScale": MFontScale["M"],
@@ -450,7 +450,7 @@ def CreateSLMenu(menu_class):
         save_val = {
             "Name": "Slot %s" % clave,
             "Text": slot_name,
-            "VSep": "0.2em",
+            "VSep": "0.6em",
             "FontScale": MFontScale["M"],
             "FocusCallBack": FocusOnBitmap,
             "Clave": clave,
@@ -505,13 +505,13 @@ def CreateSLMenu(menu_class):
                 save_val["Text"],
             )
             save_val["Focusable"] = 0
-            save_val["VSep"] = "0.8em"
+            save_val["VSep"] = "1.4em"
             #
             load_val["Text"] = "[%s] %s" % (
                 MenuText.GetMenuText("Quick Save"),
                 load_val["Text"],
             )
-            load_val["VSep"] = "0.8em"
+            load_val["VSep"] = "1.4em"
         if not save_exists:
             del save_val["ListDescr"]
             save_val["Command"] = SaveGameToDisk
@@ -553,6 +553,8 @@ def CreateSLMenu(menu_class):
     #
     if SaveMenu.Focusable:
         menu_class.SetFocus_Idx(Menu.GetMenuWidget("SAVE GAME", menu_class)[1])
+    elif Bladex.GetEntity("Player1").Life <= 0 and LoadMenu.Focusable:
+        menu_class.SetFocus_Idx(Menu.GetMenuWidget("LOAD GAME", menu_class)[1])
     #
     Reference.debugprint("Find %d saved games." % save_count)
 
@@ -582,11 +584,7 @@ def ActivaMenuDeRegreso():
     import Menu
 
     if Bladex.GetEntity("Player1").Life <= 0:
-        Menu.GetMenuItem(["BACK TO GAME"])[
-            "Kind"
-        ] = (
-            MenuWidget.B_MenuItemTextNoFXNoFocus
-        )  # :TODO: crash with TypeError : expected integer index
+        Menu.GetMenuItem(["BACK TO GAME"])["Focusable"] = 0
         Menu.EscapeFunction = ElUsuarioPresionaLaTeclaEscape
 
     Menu.Desc1["iFocus"] = 0
