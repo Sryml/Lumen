@@ -177,7 +177,7 @@ def WrapText(Text, MaxWidth, FontScale, font_behaviour):
 class B_BackColor(BUIx.B_RectWidget):
     def __init__(self, Parent, MenuDescr, StackMenu):
         BUIx.B_RectWidget.__init__(self, Parent, MenuDescr["Name"], 1, 1)
-        ViewSize = Raster.GetSize()
+        ViewSize = Raster.GetUnscaledSize()
         self.Rectangle = MenuDescr.get("Rectangle", (0, 0, ViewSize[0], ViewSize[1]))
         self.Color = MenuDescr.get("Color", (0, 0, 0))
         self.Alpha = MenuDescr.get("Alpha", 1.0)
@@ -205,7 +205,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
 
         self.CheckBoxBmp = Parent.CheckBoxBmp
         self.CheckMarkBmp = Parent.CheckMarkBmp
-        self.border_scale = Parent.border_scale
+        # self.border_scale = Parent.border_scale
         border_size = Parent.border_size
         BUIx.B_FrameWidget.__init__(
             self,
@@ -215,6 +215,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
             border_size[1],
         )
         MenuWidget.B_MenuTreeItem.__init__(self, MenuDescr, StackMenu)
+        self.SetAutoScale(1)
         self.SetDrawFunc(self.Draw)
         #
         self.wTitle = BUIx.B_TextWidget(
@@ -274,6 +275,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
             border_size[1],
             "ModBorder",
         )
+        self.wBorder.SetAutoScale(1)
         self.wBorder.SetAlpha(1.0)
         self.wBorder.SetColor(255, 255, 255)
         #
@@ -339,6 +341,8 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         w.SetStateLabel(self)
 
     def Draw(self, x, y, time):
+        from LumenLib import BODLoader
+
         if self.GetHasFocus():
             r, g, b = Language.FontColor.Focused
         else:
@@ -349,12 +353,13 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         # 展示图
         img, w, h = self.MenuDescr["Show"]
         border_w, border_h = self.GetSize()
+        border_scale = border_h / float(BODLoader.BORDER_SIZE[1])
         if img is not None:
             rw, rh = img.GetDimension()
-            w, h = w * self.border_scale, h * self.border_scale
+            w, h = w * border_scale, h * border_scale
             Raster.SetPosition(
                 x + (border_w - w) * 0.5,
-                y + border_h * 0.110 + (261 * self.border_scale - h) * 0.5,
+                y + border_h * 0.110 + (261 * border_scale - h) * 0.5,
             )
             if GameVersion == Lumenx.CLASSIC_VER:
                 Raster.DrawImage(rw, rh, "RGB", "Normal", img.GetData())
@@ -362,7 +367,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
                 Raster.DrawResizeImage(rw, rh, "RGB", "Normal", img.GetData(), w, h)
         # 状态标记
         if self.MenuDescr["Installed"] != -1:
-            w, h = 34 * self.border_scale, 34 * self.border_scale
+            w, h = 34 * border_scale, 34 * border_scale
             Enabled = self.MenuDescr["Enabled"]
             if self.MenuDescr["Installed"] == 0:
                 r, g, b = 39, 39, 39
@@ -534,7 +539,7 @@ class B_ModGridWidget(B_GridWidget):
         self.border_size = border_size = AdaptResolution(
             BODLoader.BORDER_SIZE, (3840, 2160), Parent.GetSize()
         )
-        self.border_scale = border_size[0] / float(BODLoader.BORDER_SIZE[0])
+        # self.border_scale = border_size[0] / float(BODLoader.BORDER_SIZE[0])
         self.gap = gap = AdaptResolution(
             (BODLoader.BORDER_GAP, BODLoader.BORDER_GAP), (3840, 2160), Parent.GetSize()
         )[0]
@@ -547,6 +552,7 @@ class B_ModGridWidget(B_GridWidget):
         Menudesc["Size"] = size
         #
         B_GridWidget.__init__(self, Parent, Menudesc, StackMenu, VertPos)
+        # self.SetAutoScale(0)
         # self.SetBorder(1)
         # self.SetBorderColor(200, 200, 0)
         self.nItems = len(self.MenuItems)
