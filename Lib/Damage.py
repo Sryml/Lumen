@@ -1258,6 +1258,7 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 	# Shield component OR block with 2H weapon #
 	######################################################################################	
 	blocking_with_weapon=0
+	inv=me.GetInventory()
 	if Shielded:
 		victimsShieldName = me.GetInventory().GetActiveShield()
 		# Based on the characteristics of whatever you are carrying in the left hand
@@ -1304,16 +1305,24 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 				shieldF = victimsShieldData[5][4]
 				shield_breakable=victimsShieldData[5][5]
 				blocking_with_weapon=1
+	elif inv.GetMagicShield():
+		# Patch, this damage should be shielded....
+		shield= Bladex.GetEntity(inv.GetMagicShield())
+		ximpulse= 1.0
+		yimpulse= 0.0
+		zimpulse= 0.0
+		shield.HitShieldFunc (shield.Name,WeaponName,x,y,z,ximpulse,yimpulse,zimpulse,DamageType)
+		return
 	else:
-		inv=me.GetInventory()
-		if inv.GetMagicShield():
-			# Patch, this damage should be shielded....
-			shield= Bladex.GetEntity(inv.GetMagicShield())
-			ximpulse= 1.0
-			yimpulse= 0.0
-			zimpulse= 0.0
-			shield.HitShieldFunc (shield.Name,WeaponName,x,y,z,ximpulse,yimpulse,zimpulse,DamageType)
-			return
+		left_name = me.InvLeft
+		ent = Bladex.GetEntity(left_name)
+		if left_name and ent:
+			kind = ent.Kind
+			objData = Reference.EntitiesObjectData.get(left_name, Reference.DefaultObjectData.get(kind, None))
+			if objData:
+				obj_flag = objData[0]
+				if obj_flag in (Reference.OBJ_WEAPON, Reference.OBJ_STANDARD, Reference.OBJ_ARROW, Reference.OBJ_BOW):
+					shieldF = objData[2]
 
 	######################################################################################	
 	
@@ -1334,10 +1343,7 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 	# Weapon component #
 	######################################################################################
 	victimsWeaponData= None
-	if me.GetInventory().HoldingBow:
-		victimsWeaponName = me.InvLeft
-	else:
-		victimsWeaponName = me.InvRight
+	victimsWeaponName = me.InvRight
 	if victimsWeaponName and blocking_with_weapon==0:	
 		if Reference.EntitiesObjectData.has_key(victimsWeaponName):
 			if Reference.EntitiesObjectData[victimsWeaponName][0] == Reference.OBJ_WEAPON or Reference.EntitiesObjectData[victimsWeaponName][0] == Reference.OBJ_STANDARD or Reference.EntitiesObjectData[victimsWeaponName][0] == Reference.OBJ_ARROW or Reference.EntitiesObjectData[victimsWeaponName][0] == Reference.OBJ_BOW:

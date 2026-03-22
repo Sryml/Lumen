@@ -61,37 +61,31 @@ def Draw():
 			#else:
 			#	ShieldName = char.InvLeftBack
 			inv= char.GetInventory()
-			if inv.HoldingBow:
-				WeaponName = char.InvLeft
-			else:
-				WeaponName = inv.GetActiveWeapon()
-			ShieldName = inv.GetActiveShield()
+			WeaponName = char.InvRight #inv.GetActiveWeapon()
+			wp = Bladex.GetEntity(WeaponName)
+			ShieldName = char.InvLeft #inv.GetActiveShield()
+			sh = Bladex.GetEntity(ShieldName)
 
-			if WeaponName:
-				if Reference.EntitiesObjectData.has_key(WeaponName):
-					if Reference.EntitiesObjectData[WeaponName][0] == Reference.OBJ_WEAPON or Reference.EntitiesObjectData[WeaponName][0] == Reference.OBJ_STANDARD or Reference.EntitiesObjectData[WeaponName][0] == Reference.OBJ_ARROW:
-						weaponData = Reference.EntitiesObjectData[WeaponName]
-						if len (weaponData) > 1:
-							weaponFPow = weaponData[1]
-							weaponFDef = weaponData[2]
-				else:
-					kind = Bladex.GetEntity(WeaponName).Kind
-					if Reference.DefaultObjectData.has_key(kind):
-						if Reference.DefaultObjectData[kind][0] == Reference.OBJ_WEAPON or Reference.DefaultObjectData[kind][0] == Reference.OBJ_STANDARD or Reference.DefaultObjectData[kind][0] == Reference.OBJ_ARROW or Reference.DefaultObjectData[kind][0] == Reference.OBJ_BOW:
-							weaponData = Reference.DefaultObjectData[kind]
-							if len (weaponData) > 1:
-								weaponFPow = weaponData[1]
-								weaponFDef = weaponData[2]
-			if ShieldName:
-				if Reference.EntitiesObjectData.has_key(ShieldName):
-					if Reference.EntitiesObjectData[ShieldName][0] ==  Reference.OBJ_SHIELD:
-						shieldFPow = Reference.EntitiesObjectData[ShieldName][1]
-
-				else:
-					kind = Bladex.GetEntity(ShieldName).Kind
-					if Reference.DefaultObjectData.has_key(kind):
-						if Reference.DefaultObjectData[kind][0] ==  Reference.OBJ_SHIELD:
-							shieldFPow = Reference.DefaultObjectData[kind][1]
+			if WeaponName and wp:
+				kind = wp.Kind
+				objData = Reference.EntitiesObjectData.get(WeaponName, Reference.DefaultObjectData.get(kind, None))
+				if objData:
+					obj_flag = objData[0]
+					if obj_flag in (Reference.OBJ_WEAPON, Reference.OBJ_STANDARD, Reference.OBJ_ARROW):
+						if len (objData) > 1:
+							weaponFPow = objData[1]
+							weaponFDef = objData[2]
+			if ShieldName and sh:
+				kind = sh.Kind
+				objData = Reference.EntitiesObjectData.get(ShieldName, Reference.DefaultObjectData.get(kind, None))
+				if objData:
+					obj_flag = objData[0]
+					if obj_flag in (Reference.OBJ_WEAPON, Reference.OBJ_STANDARD, Reference.OBJ_ARROW, Reference.OBJ_BOW):
+						if len (objData) > 1:
+							shieldFPow = objData[1]
+							shieldFDef = objData[2]
+					elif obj_flag == Reference.OBJ_SHIELD:
+						shieldFPow = objData[1]
 
 			FDefense = char.Data.FDefense
 			FAttack = char.Data.FAttack
@@ -108,7 +102,7 @@ def Draw():
 					Color = 0
 
 			damage = int((charFPow * FAttack) + (weaponFPow + shieldFPow))
-			defense = int((charFDef * FDefense) + weaponFDef)
+			defense = int((charFDef * FDefense) + (weaponFDef + shieldFDef))
 			
 			import MenuText
 			POW = MenuText.GetMenuText("POW")
