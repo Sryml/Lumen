@@ -908,34 +908,39 @@ def BreakMyShield(EntityName):
 				if child and child.Kind<>"Entity Spot":
 					esc.Unlink(child)
 					child.Impulse(0,0,0)
-		if Breakings.ExplodeSpecialObject ( me.InvLeft , 24000.0)==1:
-			if Reference.EntitiesObjectData.has_key(me.InvLeft):
-				del Reference.EntitiesObjectData[me.InvLeft]
-			DropInvalidObjectsOnImpact (EntityName)
-			me.Wuea=Reference.WUEA_ENDED
-			me.LaunchAnmType("df_s_broken")
-			inv=me.GetInventory()
-			inv.RemoveShield(me.InvLeft)
-			inv.LinkLeftHand("None")
-			if me.Data.NPC:
-				me.Data.ResetCombat (EntityName)
+		if Breakings.ExplodeSpecialObject ( me.InvLeft , 24000.0)==0:
+			if hasattr(esc.Data, "BreakFunc"): # -Sryml
+				esc.Data.BreakFunc()
+		if Reference.EntitiesObjectData.has_key(me.InvLeft):
+			del Reference.EntitiesObjectData[me.InvLeft]
+		DropInvalidObjectsOnImpact (EntityName)
+		me.Wuea=Reference.WUEA_ENDED
+		me.LaunchAnmType("df_s_broken")
+		inv=me.GetInventory()
+		inv.RemoveShield(me.InvLeft)
+		inv.LinkLeftHand("None")
+		if me.Data.NPC:
+			me.Data.ResetCombat (EntityName)
 
 
 def BreakMySword(EntityName):
 	me=Bladex.GetEntity(EntityName)
 	if me.InvRight<>"":		
+		obj = Bladex.GetEntity(me.InvRight)
 		Actions.Stop_Weapon (EntityName,"Stop_Weapon")
-		if Breakings.ExplodeSpecialObject ( me.InvRight , 24000.0)==1:
-			if Reference.EntitiesObjectData.has_key(me.InvRight):
-				del Reference.EntitiesObjectData[me.InvRight]
-			DropInvalidObjectsOnImpact (EntityName)
-			me.Wuea=Reference.WUEA_ENDED
-			me.LaunchAnmType("sword_broken")
-			inv=me.GetInventory()
-			inv.RemoveWeapon(me.InvRight)
-			inv.LinkRightHand("None")
-			if me.Data.NPC:
-				me.Data.ResetCombat (EntityName)
+		if Breakings.ExplodeSpecialObject ( me.InvRight , 24000.0)==0:
+			if hasattr(obj.Data, "BreakFunc"): # -Sryml
+				obj.Data.BreakFunc()
+		if Reference.EntitiesObjectData.has_key(me.InvRight):
+			del Reference.EntitiesObjectData[me.InvRight]
+		DropInvalidObjectsOnImpact (EntityName)
+		me.Wuea=Reference.WUEA_ENDED
+		me.LaunchAnmType("sword_broken")
+		inv=me.GetInventory()
+		inv.RemoveWeapon(me.InvRight)
+		inv.LinkRightHand("None")
+		if me.Data.NPC:
+			me.Data.ResetCombat (EntityName)
 
 def StuckWeaponFall (WeaponName, TargetName):
 	weapon= Bladex.GetEntity(WeaponName)
@@ -1385,15 +1390,13 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 							# Break the shield if 0 resistance
 							if victimsShieldData[2] <= 0.0:
 								victimsShieldData[2]=0.0
-								if shield.Data.brkobjdata:
-									BreakMyShield(me.Name)
-									Shielded=0
+								BreakMyShield(me.Name)
+								Shielded=0
 							elif attacker and attacker.InDestructorAttack==1 and damage_withstood > shield_breakable:
-								if shield.Data.brkobjdata:
-									BreakMyShield(me.Name)
-									Shielded=0
-									if PrintFormula==1:
-										print "Shield Breaking in destructor attack, took: "+`damage_withstood`+", max: "+`shield_breakable`
+								BreakMyShield(me.Name)
+								Shielded=0
+								if PrintFormula==1:
+									print "Shield Breaking in destructor attack, took: "+`damage_withstood`+", max: "+`shield_breakable`
 					if Shielded:
 						#rules out cases where shield has broken
 						if (not thrown_flag) and attacker and attacker.Person and attacker.GotAnmType("sw_react"):
@@ -1408,7 +1411,7 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 			weapon= Bladex.GetEntity(me.GetInventory().GetActiveWeapon())
 			try:
 				if weapon:
-					if weapon.Data.brkobjdata:
+					if shield_breakable:
 						# Lower the resistance of the shield
 						if victimsShieldData:
 							if not Reference.EntitiesObjectData.has_key(weapon.Name):
@@ -1419,15 +1422,13 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 							# Break the shield if 0 resistance
 							if victimsShieldData[5][4] <= 0.0:
 								victimsShieldData[5][4]=0.0
-								if weapon.Data.brkobjdata:
-									BreakMySword(me.Name)
-									Shielded=0
+								BreakMySword(me.Name)
+								Shielded=0
 							elif attacker and attacker.InDestructorAttack==1 and damage_withstood > shield_breakable:
-								if weapon.Data.brkobjdata:
-									BreakMySword(me.Name)
-									Shielded=0
-									if PrintFormula==1:
-										print "Weapon Breaking in destructor attack, took: "+`damage_withstood`+", max: "+`shield_breakable`
+								BreakMySword(me.Name)
+								Shielded=0
+								if PrintFormula==1:
+									print "Weapon Breaking in destructor attack, took: "+`damage_withstood`+", max: "+`shield_breakable`
 					if Shielded:
 						#rules out cases where shield has broken
 						if (not thrown_flag) and attacker and attacker.Person and attacker.GotAnmType("sw_react"):
@@ -1502,21 +1503,21 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 	if me.Life <= 0.0:
 		if (AttackerName):
 			attacker=Bladex.GetEntity(AttackerName)
-			if attacker and attacker.InDestructorAttack==1 and effective_damage>1:
-				try:
-					if victimsShieldName:
-						victimsShield= Bladex.GetEntity(victimsShieldName)
-						if victimsShield and victimsShield.Data.brkobjdata:
-							BreakMyShield(me.Name)
-				except:
-					pass
-				try:
-					if victimsWeaponName:
-						victimsWeapon= Bladex.GetEntity(victimsWeaponName)
-						if victimsWeapon and victimsWeaponName.Data.brkobjdata:
-							BreakMySword(me.Name)
-				except:
-					pass
+			# if attacker and attacker.InDestructorAttack==1 and effective_damage>1:
+			# 	try:
+			# 		if victimsShieldName:
+			# 			victimsShield= Bladex.GetEntity(victimsShieldName)
+			# 			if victimsShield and victimsShield.Data.brkobjdata:
+			# 				BreakMyShield(me.Name)
+			# 	except:
+			# 		pass
+			# 	try:
+			# 		if victimsWeaponName:
+			# 			victimsWeapon= Bladex.GetEntity(victimsWeaponName)
+			# 			if victimsWeapon and victimsWeaponName.Data.brkobjdata:
+			# 				BreakMySword(me.Name)
+			# 	except:
+			# 		pass
 			if (prevLife>0) and (netgame.GetNetState() == 0):
 				AttackerEntity=Bladex.GetEntity(AttackerName)
 				if AttackerEntity:

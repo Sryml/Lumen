@@ -94,8 +94,8 @@ def LeftLife(obj_name):
 def ExplodeSpecialObject(obj_name, expl_imp,delta = (0,0,0)):
 
 	obj=Bladex.GetEntity(obj_name)
-	if obj.Data is None:
-		print "Trying to break "+obj_name+" AND it was NOT breakable!!!"
+	if not hasattr(obj.Data,"brkobjdata"):
+		# print "Trying to break "+obj_name+" AND it was NOT breakable!!!"
 		return 0
 	brkobj=obj.Data.brkobjdata
 #	for n in range(brkobj.n_piezas):
