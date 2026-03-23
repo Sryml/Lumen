@@ -535,22 +535,27 @@ class PlayerPerson:
 	def MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node):
 		# print EntityName+": MutilateFunc"
 		me = Bladex.GetEntity(EntityName)
+		limb= Bladex.GetEntity(obj_name)
+		#
+		if limb.TestHit:
+			limb.PutToWorld()
+			limb.Move(0, -140, 0)
+		limb.ExclusionGroup=1337
+		# limb.Impulse(0.0, 0.0, 0.0)
+		#
 		if me and me.Kind!="Skeleton":
 			Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
 
-		if me.Kind=="Golem_lava":
-			return
+		if me.Kind=="Golem_lava" or (me.Kind=="Minotaur" and node!=Reference.BODY_HEAD):
+			return limb
 
-		if me.Kind=="Minotaur" and node!=Reference.BODY_HEAD:
-			return
-
-		limb= Bladex.GetEntity(obj_name)
 		InitDataField.Initialise(limb)
 		limb.Data.NoFXOnHit= 1
 		# print limb.Mass, node
 		if limb.Mass > 1.5 and limb.Mass < 7.0:
 			Reference.EntitiesSelectionData[obj_name]= Reference.DefaultSelectionData["Limb"]
 			Reference.EntitiesObjectData[obj_name]= Reference.DefaultObjectData['Limb']
+		return limb
 
 	def TakeFunc (self, MyName):
 		Actions.StdUse (MyName)
@@ -722,7 +727,7 @@ class PlayerPerson:
 		Bladex.GetEntity(EntityName).Freeze()
 
 	def PCImDead (self, EntityName):
-		me = Bladex.GetEntity(EntityName)
+		me = Bladex.GetEntity(EntityName) # type: Bladex._entity.B_Entity_Person
 		me.AddAnmEventFunc("UnlinkAll", self.UnlinkAll)
 
 		already_death=0
@@ -782,10 +787,14 @@ class PlayerPerson:
 				launch_new=0
 
 			if launch_new==1:
+				# me.SetTmpAnmFlags(1, 1, 1, 0, 5, 1)
 				me.LaunchAnmType(death_anim)
+				me.ExclusionMask = 7
 
 			if me.AnimName<>death_anim:
+				# me.SetTmpAnmFlags(1, 1, 1, 0, 5, 1)
 				me.LaunchAnmType("dth0")
+				me.ExclusionMask = 7
 				if me.AnimName<>"dth0":
 					#pdb.set_trace()
 					print "BUG? -> Basdic_Funcs.py , def PCImDead()"
