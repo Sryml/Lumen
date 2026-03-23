@@ -193,7 +193,8 @@ def PutAllInBack(EntityName):
     if rightback:
         inv.LinkRightBack(rightback)
     elif not rightback and right:
-        inv.LinkRightBack(right)
+        if Bladex.GetEntity(right).Kind[:4] != "Limb":
+            inv.LinkRightBack(right)
     elif rightback and right:
         print "ERROR - Actions.PutAllInBack -> rightback and right both diff on none!!!"
         inv.LinkRightBack(rightback)
