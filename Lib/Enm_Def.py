@@ -17,6 +17,8 @@ import GameStateAux
 #if Reference.DEBUG_INFO == 1:
 import pdb
 
+### Magic exclusion group that is assigned to all inventory items and limbs. -LeadHead
+EXG_MAGIC = 1337
 DEBUG_SOUNDS=0
 ##################################################################################
 #  E V E N T S
@@ -362,7 +364,10 @@ def ChooseLeader (entity1name, entity2name):
 	return ChooseMostLife (entity1name, entity2name)
 ##################################################################################
 
-
+def ResetExclusionGroup(ent_name):
+	me = Bladex.GetEntity(ent_name)
+	me.ExclusionGroup = 0
+	me.OnStopFunc = None
 
 # Define the default NPC python person class
 class NPCPerson (Basic_Funcs.PlayerPerson):
@@ -408,7 +413,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 		# Initialise core                         #
 		#_________________________________________#
 		me.SubscribeToList("Listeners")
-		me.Deaf = 0
+		# me.Deaf = 0
 		me.CombatGroup = "Group of " + me.Name
 
 
@@ -1452,6 +1457,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 
 
 	def StdImDead(self,EntityName):
+		# type: (str) -> ...
 		global TwinkleObjs
 		Reference.debugprint(EntityName+": I died!")
 		if self.Asleep:
@@ -1498,47 +1504,128 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 
 
 		# Drop the weapons if possible
-
+		inv = me.GetInventory()
+		
+		pos_l= me.Rel2AbsPoint(200,0,0)
+		pos_r= me.Rel2AbsPoint(-200,0,0)
+		try:
+			pos_rf= me.Rel2AbsPoint(0,0,0,"R_Foot")
+			pos_lf= me.Rel2AbsPoint(0,0,0,"L_Foot")
+			
+			diff= (pos_rf[0]-pos_lf[0])/2, (pos_rf[1]-pos_lf[1])/2, (pos_rf[2]-pos_lf[2])/2
+			pos_cenf= pos_lf[0]+diff[0], pos_lf[1]+diff[1], pos_lf[2]+diff[2]
+		except:
+			pos_rf = pos_r
+			pos_lf = pos_l
+			pos_cenf = me.Position
+		
+		# Drop the weapons if possible
 		try:
 			object = Bladex.GetEntity(me.InvLeft)
-			if me.InvLeft and object and not object.TestHit:
+			if me.InvLeft and object:
 				Actions.RemoveFromInventory (me, object,"DropLeftEvent")
-				object.Alpha=1.0
-				object.Impulse(0.0, 0.0, 0.0)
-		except AttributeError:
+				# object.Alpha=1.0
+				if object.TestHit:
+					object.ExclusionGroup = EXG_MAGIC
+					x,y,z= object.Position
+					if not Bladex.GetSector(x,y,z):
+						if Bladex.GetSector(pos_l[0],pos_l[1],pos_l[2]):
+							object.Position= pos_l
+						else:
+							object.Position= pos_lf
+					if not object.TestHit:
+						object.OnStopFunc=ResetExclusionGroup
+					else:
+						object.ExclusionGroup=0
+				object.Impulse(0.0, 0.0, 0.0) 
+		except AttributeError: 
 			pass
-			#pdb.set_trace()
-
+			# pdb.set_trace()
+		
 		try:
 			object = Bladex.GetEntity(me.InvRight)
-			if me.InvRight and object and not object.TestHit:
+			if me.InvRight and object:
 				Actions.RemoveFromInventory (me, object,"DropRightEvent")
-				object.Alpha=1.0
-				object.Impulse(0.0, 0.0, 0.0)
-		except AttributeError:
+				# object.Alpha=1.0
+				if object.TestHit:
+					object.ExclusionGroup = EXG_MAGIC
+					x,y,z= object.Position
+					if not Bladex.GetSector(x,y,z):
+						if Bladex.GetSector(pos_r[0],pos_r[1],pos_r[2]):
+							object.Position= pos_r
+						else:
+							object.Position= pos_rf
+					if not object.TestHit:
+						object.OnStopFunc=ResetExclusionGroup
+					else:
+						object.ExclusionGroup=0
+				object.Impulse(0.0, 0.0, 0.0) 
+		except AttributeError: 
 			pass
-			#pdb.set_trace()
-
+			# pdb.set_trace()
+			
+		object = Bladex.GetEntity(me.InvRightBack)
+		if object:
+			Actions.RemoveFromInventory (me, object,"DropEvent")
+			inv.LinkRightBack("")
+			if object.TestHit:
+				object.ExclusionGroup = EXG_MAGIC
+				x,y,z= object.Position
+				if not Bladex.GetSector(x,y,z):
+					if Bladex.GetSector(pos_r[0],pos_r[1],pos_r[2]):
+						object.Position= pos_r
+					else:
+						object.Position= pos_rf
+				if not object.TestHit:
+					object.OnStopFunc=ResetExclusionGroup
+				else:
+					object.ExclusionGroup=0
+			object.Impulse(0.0, 0.0, 0.0)
+			
+		object = Bladex.GetEntity(me.InvLeftBack)
+		if object:
+			Actions.RemoveFromInventory (me, object,"DropEvent")
+			inv.LinkLeftBack("")
+			if object.TestHit:
+				object.ExclusionGroup = EXG_MAGIC
+				x,y,z= object.Position
+				if not Bladex.GetSector(x,y,z):
+					if Bladex.GetSector(pos_l[0],pos_l[1],pos_l[2]):
+						object.Position= pos_l
+					else:
+						object.Position= pos_lf
+				if not object.TestHit:
+					object.OnStopFunc=ResetExclusionGroup
+				else:
+					object.ExclusionGroup=0
+			object.Impulse(0.0, 0.0, 0.0)
+			
 		# Drop everything else
-		inv = me.GetInventory()
 		#pdb.set_trace()
 		while inv.nObjects > 0:
 			object_name = inv.GetObject(0)
 			object = Bladex.GetEntity(object_name)
 			if object:
-				object.Position=me.Position
+				object.Position=me.Rel2AbsPoint(0,0,-370)
 				me.Unlink(object)
 				inv.RemoveObject(object_name)
 				object.ExcludeHitFor(me)
 				if object.Kind in TwinkleObjs:
 					Bladex.AddScheduledFunc(Bladex.GetTime(), Actions.TakeObject,("Player1",object_name))
-				else:
+				else:	
 					if object.TestHit:
 						print "WARNING OBJECT "+object.Name+" REMOVED FROM WORLD BECAUSE COLLIDING"
-						object.RemoveFromWorld()
-					else:
-						object.Alpha=1.0
-						object.Impulse(0.0, 0.0, 0.0)
+						# object.RemoveFromWorld()
+						object.ExclusionGroup = EXG_MAGIC
+						x,y,z= object.Position
+						if not Bladex.GetSector(x,y,z):
+							object.Position= pos_cenf
+						if not object.TestHit:
+							object.OnStopFunc=ResetExclusionGroup
+						else:
+							object.ExclusionGroup=0
+					# object.Alpha=1.0
+					object.Impulse(0.0, 0.0, 0.0)
 
 		while inv.nWeapons > 0:
 			object_name = inv.GetWeapon(0)
@@ -1550,13 +1637,20 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				object.ExcludeHitFor(me)
 				try:
 					if object.TestHit:
-						object.RemoveFromWorld()
-					else:
-						object.Alpha=1.0
-						object.Impulse(0.0, 0.0, 0.0)
+						# object.RemoveFromWorld()
+						object.ExclusionGroup = EXG_MAGIC
+						x,y,z= object.Position
+						if not Bladex.GetSector(x,y,z):
+							object.Position= pos_rf
+						if not object.TestHit:
+							object.OnStopFunc=ResetExclusionGroup
+						else:
+							object.ExclusionGroup=0
+					# object.Alpha=1.0
+					object.Impulse(0.0, 0.0, 0.0) 
 				except AttributeError:
 					print "TestHit unsupported for object "+object.Name
-					#pdb.set_trace()
+					# pdb.set_trace()
 
 		while inv.nShields > 0:
 			object_name = inv.GetShield(0)
@@ -1567,11 +1661,18 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				inv.RemoveShield(object_name)
 				object.ExcludeHitFor(me)
 				if object.TestHit:
-					object.RemoveFromWorld()
-				else:
-					object.Alpha=1.0
-					object.Impulse(0.0, 0.0, 0.0)
-
+					# object.RemoveFromWorld()
+					object.ExclusionGroup = EXG_MAGIC
+					x,y,z= object.Position
+					if not Bladex.GetSector(x,y,z):
+						object.Position= pos_lf
+					if not object.TestHit:
+						object.OnStopFunc=ResetExclusionGroup
+					else:
+						object.ExclusionGroup=0
+				# object.Alpha=1.0
+				object.Impulse(0.0, 0.0, 0.0) 
+		
 		while inv.nQuivers > 0:
 			object_name = inv.GetQuiver(0)
 			object = Bladex.GetEntity(object_name)
@@ -1581,21 +1682,28 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				inv.RemoveQuiver(object_name)
 				object.ExcludeHitFor(me)
 				if object.TestHit:
-					object.RemoveFromWorld()
-				else:
-					object.Alpha=1.0
-					object.Impulse(0.0, 0.0, 0.0)
+					# object.RemoveFromWorld()
+					object.ExclusionGroup = EXG_MAGIC
+					x,y,z= object.Position
+					if not Bladex.GetSector(x,y,z):
+						object.Position= pos_cenf
+					if not object.TestHit:
+						object.OnStopFunc=ResetExclusionGroup
+					else:
+						object.ExclusionGroup=0
+				# object.Alpha=1.0
+				object.Impulse(0.0, 0.0, 0.0) 
 
 		while inv.nKeys > 0:
 			object_name = inv.GetKey(0)
 			object = Bladex.GetEntity(object_name)
-			if object:
+			if object: 
 				object.Position=me.Position
 				me.Unlink(object)
 				inv.RemoveKey(object_name)
 				object.ExcludeHitFor(me)
 				Bladex.AddScheduledFunc(Bladex.GetTime(), Actions.TakeObject,("Player1",object_name))
-
+				
 				char = Bladex.GetEntity("Player1")
 				new_key_sound.Stop()
 				new_key_sound.PlayStereo()
