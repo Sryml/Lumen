@@ -2109,10 +2109,21 @@ def TryDropRight (EntityName):
 	else:
 		return FALSE
 
+def Toggle4DropBow(EntityName, EventName):
+	me = Bladex.GetEntity(EntityName)
+	me.DelAnmEventFunc(EventName)
+	inv = me.GetInventory()
+	SheatheArrow(inv, me.InvRight)
+	inv.LinkBack("None")
+
+	me.Wuea = Reference.WUEA_ENDED
+	me.AddAnmEventFunc("DropLeftEvent", DropReleaseEventHandler)
+	me.LaunchAnmType("drp_l")
+
 def TryDropLeft (EntityName):
 	me = Bladex.GetEntity(EntityName)
 	statL=StatL(me.Name)
-	if statL <> LA_NO_WEAPON and statL <> LA_BOW:
+	if statL != LA_NO_WEAPON:
 		###Reference.debugprint(EntityName+": Left hand obj = "+me.InvLeft)
 		object = Bladex.GetEntity(me.InvLeft)
 		if IsValidForDropping (object.Name):
@@ -2120,7 +2131,15 @@ def TryDropLeft (EntityName):
 			#if object.TestHit:
 			#	###Reference.debugprint(EntityName+": Pre-colliding - abandoning drop")
 			#	return FALSE
-
+			if statL == LA_BOW:
+				if me.InvRight and Reference.GiveObjectFlag(me.InvRight) == Reference.OBJ_ARROW:
+					UnGraspString(EntityName,"UnGraspString")
+					me.AddAnmEventFunc("ChangeREvent", Toggle4DropBow)
+					me.LaunchAnmType("Chg_r")
+					return TRUE
+				else:
+					inv = me.GetInventory()
+					inv.LinkBack("None")
 			# Left Handed Object Animation
 			me.AddAnmEventFunc("DropLeftEvent",DropReleaseEventHandler)
 			me.LaunchAnmType("drp_l")
