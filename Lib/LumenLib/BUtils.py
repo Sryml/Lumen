@@ -6,6 +6,7 @@
 #
 
 import string
+import types
 
 from Lumenx import printx
 
@@ -175,7 +176,7 @@ class EntitiesSelectionDict(Dictionary):
 
         self.data_raw[key] = value
         new_value = value
-        if len(value) == 3:
+        if type(value) in (types.TupleType, types.ListType) and len(value) == 3:
             new_value = (value[0], value[1], MenuText.GetMenuText(value[2]))
         Dictionary.__setitem__(self, key, new_value)
 
