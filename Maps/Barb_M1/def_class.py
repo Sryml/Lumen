@@ -1,4 +1,8 @@
-
+##///
+##||| BARB_M1/def_class.PY TITANIUM
+##||| Change list:
+##||| * Restored shadows to ceiling spike trap
+##\\\ 
 import Bladex
 import ObjStore
 #*************************************************************************************************
@@ -31,7 +35,7 @@ class PinLinkCeil:
 		for i in range(r_min,r_max):
 			self.pincho[j:j] = [Bladex.GetEntity(name + `i`)]
 			self.pincho[j].MessageEvent(MESSAGE_START_WEAPON,0,0)
-			self.pincho[j].CastShadows = 0
+			# self.pincho[j].CastShadows = 0	## Don't! -LeadHead
 			j = j + 1
 
 	def PinchoSigueTecho(self,entity,time):

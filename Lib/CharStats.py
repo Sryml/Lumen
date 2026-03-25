@@ -3,8 +3,6 @@
 
 import sys
 
-sys.path.append("../../Stats")
-
 from CharData import CharMaxLifeValue
 from CharData import CharMaxEnergyValue
 from CharData import CharDamageData
@@ -15,7 +13,6 @@ from CharData import CharResistances
 from CharData import CharAccuracy
 
 
-sys.path.remove("../../Stats")
 # Si alguien sabe alguna forma mejor de hacer que solamente se pueda importar desde este archivo que lo haga
  
 

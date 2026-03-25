@@ -38,12 +38,12 @@ DMusic.AddCombatMusic("Great_Ork",  "../../sounds/COMBATE2.wav",  300 , 0 , 1 , 
 ###MUSICAS
 #Bladex.AddMusicEventADPCM( "Orc","../../Sounds/ATMOSFERA5.wav",  f in , f out, vol, prioridad , 1, loop )
 
-Bladex.AddMusicEventADPCM( "tambores_Orc","../../Sounds/ATMOSFERA5.wav"   , 1.0, 1.0, 1.0, 0  , 1, -1 )
-Bladex.AddMusicEventMP3( "ATMOSFERA12","../../Sounds/ATMOSFERA12.mp3"     , 1.0, 1.0, 0.8, 0  , 1,  0 )
+Bladex.AddMusicEventMP3  ( "tambores_Orc","../../Sounds/ATMOSFERA5.mp3"   , 1.0, 1.0, 1.0, 0  , 1, -1 )
+Bladex.AddMusicEventMP3  ( "ATMOSFERA12","../../Sounds/ATMOSFERA12.mp3"     , 1.0, 1.0, 0.8, 0  , 1,  0 )
 Bladex.AddMusicEventADPCM( "ATMOSFERA32","../../Sounds/ATMOSFERA32.wav"     , 1.0, 1.0, 0.8, 0  , 1,  0 )
-Bladex.AddMusicEventADPCM( "tambores_Orc2","../../Sounds/ATMOSFERA5.wav"  , 1.0, 1.0, 1.0, 0  , 1, -1 )
-Bladex.AddMusicEventADPCM( "grutas","../../Sounds/ATMOSFERA8.wav"	     , 1.0, 1.0, 1.0, 0  , 1, -1 )
-Bladex.AddMusicEventADPCM( "tambores_pueblo","../../Sounds/ATMOSFERA19.wav", 1.0, 1.0, 1.0, 0  , 1, -1 )
+Bladex.AddMusicEventMP3  ( "tambores_Orc2","../../Sounds/ATMOSFERA5.mp3"  , 1.0, 1.0, 1.0, 0  , 1, -1 )
+Bladex.AddMusicEventMP3  ( "grutas","../../Sounds/ATMOSFERA8.mp3"	     , 1.0, 1.0, 1.0, 0  , 1, -1 )
+Bladex.AddMusicEventMP3  ( "tambores_pueblo","../../Sounds/ATMOSFERA19.mp3", 1.0, 1.0, 1.0, 0  , 1, -1 )
 Bladex.AddMusicEventADPCM("Casaguagua","../../Sounds/ATMOSFERA28.wav",      1.0, 1.0, 1.0,   0, 1, 0 )
 
 Bladex.AddMusicEventADPCM( "casa_jefe","../../Sounds/ATMOSFERA4.wav",       1.0, 1.0, 0.6, 0  , 1, -1 )

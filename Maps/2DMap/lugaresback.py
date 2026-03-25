@@ -9,6 +9,8 @@ import string
 import MenuText
 import Lumenx
 
+language = Language.CheckFallback()
+
 # MapList = {}
 # execfile ("../../data/text/"+Language.Current+"/map2D.py")
 
@@ -174,7 +176,14 @@ if Bladex.GetStringValue("LastVisitedMap") == "M_6":
 	LastMap = 5
 
 if Bladex.GetStringValue("LastVisitedMap") == "M_7":
+	GameText.WriteText("M15T8",TextYPos)
 	LastMap = 6
+
+	sound2=Bladex.CreateSound('../../Sounds/'+language+'/palacebalance.wav', 'SoundM15')
+	sound2.Volume=0.5
+	sound2.MinDistance=100000
+	sound2.MaxDistance=200000
+	Bladex.AddScheduledFunc(Bladex.GetTime(), sound2.PlayStereo, ())
 
 # Next line is for testing different Texts ;-)
 #GameText.WriteText("M1T2")

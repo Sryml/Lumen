@@ -1,3 +1,9 @@
+##///
+##||| Barb_M1/OBJETOS.PY TITANIUM
+##||| Change list:
+##||| * added sparks for stones
+##||| * Changed some light sources for more consistent shadows
+##\\\
 
 ##############	PUENTE ROTO EN LAS ROCAS
 
@@ -67,7 +73,7 @@ o=Bladex.CreateEntity("NoName0","Antorchaenpared",13253.047000,-23297.152000,521
 o.Scale=1.000000
 o.Orientation=0.691655,0.691655,-0.147016,0.147016
 o.FiresIntensity=[ 0 ]
-o.Lights=[ (4.000000,0.070000,(255,153,40)) ]
+o.Lights=[ (4.000000,0.060000,(255,153,40)) ]   # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -82,6 +88,8 @@ o.Orientation=0.541675,0.541675,-0.454519,0.454519
 o=Bladex.CreateEntity("cajabse5","Caja_i_r",16791.710000,-21601.896000,56335.429000)
 o.Scale=1.000000
 o.Orientation=0.632814,0.632814,-0.315509,0.315509
+Sparks.SetWoodenSparkling(o.Name)
+o.Static=1
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -89,6 +97,8 @@ o.Orientation=0.632814,0.632814,-0.315509,0.315509
 o=Bladex.CreateEntity("cajabse6","Caja_i_r",16307.677000,-21602.025000,58053.968000)
 o.Scale=1.000000
 o.Orientation=0.606109,0.606109,-0.364187,0.364187
+Sparks.SetWoodenSparkling(o.Name)
+o.Static=1
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 

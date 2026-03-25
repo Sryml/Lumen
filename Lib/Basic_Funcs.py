@@ -44,7 +44,7 @@ if netgame.GetNetState() != 0:
 
 
 new_combo_sound = Bladex.CreateSound('../../Sounds/sesgado-lava.wav', 'NewComboSound')
-new_combo_sound.Volume=1.0
+new_combo_sound.Volume=0.8
 new_combo_sound.MinDistance=5000
 new_combo_sound.MaxDistance=20000
 
@@ -232,6 +232,7 @@ class PlayerPerson:
 		self.InvShieldQueue = []
 		self.InvQuiverQueue = []
 		self.InvObjectQueue = []
+		self.MutilatePickable = -1 # All can be picked up
 		#
 
 		self.Resistances= copy.copy(CharStats.GetCharResistances(me.Kind))
@@ -543,18 +544,14 @@ class PlayerPerson:
 		limb.ExclusionGroup=1337
 		# limb.Impulse(0.0, 0.0, 0.0)
 		#
-		if me and me.Kind!="Skeleton":
-			Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
+		Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
 
-		if me.Kind=="Golem_lava" or (me.Kind=="Minotaur" and node!=Reference.BODY_HEAD):
-			return limb
-
-		InitDataField.Initialise(limb)
-		limb.Data.NoFXOnHit= 1
-		# print limb.Mass, node
-		if limb.Mass > 1.5 and limb.Mass < 7.0:
-			Reference.EntitiesSelectionData[obj_name]= Reference.DefaultSelectionData["Limb"]
-			Reference.EntitiesObjectData[obj_name]= Reference.DefaultObjectData['Limb']
+		if self.MutilatePickable == -1 or (self.MutilatePickable>>node & 1):
+			InitDataField.Initialise(limb, NoFXOnHit=1)
+			# print limb.Mass, node
+			if limb.Mass > 1.0 and limb.Mass < 8.0:
+				Reference.EntitiesSelectionData[obj_name]= Reference.DefaultSelectionData["Limb"]
+				Reference.EntitiesObjectData[obj_name]= Reference.DefaultObjectData['Limb']
 		return limb
 
 	def TakeFunc (self, MyName):

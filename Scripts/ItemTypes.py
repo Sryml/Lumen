@@ -2047,7 +2047,7 @@ class BladeSword2(ActivateableSpecialWeapon):
 		self.ImpactSound.MinDistance=5000
 		self.ImpactSound.MaxDistance=30000
 
-		Actions.LinkContinuosSound(me.Name,"../../Sounds/m-loop-lavahervidero-1.wav")
+		Actions.LinkContinuosSound(me.Name,"../../Sounds/m-loop-lavahervidero-1.wav",Volume=0.4)
 		me.OnStopFunc=self.StartBackToPlayer
 		self.OwnerName="Player1"
 

@@ -190,8 +190,10 @@ def SaveGameToDisk(menu_class=None, clave="1", quick=0):
 
 def QuickSave():
     import Actions
+    import ObjStore
 
     if string.lower(Lumenx.GetCurrentMap()) not in ("casa", "2dmap"):
+        ObjStore.CheckStore()
         SaveGameToDisk(clave="1", quick=1)
         Actions.ReportMsg(MenuText.GetMenuText("Quick Save"))
 

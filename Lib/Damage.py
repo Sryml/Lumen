@@ -148,6 +148,7 @@ InflictDamageFXData['Amz_g_spear_sb11']=(400.0, 0.9, 240, 20, 0, 2.0, None, 1.0,
 
 # Attacking Anim Table   (Damage Factor)
 AnimationData={}         #############
+StaminaData={}
 
 ###############
 #   BARBARO   #
@@ -482,6 +483,8 @@ AnimationData['Dwf_g_s18_2h']=   1.0
 AnimationData['Dwf_g_32_5_3new']=   1.0
 AnimationData['Dwf_g_s22low_new']=   50.0
 AnimationData['Dwf_g_s3_new']=   12.0
+StaminaData['Dwf_g_s3_new'] = 10.8
+
 AnimationData['Dwf_g_27kata']=   1.0
 AnimationData['Dwf_g_12low']=   1.0
 AnimationData['Dwf_g_s11']=   1.0
@@ -1011,10 +1014,13 @@ def CalculateFatigue(EntityName, AnimName):
 			######################################################################################
 			me.LaunchAnimation(AnimName)
 			# Animation component #
-			if AnimationData.has_key(me.AnimFullName):
-				animF = AnimationData[me.AnimFullName]
-			elif AnimationData.has_key(me.AnimName):
-				animF = AnimationData[me.AnimName]
+			if StaminaData.has_key(me.AnimFullName):
+				animF = StaminaData[me.AnimFullName]
+			else:
+				if AnimationData.has_key(me.AnimFullName):
+					animF = AnimationData[me.AnimFullName]
+				elif AnimationData.has_key(me.AnimName):
+					animF = AnimationData[me.AnimName]
 			
 			######################################################################################
 			
@@ -1032,7 +1038,7 @@ def CalculateFatigue(EntityName, AnimName):
 			if PrintFatigue:
 				print "energy_cost= (charF("+`charF`+") + weaponF("+`weaponF`+")) * (animF("+me.AnimFullName+"="+`animF`+") + prev_energy2lose("+`me.Data.Energy2Lose`+")= "+`energy_cost`
 				print "max_energy= "+`max_energy`+", current_energy= "+`me.Energy`
-			if energy_cost<max_energy:
+			if energy_cost<=max_energy:
 				me.Data.Energy2Lose= energy_cost
 				
 				if energy_cost>me.Energy:

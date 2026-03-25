@@ -1682,6 +1682,10 @@ class Spidersmall (Enm_Def.NPCPerson):
 		self.SoundPriorities[Reference.SND_NOISYPC] = 30.0
 		self.SoundPriorities[Reference.SND_PC]      = 80.0
 
+		#
+		self.MutilatePickable = 0
+		self.MaxSpitHits = 1
+
 
 	# Functions for loading and saving state
 	def __getstate__(self):
@@ -1736,10 +1740,6 @@ class Spidersmall (Enm_Def.NPCPerson):
 			me.InterruptCombat()
 			me.LaunchAnmType("dth2")
 
-	# Overide the MutilateFunc because we don't want limbs we can pick up
-	def MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node):
-		Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
-
 	def HitFunc (self, EntityName, WeaponName, Cx, Cy, Cz, Px, Py, Pz,wcx,wcy,wcz,wdx,wdy,wdz):
 		Enm_Def.NPCPerson.HitFunc(self, EntityName, WeaponName, Cx, Cy, Cz, Px, Py, Pz,wcx,wcy,wcz,wdx,wdy,wdz)
 		me = Bladex.GetEntity(EntityName)
@@ -1759,34 +1759,42 @@ class Spidersmall (Enm_Def.NPCPerson):
 
 
 	def VenomPrtlHit(self,prtl_name,hit_entity,x,y,z,vx,vy,vz,wcx,wcy,wcz,wdx,wdy,wdz):
-		if hit_entity != "BWorld":
+		me = Bladex.GetEntity(self.Name)
+		ptcl = Bladex.GetEntity(prtl_name)
+		ptcl_sys = Bladex.GetEntity(ptcl.Data.Parent)
+		MaxHits = ptcl_sys.Data.MaxHits
+		if MaxHits != 0 and hit_entity != "BWorld":
 			victim=Bladex.GetEntity(hit_entity)
 			if victim:
 				if victim.Person and not victim.Kind=="Spidersmall":
-					# Need to check immunity
-					#ptcl=Bladex.GetEntity(prtl_name)
-					#print (hit_entity+" was hit by "+prtl_name+ " of type "+ptcl.Kind)
-					Reference.EntitiesObjectData[prtl_name]= [Reference.OBJ_WEAPON, 0, 0,   1.0,  Reference.THR_STRAIGHT, Reference.W_FLAG_1H, ["Venom", +2.0]]
-					victim.DamageFunc(hit_entity, self.Name, prtl_name, "Poison", 1, -1, x, y, z, 0)
-					if Reference.EntitiesObjectData.has_key(prtl_name):
-						del Reference.EntitiesObjectData[prtl_name]
+					HitDict = ptcl_sys.Data.HitDict
+					if MaxHits == -1:
+						dealDamage = True
+					else:
+						HitDict[hit_entity] = HitDict.get(hit_entity, 0) + 1
+						dealDamage = HitDict[hit_entity] <= MaxHits
+					if dealDamage:
+						damage = (CharStats.GetCharDamageData(me.CharType,me.Level) / 3)
+						Reference.EntitiesObjectData[prtl_name]= [Reference.OBJ_WEAPON, 0, 0,   1.0,  Reference.THR_STRAIGHT, Reference.W_FLAG_1H, ["Venom", +damage]]
+						victim.DamageFunc(hit_entity, self.Name, prtl_name, "Poison", 1, -1, x, y, z, 0)
+						if Reference.EntitiesObjectData.has_key(prtl_name):
+							del Reference.EntitiesObjectData[prtl_name]
 
-					# Generate a smoke effect
-					smoke=Bladex.CreateEntity("FuegoVerde", "Entity Particle System D1", x, y, z)
-					smoke.ParticleType="VenomSmoke"
-					smoke.YGravity=-100.0
-					smoke.Friction=0.05
-					smoke.PPS=8
-					smoke.Velocity=0.0, -80.0, 0.0
-					smoke.RandomVelocity=5.0
-					smoke.DeathTime=Bladex.GetTime()+1.0
-					node= 0
-					victim.LinkToNode(smoke,node)
+						# Generate a smoke effect
+						smoke=Bladex.CreateEntity("FuegoVerde", "Entity Particle System D1", x, y, z)
+						smoke.ParticleType="VenomSmoke"
+						smoke.YGravity=-100.0
+						smoke.Friction=0.05
+						smoke.PPS=8
+						smoke.Velocity=0.0, -80.0, 0.0
+						smoke.RandomVelocity=5.0
+						smoke.DeathTime=Bladex.GetTime()+1.0
+						node= 0
+						victim.LinkToNode(smoke,node)
 
 				elif victim.Weapon:
 					pass
 		# This particle should be removed, as it has been converted to smoke
-		ptcl=Bladex.GetEntity(prtl_name)
 		ptcl.RemoveFromWorld()
 
 
@@ -1796,6 +1804,7 @@ class Spidersmall (Enm_Def.NPCPerson):
 			prtl=venom.GetParticleEntity()
 			prtl.HitFunc=self.VenomPrtlHit
 			prtl.ObjCTest= 1
+			InitDataField.Initialise(prtl, Parent=venom_name)
 			if(Bladex.GetTime()<end_time):
 				Bladex.AddScheduledFunc(Bladex.GetTime()+period,self.SpitFunc,(venom_name,end_time,period))
 
@@ -1812,10 +1821,11 @@ class Spidersmall (Enm_Def.NPCPerson):
 		venom.Friction=0.075
 		venom.PPS=512
 		venom.DeathTime=end_time+1.0/60.0;
-		vx,vy,vz=me.Rel2AbsVector(0,-14000.0,6500.0)
+		vx,vy,vz=me.Rel2AbsVector(0,-14000.0,8500.0)        # vz was 6500.0
 		venom.Velocity=vx,vy,vz
 		venom.RandomVelocity=5.0
 		me.LinkToNode(venom,node)
+		InitDataField.Initialise(venom, MaxHits=self.MaxSpitHits, HitDict={})
 
 		self.SpitFunc(venom.Name, end_time, period)
 
@@ -2444,6 +2454,8 @@ class Minotaur (Enm_Def.NPCPerson):
 		self.DamageFactorNone  = 0.25
 		self.DamageFactorLight = 0.33
 		self.DamageFactorHeavy = 0.5
+
+		self.MutilatePickable = 1 << Reference.BODY_HEAD
 
 	def ResetSounds(self, EntityName):
 		AniSound.AsignarSonidosMinotaur(EntityName)

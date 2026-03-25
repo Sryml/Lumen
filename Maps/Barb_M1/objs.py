@@ -1,3 +1,12 @@
+##///
+##||| Barb_M1/objs.PY TITANIUM
+##||| Change list:
+##||| * added sparks for misc items
+##||| * removed selection data from some misc stuff
+##||| * Changed some light sources for more consistent shadows
+##||| * added invisible block near first platforming part (across cliff) for more consistent collision
+##\\\
+
 import Reference
 import Bladex
 # Item configuration script
@@ -73,7 +82,7 @@ o=Bladex.CreateEntity("antorchaen1","Antorchaenpared",-127077.249000,-8688.11300
 o.Scale=1.000000
 o.Orientation=0.403989,0.407020,-0.587808,0.570621
 o.FiresIntensity=[ 3 ]
-o.Lights=[ (10.000000,0.099000,(231,152,65)) ]
+o.Lights=[ (10.000000,0.0500,(231,152,65)) ]        # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -365,7 +374,7 @@ o=Bladex.CreateEntity("antorchaen13","Antorchaenpared",-200526.966000,-12314.177
 o.Scale=1.000000
 o.Orientation=0.706676,0.706676,-0.024678,0.024678
 o.FiresIntensity=[ 3 ]
-o.Lights=[ (7.000000,0.050000,(255,165,64)) ]
+o.Lights=[ (7.000000,0.03125,(255,165,64)) ]        # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -447,7 +456,7 @@ o=Bladex.CreateEntity("NoName1","Antorchaenpared",-159078.811000,-22335.301000,2
 o.Scale=1.000000
 o.Orientation=0.098461,0.121630,-0.706032,0.690674
 o.FiresIntensity=[ 3 ]
-o.Lights=[ (7.000000,0.100000,(255,165,64)) ]
+o.Lights=[ (7.000000,0.031250,(255,165,64)) ]       # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -548,7 +557,7 @@ o=Bladex.CreateEntity("NoName0","Hoguera",-155738.238000,-19728.198000,163978.26
 o.Scale=1.196147
 o.Orientation=0.707107,0.707107,0.000000,0.000000
 o.FiresIntensity=[ 3 ]
-o.Lights=[ (9.000000,0.100000,(255,148,30)) ]
+o.Lights=[ (9.000000,0.0790000,(255,148,30)) ]      # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -695,7 +704,7 @@ o=Bladex.CreateEntity("NoName0","Antorchaenpared",-73321.110000,-37464.618000,15
 o.Scale=1.000000
 o.Orientation=0.281958,0.259155,0.648459,-0.657905
 o.FiresIntensity=[ 3 ]
-o.Lights=[ (5.000000,0.090000,(255,174,85)) ]
+o.Lights=[ (5.000000,0.060000,(255,174,85)) ]   # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -831,6 +840,8 @@ o.Orientation=0.463462,0.241263,-0.756301,0.393705
 o=Bladex.CreateEntity("NoName1","LapidaManuel",-56227.207000,-30045.224000,159712.351000,Reference.ObjType("LapidaManuel"))
 o.Scale=1.745810
 o.Orientation=0.676210,0.676210,0.206738,-0.206738
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -838,6 +849,8 @@ o.Orientation=0.676210,0.676210,0.206738,-0.206738
 o=Bladex.CreateEntity("NoName3","LapidaManuel",-185029.369000,-9860.416000,195406.173000,Reference.ObjType("LapidaManuel"))
 o.Scale=1.834864
 o.Orientation=0.674380,0.674380,0.212631,-0.212631
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -957,6 +970,8 @@ o.Orientation=0.161461,0.496925,-0.263480,0.810909
 o=Bladex.CreateEntity("NoName7","Lapida",113315.645000,-53634.705000,194119.337000,Reference.ObjType("Lapida"))
 o.Scale=3.171606
 o.Orientation=0.043168,-0.705788,-0.030843,-0.706434
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -964,6 +979,8 @@ o.Orientation=0.043168,-0.705788,-0.030843,-0.706434
 o=Bladex.CreateEntity("NoName0","Lapida",110608.754000,-52984.843000,145725.477000,Reference.ObjType("Lapida"))
 o.Scale=3.718959
 o.Orientation=0.128341,0.023787,-0.988389,0.077788
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -971,6 +988,8 @@ o.Orientation=0.128341,0.023787,-0.988389,0.077788
 o=Bladex.CreateEntity("NoName1","Lapida",155401.592000,-48713.065000,147341.918000,Reference.ObjType("Lapida"))
 o.Scale=1.928460
 o.Orientation=0.139173,0.990268,0.000000,0.000000
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -978,6 +997,8 @@ o.Orientation=0.139173,0.990268,0.000000,0.000000
 o=Bladex.CreateEntity("NoName3","Lapida",69582.330000,-51240.231000,118131.225000,Reference.ObjType("Lapida"))
 o.Scale=2.573538
 o.Orientation=0.992328,0.095550,0.007520,-0.078098
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -985,6 +1006,8 @@ o.Orientation=0.992328,0.095550,0.007520,-0.078098
 o=Bladex.CreateEntity("NoName4","Lapida",69912.145000,-51340.227000,115846.498000,Reference.ObjType("Lapida"))
 o.Scale=2.216715
 o.Orientation=0.737277,0.000000,-0.675590,0.000000
+Sparks.SetStoneSparkling(o.Name)
+Reference.EntitiesSelectionData[o.Name]=         [0, 0,  ""]
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -1110,6 +1133,7 @@ o.Orientation=0.707107,0.707107,0.000000,0.000000
 o=Bladex.CreateEntity("53","Menhir1",-61516.366000,-29089.432000,186421.196000,Reference.ObjType("Menhir1"))
 o.Scale=1.000000
 o.Orientation=0.676164,0.725097,-0.095461,0.089019
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -1131,6 +1155,7 @@ o.Orientation=0.549525,0.549525,-0.444997,0.444997
 o=Bladex.CreateEntity("NoName5","Menhir3",114583.204000,-62097.372000,201468.826000,Reference.ObjType("Menhir3"))
 o.Scale=1.334504
 o.Orientation=0.050394,-0.621749,-0.036700,0.780732
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -1173,6 +1198,7 @@ o.Orientation=0.707107,0.707107,0.000000,0.000000
 o=Bladex.CreateEntity("NoName14","Menhir3",109267.301000,-62414.724000,186179.475000,Reference.ObjType("Menhir3"))
 o.Scale=1.269735
 o.Orientation=0.057701,-0.845785,0.064344,-0.526477
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -1267,7 +1293,7 @@ o=Bladex.CreateEntity("NoName0","Antorchaenpared",-55258.867000,-20619.685000,29
 o.Scale=1.000000
 o.Orientation=0.400510,0.400510,-0.582745,0.582745
 o.FiresIntensity=[ 0 ]
-o.Lights=[ (10.000000,0.099000,(255,150,34)) ]
+o.Lights=[ (10.000000,0.07,(255,150,34)) ]      # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -1381,6 +1407,8 @@ o.Lights=[ (10.000000,0.060000,(211,165,69)) ]
 o=Bladex.CreateEntity("NoName0","Caja_i_i",-179005.700000,-5679.183000,141544.082000,Reference.ObjType("Caja_i_i"))
 o.Scale=1.596264
 o.Orientation=0.661686,0.661404,0.249512,-0.249921
+Sparks.SetMetalSparkling(o.Name)
+o.Static=1
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -1799,6 +1827,7 @@ o.Orientation=0.707107,0.707107,0.000000,0.000000
 o=Bladex.CreateEntity("NoName0","Menhir1",-63833.415000,-32068.320000,168640.572000,Reference.ObjType("Menhir1"))
 o.Scale=0.651900
 o.Orientation=0.131344,0.138408,-0.675708,0.712047
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -2319,6 +2348,8 @@ o.Orientation=0.539425,-0.185582,-0.654375,-0.496361
 o=Bladex.CreateEntity("NoName0","Caja_i_i",-164532.812000,-10267.993000,202103.005000,Reference.ObjType("Caja_i_i"))
 o.Scale=1.853212
 o.Orientation=0.698401,0.698401,0.110616,-0.110616
+Sparks.SetMetalSparkling(o.Name)
+o.Static=1
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -2521,6 +2552,7 @@ o.Orientation=0.700225,0.700225,0.098410,-0.098410
 o=Bladex.CreateEntity("NoName3","Menhir3",-112507.506000,-25938.858000,164280.007000,Reference.ObjType("Menhir3"))
 o.Scale=1.000000
 o.Orientation=0.586218,0.586218,-0.395409,0.395409
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -2994,6 +3026,7 @@ o.Lights=[ (6.000000,0.080000,(255,149,32)) ]
 o=Bladex.CreateEntity("NoName3","Menhir1",-72147.041000,-29931.960000,149509.099000,Reference.ObjType("Menhir1"))
 o.Scale=0.614119
 o.Orientation=0.537688,0.537688,-0.459229,0.459229
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3001,6 +3034,7 @@ o.Orientation=0.537688,0.537688,-0.459229,0.459229
 o=Bladex.CreateEntity("NoName4","Menhir3",-71434.513000,-30564.918000,150818.117000,Reference.ObjType("Menhir3"))
 o.Scale=0.602019
 o.Orientation=0.575667,0.575667,-0.410619,0.410619
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3186,7 +3220,7 @@ o=Bladex.CreateEntity("NoName2","Antorchaenpared",-55631.035000,-14214.730000,42
 o.Scale=1.000000
 o.Orientation=0.395409,0.395409,0.586218,-0.586218
 o.FiresIntensity=[ 7 ]
-o.Lights=[ (6.000000,0.080000,(255,145,21)) ]
+o.Lights=[ (6.000000,0.040000,(255,145,21)) ]       # Changed
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3243,6 +3277,7 @@ o.Orientation=0.707107,0.707107,0.000000,0.000000
 o=Bladex.CreateEntity("NoName1","Menhir1",-125795.660000,-25094.806000,172992.467000,Reference.ObjType("Menhir1"))
 o.Scale=0.665003
 o.Orientation=0.688984,0.688984,-0.159064,0.159064
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3250,6 +3285,7 @@ o.Orientation=0.688984,0.688984,-0.159064,0.159064
 o=Bladex.CreateEntity("NoName2","Menhir1",-129055.047000,-24991.550000,170722.295000,Reference.ObjType("Menhir1"))
 o.Scale=0.645445
 o.Orientation=0.405580,0.405580,-0.579228,0.579228
+Sparks.SetStoneSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3257,6 +3293,7 @@ o.Orientation=0.405580,0.405580,-0.579228,0.579228
 o=Bladex.CreateEntity("metalo3","Rastrillo",-127679.684000,-25040.583000,171595.549000,Reference.ObjType("Rastrillo"))
 o.Scale=0.720103
 o.Orientation=0.679715,-0.679715,-0.194905,-0.194905
+Sparks.SetMetalSparkling(o.Name)
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3292,6 +3329,8 @@ o.Orientation=0.679178,0.090533,-0.213846,0.696269
 o=Bladex.CreateEntity("NoName0","Caja_i_i",-55052.254000,-12812.446000,41588.969000,Reference.ObjType("Caja_i_i"))
 o.Scale=1.244716
 o.Orientation=0.694364,0.693880,0.134932,-0.134844
+Sparks.SetMetalSparkling(o.Name)
+o.Static=1
 #o.NodesOrientation=?  En la siguiente versión
 #o.Scripts=?  En la siguiente versión
 
@@ -3569,3 +3608,11 @@ o.Orientation=0.877926,0.456925,-0.142496,0.012649
 #o.Scripts=?  En la siguiente versión
 
 
+
+### Added Block to make 1 platforming section more consistent
+
+o=Bladex.CreateEntity("TiBlock1Barb","Adoquinpulsador",-13569.7523404, -17892.1740454, 7346.00668414)
+o.Scale = 2.2
+o.Orientation = 1.0, 0.0, 0.0, 0.0
+o.Alpha = 0.0
+o.CastShadows = 0

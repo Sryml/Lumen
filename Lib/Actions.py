@@ -98,6 +98,23 @@ FixedFootAutoInterp=5
 # Table to be used by other libraries
 TryToTakeCallBacks = []
 
+# Race-Ordered Weapons, originals were wrong. Should be fixed now -LeadHead
+KnightWeaps = [	"QueenSword","IceSword","FireSword", "BladeSword2","Gladius","Espadaelfica" ,
+				"Espadaromana","Espadacurva","Dagesse","Cimitarra","Espadafilo",
+				"Espada","Maza","Maza2","Maza3","HookSword","DoubleSword"]
+
+DwarfWeaps = [	"QueenSword","CrushHammer","FireAxe","IceHammer", "BladeSword2","Hacha","Hacha5","Hacha4","Hacha3",
+				"Hacha6","Hacha2","Garrote","Martillo","Martillo2","Garropin","MazaDoble",
+				"Garrote2","Martillo3"]
+
+AmazonWeaps = [	"QueenSword","SteelFeather","FireBo","IceWand", "BladeSword2","LanzaAncha","Bichero",
+				"Bo","Lanza","Naginata","Tridente","Arpon","Axpear","Crosspear",
+				"Hachacuchilla","Naginata2","DeathBo","CrushBo"]
+
+BarbWeaps  = [	"QueenSword","FireBigSword","IceAxe", "BladeSword2Barbarian","Chaosword",
+				"DeathSword","LongSword","Alfanje","BigSword","SawSword","FlatSword",
+				"Eclipse","Guadanya","Hacha2hojas","RhinoClub","Hacharrajada"]
+
 #
 # Message Support Functions
 #
@@ -625,6 +642,7 @@ def StdUse (EntityName):
 
 	if not success:
 		if me.Data and me.Data.selected_entity:
+			msg = 0
 			if IsValidForUsing (me.Data.selected_entity[0], EntityName):
 				object_flag= Reference.GiveObjectFlag(me.Data.selected_entity[0])
 				if object_flag!=Reference.OBJ_USEME and object_flag!=Reference.OBJ_ITEM:	# Automatics get picked up first
@@ -634,19 +652,21 @@ def StdUse (EntityName):
 					object.Data.UsedBy = EntityName
 					object.UseFunc(object.Name, USE_FROM_NEARBY)
 					return
+			else:
+				msg = 1
 
 			if IsValidForTaking (me.Data.selected_entity[0]):
 				me.Data.toggle4t_clearback= FALSE
 				me.Data.stuff_onback_b4= SthOnBack(EntityName)
 				if TryToTake(EntityName, me.Data.selected_entity[0]):
 					return
-			else:
-				if(Bladex.IsUseMsgActive()==0):
-					return
+			elif not msg:
+				# if(Bladex.IsUseMsgActive()==0):
+				# 	return
 				ReportMsg ("The selected object cannot be taken")
 		else:
-			if(Bladex.IsUseMsgActive()==0):
-				return
+			# if(Bladex.IsUseMsgActive()==0):
+			# 	return
 			ReportMsg ("Nothing selected")
 
 
@@ -655,6 +675,7 @@ def IsValidForUsing(instance_name, EntityName):
 	object = Bladex.GetEntity(instance_name)
 
 	if not me or not object or not object.CanUse or not object.UseFunc:
+		ReportMsg ("The selected object cannot be taken")
 		return FALSE
 
 	dist = B3DLib.GetXZDistance (EntityName, instance_name)
@@ -662,15 +683,18 @@ def IsValidForUsing(instance_name, EntityName):
 
 	# Is it too far?
 	if dist > chartype.Reach*1.5:	# Patch because we extend our reach to use (e.g. with a torch)
+		ReportMsg ("Not in reach")  # Added -LeadHead
 		return FALSE
 
 	# Is it too low?
 	heightdiff = -(object.Position[1] - (me.Position[1]+me.Dist2Floor))
 	if heightdiff < chartype.MinTake:
+		ReportMsg ("Not in reach")  # Added -LeadHead
 		return FALSE
 
 	#Is it too high?
 	if heightdiff > chartype.MaxTake5:
+		ReportMsg ("Not in reach")  # Added -LeadHead
 		return FALSE
 
 	return TRUE
@@ -718,9 +742,11 @@ def StdSetFireToUseFunc(ObjectName,use_from):
 		me = Bladex.GetEntity(EntityName)
 		if me:
 			if not has_torch (EntityName):
+				ReportMsg ("The selected object cannot be taken")   # Added -LeadHead
 				return 0
 			torch = Bladex.GetEntity(me.InvRight)
 			if torch.Data.torchobjdata.LightStatus==Torchs.OFF:
+				ReportMsg ("The selected object cannot be taken")   # Added -LeadHead
 				return 0
 			object.UseFunc = 0
 			object.Data.UsedBy = me.InvRight
@@ -1669,58 +1695,25 @@ def PickupEventHandler(EntityName, EventName, force_take=TRUE):
 			weapon_added=TRUE
 			if(netgame.GetNetState()==0):
 				if (not me.Data.NPC) and not me.Data.WasObjectAlreadyTaken(object_name):
-					# Race-Ordered Weapons
-					KnightWeaps = [	"QueenSword","IceSword","FireSword","Gladius","Orksword","Espadaelfica" ,
-									"Espadaromana","Espadacurva","Dagesse","Cimitarra","EgyptSword","Espadafilo" ,
-									"Espada","Maza","Maza2","Maza3"]
-
-					DwarfWeaps = [	"CrushHammer","FireAxe","IceHammer","Hacha","Hacha5","Hacha4","Hacha3",
-									"Hacha6","Hacha2","Garrote","Martillo","Martillo2","Garropin","MazaDoble" ,
-									"Garrote2","Martillo3"]
-
-					AmazonWeaps = [	"TaiSword","SteelFeather","FireBo","LightEdge","Ninjato",
-									"HookSword","Katana" ,"DoubleSword","Bo","Lanza","Naginata","Tridente",
-									"Hachacuchilla","Naginata2","DeathBo","CrushBo"]
-
-					BarbWeaps  = [	"FireBigSword","IceAxe","DalWeapon","Sablazo","Chaosword",
-									"DeathSword","LongSword","Alfanje","BigSword","SawSword","FlatSword",
-									"Eclipse","Guadanya","Hacha2hojas","RhinoClub","Hacharrajada"]
-
 					char = Bladex.GetEntity("Player1")
 
 					import Scorer
 
-					if char.Kind == "Barbarian_N":
-						if  (
-							(not AmazonWeaps.count(WeaponName)) and
-							(not  DwarfWeaps.count(WeaponName)) and
-							(not KnightWeaps.count(WeaponName))
-							):
+					### Re-written in a sensible manner -LeadHead
+					if char.Kind[:9]=="Barbarian":
+						if BarbWeaps.count(WeaponName):
 							Scorer.SlideTBS(0)
-
-					if char.Kind == "Amazon_N":
-						if  (
-							(not   BarbWeaps.count(WeaponName)) and
-							(not  DwarfWeaps.count(WeaponName)) and
-							(not KnightWeaps.count(WeaponName))
-							):
+					elif char.Kind[:6]=="Knight":
+						if KnightWeaps.count(WeaponName):
 							Scorer.SlideTBS(0)
-
-					if char.Kind == "Dwarf_N":
-						if  (
-							(not AmazonWeaps.count(WeaponName)) and
-							(not   BarbWeaps.count(WeaponName)) and
-							(not KnightWeaps.count(WeaponName))
-							):
+					elif char.Kind[:6]=="Amazon":
+						if AmazonWeaps.count(WeaponName):
 							Scorer.SlideTBS(0)
-
-					if char.Kind == "Knight_N":
-						if  (
-							(not AmazonWeaps.count(WeaponName)) and
-							(not  DwarfWeaps.count(WeaponName)) and
-							(not   BarbWeaps.count(WeaponName))
-							):
+					elif char.Kind[:5]=="Dwarf":
+						if DwarfWeaps.count(WeaponName):
 							Scorer.SlideTBS(0)
+					else:
+						print ("!!ERROR @ ACTIONS.PY!! - Couldn't parse char.Kind!")
 
 		inv.LinkRightHand (object_name)
 
@@ -2994,12 +2987,13 @@ def LinkContinuosSoundAux(csound):
 
 
 
-def LinkContinuosSound(EntityName,SoundName,max_dist=12000,min_dist=5000):
+def LinkContinuosSound(EntityName,SoundName,max_dist=12000,min_dist=5000,Volume=1.0):
     me = Bladex.GetEntity(EntityName)
     csound=Bladex.CreateEntity(EntityName+"ContinuosSound", "Entity Sound", 0,0,0)
     csound.SetSound(AutomatedAssets(SoundName))
     csound.MinDistance=min_dist
     csound.MaxDistance=max_dist
+    csound.Volume = Volume
     me.Link(csound)
     #Otherwise it would not work (the SS does NOT launch any sounds when loading!!!)
     Bladex.AddScheduledFunc(Bladex.GetTime()+1.0,LinkContinuosSoundAux,(csound,),"LinkContinuosSoundAux")

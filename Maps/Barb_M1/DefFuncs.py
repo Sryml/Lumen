@@ -1,3 +1,17 @@
+##///
+##||| BARB_M1/DEFFUNCS.PY TITANIUM
+##||| Change list:
+##||| * Environmental animations should now be played at 60fps
+##||| * Final cutscene can be skipped now.
+##||| * Doors broken by liches now are better synced with their attack animation.
+##||| * Changed sound events for totem cutscene.
+##||| * 
+##||| * 
+##||| * 
+##||| * 
+##\\\ 
+
+
 import def_class
 import Bladex
 import ReadGSFile
@@ -371,7 +385,8 @@ def StopSpirits(Camera,Frame):
 	cam = Bladex.GetEntity("Camera")
 	cam.SetPersonView("Player1")
 	cam.Cut()
-
+	ScriptSkip.SkipScriptEnd()          # Added     -LeadHead
+	
 	time = 0
 	if Reference.DEMO_MODE==0:
 		Bladex.AddScheduledFunc(Bladex.GetTime()+time,GotoMapVars.EndOfLevel,(),"GotoMapVars.EndOfLevel")
@@ -424,8 +439,8 @@ def StartScene(trsector, ent_name):
 		time = Bladex.GetTime()
 
 		Bladex.AddScheduledFunc(time + 1.0,musicaytexto,(),"musicaytexto")
-		Bladex.DeactivateInput()
-
+		# Bladex.DeactivateInput()                      #
+		ScriptSkip.SkipScriptStart("Barb_M1 final")     # Added -LeadHead
 
 
 	startspirittime = Bladex.GetTime()
@@ -497,7 +512,7 @@ def Derrumba(sector_index, entity_name):
 def EspantarCuervo1():
 	crow1.ClearPath();
 	crow1.Animation="Crw_fly"
-	crow1.FPS=20.0
+	crow1.FPS=60.0      # Was 20.0 -LeadHead
 	crow1.AddPathNode(5.0,-84000,-5000,-114000);
 	crow1.AddPathNode(5.0,-102000,-4000,-103000);
 	crow1.AddPathNode(7.0,-122000,-5000,-101000);
@@ -515,7 +530,7 @@ def EspantarCuervo1():
 def EspantarCuervo2():
 	crow2.ClearPath();
 	crow2.Animation="Crw_fly"
-	crow2.FPS=20.0
+	crow2.FPS=60.0      # Was 20.0 -LeadHead
 	crow2.AddPathNode(5.0,-126000,-21000,64000);
 	crow2.AddPathNode(5.0,-144000,-22000,51000);
 	crow2.AddPathNode(7.0,-162000,-24000,56000);
@@ -533,7 +548,7 @@ def EspantarCuervo2():
 def EspantarCuervo3():
 	crow3.ClearPath();
 	crow3.Animation="Crw_fly"
-	crow3.FPS=20.0
+	crow3.FPS=60.0      # Was 20.0 -LeadHead
 	crow3.AddPathNode(5.0,-128000,-24000,101000);
 	crow3.AddPathNode(5.0,-146000,-24000,110000);
 	crow3.AddPathNode(4.0,-166000,-22000,112000);
@@ -676,24 +691,45 @@ def BorrarCascada(cascada):
 #*************************************************************************************************
 #*************************************************************************************************
 
+"""
+# Following funcs have been edited:
+# - Introduced a 1.1s delay before door breaks to better sync with Lich animations
+# - Liches made deaf and blind so they don't try to lock on to you through walls
+#           -LeadHead
+"""
+
 def LichBreakDoor(TrSector,Entity):
 	if Entity == "Player1":
-		b2.HitSector(0,"",b2.pos[0],b2.pos[1],b2.pos[2])
-		b3.HitSector(0,"",b3.pos[0],b3.pos[1],b3.pos[2])
+		# b2.HitSector(0,"",b2.pos[0],b2.pos[1],b2.pos[2])
+		# b3.HitSector(0,"",b3.pos[0],b3.pos[1],b3.pos[2])
 		Bladex.RemoveTriggerSectorFunc(TrSector, "OnEnter")
 		doorenm1 = Bladex.GetEntity("doorenm1")
 		doorenm1.Angle = 4.6
 		doorenm1.LaunchAnmType("g_12")
+		doorenm1.Deaf=0
+		doorenm1.Blind=0
 		doorenm1.SetActiveEnemy("Player1")
+		Bladex.AddScheduledFunc(Bladex.GetTime()+1.1, ShatterDoor1, (),"Shatteroor1")
+		
+def ShatterDoor1():
+	b2.HitSector(0,"",b2.pos[0],b2.pos[1],b2.pos[2])
+	b3.HitSector(0,"",b3.pos[0],b3.pos[1],b3.pos[2])
+		
 
 def LichBreakDoor2(TrSector,Entity):
 	if Entity == "Player1":
-		b5.HitSector(0,"",b5.pos[0],b5.pos[1],b5.pos[2])
+		# b5.HitSector(0,"",b5.pos[0],b5.pos[1],b5.pos[2])
 		Bladex.RemoveTriggerSectorFunc(TrSector, "OnEnter")
 		doorenm2 = Bladex.GetEntity("doorenm2")
 		doorenm2.Angle = 1.6
 		doorenm2.LaunchAnmType("g_12")
+		doorenm2.Deaf=0
+		doorenm2.Blind=0
 		doorenm2.SetActiveEnemy("Player1")
+		Bladex.AddScheduledFunc(Bladex.GetTime()+1.1, ShatterDoor2, (),"Shatteroor2")
+		
+def ShatterDoor2():
+		b5.HitSector(0,"",b5.pos[0],b5.pos[1],b5.pos[2])
 
 
 def SetupBreakSector(pos,pos2,norm,life,dir,dir1,dir2):
@@ -768,7 +804,7 @@ def DeactivatePinchoOnHit (EntityName, VictimName, ImpX, ImpY, ImpZ):
 def ActivatePinchos():
 	for i in range(1,23):
 		# Activate pincho
-		print "Pinchos1_"+`i`
+		# print "Pinchos1_"+`i`     # PLAGUE: stop spamming the console ffs
 		pincho=Bladex.GetEntity("Pinchos1_"+`i`)
 		pincho.MessageEvent(Reference.MESSAGE_START_WEAPON,0,0)
 		pincho.MessageEvent(Reference.MESSAGE_SETSTATICWEPONMODE,1,0)
@@ -1028,6 +1064,9 @@ def AbandonarPuerta(Sector,Entity_Name):
 #*************************************************************************************************
 #*************************************************************************************************
 
+### PLAGUE: The sounds for totem are just really weak. They have to be changed and more sounds added.
+### Also, why does this part have no music in the background? Surely, it's an oversight.
+
 def SonidoEsfuerzo(Esfuerzo):
 	char = Bladex.GetEntity("Player1")
 
@@ -1051,6 +1090,21 @@ def SonidoCrujido(Crujido):
 	else:
 		soundcrujido2.Position = totem.Position
 		soundcrujido2.PlaySound(0)
+		
+def SonidoHit(Hit):
+	
+	if Hit == 0:
+		soundtotemhit.Position = -88742, -31228, 155657
+		soundtotemhit.PlaySound(0)
+	elif Hit == 1:
+		soundtotemhit2.Position = -88742, -31228, 155657
+		soundtotemhit2.PlaySound(0)
+		soundtotemhit.Position = -88742, -31228, 155657
+		soundtotemhit.PlaySound(0)
+	elif Hit == 2:
+		soundtotemhit3.Position = -88742, -31228, 155657
+		soundtotemhit3.PlaySound(0)
+	
 
 def TotemThrow(a,b):
 	totem.TurnOff()
@@ -1078,8 +1132,8 @@ def TotemHit(a,b):
 	polvareda.Velocity=0.0, -300.0, 0.0
 	polvareda.RandomVelocity=60.0
 
-	soundtotemhit.Position = -88742, -31228, 155657
-	soundtotemhit.PlaySound(0)
+	# soundtotemhit.Position = -88742, -31228, 155657
+	# soundtotemhit.PlaySound(0)
 
 
 def ThrowTotem(entity,use_from):
@@ -1093,7 +1147,7 @@ def ThrowTotem(entity,use_from):
 		cam.SetMaxCamera("tot_Camera01.cam",0,194)
 		Bladex.DeactivateInput()
 
-		char.QuickFace(angle)
+		# char.QuickFace(angle)
 
 		totem.Orientation = (0.707388281822, 0.706825196743, 0.0, 0.0)
 		totem.Actor = 1
@@ -1117,8 +1171,13 @@ def ThrowTotem(entity,use_from):
 
 		Bladex.AddScheduledFunc(time + 1.1,SonidoCrujido,(1,),"SonidoCrujido1")
 		Bladex.AddScheduledFunc(time + 2.7,SonidoCrujido,(1,),"SonidoCrujido1")
-		Bladex.AddScheduledFunc(time + 5.65,SonidoCrujido,(1,),"SonidoCrujido1")
-		Bladex.AddScheduledFunc(time + 6.39,SonidoCrujido,(2,),"SonidoCrujido2")
+		Bladex.AddScheduledFunc(time + 5.65,SonidoCrujido,(2,),"SonidoCrujido2")
+		# Bladex.AddScheduledFunc(time + 6.39,SonidoCrujido,(2,),"SonidoCrujido2")
+		
+		Bladex.AddScheduledFunc(time + 7.27,SonidoHit,(1,),"SonidoHit1")
+		Bladex.AddScheduledFunc(time + 7.61,SonidoHit,(2,),"SonidoHit2")
+		Bladex.AddScheduledFunc(time + 8.16,SonidoHit,(0,),"SonidoHit3")
+		
 
 		cam.AddCameraEvent(147,TotemHit)
 		cam.AddCameraEvent(190,TotemThrow)
@@ -1310,7 +1369,7 @@ def DeactivatePinchoOnHit3 (EntityName, VictimName, ImpX, ImpY, ImpZ):
 def ActivatePinchos3():
 	for i in range(1,19):
 		# Activate pincho
-		print "Pinchos3_"+`i`
+		# print "Pinchos3_"+`i`        # PLAGUE: Stop spamming the console ffs
 		pincho=Bladex.GetEntity("Pinchos3_"+`i`)
 		pincho.MessageEvent(Reference.MESSAGE_START_WEAPON,0,0)
 		pincho.MessageEvent(Reference.MESSAGE_SETSTATICWEPONMODE,1,0)
@@ -1341,7 +1400,7 @@ def DeactivatePinchoOnHit2 (EntityName, VictimName, ImpX, ImpY, ImpZ):
 def ActivatePinchos2():
 	for i in range(3,28):
 		# Activate pincho
-		print "Pinchos2_"+`i`
+		# print "Pinchos2_"+`i`     # # PLAGUE: Stop spamming the console ffs
 		pincho=Bladex.GetEntity("Pinchos2_"+`i`)
 		pincho.MessageEvent(Reference.MESSAGE_START_WEAPON,0,0)
 		pincho.MessageEvent(Reference.MESSAGE_SETSTATICWEPONMODE,1,0)
@@ -1389,7 +1448,7 @@ def FlyCrow():
 	crowinicio.Actor=1
 	crowinicio.Alpha = 0.0
 	crowinicio.Animation="Crw_start_fly"
-	crowinicio.FPS=20.0
+	crowinicio.FPS=60.0         # was 20 -LeadHead
 	#crowinicio.Frame = frame
 	crowinicio.SendSectorMsgs=0
 	crowinicio.TurnOn()
@@ -1415,7 +1474,7 @@ def BarbInicio():
 
 	crowinicio2.Actor=1
 	crowinicio2.Animation="Crw_start_pic"
-	crowinicio2.FPS=20.0
+	crowinicio2.FPS=60.0                # Was 20 -LeadHead
 	crowinicio2.SendSectorMsgs=0
 	crowinicio2.TurnOn()
 

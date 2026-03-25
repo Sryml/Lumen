@@ -53,8 +53,8 @@ def Init():
     Bladex.AddAnmEvent("Amz_g_magic2","Stop_Trail",0.497)
     Bladex.AddAnmEvent("Amz_g_magic2","HitInitialItp",0.064)
     Bladex.AddAnmEvent("Amz_g_magic2","HitFinalItp",0.978)
-    Bladex.AddAnmEvent("Amz_g_magic2","Start_Weapon_Special",0.629)
-    Bladex.AddAnmEvent("Amz_g_magic2","Stop_Weapon_Special",0.724)
+    Bladex.AddAnmEvent("Amz_g_magic2","Start_Weapon_Special",0.321) # 0.629
+    Bladex.AddAnmEvent("Amz_g_magic2","Stop_Weapon_Special",0.497)  # 0.724     corrected -LeadHead
     
     Bladex.AddAnmEvent("Amz_g_bad_axe","HitInitialItp",0.078)
     Bladex.AddAnmEvent("Amz_g_bad_axe","HitFinalItp",0.951)
@@ -290,8 +290,8 @@ def Init():
     Bladex.AddAnmEvent("Amz_tke_r_03","PickupEvent",0.5500)
     Bladex.AddAnmEvent("Amz_tke_r_04","PickupEvent",0.5500)
     Bladex.AddAnmEvent("Amz_tke_r_05","PickupEvent",0.5500)
-    Bladex.AddAnmEvent("Amz_tke_r_key00","PickupEvent",0.2069)
-    Bladex.AddAnmEvent("Amz_tke_r_key00","Key_down",0.6897)
+    # Bladex.AddAnmEvent("Amz_tke_r_key00","PickupEvent",0.2069)        ### PLAGUE: Duplicated, commented out
+    # Bladex.AddAnmEvent("Amz_tke_r_key00","Key_down",0.6897)           ###
 
     Bladex.AddAnmEvent("Amz_g_spear02low","HitInitialItp",0.103)
     Bladex.AddAnmEvent("Amz_g_spear02low","HitFinalItp",0.770)
@@ -348,8 +348,10 @@ def Init():
     Bladex.AddAnmEvent("Amz_g_spear_b6_26","HitFinalItp",0.794)
     Bladex.AddAnmEvent("Amz_g_spear_b6_26","Start_Trail",0.448)
     Bladex.AddAnmEvent("Amz_g_spear_b6_26","Stop_Trail",0.699)
-    Bladex.AddAnmEvent("Amz_g_spear_b6_26","Start_Weapon",0.448)
-    Bladex.AddAnmEvent("Amz_g_spear_b6_26","Stop_Weapon",0.699)
+    Bladex.AddAnmEvent("Amz_g_spear_b6_26","Start_Weapon",0.448)    # Now hits twice
+    Bladex.AddAnmEvent("Amz_g_spear_b6_26","Stop_Weapon",0.521)     #
+    Bladex.AddAnmEvent("Amz_g_spear_b6_26","Start_Weapon",0.525)    #
+    Bladex.AddAnmEvent("Amz_g_spear_b6_26","Stop_Weapon",0.699)     #       -LeadHead
     Bladex.AddAnmEvent("Amz_g_spear_b6_26","Start_Weapon_Special",0.448)
     Bladex.AddAnmEvent("Amz_g_spear_b6_26","Stop_Weapon_Special",0.699)
     
@@ -519,6 +521,7 @@ def Init():
     Bladex.AddAnmEvent("Amz_g_spear_back","Stop_Trail",0.458)
     Bladex.AddAnmEvent("Amz_g_spear_back","Start_Weapon",0.272)
     Bladex.AddAnmEvent("Amz_g_spear_back","Stop_Weapon",0.458)
+    Bladex.AddAnmEvent("Amz_g_spear_back","Swap180",0.90)           # Added. -LeadHead
 
 
 
@@ -752,6 +755,7 @@ def Init():
     Bladex.AddAnmEvent("Bar_g2h_back","Stop_Weapon",0.556)
     Bladex.AddAnmEvent("Bar_g2h_back","HitInitialItp",0.3)
     Bladex.AddAnmEvent("Bar_g2h_back","HitFinalItp",0.867)
+    Bladex.AddAnmEvent("Bar_g2h_back","Swap180",0.95)           # Added. -LeadHead
 
     Bladex.AddAnmEvent("Bar_g2h_s1","Start_Trail",0.361)
     Bladex.AddAnmEvent("Bar_g2h_s1","Stop_Trail",0.499)
@@ -1014,8 +1018,8 @@ def Init():
     Bladex.AddAnmEvent("Bar_g_magic2","Stop_Trail",0.497)
     Bladex.AddAnmEvent("Bar_g_magic2","HitInitialItp",0.064)
     Bladex.AddAnmEvent("Bar_g_magic2","HitFinalItp",0.978)
-    Bladex.AddAnmEvent("Bar_g_magic2","Start_Weapon_Special",0.629)
-    Bladex.AddAnmEvent("Bar_g_magic2","Stop_Weapon_Special",0.724)
+    Bladex.AddAnmEvent("Bar_g_magic2","Start_Weapon_Special",0.321) # 0.629
+    Bladex.AddAnmEvent("Bar_g_magic2","Stop_Weapon_Special",0.497)  # 0.724     corrected -LeadHead
 
 
 
@@ -1086,8 +1090,10 @@ def Init():
     #     BARBARO VIEJAS ANIMACIONES                           #
     #                                                          #
     ############################################################
-    Bladex.AddAnmEvent("Bar_gulp00","drinkingEvent",0.2826)
-    Bladex.AddAnmEvent("Bar_gulp00","ThrowBottle",0.7391)
+#   ###     Duplicated with previous lines, commenting out -LeadHead
+#
+#    Bladex.AddAnmEvent("Bar_gulp00","drinkingEvent",0.2826)
+#    Bladex.AddAnmEvent("Bar_gulp00","ThrowBottle",0.7391)
 
     Bladex.AddAnmEvent("Bar_bag","ChangeREvent",0.556)
 
@@ -1127,7 +1133,7 @@ def Init():
     Bladex.AddAnmEvent("Bar_tke_r_key00","PickupEvent",0.2069)
     Bladex.AddAnmEvent("Bar_tke_r_key00","Key_down",0.6897)
     Bladex.AddAnmEvent("Bar_tke_r_key03","PickupEvent",0.316)
-    Bladex.AddAnmEvent("Bar_tke_r_key03","Key_down",0.943)
+    Bladex.AddAnmEvent("Bar_tke_r_key03","Key_down",0.783) # was 0.943
     Bladex.AddAnmEvent("Bar_tke_r_key05","PickupEvent",0.220)
     Bladex.AddAnmEvent("Bar_tke_r_key05","Key_down",0.680)
     Bladex.AddAnmEvent("Bar_tke_r_key01","PickupEvent",0.221)
@@ -1138,6 +1144,12 @@ def Init():
 
     Bladex.AddAnmEvent("Bar_lvr_d","Activate",0.3548)
     Bladex.AddAnmEvent("Bar_lvr_u","Activate",0.3889)
+
+    # Added     -LeadHead
+    Bladex.AddAnmEvent("Bar_df_01_2w","HitFinalItp",0.388)
+    Bladex.AddAnmEvent("Bar_df_01_axe","HitFinalItp",0.388)
+    
+
 
     Bladex.AddAnmEvent("Bar_g_01","Start_Trail",0.3117)
     Bladex.AddAnmEvent("Bar_g_01","Stop_Trail",0.5714)
@@ -1376,6 +1388,13 @@ def Init():
     Bladex.AddAnmEvent("Kgt_g_28new","Start_Weapon",0.345)
     Bladex.AddAnmEvent("Kgt_g_28new","Stop_Weapon",0.623)
 
+    # Bladex.AddAnmEvent("Kgt_g_19","HitInitialItp",0.055) PLAGUE: To be decided
+    # Bladex.AddAnmEvent("Kgt_g_19","HitFinalItp",0.691)
+    # Bladex.AddAnmEvent("Kgt_g_19","Start_Trail",0.379)
+    # Bladex.AddAnmEvent("Kgt_g_19","Stop_Trail",0.732)
+    # Bladex.AddAnmEvent("Kgt_g_19","Start_Weapon",0.379)
+    # Bladex.AddAnmEvent("Kgt_g_19","Stop_Weapon",0.698)
+
     Bladex.AddAnmEvent("Kgt_g_39_new","HitInitialItp",0.131)
     Bladex.AddAnmEvent("Kgt_g_39_new","HitFinalItp",0.843)
     Bladex.AddAnmEvent("Kgt_g_39_new","Start_Trail",0.197)
@@ -1509,10 +1528,14 @@ def Init():
     Bladex.AddAnmEvent("Kgt_g_02_new","HitInitialItp",0.131)
     Bladex.AddAnmEvent("Kgt_g_02_new","HitFinalItp",0.553)
     Bladex.AddAnmEvent("Kgt_g_02_new","Start_Weapon",0.287)
-    Bladex.AddAnmEvent("Kgt_g_02_new","Stop_Weapon",462)
+    Bladex.AddAnmEvent("Kgt_g_02_new","Stop_Weapon",0.462)        # Bugfix. Was 462 (yes, no decimal) -LeadHead
     Bladex.AddAnmEvent("Kgt_g_02_new","Start_Trail",0.287)
     Bladex.AddAnmEvent("Kgt_g_02_new","Stop_Trail",0.462)
 
+    Bladex.AddAnmEvent("Kgt_g_06lowkata_new","Start_Weapon",0.068)
+    Bladex.AddAnmEvent("Kgt_g_06lowkata_new","Stop_Weapon",0.166)
+    Bladex.AddAnmEvent("Kgt_g_06lowkata_new","Start_Weapon",0.445)
+    Bladex.AddAnmEvent("Kgt_g_06lowkata_new","Stop_Weapon",0.560)
     Bladex.AddAnmEvent("Kgt_g_06lowkata_new","HitInitialItp",0.059)
     Bladex.AddAnmEvent("Kgt_g_06lowkata_new","HitFinalItp",0.635)
     Bladex.AddAnmEvent("Kgt_g_06lowkata_new","Start_Weapon",0.464)
@@ -1574,7 +1597,7 @@ def Init():
     Bladex.AddAnmEvent("Kgt_g_18_11_22_new","Start_Trail",0.630)
     Bladex.AddAnmEvent("Kgt_g_18_11_22_new","Stop_Trail",0.770)
 
-    Bladex.AddAnmEvent("Kgt_g_22kata_23_new","HitInitialItp",0.062)
+    Bladex.AddAnmEvent("Kgt_g_22kata_23_new","HitInitialItp",0.112)     # Was 0.062 -LeadHead
     Bladex.AddAnmEvent("Kgt_g_22kata_23_new","HitFinalItp",0.712)
     Bladex.AddAnmEvent("Kgt_g_22kata_23_new","Start_Weapon",0.258)
     Bladex.AddAnmEvent("Kgt_g_22kata_23_new","Stop_Weapon",0.332)
@@ -1615,8 +1638,8 @@ def Init():
     Bladex.AddAnmEvent("Kgt_g_magic2","Stop_Trail",0.497)
     Bladex.AddAnmEvent("Kgt_g_magic2","HitInitialItp",0.064)
     Bladex.AddAnmEvent("Kgt_g_magic2","HitFinalItp",0.978)
-    Bladex.AddAnmEvent("Kgt_g_magic2","Start_Weapon_Special",0.629)
-    Bladex.AddAnmEvent("Kgt_g_magic2","Stop_Weapon_Special",0.724)
+    Bladex.AddAnmEvent("Kgt_g_magic2","Start_Weapon_Special",0.321) # 0.629
+    Bladex.AddAnmEvent("Kgt_g_magic2","Stop_Weapon_Special",0.497)  # 0.724     corrected -LeadHead
 
     Bladex.AddAnmEvent("Kgt_g_286new","HitInitialItp",0.099)
     Bladex.AddAnmEvent("Kgt_g_286new","HitFinalItp",0.821)
@@ -1742,10 +1765,14 @@ def Init():
 
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","HitInitialItp",0.070)
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","HitFinalItp",0.820)
+    Bladex.AddAnmEvent("Kgt_g_s28kata_new","Start_Weapon",0.275)             # Added
+    Bladex.AddAnmEvent("Kgt_g_s28kata_new","Stop_Weapon",0.380)              #   -LeadHead
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","Start_Weapon",0.575)
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","Stop_Weapon",0.729)
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","Start_Trail",0.113)
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","Stop_Trail",0.729)
+    Bladex.AddAnmEvent("Kgt_g_s28kata_new","Start_Weapon_Special",0.275)    # Added
+    Bladex.AddAnmEvent("Kgt_g_s28kata_new","Stop_Weapon_Special",0.380)     #   -LeadHead
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","Start_Weapon_Special",0.575)
     Bladex.AddAnmEvent("Kgt_g_s28kata_new","Stop_Weapon_Special",0.729)
 
@@ -1966,13 +1993,13 @@ def Init():
     Bladex.AddAnmEvent("Kgt_dth_bl2","drop_dth_r",0.2373)
 
     Bladex.AddAnmEvent("Kgt_tke_r_key02","PickupEvent",0.2759)
-    Bladex.AddAnmEvent("Kgt_tke_r_key02","Key_down",0.8621)
+    Bladex.AddAnmEvent("Kgt_tke_r_key02","Key_down",0.7781)     # was 0.8621  -LeadHead
     Bladex.AddAnmEvent("Kgt_tke_r_key04","PickupEvent",0.2727)
     Bladex.AddAnmEvent("Kgt_tke_r_key04","Key_down",0.6667)
     Bladex.AddAnmEvent("Kgt_tke_r_key01","PickupEvent",0.3103)
-    Bladex.AddAnmEvent("Kgt_tke_r_key01","Key_down",0.8621)
+    Bladex.AddAnmEvent("Kgt_tke_r_key01","Key_down",0.7961)     # was 0.8621  -LeadHead
     Bladex.AddAnmEvent("Kgt_tke_r_key03","PickupEvent",0.3103)
-    Bladex.AddAnmEvent("Kgt_tke_r_key03","Key_down",0.8966)
+    Bladex.AddAnmEvent("Kgt_tke_r_key03","Key_down",0.7966)     # was 0.8966  -LeadHead
     Bladex.AddAnmEvent("Kgt_tke_r_key05","PickupEvent",0.2727)
     Bladex.AddAnmEvent("Kgt_tke_r_key05","Key_down",0.6667)
 
@@ -2319,8 +2346,8 @@ def Init():
     Bladex.AddAnmEvent("Dwf_drp_r","DropRightEvent",0.4074)
     Bladex.AddAnmEvent("Dwf_drp_l","DropLeftEvent",0.543)
 
-    Bladex.AddAnmEvent("Dwf_tke_r_key00","PickupEvent",0.2069)
-    Bladex.AddAnmEvent("Dwf_tke_r_key00","Key_down",0.6897)
+    # Bladex.AddAnmEvent("Dwf_tke_r_key00","PickupEvent",0.2069)  ### PLAGUE: duplicate below
+    # Bladex.AddAnmEvent("Dwf_tke_r_key00","Key_down",0.6897)     ###
     Bladex.AddAnmEvent("Dwf_tke_r_key03","PickupEvent",0.316)
     Bladex.AddAnmEvent("Dwf_tke_r_key03","Key_down",0.943)
     Bladex.AddAnmEvent("Dwf_tke_r_key05","PickupEvent",0.220)
@@ -2339,7 +2366,7 @@ def Init():
     Bladex.AddAnmEvent("Dwf_pulsador","Activate",0.3333)  
 
 
-    Bladex.AddAnmEvent("Dwf_tke_r_01","PickupEvent",0.5882)
+    # Bladex.AddAnmEvent("Dwf_tke_r_01","PickupEvent",0.5882)       ### PLAGUE: duplicate above
     Bladex.AddAnmEvent("Dwf_tke_r_02","PickupEvent",0.382)
     Bladex.AddAnmEvent("Dwf_tke_r_03","PickupEvent",0.297)
     Bladex.AddAnmEvent("Dwf_tke_r_04","PickupEvent",0.407)
@@ -2470,8 +2497,10 @@ def Init():
     Bladex.AddAnmEvent("Dwf_g_22","HitFinalItp",0.789)
     Bladex.AddAnmEvent("Dwf_g_22","Start_Trail",0.454)
     Bladex.AddAnmEvent("Dwf_g_22","Stop_Trail",0.677)
-    Bladex.AddAnmEvent("Dwf_g_22","Start_Weapon",0.454)
-    Bladex.AddAnmEvent("Dwf_g_22","Stop_Weapon",0.677)
+    Bladex.AddAnmEvent("Dwf_g_22","Start_Weapon",0.454)     # Now hits twice
+    Bladex.AddAnmEvent("Dwf_g_22","Stop_Weapon",0.522)      #
+    Bladex.AddAnmEvent("Dwf_g_22","Start_Weapon",0.525)     #
+    Bladex.AddAnmEvent("Dwf_g_22","Stop_Weapon",0.677)      #       -LeadHead
     Bladex.AddAnmEvent("Dwf_g_22","Start_Weapon_Special",0.454)
     Bladex.AddAnmEvent("Dwf_g_22","Stop_Weapon_Special",0.677)
     
@@ -2548,6 +2577,15 @@ def Init():
     Bladex.AddAnmEvent("Dwf_g_09","Stop_Weapon",0.455)
     Bladex.AddAnmEvent("Dwf_g_09","Start_Weapon_Special",0.278)
     Bladex.AddAnmEvent("Dwf_g_09","Stop_Weapon_Special",0.455)
+    
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","HitInitialItp",0.120)           # Added
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","HitFinalItp",0.748)             # Anim previously unused
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","Start_Trail",0.378)             #
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","Stop_Trail",0.727)              # Now used by IceHammer
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","Start_Weapon",0.463)            #
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","Stop_Weapon",0.727)             #
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","Start_Weapon_Special",0.463)    #
+    Bladex.AddAnmEvent("Dwf_g_s18_2h","Stop_Weapon_Special",0.727)     #                -LeadHead
 
     Bladex.AddAnmEvent("Dwf_g_01a","Start_Weapon",0.370)
     Bladex.AddAnmEvent("Dwf_g_01a","Stop_Weapon",0.646)
@@ -2676,8 +2714,8 @@ def Init():
     Bladex.AddAnmEvent("Dwf_g_magic2","Stop_Trail",0.497)
     Bladex.AddAnmEvent("Dwf_g_magic2","HitInitialItp",0.064)
     Bladex.AddAnmEvent("Dwf_g_magic2","HitFinalItp",0.978)
-    Bladex.AddAnmEvent("Dwf_g_magic2","Start_Weapon_Special",0.629)
-    Bladex.AddAnmEvent("Dwf_g_magic2","Stop_Weapon_Special",0.724)
+    Bladex.AddAnmEvent("Dwf_g_magic2","Start_Weapon_Special",0.321) # 0.629
+    Bladex.AddAnmEvent("Dwf_g_magic2","Stop_Weapon_Special",0.497)  # 0.724     corrected -LeadHead
 
 
     Bladex.AddAnmEvent("Dwf_clmb_medlow_1h","Impulse_Clmb",0.2900)
@@ -2727,7 +2765,7 @@ def Init():
     Bladex.AddAnmEvent("Dgk_g_02_new","HitInitialItp",0.131)
     Bladex.AddAnmEvent("Dgk_g_02_new","HitFinalItp",0.655)
     Bladex.AddAnmEvent("Dgk_g_02_new","Start_Weapon",0.268)
-    Bladex.AddAnmEvent("Dgk_g_02_new","Stop_Weapon",525)
+    Bladex.AddAnmEvent("Dgk_g_02_new","Stop_Weapon",0.525)      # Same issue as Knight's SpeedKill, was missing a decimal -LeadHead
     Bladex.AddAnmEvent("Dgk_g_02_new","Start_Trail",0.268)
     Bladex.AddAnmEvent("Dgk_g_02_new","Stop_Trail",0.525)
                
@@ -3307,13 +3345,13 @@ def Init():
 
     ############################################################
     #                                                          #
-    #     ARAÑA PEQUEÑA                                        #
+    #     ARAÃ‘A PEQUEÃ‘A                                        #
     #                                                          #
     ############################################################
     Bladex.AddAnmEvent("Spd_g_01","Start_Weapon",0.4118)
     Bladex.AddAnmEvent("Spd_g_01","Stop_Weapon",0.8824)
-    Bladex.AddAnmEvent("Spd_spit","Spit",0.4762)
-
+    Bladex.AddAnmEvent("Spd_g_spit","Spit",0.4762)              # This one was misnamed as "Spd_spit", hence couldn't spit... -LeadHead
+                                                                # It has taken me 2 years to finally find the reason spider spitting didn't work.
 
     ############################################################
     #                                                          #
@@ -3510,6 +3548,12 @@ def Init():
     Bladex.AddAnmEvent("Skl_g_16","Stop_Weapon",0.535)
     Bladex.AddAnmEvent("Skl_g_16","HitInitialItp",0.135)
     Bladex.AddAnmEvent("Skl_g_16","HitFinalItp",0.731)
+    Bladex.AddAnmEvent("Skl_g_18","Start_Trail",0.445)   ## All this g_18 stuff added, because was originally missing -LeadHead
+    Bladex.AddAnmEvent("Skl_g_18","Stop_Trail",0.652)    ##
+    Bladex.AddAnmEvent("Skl_g_18","Start_Weapon",0.445)  ##
+    Bladex.AddAnmEvent("Skl_g_18","Stop_Weapon",0.652)   ##
+    Bladex.AddAnmEvent("Skl_g_18","HitInitialItp",0.170) ##
+    Bladex.AddAnmEvent("Skl_g_18","HitFinalItp",0.869)   ##
     Bladex.AddAnmEvent("Skl_g_22","Start_Trail",0.115)
     Bladex.AddAnmEvent("Skl_g_22","Stop_Trail",0.181)
     Bladex.AddAnmEvent("Skl_g_22","Start_Trail",0.243)
@@ -3739,7 +3783,7 @@ def Init():
 
     ############################################################
     #                                                          #
-    #     SEÑOR OSCURO                                         #
+    #     SEÃ‘OR OSCURO                                         #
     #                                                          #
     ############################################################
     Bladex.AddAnmEvent("Ank_g_01","Start_Weapon",0.4)
@@ -3832,13 +3876,13 @@ def Init():
     Bladex.AddAnmEvent("Amz_bag","ChangeREvent",0.556)
 
     Bladex.AddAnmEvent("Amz_tke_r_key02","PickupEvent",0.2759)
-    Bladex.AddAnmEvent("Amz_tke_r_key02","Key_down",0.8621)
+    Bladex.AddAnmEvent("Amz_tke_r_key02","Key_down",0.7781)     # was 0.8621
     Bladex.AddAnmEvent("Amz_tke_r_key04","PickupEvent",0.2727)
     Bladex.AddAnmEvent("Amz_tke_r_key04","Key_down",0.6667)
     Bladex.AddAnmEvent("Amz_tke_r_key01","PickupEvent",0.3103)
-    Bladex.AddAnmEvent("Amz_tke_r_key01","Key_down",0.8621)
+    Bladex.AddAnmEvent("Amz_tke_r_key01","Key_down",0.7961)     # was 0.8621
     Bladex.AddAnmEvent("Amz_tke_r_key03","PickupEvent",0.3103)
-    Bladex.AddAnmEvent("Amz_tke_r_key03","Key_down",0.8966)
+    Bladex.AddAnmEvent("Amz_tke_r_key03","Key_down",0.7966)     # was 0.8966
     Bladex.AddAnmEvent("Amz_tke_r_key05","PickupEvent",0.2727)
     Bladex.AddAnmEvent("Amz_tke_r_key05","Key_down",0.6667)
 

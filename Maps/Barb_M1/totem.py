@@ -1,15 +1,32 @@
+##///
+##||| Barb_M1/TOTEM.PY TITANIUM
+##||| Change list:
+##||| * Changed sound events for totem cutscene.
+##\\\ 
+
 import Actions
 import Sounds
-import Scorer
-import B3DLib
+import Scorer       # PLAGUE: Why are you even importing this?
+import B3DLib       #           
 import darfuncs
 
 #char.Position = -97065.856439,-27037.893892,155774.699829
 
 soundtotemhit=Sounds.CreateEntitySound('../../Sounds/golpe-madera-pesada.wav', 'SoundTotemHit')
-soundtotemhit.Volume=0.5
+soundtotemhit.Volume=0.9
 soundtotemhit.MinDistance=10000
 soundtotemhit.MaxDistance=20000
+
+### Addedd soundtotemhit[2-3]   -LeadHead
+soundtotemhit2=Sounds.CreateEntitySound('../../Sounds/golpe-roca-1.wav', 'SoundTotemHit2')
+soundtotemhit2.Volume=1
+soundtotemhit2.MinDistance=10000
+soundtotemhit2.MaxDistance=20000
+
+soundtotemhit3=Sounds.CreateEntitySound('../../Sounds/drawbridge-door-close.wav', 'SoundTotemHit3')
+soundtotemhit3.Volume=0.9
+soundtotemhit3.MinDistance=10000
+soundtotemhit3.MaxDistance=20000
 
 soundesfuerzo1=Sounds.CreateEntitySound('../../Sounds/esfuerzo-barb-corto.wav', 'SoundEsfuerzo1')
 soundesfuerzo1.Volume=0.5
@@ -26,12 +43,13 @@ soundesfuerzo3.Volume=0.5
 soundesfuerzo3.MinDistance=10000
 soundesfuerzo3.MaxDistance=20000
 
-soundcrujido1=Sounds.CreateEntitySound('../../Sounds/wood-bridge-creak.wav', 'SoundCrujido1')
-soundcrujido1.Volume=1
+soundcrujido1=Sounds.CreateEntitySound('../../Sounds/wood-bridge-creak2.wav', 'SoundCrujido1')  # was wood-bridge-creak.wav
+soundcrujido1.Volume=0.6            # Was 1
 soundcrujido1.MinDistance=10000
 soundcrujido1.MaxDistance=20000
 
-soundcrujido2=Sounds.CreateEntitySound('../../Sounds/wood-bridge-creak2.wav', 'SoundCrujido2')
+# soundcrujido2=Sounds.CreateEntitySound('../../Sounds/wood-bridge-creak2.wav', 'SoundCrujido2')    # Replaced sound
+soundcrujido2=Sounds.CreateEntitySound('../../Sounds/m-subirmadera.wav', 'SoundCrujido2')           #       -LeadHead
 soundcrujido2.Volume=1
 soundcrujido2.MinDistance=10000
 soundcrujido2.MaxDistance=20000
