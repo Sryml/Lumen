@@ -594,17 +594,18 @@ def ObjAlpha(o,alpha=0.8,SelfIlum=0.0):
 #  Funciones auxiliares para la aparicion valida de objetos      #
 #----------------------------------------------------------------#	
 
-def ValidAppear(pos,func=None,param=None):
-	entid = Bladex.GetEntitiesAt(pos[0],pos[1],pos[2],4000)
+def ValidAppear(pos,func=None,param=None,radius=4000.0):
+	entid = Bladex.GetEntitiesAt(pos[0],pos[1],pos[2],radius)
 	for on in entid:
 		o = Bladex.GetEntity(on)
 		if o.Person:
 			if o.Life > 0:
-				if o.Alpha >0.01:
-					print "Trying to do it, but",on,"is bothering. Next try in 5 seconds."
-					if func:
-						Bladex.AddScheduledFunc(Bladex.GetTime()+5.0, ValidAppear,(pos,func,param))
-					return 0
+				# if hasattr(o, "ExclusionMask") and (o.ExclusionMask & SolidMask.EX_PERSON == 0):
+				if func:
+					Reference.debugprint("Trying to do it, but",on,"is bothering. Next try in 3 seconds.")
+					Bladex.AddScheduledFunc(Bladex.GetTime()+3.0, ValidAppear,(pos,func,param,radius))
+				Reference.debugprint("%s: distance %s" % (on, AuxFuncs.Module(map(lambda a,b: a-b, pos, o.Position))))
+				return 0
 	if func:
 		apply(func,param)
 		print "The function was XQted"
@@ -619,6 +620,7 @@ def CreateFalseCube(pos,timeToKill = -1,Name = ""):
 	o.CastShadows = 0
 	o.Alpha       = 0.0
 	o.RasterMode  ="Read"
+	Reference.EntitiesSelectionData[o.Name] = None
 	if timeToKill != -1:
 		Bladex.AddScheduledFunc(Bladex.GetTime()+timeToKill, o.SubscribeToList,("Pin",))
 	return o

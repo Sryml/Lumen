@@ -9,12 +9,14 @@ import darfuncs
 import GameStateAux
 import ObjStore
 import whrandom
+import Reference
 
 def EnemyReady(ent_name):
-	print "Borrando '"+ent_name + "quad'"
+	# print "Borrando '"+ent_name + "quad'"
 	o = Bladex.GetEntity(ent_name + "quad")
 	if o:
 		o.SubscribeToList("Pin")
+		Reference.EntitiesSelectionData.pop(o.Name)
 	char=Bladex.GetEntity("Player1")
 	enm=Bladex.GetEntity(ent_name)
 	Bladex.AddScheduledFunc(Bladex.GetTime(),enm.SetOnFloor,())
@@ -63,7 +65,7 @@ class EnmGenRnd:
 	N_EnmGen = 0
 	DifTime = 0
 	VirGenPos = [0,0,0]
-	Last_Point = 0
+	Last_Point = -1
 	NumDeaths  = 0
 	Level = 0
 	SonidoGen=None
@@ -74,6 +76,7 @@ class EnmGenRnd:
 		self.VirGenPos=[0,0,0]
 		self.Points = [0]
 		self.Enemies = [0]
+		self.taken_points = []
 
 	def GeneratorReady(self,ent_name):
 		#enm=Bladex.GetEntity(ent_name)
@@ -112,63 +115,47 @@ class EnmGenRnd:
 			enm.Data.NEnemy = self.NextEnemy
 		return enm
 
+	def restore_point(self,point):
+		self.taken_points.remove(point)
+
 	def GenerateEnemy(self):
+		# Refactored -Sryml
 		enmgen = self
 		char=Bladex.GetEntity("Player1")
 		charpos = char.Position
-		lpt = self.Last_Point
-		point = self.GetBestGenerationPoint(charpos)
-		self.Last_Point = lpt
-		if not darfuncs.ValidAppear(self.Points[point].Position):
-			Bladex.AddScheduledFunc(Bladex.GetTime()+5.0, self.GenerateEnemy,())
-
-			return
-
-
+		#
 		if enmgen.Ready:
 			nenemies = enmgen.OnceEnm - enmgen.EnmActivates
-
-			if self.DifTime == 0:
-				if nenemies > 1:
-					if enmgen.NextEnemy + nenemies >= enmgen.NEnemies:
-						nenemies = enmgen.NEnemies - enmgen.NextEnemy
-						enmgen.Deactivate()
-						enmgen.FinishGen = 1
-				elif enmgen.NextEnemy + 1 >= enmgen.NEnemies:
-					enmgen.Deactivate()
-					enmgen.FinishGen = 1
-			elif nenemies > 1:
-				if enmgen.NextEnemy + nenemies >= enmgen.NEnemies:
-					nenemies = enmgen.NEnemies - enmgen.NextEnemy
-					enmgen.Deactivate()
-					enmgen.FinishGen = 1
-
-				if nenemies > 1:
-					Bladex.AddScheduledFunc(Bladex.GetTime() + self.DifTime+whrandom.random(),self.GenerateEnemy,())
-					nenemies = 1
-			elif enmgen.NextEnemy + 1 >= enmgen.NEnemies:
-				enmgen.Deactivate()
-				enmgen.FinishGen = 1
-
-
-			enmgen.EnmActivates = enmgen.EnmActivates + nenemies
-
-			t = 0
-
+			if nenemies == 0:
+				return
+			if nenemies > 1 and self.DifTime != 0:
+				nenemies = 1
+				Bladex.AddScheduledFunc(Bladex.GetTime() + self.DifTime+whrandom.random(),self.GenerateEnemy,())
+			#
+			retry = 0
 			for t in range(nenemies):
-				point = self.GetBestGenerationPoint(charpos)
+				point = self.GetBestGenerationPoint()
+				if point is None:
+					retry = 1
+					continue
+				#
+				self.taken_points.append(point)
+				Bladex.AddScheduledFunc(Bladex.GetTime()+2.0, self.restore_point, (point,))
 				enm = self.ActivateEnemy(point)
-				pos = enm.Position
 
 				enmgen.NextEnemy=enmgen.NextEnemy+1
+				enmgen.EnmActivates = enmgen.EnmActivates + 1
+				if enmgen.NextEnemy >= enmgen.NEnemies:
+					enmgen.Deactivate()
+					enmgen.FinishGen = 1
+
+				pos = enm.Position
 				v=charpos[0]-pos[0], 0.0, charpos[2]-pos[2]
 				v=B3DLib.Normalize(v)
-
 				if v[0] > 0:
 					alfa=-(3.14159/2.0)*(v[0]/abs(v[0]))+math.atan(v[2]/v[0])
 				else:
 					alfa = 3.14 * -v[1]
-
 				enm.Angle=alfa
 
 				if enmgen.Points[point].Animation:
@@ -188,33 +175,30 @@ class EnmGenRnd:
 					enmgen.SonidoGen.PlaySound(0)
 
 					apply(enmgen.InitGenFunc, (enm,))
+			#
+			if retry:
+				for i in range(Bladex.GetnScheduledFuncs()):
+					if Bladex.GetScheduledFunc(i)[2] == "EnmGenRnd.GenerateEnemy":
+						return
+				Bladex.AddScheduledFunc(Bladex.GetTime()+3.0, self.GenerateEnemy,(), "EnmGenRnd.GenerateEnemy")
+				Reference.debugprint("Next try in 3 seconds.")
 
-	def GetBestGenerationPoint(self,charpos):
-		point = self.p
-
-		if point + 1 >= self.NPoints:
-			self.p = 0
-		else:
-			self.p = self.p + 1
-
+	def GetBestGenerationPoint(self):
+		# Rewritten -Sryml
+		point = (self.Last_Point + 1) % self.NPoints
 		for i in range(self.NPoints):
-			if point <> self.Last_Point:
-				pos = self.Points[point].Position
-				v=charpos[0]-pos[0], 0.0, charpos[2]-pos[2]
+			if point in self.taken_points:
+				point = (point + 1) % self.NPoints
+				Reference.debugprint("Point %s is already taken." % point)
+				continue
+			pos = self.Points[point].Position
+			if darfuncs.ValidAppear(pos, radius=3100):
+				self.Last_Point = point
+				return point
+			point = (point + 1) % self.NPoints
 
-				dist = v[0] * v[0] + v[2] * v[2]
+		return None
 
-				if dist > 3000000:
-					self.Last_Point = point
-					return point
-
-			point = point + 1
-
-			if point >= self.NPoints:
-				point = 0
-
-		self.Last_Point = point
-		return point
 
 	def AddPoint(self,pos,enemydscr=("Skl", "Skeleton", "", 0, "", 0), animation="", Level=None):
 		point = Point()
@@ -232,7 +216,6 @@ class EnmGenRnd:
 		self.Points[self.NPoints:self.NPoints] = [point]
 		self.NPoints = self.NPoints + 1
 
-		self.NumDeaths  = self.NumDeaths+1
 
 	def CreateEnemy(self,i):
 		Rage = self.Points[i].EnemyType
@@ -265,6 +248,7 @@ class EnmGenRnd:
 		enm.Data.enmgendata=self
 		darfuncs.HideBadGuy(enm.Name)
 		self.N_EnmGen = self.N_EnmGen + 1
+		self.NumDeaths  = self.NumDeaths+1
 
 		return enm
 
