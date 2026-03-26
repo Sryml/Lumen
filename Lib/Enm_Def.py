@@ -14,11 +14,10 @@ import Damage
 import Stars
 import DMusic
 import GameStateAux
+import SolidMask
 #if Reference.DEBUG_INFO == 1:
 import pdb
 
-### Magic exclusion group that is assigned to all inventory items and limbs. -LeadHead
-EXG_MAGIC = 1337
 DEBUG_SOUNDS=0
 ##################################################################################
 #  E V E N T S
@@ -1526,7 +1525,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				Actions.RemoveFromInventory (me, object,"DropLeftEvent")
 				# object.Alpha=1.0
 				if object.TestHit:
-					object.ExclusionGroup = EXG_MAGIC
+					object.ExclusionGroup = SolidMask.EXG_MAGIC
 					x,y,z= object.Position
 					if not Bladex.GetSector(x,y,z):
 						if Bladex.GetSector(pos_l[0],pos_l[1],pos_l[2]):

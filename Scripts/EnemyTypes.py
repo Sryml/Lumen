@@ -201,6 +201,8 @@ class Skeleton (Enm_Def.NPCPerson):
 		self.SoundPriorities[Reference.SND_PC]      =  2.0
 		me.ImDeadFunc=self.ImDeadFunc
 
+		self.MutilatePickable = 0
+
 	def ResetSounds(self, EntityName):
 		AniSound.AsignarSonidosEsqueleto(EntityName)
 
@@ -244,7 +246,7 @@ class Skeleton (Enm_Def.NPCPerson):
 		Bladex.AddScheduledFunc(Bladex.GetTime()+10, dust.EnPolvoPerson,(EntityName,100,0,))
 
 	def MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node):
-		limb= Bladex.GetEntity(obj_name)
+		limb = Enm_Def.NPCPerson.MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node)
 		InitDataField.Initialise(limb)
 		Bladex.AddScheduledFunc(Bladex.GetTime()+10, dust.EnPolvoObjeto,(obj_name,100,0,))
 
@@ -2179,6 +2181,7 @@ class Lich (Enm_Def.NPCPerson):
 		me.ImDeadFunc=self.ImDeadFunc
 		me.AddAnmEventFunc("Spit", self.StartSpit)
 		self.NoFXOnHit= TRUE
+		self.MutilatePickable = 0
 
 	# Functions for loading and saving state
 	def __getstate__(self):
@@ -2285,8 +2288,7 @@ class Lich (Enm_Def.NPCPerson):
 		Bladex.AddScheduledFunc(Bladex.GetTime()+10, dust.EnPolvoPerson,(EntityName,100,0,))
 
 	def MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node):
-		Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
-		limb= Bladex.GetEntity(obj_name)
+		limb = Enm_Def.NPCPerson.MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node)
 		InitDataField.Initialise(limb)
 		Bladex.AddScheduledFunc(Bladex.GetTime()+10, dust.EnPolvoObjeto,(obj_name,100,0,))
 

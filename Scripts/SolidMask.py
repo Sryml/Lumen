@@ -5,6 +5,9 @@ EX_FLOOR  = 2
 EX_CAMERA = 4
 EX_EYE    = 32
 
+### Magic exclusion group that is assigned to all inventory items and limbs. -LeadHead
+EXG_MAGIC = 1337
+
 def Init():
     import Bladex
 

@@ -36,6 +36,7 @@ import GameStateAux
 import BInput
 import InitDataField
 import CombosFX
+import SolidMask
 
 from LumenLib import Inventory
 
@@ -541,7 +542,7 @@ class PlayerPerson:
 		if limb.TestHit:
 			limb.PutToWorld()
 			limb.Move(0, -140, 0)
-		limb.ExclusionGroup=1337
+		limb.ExclusionGroup = SolidMask.EXG_MAGIC
 		# limb.Impulse(0.0, 0.0, 0.0)
 		#
 		Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
@@ -579,6 +580,7 @@ class PlayerPerson:
 
 		self.UnlinkAll (EntityName, "")  # Dettatch arrows
 		me.LaunchAnmType("rlx_no")
+		me.ExclusionMask = me.ExclusionMask & (0xFFFF ^ SolidMask.EX_PERSON)
 
 		inv= me.GetInventory()
 		# Right Back
@@ -786,12 +788,12 @@ class PlayerPerson:
 			if launch_new==1:
 				# me.SetTmpAnmFlags(1, 1, 1, 0, 5, 1)
 				me.LaunchAnmType(death_anim)
-				me.ExclusionMask = 7
+				me.ExclusionMask = me.ExclusionMask | SolidMask.EX_PERSON
 
 			if me.AnimName<>death_anim:
 				# me.SetTmpAnmFlags(1, 1, 1, 0, 5, 1)
 				me.LaunchAnmType("dth0")
-				me.ExclusionMask = 7
+				me.ExclusionMask = me.ExclusionMask | SolidMask.EX_PERSON
 				if me.AnimName<>"dth0":
 					#pdb.set_trace()
 					print "BUG? -> Basdic_Funcs.py , def PCImDead()"
