@@ -317,7 +317,7 @@ def SaveFunctionAux(func):
     elif func_type==types.FunctionType:
       return ("f",(func.func_name,GetFunctionFile(func)))
     elif func_type==types.BuiltinFunctionType:
-      if not func.__self__:
+      if getattr(func, "__self__", None) is None:
         return ("cf",(func.__name__,None))
       else: # Asumo que son entidades
         return ("cf",(func.__name__,func.__self__.Name))

@@ -726,6 +726,7 @@ class WorldState:
         try:
             self.SaveLState(save_dir, load_bar)
         except:
+            traceback.print_exc()
             import SaveGame
             try:
                 shutil.rmtree(save_dir)

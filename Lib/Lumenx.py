@@ -86,6 +86,7 @@ class _DATA:
 
 
 def __fn():
+    # Use setattr to pass the editor's syntax check
     setattr(sys.modules["__builtin__"], "True", (1 == 1))
     setattr(sys.modules["__builtin__"], "False", (1 == 0))
 
@@ -205,10 +206,13 @@ import typing
 import struct
 import copy
 import pprint
+import types
 
 #
 import Bladex
 import BInput
+
+from LumenLib import BUtils
 
 #
 if typing.TYPE_CHECKING:
@@ -233,29 +237,42 @@ import Bladex_raw
 class __FunctionDecorator:
     def __init__(self):
         self.RawFunc = imp.new_module("RawFunc")
+        self.NameList = []
 
     def Decorator(self, obj, name):
         RawFunc = self.RawFunc
         setattr(RawFunc, name, getattr(obj, name))
         setattr(obj, name, getattr(self, name))
+        self.NameList.append(name)
 
     # builtin module
     def execfile(self, filename, globals=None, locals=None):
         filename = AutomatedAssets(filename)
         if globals is None or locals is None:
-            try:
-                1 / 0
-            except ZeroDivisionError:
-                if globals is None:
-                    globals = sys.exc_info()[2].tb_frame.f_back.f_globals
-                if locals is None:
-                    locals = sys.exc_info()[2].tb_frame.f_back.f_locals
+            ret = BUtils.get_tb_namespace()
+            globals = globals is None and ret[0] or globals
+            locals = locals is None and ret[1] or locals
         return self.RawFunc.execfile(filename, globals, locals)
 
     def type(self, obj):
         if hasattr(obj, "is_proxy"):
             obj = obj.target
+        elif obj == self.type:
+            obj = self.RawFunc.type
+        elif self.RawFunc.type(obj) in (types.FunctionType, types.MethodType):
+            name = obj.__name__
+            if name in self.NameList or name in globals()["__bladex_decorators"]:
+                return types.BuiltinFunctionType
+
         return self.RawFunc.type(obj)
+
+    def getattr(self, obj, name, default=Ellipsis):
+        if hasattr(obj, name):
+            return self.RawFunc.getattr(obj, name)
+        elif default is not Ellipsis:
+            return default
+        else:
+            Raisex(AttributeError, "object has no attribute '%s'" % name, depth=2)
 
     # BBLibc module
     def B_BitMap24_ReadFromBMP(self, this, arg0):
@@ -965,8 +982,9 @@ def LoadWorld(file_name):
     return Bladex_raw.LoadWorld(file_name)
 
 
-def Raisex(exc, msg=""):
-    return "raise %s, %s" % (exc, repr(msg))
+def Raisex(exc, msg="", depth=1):
+    glob, loc = BUtils.get_tb_namespace(depth)
+    exec("raise %s, %s" % (exc, repr(msg)), glob, loc)
 
 
 def ReadAlphaBitMap(file_name, internal_name, save=1):
@@ -1153,9 +1171,11 @@ def SetMapListPath(path):
 def SetModRoot(path):
     _DATA.mod_root = path
 
-def ShowCriticalWarning(msg):
+
+def ShowCriticalWarning(*args):
     """Compatible with classic version"""
-    return Bladex_raw.ShowCriticalWarning(msg)
+    return apply(Bladex_raw.ShowCriticalWarning, args)
+
 
 ######### Function End
 
@@ -1202,6 +1222,7 @@ FunctionDecorator = __FunctionDecorator()
 for obj, name in (
     (sys.modules["__builtin__"], "execfile"),
     (sys.modules["__builtin__"], "type"),
+    (sys.modules["__builtin__"], "getattr"),
     (BBLibc, "B_BitMap24_ReadFromBMP"),
     (BBLibc, "B_BitMap24_ReadFromJPEG"),
     (BBLibc, "B_BitMap24_ReadFromFile"),
@@ -1220,7 +1241,7 @@ for obj, name in (
 SetCurrentMap(os.path.basename(os.getcwd()))
 
 # Clean up
-del __fn, __bladex_decorators, obj, name
+del __fn, obj, name
 
 
 #  _    _   _ __  __ _____ _   _

@@ -20,7 +20,7 @@ def BladeRawInput(prompt=None):
         prompt = ""
     ret = Bladex.Input(prompt)
     if ret == 0:
-        exec(Lumenx.Raisex(KeyboardInterrupt, "operation cancelled"))
+        Lumenx.Raisex(KeyboardInterrupt, "operation cancelled")
     return ret
 
 

@@ -7,6 +7,7 @@
 
 import string
 import types
+import sys
 
 from Lumenx import printx
 
@@ -49,7 +50,7 @@ class Dictionary:
         """比较两个字典 - Python 1.5 使用 __cmp__ 而非 __eq__"""
         if isinstance(other, Dictionary):
             return cmp(self.data, other.data)
-        elif isinstance(other, dict):
+        elif isinstance(other, types.DictType):
             return cmp(self.data, other)
         else:
             return -1  # 无法比较
@@ -222,6 +223,39 @@ def parse_utf8_string(s):
         chars.append(utf8_char)
         i = i + length
     return chars
+
+
+# -------------------------------
+# 获取回溯命名空间
+# -------------------------------
+def get_tb_namespace(depth=1):
+    """
+    The function `get_tb_namespace` retrieves the global and local namespaces at a specified depth in
+    the call stack when an exception occurs.
+
+    :param depth: The `depth` parameter in the `get_tb_namespace` function determines how many levels up
+    the call stack to go when retrieving the namespace. Positive values of `depth` indicate how many
+    levels up to go, while a value of -1 indicates to go all the way to the top of the call, defaults to
+    1 (optional)
+
+    :return: The function `get_tb_namespace` returns the global and local namespaces of the frame at the
+    specified depth in the call stack.
+    """
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        frame = sys.exc_info()[2].tb_frame.f_back
+    #
+    if depth > 0:
+        for i in range(depth):
+            if not frame.f_back:
+                break
+            frame = frame.f_back
+    elif depth == -1:
+        while frame.f_back:
+            frame = frame.f_back
+
+    return (frame.f_globals, frame.f_locals)
 
 
 """

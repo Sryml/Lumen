@@ -247,10 +247,10 @@ def ConstCFunction(fun_name,ent_name):
 
 
 def RedCFunction(f):
-  if f.__self__: # Asume que es una entidad
-    return ConstCFunction,(f.__name__,f.__self__.Name)
-  else:
+  if getattr(f, "__self__", None) is None: # Asume que es una entidad
     return ConstCFunction,(f.__name__,None)
+  else:
+    return ConstCFunction,(f.__name__,f.__self__.Name)
 
 
 def RegisterPickCFunction():
