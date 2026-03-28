@@ -272,7 +272,7 @@ class __FunctionDecorator:
         elif default is not Ellipsis:
             return default
         else:
-            Raisex(AttributeError, "object has no attribute '%s'" % name, depth=2)
+            Raisex(AttributeError, "object has no attribute '%s'" % name)
 
     # BBLibc module
     def B_BitMap24_ReadFromBMP(self, this, arg0):
@@ -982,9 +982,8 @@ def LoadWorld(file_name):
     return Bladex_raw.LoadWorld(file_name)
 
 
-def Raisex(exc, msg="", depth=1):
-    glob, loc = BUtils.get_tb_namespace(depth)
-    exec("raise %s, %s" % (exc, repr(msg)), glob, loc)
+def Raisex(exc, msg=""):
+    exec("raise %s, %s" % (exc, repr(msg)))
 
 
 def ReadAlphaBitMap(file_name, internal_name, save=1):

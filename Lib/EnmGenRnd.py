@@ -15,8 +15,8 @@ def EnemyReady(ent_name):
 	# print "Borrando '"+ent_name + "quad'"
 	o = Bladex.GetEntity(ent_name + "quad")
 	if o:
-		o.SubscribeToList("Pin")
 		Reference.EntitiesSelectionData.pop(o.Name)
+		o.SubscribeToList("Pin")
 	char=Bladex.GetEntity("Player1")
 	enm=Bladex.GetEntity(ent_name)
 	Bladex.AddScheduledFunc(Bladex.GetTime(),enm.SetOnFloor,())

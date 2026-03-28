@@ -622,6 +622,7 @@ def CreateFalseCube(pos,timeToKill = -1,Name = ""):
 	o.RasterMode  ="Read"
 	Reference.EntitiesSelectionData[o.Name] = None
 	if timeToKill != -1:
+		Bladex.AddScheduledFunc(Bladex.GetTime()+timeToKill, Reference.EntitiesSelectionData.pop,(o.Name,))
 		Bladex.AddScheduledFunc(Bladex.GetTime()+timeToKill, o.SubscribeToList,("Pin",))
 	return o
 	

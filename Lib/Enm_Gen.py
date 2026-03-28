@@ -8,6 +8,7 @@ import GameStateAux
 import darfuncs
 import ItemTypes
 import ObjStore
+import Reference
 
 
 
@@ -20,6 +21,7 @@ def GeneratorReady(ent_name):
 def EnemyReady(ent_name):
 	o = Bladex.GetEntity(ent_name + "quad")
 	if o:
+		Reference.EntitiesSelectionData.pop(o.Name)
 		o.SubscribeToList("Pin")
 	enm=Bladex.GetEntity(ent_name)
 	enm.InitPos=enm.Position

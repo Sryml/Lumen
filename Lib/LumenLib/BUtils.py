@@ -9,6 +9,8 @@ import string
 import types
 import sys
 
+import ObjStore
+
 from Lumenx import printx
 
 #
@@ -24,19 +26,34 @@ if typing.TYPE_CHECKING:
 # 字典类
 # -------------------------------
 class Dictionary:
-    def __init__(self, dict=None, **kwargs):
+    def __init__(self, dict=None, persistent=0, **kwargs):
         """初始化字典"""
+        if persistent:
+            self.ObjId = ObjStore.GetNewId()
+            ObjStore.ObjectsStore[self.ObjId] = self
+        else:
+            self.ObjId = None
+        #
         self.update_callbacks = []
         self.data = {}
         apply(self.update, (dict,), kwargs)
 
+    def persistent_id(self):
+        return self.ObjId
+
     # -------------------------------
     def __getstate__(self):
-        return {"%s" % (self.__class__.__name__): self.data}
+        # type: () -> dict
+        return {"Dictionary": (self.ObjId, self.data)}
 
     def __setstate__(self, state):
         self.update_callbacks = []
-        self.data = state["%s" % (self.__class__.__name__)]
+        state = state["Dictionary"]
+        self.ObjId = state[0]
+        if self.ObjId is not None:
+            ObjStore.ObjectsStore[self.ObjId] = self
+        #
+        self.data = state[1]
 
     # -------------------------------
     def __repr__(self):
@@ -127,7 +144,7 @@ class Dictionary:
         return self[key]
 
     def pop(self, key, *args):
-        """移除并返回值（Python 1.5 原版dict没有pop，但我们可以实现）"""
+        """移除并返回值（Python 1.5 原版dict没有pop）"""
         if len(args) > 1:
             printx(TypeError, "pop expected at most 2 arguments")
             return None
@@ -158,18 +175,20 @@ class Dictionary:
 
 
 class EntitiesSelectionDict(Dictionary):
-    def __init__(self, dict=None, **kwargs):
+    def __init__(self, dict=None, persistent=0, **kwargs):
         self.data_raw = {}
-        apply(Dictionary.__init__, (self, dict), kwargs)
+        apply(Dictionary.__init__, (self, dict, persistent), kwargs)
 
     # -------------------------------
     def __getstate__(self):
-        state = Dictionary.__getstate__(self)
-        state.update({"%s" % (self.__class__.__name__): self.data_raw})
+        state = {"Dictionary": (self.ObjId, {})}
+        state.update({"EntitiesSelectionDict": self.data_raw})  # type: ignore
         return state
 
     def __setstate__(self, state):
-        self.data_raw = state["%s" % (self.__class__.__name__)]
+        Dictionary.__setstate__(self, state)
+        self.data_raw = state["EntitiesSelectionDict"]
+        self.update(self.data_raw)
 
     # -------------------------------
     def __setitem__(self, key, value):

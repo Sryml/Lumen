@@ -1547,7 +1547,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				Actions.RemoveFromInventory (me, object,"DropRightEvent")
 				# object.Alpha=1.0
 				if object.TestHit:
-					object.ExclusionGroup = EXG_MAGIC
+					object.ExclusionGroup = SolidMask.EXG_MAGIC
 					x,y,z= object.Position
 					if not Bladex.GetSector(x,y,z):
 						if Bladex.GetSector(pos_r[0],pos_r[1],pos_r[2]):
@@ -1568,7 +1568,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 			Actions.RemoveFromInventory (me, object,"DropEvent")
 			inv.LinkRightBack("")
 			if object.TestHit:
-				object.ExclusionGroup = EXG_MAGIC
+				object.ExclusionGroup = SolidMask.EXG_MAGIC
 				x,y,z= object.Position
 				if not Bladex.GetSector(x,y,z):
 					if Bladex.GetSector(pos_r[0],pos_r[1],pos_r[2]):
@@ -1586,7 +1586,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 			Actions.RemoveFromInventory (me, object,"DropEvent")
 			inv.LinkLeftBack("")
 			if object.TestHit:
-				object.ExclusionGroup = EXG_MAGIC
+				object.ExclusionGroup = SolidMask.EXG_MAGIC
 				x,y,z= object.Position
 				if not Bladex.GetSector(x,y,z):
 					if Bladex.GetSector(pos_l[0],pos_l[1],pos_l[2]):
@@ -1615,7 +1615,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 					if object.TestHit:
 						print "WARNING OBJECT "+object.Name+" REMOVED FROM WORLD BECAUSE COLLIDING"
 						# object.RemoveFromWorld()
-						object.ExclusionGroup = EXG_MAGIC
+						object.ExclusionGroup = SolidMask.EXG_MAGIC
 						x,y,z= object.Position
 						if not Bladex.GetSector(x,y,z):
 							object.Position= pos_cenf
@@ -1637,7 +1637,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				try:
 					if object.TestHit:
 						# object.RemoveFromWorld()
-						object.ExclusionGroup = EXG_MAGIC
+						object.ExclusionGroup = SolidMask.EXG_MAGIC
 						x,y,z= object.Position
 						if not Bladex.GetSector(x,y,z):
 							object.Position= pos_rf
@@ -1661,7 +1661,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				object.ExcludeHitFor(me)
 				if object.TestHit:
 					# object.RemoveFromWorld()
-					object.ExclusionGroup = EXG_MAGIC
+					object.ExclusionGroup = SolidMask.EXG_MAGIC
 					x,y,z= object.Position
 					if not Bladex.GetSector(x,y,z):
 						object.Position= pos_lf
@@ -1682,7 +1682,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 				object.ExcludeHitFor(me)
 				if object.TestHit:
 					# object.RemoveFromWorld()
-					object.ExclusionGroup = EXG_MAGIC
+					object.ExclusionGroup = SolidMask.EXG_MAGIC
 					x,y,z= object.Position
 					if not Bladex.GetSector(x,y,z):
 						object.Position= pos_cenf

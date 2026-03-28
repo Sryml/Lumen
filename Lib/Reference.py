@@ -799,7 +799,7 @@ DefaultObjectData['Tablilla5']=          [OBJ_TABLET]
 DefaultObjectData['Tablilla6']=          [OBJ_TABLET]
 
 DefaultSelectionData={}
-EntitiesSelectionData=BUtils.EntitiesSelectionDict()
+EntitiesSelectionData=BUtils.EntitiesSelectionDict(persistent=1)
 
 EnemiesScorerData={}
 EnemiesDefaultScorerData={}
@@ -1229,7 +1229,7 @@ def SaveData(filename):
   funcfile=open(filename,"wt")
   p=cPickle.Pickler(funcfile)
   p.persistent_id=GameStateAux.persistent_id
-  d=(EntitiesSelectionData.data_raw,TimesSaved,EntitiesObjectData,SpecialsTB)
+  d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB)
   p.dump(d)
   funcfile.close()
 
@@ -1237,6 +1237,7 @@ def SaveData(filename):
 def LoadData(filename):
   import cPickle
   import GameStateAux
+  import ObjStore
 
   funcfile=open(filename,"rt")
   p=cPickle.Unpickler(funcfile)
@@ -1249,7 +1250,7 @@ def LoadData(filename):
   global EntitiesObjectData
   global SpecialsTB
 
-  EntitiesSelectionData = BUtils.EntitiesSelectionDict(d[0])
+  EntitiesSelectionData = d[0]
   TimesSaved            = d[1]
   EntitiesObjectData    = d[2]
   SpecialsTB = d[3]
