@@ -5,6 +5,7 @@ import Bladex
 import copy_reg
 import types
 
+from Lumenx import printx
 
 GlobalModulesCache=None
 GlobalFunctionsCache=None
@@ -120,33 +121,15 @@ def FindFunctionAux(module,fun_name):
 
 
 
-def ConstFunction(fun_name,lib_name):
-
-  funcs=GetGlobalsAux2(types.FunctionType)
-  for i in funcs:
-    if i[1].func_name==fun_name:
-      return i[1]
-
-  # La busco en los modulos
-  global_mods=GetGlobalsAux2(types.ModuleType)
-  # Primero miro si hay concordancia con lib_name
-  for i in global_mods:
-      if i[0]==lib_name and i[1].__dict__.has_key(fun_name):
-          return i[1].__dict__[fun_name]
-
-  for i in global_mods:
-    func=FindFunctionAux(i[1],fun_name)
-    if func:
-        return func
-  
-  try:
-    ret_func=None
-    exec("import "+lib_name)
-    exec("ret_func=%s.%s"%(lib_name,fun_name))
-    return ret_func
-  except:
-    print "Warning, can't find global function '",fun_name,"'",lib_name,"'"
-    return None
+def ConstFunction(fun_name, lib_name):
+    # Rewritten -Sryml
+    if fun_name == "<lambda>":
+        return None
+    try:
+        return __import__(lib_name).__dict__[fun_name]
+    except:
+        printx("Error: Cannot find function %s in library %s" % (fun_name, lib_name))
+        return None
 
 
 

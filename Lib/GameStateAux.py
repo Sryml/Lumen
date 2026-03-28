@@ -15,7 +15,7 @@ import ObjStore
 import cStringIO
 import string
 
-
+from Lumenx import printx
 
 
 
@@ -352,7 +352,7 @@ def LoadFunctionAux(func_id_ex,res_obj=None,res_field=None,aux=None):
       assign_func=eval("cl."+func_id[1])
     else:
       if res_obj is not None:
-        if type(res_obj) == type(Bladex.GetEntity("Camera")): # by Sryml
+        if type(res_obj) == type(Bladex.GetEntity("Camera")): # -Sryml
           #print "FixDataBase.append() Entity->",func_id,res_obj.Name,res_field,ob_id
           FixDataBase.append((func_id,res_obj.Name,res_field,ob_id,"Entity"))
         else:
@@ -480,7 +480,7 @@ def SaveNewMembers(check_class):
     return ()
 
   ret=[]
-  entity_type=type(Bladex.GetEntity("Camera")) # by Sryml
+  entity_type=type(Bladex.GetEntity("Camera")) # -Sryml
   members=GetNewMembers(check_class)
   members_keys=members.keys()
   for i in members_keys:
@@ -568,23 +568,14 @@ def GetAlteredMethods(check_class):
 
 
 def GetFunctionFile(f):
-  if not f:
-    return "Error, None is not  a function"
-  try:
-    # No se si esto depende de W2000
-    import string
-    s=str(f.func_code)
-    s2=string.split(s,'"') # Siempre?
-    func_path=s2[1]  # Siempre?
-
-    import os
-    filename=os.path.split(func_path)[1]
-    filename_noext=os.path.splitext(filename)[0]
-
-    return filename_noext
-  except Exception,e: # by Sryml
-    print "Exception in GetFunctionFile",e
-    return "Error getting lib"
+    # Rewritten -Sryml
+    if not f:
+        return "Error, None is not  a function"
+    try:
+        return f.func_globals["__name__"]
+    except:
+        printx("Exception in GetFunctionFile", f)
+        return "Error getting lib"
 
 def LinkLeftBack(weapon_name,inv,owner):
 	weapon = Bladex.GetEntity(weapon_name)
