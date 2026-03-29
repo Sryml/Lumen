@@ -922,9 +922,6 @@ for i in range(len(keys)):
         file.write('import BODInit\n')
         file.write('BODInit.Init()\n\n')
         file.write('__load_bar.Increment()\n')
-        file.write('import PickInit\n')
-        file.write('PickInit.Init()\n\n')
-        file.write('__load_bar.Increment("Pick")\n')
 
         file.write('if InNewMap:\n')
         file.write('  __load_bar.Increment("SolidMask")\n')
@@ -938,6 +935,11 @@ for i in range(len(keys)):
         file.write('  __load_bar.Increment("Material")\n')
         file.write('  import Material\n')
         file.write('  Material.Init()\n')
+
+        file.write('import PickInit\n')
+        file.write('PickInit.Init()\n\n')
+        file.write('__load_bar.Increment("Pick")\n')
+
 ## Esto deberia seguir en el if
         file.write('__load_bar.Increment("AniSound")\n')
         file.write('import AniSound\n')

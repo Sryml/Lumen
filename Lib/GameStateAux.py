@@ -320,7 +320,18 @@ def SaveFunctionAux(func):
       if getattr(func, "__self__", None) is None:
         return ("cf",(func.__name__,None))
       else: # Asumo que son entidades
-        return ("cf",(func.__name__,func.__self__.Name))
+        this = func.__self__
+        this_type = type(this)
+        if this_type == type(Bladex.GetEntity(0)):
+          func_self = ("Entity",this.Name)
+        elif this_type == type(Bladex.GetSound("GolpeMaderaMediana")):
+          func_self = ("Sound",this.Name)
+        elif this_type == type(Bladex.GetSector(0)):
+          func_self = ("Sector",this.Index)
+        elif this_type == type(Bladex.GetEntity(0).GetInventory()):
+          func_self = ("Inventory",this.Owner)
+
+        return ("cf",(func.__name__,func_self))
 
     return ("n",(None,None))
 

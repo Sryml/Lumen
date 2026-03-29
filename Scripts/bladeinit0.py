@@ -12,10 +12,6 @@ import BODInit
 BODInit.Init()
 
 
-import PickInit
-PickInit.Init()
-
-
 import SolidMask
 SolidMask.Init()
 
@@ -28,6 +24,9 @@ Mass.Init()
 import Material
 Material.Init()
 
+
+import PickInit
+PickInit.Init()
 
 #
 # Sounds

@@ -4,6 +4,7 @@
 import Bladex
 import copy_reg
 import types
+import sys
 
 from Lumenx import printx
 
@@ -81,20 +82,19 @@ def RegisterPickSound():
 
 
 def ConstEntity(ent_name):
+  if ent_name is None:
+    return None
   e=Bladex.GetEntity(ent_name)
   return e
 
 
 def RedEntity(e):
-
-  if e:
-    try:
-      return ConstEntity,(e.Name,)
-    except:
-      print "PickInit.RedEntity() can not get entity name"
-      return ConstEntity,("Invalid Entity",)
-
-  return ConstEntity,("Invalid Entity",)
+  # -Sryml
+  if hasattr(e, "Name"):
+    return ConstEntity,(e.Name,)
+  else:
+    printx("PickInit.RedEntity() can not get entity name")
+    return ConstEntity,(None,)
 
 
 def RegisterPickEntity():
@@ -126,7 +126,8 @@ def ConstFunction(fun_name, lib_name):
     if fun_name == "<lambda>":
         return None
     try:
-        return __import__(lib_name).__dict__[fun_name]
+        __import__(lib_name)
+        return sys.modules[lib_name].__dict__[fun_name] # Considering the case of module packages
     except:
         printx("Error: Cannot find function %s in library %s" % (fun_name, lib_name))
         return None
@@ -188,18 +189,26 @@ def RegisterPickMethod():
 
 
 
-def ConstCFunction(fun_name,ent_name):
+def ConstCFunction(fun_name,func_self):
+  import Reference
+  Reference.debugprint("ConstCFunction: '",fun_name,"','",func_self,"'")
+  if func_self is not None:
+    this_type = func_self[0]
+    if this_type == "Entity":
+      o = Bladex.GetEntity(func_self[1])
+    elif this_type == "Sound":
+      o = Bladex.GetSound(func_self[1])
+    elif this_type == "Sector":
+      o = Bladex.GetSector(func_self[1])
+    elif this_type == "Inventory":
+      o = Bladex.GetEntity(func_self[1])
+      if hasattr(o, "GetInventory"):
+        o = o.GetInventory()
+      else:
+        o = None
 
-  print "ConstCFunction: '",fun_name,"','",ent_name,"'"
-  if ent_name: #Si es una entidad
-    import Bladex
-    ent=Bladex.GetEntity(ent_name)
-    if ent:
-        assign_func=eval("ent."+fun_name)
-        return assign_func
-    else: # La entidad ha desaparecido.
-        print "Can not find entity",ent_name
-        return None
+    assign_func = getattr(o, fun_name, None)
+    return assign_func
 
   # La busco en funciones C
   funcs=GetGlobalsAux2(types.BuiltinFunctionType)
@@ -208,7 +217,7 @@ def ConstCFunction(fun_name,ent_name):
       return i[1]
   # La busco en los modulos
   # Primero en los de Blade
-  import Bladex
+  # import Bladex
   import Traps_C
   import B3DLib
   mods=(Bladex,B3DLib,Traps_C)
@@ -273,7 +282,21 @@ def RegisterPickSector():
 
   copy_reg.pickle(type(gmadlig),RedSector,ConstSector)
 
+# ---------------------------------
+def ConstEntInventory(name):
+    if name is None:
+        return None
+    o = Bladex.GetEntity(name).GetInventory()
+    return o
 
+
+def RedEntInventory(o):
+    return ConstEntInventory, (getattr(o, "Owner", None),)
+
+
+def RegisterPickEntInventory():
+    gmadlig = Bladex.GetEntity(0).GetInventory()
+    copy_reg.pickle(type(gmadlig), RedEntInventory, ConstEntInventory)
 
 
 def ClearCaches():
@@ -296,4 +319,5 @@ def Init():
   RegisterPickSector()
   RegisterPickMethod()
   RegisterPickCFunction()
+  RegisterPickEntInventory()
   print "Executed PickInit.Init()"
