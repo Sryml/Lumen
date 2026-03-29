@@ -17,6 +17,9 @@ def Init():
 	Bladex.ReadBitMap("../../Data/Glow.bmp","Glow")
 	Bladex.ReadBitMap("../../Data/SunFlare.bmp","SunFlare")
 	Bladex.ReadBitMap("../../Data/BloodPrtl.bmp","BloodParticle")
+	Bladex.ReadBitMap("../../Data/BloodPrtlGreen.bmp","GreenBloodParticle") # Added
+	Bladex.ReadBitMap("../../Data/BloodPrtlBlue.bmp","BlueBloodParticle") # Added
+	Bladex.ReadBitMap("../../Data/BloodPrtlGrey.bmp","GreyBloodParticle") # Added
 	Bladex.ReadAlphaBitMap("../../Data/BloodDropPrtl.bmp","BloodDropParticle")
 	Bladex.ReadAlphaBitMap("../../Data/GenericPrtl.bmp","GenericParticle")
 	Bladex.ReadAlphaBitMap("../../Data/GenericPrtl2.bmp","GenericParticle2")
@@ -144,33 +147,49 @@ def Init():
 
 	##### GreenBlood Particle definition ######
 
-	Bladex.AddParticleGType("GreenBlood","GenericParticle",Reference.B_PARTICLE_GTYPE_COPY,128)
+	Bladex.AddParticleGType("GreenBlood","GreenBloodParticle",Reference.B_PARTICLE_GTYPE_MUL,64)
 
-	for i in range(128):
+	for i in range(64):
 		if(i>64):
 			aux=0.0
 		else:
 			aux=(64.0-i)/64.0
-		r=8
-		g=16
-		b=8
-		a=128
+		r=255
+		g=255
+		b=255
+		a=0
 		size=20.0*(1.0-aux)+2.0
 		Bladex.SetParticleGVal("GreenBlood",i,r,g,b,a,size)
+
+	##### BlueBlood Particle definition ######
+
+	Bladex.AddParticleGType("BlueBlood","BlueBloodParticle",Reference.B_PARTICLE_GTYPE_MUL,64)
+
+	for i in range(64):
+		if(i>64):
+			aux=0.0
+		else:
+			aux=(64.0-i)/64.0
+		r=255
+		g=255
+		b=255
+		a=0
+		size=20.0*(1.0-aux)+2.0
+		Bladex.SetParticleGVal("BlueBlood",i,r,g,b,a,size)
 
 	##### GreyBlood Particle definition ######
 
 
-	Bladex.AddParticleGType("GreyBlood","BloodParticle",Reference.B_PARTICLE_GTYPE_MUL,32)
+	Bladex.AddParticleGType("GreyBlood","GreyBloodParticle",Reference.B_PARTICLE_GTYPE_MUL,64)
 
-	for i in range(32):
-		if(i>16):
+	for i in range(64):
+		if(i>64):
 			aux=0.0
 		else:
-			aux=(16.0-i)/16.0
-		r=100
-		g=100
-		b=100
+			aux=(64.0-i)/64.0
+		r=255
+		g=255
+		b=255
 		a=0
 		size=20.0*(1.0-aux)+2.0
 		Bladex.SetParticleGVal("GreyBlood",i,r,g,b,a,size)
@@ -397,9 +416,9 @@ def Init():
 			aux=0.0
 		else:
 			aux=(duration/2.0-i)/(duration/2.0)
-		r=0
-		g=5
-		b=0
+		r=17
+		g=50
+		b=17
 		a=max_opacity-(max(0,i-duration/2.0)*max_opacity)
 		#a= MAX(0, (16.0-i)/16.0)   MIN (1.0, i-16.0     )
 		#a=180

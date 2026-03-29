@@ -1477,8 +1477,9 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 		
 		effective_damage= effective_damage + special_damage
 	
-	if(not Shielded) and (DamageType=="Impale" or DamageType=="Slash") and Bladex.GetBloodLevel()>0:
-		me.Data.TakeBleedingImpact= effective_damage
+	# if(not Shielded) and (DamageType=="Impale" or DamageType=="Slash") and Bladex.GetBloodLevel()>0:
+	if (not Shielded):
+		me.Data.TakeBleedingImpact= effective_damage>0
 	else:
 		me.Data.TakeBleedingImpact= 0
 	

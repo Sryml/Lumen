@@ -6,27 +6,20 @@ Evaporation      = 0      #  no evaporation avail  >:-(
 AfterCreateBlood = None   # CARLOS! PLEAS DON'T SAVE THIS VALUE...
 
 def BloodPrtlHit(prtl_name,hit_entity,x,y,z,vx,vy,vz,wcx,wcy,wcz,wdx,wdy,wdz):
-	global Evaporation
 	p = Bladex.CreateEntity("BloodPool","Entity Pool",x,y,z)
-	prtl= Bladex.GetEntity(prtl_name);
-	try:
-		if(prtl.Data.evaporation):
-			p.DeathTime = Bladex.GetTime()+20.0
-		elif Evaporation:
-			p.DeathTime = Bladex.GetTime()+50.0
-	except:
-		if Evaporation:
-			p.DeathTime = Bladex.GetTime()+50.0
+	prtl= Bladex.GetEntity(prtl_name)
+	if getattr(prtl.Data, "evaporation", Evaporation):
+		p.DeathTime = Bladex.GetTime()+50.0
 			
 	if AfterCreateBlood:
 		AfterCreateBlood(x,y,z)
 	
 def GreenBloodPrtlHit(prtl_name,hit_entity,x,y,z,vx,vy,vz,wcx,wcy,wcz,wdx,wdy,wdz):
-	global Evaporation
 	p=Bladex.CreateEntity("BloodPool","Entity Pool",x,y,z)
 	p.Color = (96,192,96)
 	p.DeepColor = (64,128,64)
-	if Evaporation:
+	prtl = Bladex.GetEntity(prtl_name)
+	if getattr(prtl.Data, "evaporation", Evaporation):
 		p.DeathTime = Bladex.GetTime()+50.0
 		
 	# Generate a smoke effect
@@ -39,12 +32,20 @@ def GreenBloodPrtlHit(prtl_name,hit_entity,x,y,z,vx,vy,vz,wcx,wcy,wcz,wdx,wdy,wd
 	smoke.RandomVelocity=5.0
 	smoke.DeathTime=Bladex.GetTime()+1.5
 
+def BlueBloodPrtlHit(prtl_name,hit_entity,x,y,z,vx,vy,vz,wcx,wcy,wcz,wdx,wdy,wdz):	
+	p=Bladex.CreateEntity("BloodPool","Entity Pool",x,y,z)
+	p.Color = (10,75,192)
+	p.DeepColor = (6, 49, 127)
+	prtl = Bladex.GetEntity(prtl_name)
+	if getattr(prtl.Data, "evaporation", Evaporation):
+		p.DeathTime = Bladex.GetTime()+50.0
+
 def GreyBloodPrtlHit(prtl_name,hit_entity,x,y,z,vx,vy,vz,wcx,wcy,wcz,wdx,wdy,wdz):	
-	global Evaporation
 	p=Bladex.CreateEntity("BloodPool","Entity Pool",x,y,z)
 	p.Color = (96,96,96)
 	p.DeepColor = (80,80,80)
-	if Evaporation:
+	prtl = Bladex.GetEntity(prtl_name)
+	if getattr(prtl.Data, "evaporation", Evaporation):
 		p.DeathTime = Bladex.GetTime()+50.0
 
 
@@ -53,7 +54,7 @@ def BleedFunc(blood_name,end_time,period):
 	if(blood):
 		prtl=blood.GetParticleEntity()
 		InitDataField.Initialise(prtl)
-		prtl.Data.evaporation=0
+		# prtl.Data.evaporation=0
 		if blood.ParticleType=="GreenBlood":
 			prtl.HitFunc=GreenBloodPrtlHit
 		elif blood.ParticleType=="GreyBlood":
@@ -132,9 +133,8 @@ def BleedingImpact(entity, x, y, z, ImpX, ImpY, ImpZ, weapon_entity,WeaponCx, We
 	global DustDeathEntities
 	global SparkEntities
 	
-	AGE_Number=AGE_Number+1	
-
-	if (entity.Kind in DustDeathEntities) or (Bladex.GetBloodLevel()==0):
+	DamageType = entity.Data.LastDamageType
+	if (entity.Kind in DustDeathEntities) or (DamageType == "Crush") or (Bladex.GetBloodLevel()==0):
 		
 		dust=Bladex.CreateEntity("dust_AGE_"+str(AGE_Number),"Entity Particle System D1", x, y, z)
 		if entity.Kind == "Golem_clay":
@@ -163,8 +163,9 @@ def BleedingImpact(entity, x, y, z, ImpX, ImpY, ImpZ, weapon_entity,WeaponCx, We
 		dust.Velocity=0.0, 0.0, 0.0
 		
 		dust.DeathTime=Bladex.GetTime()+4.0/60.0
+		AGE_Number = AGE_Number + 1
 	
-	else:
+	elif DamageType in ("Impale", "Slash"):
 		time=Bladex.GetTime()
 		
 		if (weapon_entity):
@@ -177,7 +178,7 @@ def BleedingImpact(entity, x, y, z, ImpX, ImpY, ImpZ, weapon_entity,WeaponCx, We
 			
 			stickblood.RandomVelocity=100.0/60
 			stickblood.RandomVelocity_V=100.0/60
-			stickblood.Time2Live=26.0 # Maybe not necessarary
+			stickblood.Time2Live=40.0 # Maybe not necessarary
 			stickblood.Time2Live_V=6.0
 			stickblood.PPS=600
 			weapon_entity.Link(stickblood)
@@ -188,7 +189,7 @@ def BleedingImpact(entity, x, y, z, ImpX, ImpY, ImpZ, weapon_entity,WeaponCx, We
 		blood=Bladex.CreateEntity("bleed_AGE_"+str(AGE_Number),"Entity Particle System D1", x, y, z)
 		blood.YGravity=9800.0
 		blood.Friction=0.075
-		blood.PPS=600
+		blood.PPS=1000 # was 600
 		blood.DeathTime=time+10.0/60.0;
 		blood.Position=x, y, z		
 		scale= math.sqrt(ImpX*ImpX+ImpY*ImpY+ImpZ*ImpZ)
@@ -198,18 +199,16 @@ def BleedingImpact(entity, x, y, z, ImpX, ImpY, ImpZ, weapon_entity,WeaponCx, We
 		blood.Velocity=(ImpX*scale), (ImpY*scale)-2000.0, (ImpZ*scale)
 		blood.RandomVelocity=15.0
 		blood.RandomVelocity_V=10.0
-		blood.Time2Live=32
+		blood.Time2Live=50
+
 		if stickblood:
 			prtl1=stickblood.GetParticleEntity()
-			InitDataField.Initialise(prtl1)
-			prtl1.Data.evaporation=1
 		else:
 			prtl1=blood.GetParticleEntity()
-			InitDataField.Initialise(prtl1)
-			prtl1.Data.evaporation=1
+		InitDataField.Initialise(prtl1, evaporation=1)
+
 		prtl2=blood.GetParticleEntity()		
-		InitDataField.Initialise(prtl2)
-		prtl2.Data.evaporation=1
+		InitDataField.Initialise(prtl2, evaporation=1)
 		if entity.Kind=="Spidersmall":
 			blood.ParticleType="GreenBlood"
 			if stickblood:
@@ -228,5 +227,7 @@ def BleedingImpact(entity, x, y, z, ImpX, ImpY, ImpZ, weapon_entity,WeaponCx, We
 				stickblood.ParticleType="Blood"
 			prtl1.HitFunc=BloodPrtlHit
 			prtl2.HitFunc=BloodPrtlHit
+			
+		AGE_Number = AGE_Number + 1
 			
 		
