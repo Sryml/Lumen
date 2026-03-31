@@ -19,7 +19,12 @@ def Init():
     Bladex.ReadBitMap("../../Data/Icons/Glm_st.bmp","StoneGolemIcon")
     Bladex.ReadBitMap("../../Data/Icons/Glm_ic.bmp","IceGolemIcon")
     Bladex.ReadBitMap("../../Data/Icons/Gork.bmp","GorkIcon")
+    #
     Bladex.ReadBitMap("../../Data/Icons/icono caballero.bmp","KnightIcon")
+    Bladex.ReadBitMap("../../Data/Icons/icono enano.bmp","DwarfIcon")
+    Bladex.ReadBitMap("../../Data/Icons/icono amazona.bmp","AmazonIcon")
+    Bladex.ReadBitMap("../../Data/Icons/icono barbaro.bmp","BarbarianIcon")
+    #
     Bladex.ReadBitMap("../../Data/Icons/Icono Darklord.bmp","DarkLordIcon")
     Bladex.ReadBitMap("../../Data/Icons/icono prisionero.bmp","PrisonerIcon")
     Bladex.ReadBitMap("../../Data/Icons/Knight Dark.bmp","KnightDarkIcon")
@@ -57,9 +62,14 @@ def Init():
     Reference.EnemiesDefaultScorerData['Great_Demon']=("GDemonIcon","Great Demon")
     Reference.EnemiesDefaultScorerData['Great_Ork']=("GorkIcon","Great Orc")
     Reference.EnemiesDefaultScorerData['Knight']=("TraitorIcon","Knight")
-    Reference.EnemiesDefaultScorerData['Knight_N']=("KnightIcon","Knight")
+    #
+    Reference.EnemiesDefaultScorerData['Knight_N']=("KnightIcon","Sargon")
+    Reference.EnemiesDefaultScorerData['Dwarf_N']=("DwarfIcon","Naglfar")
+    Reference.EnemiesDefaultScorerData['Amazon_N']=("AmazonIcon","Zoe")
+    Reference.EnemiesDefaultScorerData['Barbarian_N']=("BarbarianIcon","Tukaram")
+    #
     Reference.EnemiesDefaultScorerData['Knight_Traitor']=("TraitorIcon","Traitor")
-    Reference.EnemiesDefaultScorerData['Knight_Zombie']=("KnightzombieIcon","Knight living death ")
+    Reference.EnemiesDefaultScorerData['Knight_Zombie']=("KnightzombieIcon","Zombie")
     Reference.EnemiesDefaultScorerData['Lich']=("LichIcon","Lich")
     Reference.EnemiesDefaultScorerData['Little_Demon']=("LDemonIcon","Spawn")
     Reference.EnemiesDefaultScorerData['Minotaur']=("MinotaurIcon","Minotaur")

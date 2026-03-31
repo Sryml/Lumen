@@ -127,14 +127,14 @@ AnimFPS_T = 1.0 / AnimFPS
 #########
 
 
-def DynamicLayout():
-    global CurrentResolution
-    if GameVersion == CLASSIC_VER or CurrentResolution == Bladex.GetResolution():
-        return
+# def DynamicLayout():
+#     global CurrentResolution
+#     if GameVersion == CLASSIC_VER or CurrentResolution == Bladex.GetResolution():
+#         return
 
-    CurrentResolution = Bladex.GetResolution()
-    TSWidgets.Reset()
-    TSWidgets.InitWidgets()
+#     CurrentResolution = Bladex.GetResolution()
+#     TSWidgets.Reset()
+#     TSWidgets.InitWidgets()
 
 
 #########
@@ -231,7 +231,7 @@ def StartConversation():
     if not ClsTSWidgets.inited:
         return
 
-    DynamicLayout()
+    # DynamicLayout()
     pj = Bladex.GetEntity("Player1")
     personName = None
     if pj.Data.selected_enemy:
@@ -260,7 +260,7 @@ def EnableJournal():
     if not ClsTSWidgets.inited or (not TSDB.JrlTxt):
         return
 
-    DynamicLayout()
+    # DynamicLayout()
     TSWidgets.jEnable()
 
 
@@ -1003,21 +1003,21 @@ class ClsTSWidgets:
             Bladex.GetTime() + 0.2, self.InitWidgets, (), Lumenx.GetNSaveName()
         )
 
-    def Reset(self):
-        # added by sryml
-        import Scorer
+    # def Reset(self):
+    #     # added by sryml
+    #     import Scorer
 
-        Scorer.wFrame.RemoveWidget(self.MainFrame.Name())
-        self.MainFrame = None
-        self.DialogFrame = None
-        self.TextWidget = []
-        self.DialogIMG = None
-        self.JournalFrame = None
-        self.jTitleWidget = None
-        self.jTextWidget = []
-        self.jMoreWidget = None
-        self.JournalIMG = None
-        self.jNewEntry = None
+    #     Scorer.wFrame.RemoveWidget(self.MainFrame.Name())
+    #     self.MainFrame = None
+    #     self.DialogFrame = None
+    #     self.TextWidget = []
+    #     self.DialogIMG = None
+    #     self.JournalFrame = None
+    #     self.jTitleWidget = None
+    #     self.jTextWidget = []
+    #     self.jMoreWidget = None
+    #     self.JournalIMG = None
+    #     self.jNewEntry = None
 
     def InitWidgets(self):
         # added by sryml
@@ -1051,6 +1051,7 @@ class ClsTSWidgets:
         self.jNewEntry.SetColor(255, 255, 255)
         self.jNewEntry.SetAlpha(1.0)
         self.jNewEntry.SetVisible(0)
+        Scorer.HIDE_LIST.append(self.jNewEntry)
 
         # DialogFrame
         dialogframe_w, dialogframe_h = UtilsWidget.AdaptResolution(

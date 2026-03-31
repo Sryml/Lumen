@@ -27,6 +27,7 @@ from LumenLib import Inventory
 
 
 FontScale = Language.FontScale
+HIDE_LIST = []
 
 CURRENT_LEVEL_R=0
 CURRENT_LEVEL_G=128
@@ -956,6 +957,8 @@ def SetVisible(vis):
     wLeftHand.SetVisible(vis)
     wRightHand.SetVisible(0)
     PowDefWidgets.Deactivate()
+    for i in HIDE_LIST:
+      i.SetVisible(vis)
   else:
     PowDefWidgets.Activate()
   #wKeysFrame.SetVisible(vis)

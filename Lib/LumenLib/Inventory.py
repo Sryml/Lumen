@@ -1062,9 +1062,11 @@ class InventoryUI:
         global INVENTORY
         INVENTORY = self
         InventoryUI.inited = 1
+
+        Scorer.HIDE_LIST.append(main_frame)
         #
-        self.Listener = BInput.B_InputListener("InventoryListener")
-        self.Listener.SetPythonFunc(self.ListenDevice)
+        # self.Listener = BInput.B_InputListener("InventoryListener")
+        # self.Listener.SetPythonFunc(self.ListenDevice)
 
     def WrapDraw(self, this):
         def wrapped(x, y, time, this=this):

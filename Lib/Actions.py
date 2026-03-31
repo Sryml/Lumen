@@ -642,7 +642,6 @@ def StdUse (EntityName):
 
 	if not success:
 		if me.Data and me.Data.selected_entity:
-			msg = 0
 			if IsValidForUsing (me.Data.selected_entity[0], EntityName):
 				object_flag= Reference.GiveObjectFlag(me.Data.selected_entity[0])
 				if object_flag!=Reference.OBJ_USEME and object_flag!=Reference.OBJ_ITEM:	# Automatics get picked up first
@@ -652,15 +651,13 @@ def StdUse (EntityName):
 					object.Data.UsedBy = EntityName
 					object.UseFunc(object.Name, USE_FROM_NEARBY)
 					return
-			else:
-				msg = 1
 
 			if IsValidForTaking (me.Data.selected_entity[0]):
 				me.Data.toggle4t_clearback= FALSE
 				me.Data.stuff_onback_b4= SthOnBack(EntityName)
 				if TryToTake(EntityName, me.Data.selected_entity[0]):
 					return
-			elif not msg:
+			else:
 				# if(Bladex.IsUseMsgActive()==0):
 				# 	return
 				ReportMsg ("The selected object cannot be taken")
@@ -675,7 +672,6 @@ def IsValidForUsing(instance_name, EntityName):
 	object = Bladex.GetEntity(instance_name)
 
 	if not me or not object or not object.CanUse or not object.UseFunc:
-		ReportMsg ("The selected object cannot be taken")
 		return FALSE
 
 	dist = B3DLib.GetXZDistance (EntityName, instance_name)

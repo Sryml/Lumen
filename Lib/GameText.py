@@ -73,38 +73,35 @@ def MapDescriptor(map):
   # else:
   #   return map
 
-FadeTextInstance = None # type: FadeText # type: ignore
 
-class FadeText(Interpolator.LinearInt):
-  def __init__(self,init_val,end_val):
-    # by Sryml
-    global FadeTextInstance
-    if FadeTextInstance is not None:
-      FadeTextInstance.Interpolator.Actions = []
-      FadeTextInstance.Interpolator.__del__ = lambda: None
-    FadeTextInstance = self
-    #
-    Interpolator.LinearInt.__init__(self,init_val,end_val)
-    self.Interpolator=Interpolator.Interp("FadeText", 0)
+class ClsFadeText(Interpolator.LinearInt):
+  # -Sryml
+  def __init__(self):
+    self.current_action = None
+
+  def __call__(self, init_value,end_value):
+    self.Abort()
+
+    Interpolator.LinearInt.__init__(self,init_value,end_value)
     time=Bladex.GetTime()
-    self.Interpolator.AddAction(time,time+FADE_TIME,self)
-    self.end_val=end_val
+    self.current_action = Interpolator.InterpGeneral.AddAction(time,time+FADE_TIME,self)
 
+  def Abort(self):
+    Interpolator.InterpGeneral.RemoveAction(self.current_action)
 
   def Execute(self,value):
     import Scorer
     ret=Interpolator.LinearInt.Execute(self,value)
     Scorer.wGameText.SetAlpha(ret)
 
-
   def EndExecute(self):
     import Scorer
-    self.Interpolator.Kill()
-    Scorer.wGameText.SetAlpha(self.end_val)
-    if self.end_val==0:
+    self.current_action = None
+    Scorer.wGameText.SetAlpha(self.end_value)
+    if self.end_value==0:
       Scorer.wGameText.SetText("")
 
-
+FadeText = ClsFadeText()
 
 def ClearText():
   FadeText(1,0)
@@ -112,6 +109,7 @@ def ClearText():
 
 def AbortText():
   import Scorer
+  FadeText.Abort()
   Bladex.RemoveScheduledFunc("ClearText")
   Bladex.RemoveScheduledFunc("NextText")
   Scorer.wGameText.SetAlpha(0)
@@ -120,6 +118,7 @@ def AbortText():
 
 
 def WriteTextAux(txt,duration,init_r,init_g,init_b,next_text,ypos=None,patch=None,font_scale=Language.FontScale["L"] * 0.83):
+  AbortText()
   import Scorer
 ##  if not patch:
   # if Scorer.VISIBLE==0:
@@ -182,6 +181,7 @@ def WriteText(txt_id,ypos=None):
 
 def ShowMessage(message="",r=255,g=255,b=255):
 	import Scorer
+	AbortText()
 	Scorer.wGameText.SetText(message)
 	Scorer.wGameText.SetAlpha(1.0)
 	Scorer.wGameText.SetColor(r,g,b)

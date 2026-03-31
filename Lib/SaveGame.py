@@ -21,6 +21,7 @@ import stat
 import Language
 import BCopy
 import shutil
+import traceback
 
 from LumenLib import Inventory, UtilsWidget
 
@@ -251,7 +252,10 @@ def ReviveSave(this):
     import MemPersistence
 
     for exec_str in this.MenuDescr["ReviveExecStr"]:
-        eval(exec_str)
+        try:
+            exec(exec_str)
+        except:
+            traceback.print_exc()
     props = MemPersistence.Get("MainChar")
     if props:
         maxWeapons = props[2].get("maxWeapons", 4)
@@ -266,9 +270,9 @@ def GetSaveDesc():
     import GotoMapVars
 
     char = Bladex.GetEntity("Player1")
-    kind = char.Kind
-    if string.upper(kind[-2:]) == "_N":
-        kind = kind[:-2]
+    # kind = char.Kind
+    # if string.upper(kind[-2:]) == "_N":
+    #     kind = kind[:-2]
     cadtime = time.strftime(DATE_FORMAT, time.localtime(time.time()))
     map_name = Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod())
     #
@@ -283,17 +287,24 @@ def GetSaveDesc():
     else:
         DisgustingMessage = SaveCounter[vismap]
     #
-    ret = (
-        '"%%s - Lv.%s %%s - %s - %s (%%s)" %% (MenuText.GetMenuText(%s), MenuText.GetMenuText(%s), MenuText.GetMenuText(%s))'
-        % (
-            char.Level + 1,
-            cadtime,
-            Reference.TimesSaved,
-            repr(map_name),
-            repr(kind),
-            repr(DisgustingMessage),
-        )
+    ret = "%s, %s, %s, %s, %s" % (
+        char.Level + 1,
+        char.Kind,
+        cadtime,
+        Reference.TimesSaved,
+        DisgustingMessage,
     )
+    # ret = (
+    #     '"%%s - Lv.%s %%s - %s - %s (%%s)" %% (MenuText.GetMenuText(%s), MenuText.GetMenuText(%s), MenuText.GetMenuText(%s))'
+    #     % (
+    #         char.Level + 1,
+    #         cadtime,
+    #         Reference.TimesSaved,
+    #         repr(map_name),
+    #         repr(kind),
+    #         repr(DisgustingMessage),
+    #     )
+    # )
     return ret
 
 
@@ -408,8 +419,8 @@ def CreateSLMenu(menu_class):
                 line = f.readline()
                 while line:
                     if string.find(line, "MemPersistence.Store") != -1:
-                        exec_str.append(line[:-1])
-                        if len(exec_str) == 2:
+                        exec_str.append(line)
+                        if len(exec_str) == 3:
                             break
                     line = f.readline()
                 f.close()
@@ -420,12 +431,26 @@ def CreateSLMenu(menu_class):
                     )
                 else:
                     map_path = os.path.join(LUMEN_ROOT, "Maps", map_dir)
-                if len(exec_str) == 2 and os.path.isdir(map_path):
+                if len(exec_str) >= 2 and os.path.isdir(map_path):
                     restartable = 1
                 #
                 if not need_revive:
                     save_exists = 1
-                    slot_name = eval(string.strip(lines[1]))
+                    #
+                    save_map_name = Lumenx.GetMapListItem(map_dir, mod_dir)
+                    tup = string.split(string.strip(lines[1]), ", ")
+                    lvl, kind, cadtime, timesaved, score = tup
+                    name = Reference.EnemiesDefaultScorerData.get(
+                        kind, ("", kind)
+                    )[1]
+                    slot_name = "%s - Lv.%s %s - %s - %s (%s)" % (
+                        MenuText.GetMenuText(save_map_name),
+                        lvl,
+                        MenuText.GetMenuText(name),
+                        cadtime,
+                        timesaved,
+                        MenuText.GetMenuText(score),
+                    )
                     screenshot = os.path.join(save_dir, "Screenshot.BMP")
                     if os.path.isfile(screenshot):
                         SaveListDescr[1]["ImageName"] = clave

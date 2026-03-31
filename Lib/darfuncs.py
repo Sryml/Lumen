@@ -198,7 +198,7 @@ def MuertoyTroceado(x,y,z,raze,weapon,trozos,angul=2.19288423389,MeshName=None):
 			return
 		print "Creating 'deaths.py'..."
 		DeathFile = open("Pak/deaths.py_","w")
-		DeathFile.write("import Bladex\nimport ItemTypes \n\n")
+		DeathFile.write("import Bladex\nimport ItemTypes\nimport EnemyTypes\n\n") # Added EnemyTypes
 		DeathFile.write("print 'loading deaths...'\n\n\n")
 		Blood.AfterCreateBlood = GrabarLaSangre
 
@@ -226,6 +226,7 @@ def MuertoyTroceado(x,y,z,raze,weapon,trozos,angul=2.19288423389,MeshName=None):
 	else:
 		DeathFile.write(")\n\n")
 		
+	DeathFile.write("EnemyTypes.EnemyDefaultFuncs(%s)\n" % muertoint2.Name) # Added
 	DeathFile.write(muertoint2.Name+".Angle = "+str(angul)+"\n")
 	DeathFile.write(muertoint2.Name+".Life = 0\n")
 	DeathFile.write(muertoint2.Name+".SetOnFloor()\n\n")

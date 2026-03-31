@@ -250,8 +250,10 @@ class __FunctionDecorator:
         filename = AutomatedAssets(filename)
         if globals is None or locals is None:
             ret = BUtils.get_tb_namespace()
-            globals = globals is None and ret[0] or globals
-            locals = locals is None and ret[1] or locals
+            if globals is None:
+                globals = ret[0]
+            if locals is None:
+                locals = ret[1]
         return self.RawFunc.execfile(filename, globals, locals)
 
     def type(self, obj):
@@ -840,6 +842,14 @@ def IsCacheEnabled():
     return _DATA.config["Cache"] == "Enabled"
 
 
+def LinkAbs(parent, child):
+    # type: (Bladex._entity.B_PyEntity, Bladex._entity.B_PyEntity) -> ...
+    """Absolute link two entities"""
+    pos = child.Position
+    child.Position = parent.Abs2RelPoint(pos[0], pos[1], pos[2])
+    parent.Link(child)
+
+
 def LoadAnmRaceData(file_name):
     if IsCacheEnabled():
         return Bladex_raw.LoadAnmRaceData(file_name)
@@ -859,6 +869,8 @@ def LoadLevel(map_dir, mod_dir=""):
         map_dir (str): Map Directory\n
         mod_dir (str, optional): MOD Directory. Defaults to "".
     """
+    import MemPersistence
+
     if map_dir == "":
         return
 
@@ -892,6 +904,9 @@ def LoadLevel(map_dir, mod_dir=""):
         printx("Cfg.py file not found!")
         return
     #
+    if map_dir == "casa":
+        MemPersistence.Delete("2DMapValues")
+        MemPersistence.Delete("MainChar")
     new_mod_root = "..\\.."
     new_blade_root = new_lumen_root + "\\.."
 
@@ -1294,6 +1309,7 @@ GetTimeActionHeld
 InventoryActivatedByFocus
 InventoryActivatedByNumbers
 IsCacheEnabled
+LinkAbs
 LoadAnmRaceData
 LoadComponent
 LoadLevel

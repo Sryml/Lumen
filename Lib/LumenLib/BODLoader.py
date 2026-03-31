@@ -163,6 +163,7 @@ def StartGame(this):
                 map_dir = k
                 break
     if map_dir or default_map:
+        MemPersistence.Delete("2DMapValues")
         MemPersistence.Delete("MainChar")
         #
         character = UtilsWidget.CHARACTER

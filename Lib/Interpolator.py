@@ -75,8 +75,8 @@ class Interp:
       end_time=i[1]
       init_time=i[0]
       if time>end_time:
-        i[2].EndExecute()
         self.Actions.remove(i) # Desubscribir de Timer
+        i[2].EndExecute()
       elif time>init_time:
         interval_time=i[3]
         value=(time-init_time)/interval_time
@@ -90,24 +90,21 @@ class Interp:
   def __init__(self,name,make_persistent=1):
     self.Actions=[]
     self.name=name
-    self.make_persistent=make_persistent
-    self.ObjId = ""
     suffix = ""
-    if not make_persistent:
-      suffix = "[NSAVE]"
-    Bladex.SetAfterFrameFunc("Interp"+name+suffix,self.ExecuteActions)
     if make_persistent:
       self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
       ObjStore.ObjectsStore[self.ObjId]=self
+    else:
+      self.ObjId = None
+      suffix = "[NSAVE]"
+    Bladex.SetAfterFrameFunc("Interp"+name+suffix,self.ExecuteActions)
 
 
   def __del__(self):
     self.Kill()
 
   def persistent_id(self):
-    if self.make_persistent:
-      return self.ObjId
-    return None
+    return self.ObjId
 
   def __getstate__(self):
     # Tiene que devolver c䮯 poder guardar el estado de la clase
@@ -115,23 +112,25 @@ class Interp:
             self.ObjId,
             self.Actions,
             self.name,
-            self.make_persistent
            )
 
   def __setstate__(self,parm):
     # Toma como par⮥tro lo que devuelve __getstate__() y debe recrear la clase
     if parm[0]==1:
       self.ObjId=parm[1]
-      if self.ObjId:
+      if self.ObjId is not None:
         ObjStore.ObjectsStore[self.ObjId]=self
       self.Actions=parm[2]
       self.name=parm[3]
-      self.make_persistent=parm[4]
     else:
       print "Warning -> Version mismatch in Interp.__setstate__()"
       self.Actions=[]
       self.name="UnNamed"
-      self.make_persistent=1
       Bladex.SetAfterFrameFunc("Interp"+name,self.ExecuteActions)
       self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
       ObjStore.ObjectsStore[self.ObjId]=self
+
+
+# ---------------------------
+
+InterpGeneral = Interp("General", 0)

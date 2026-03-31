@@ -1823,7 +1823,7 @@ class Spidersmall (Enm_Def.NPCPerson):
 		venom.Friction=0.075
 		venom.PPS=512
 		venom.DeathTime=end_time+1.0/60.0;
-		vx,vy,vz=me.Rel2AbsVector(0,-14000.0,8500.0)        # vz was 6500.0
+		vx,vy,vz=me.Rel2AbsVector(0,-14000.0,7200.0)
 		venom.Velocity=vx,vy,vz
 		venom.RandomVelocity=5.0
 		me.LinkToNode(venom,node)
