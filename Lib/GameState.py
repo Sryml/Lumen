@@ -833,7 +833,8 @@ class WorldState:
 
         # file.write('Bladex.SetCurrentMap(\"%s\")\n'%(Bladex.GetCurrentMap(),))
         # file.write('sys.path.insert(0,os.getcwd())\n')
-        file.write('Bladex.SetSaveInfo(%s)\n\n'%(str(Bladex.GetSaveInfo(),)))
+        file.write('Bladex.SetSaveInfo(%s)\n'%(str(Bladex.GetSaveInfo(),)))
+        file.write('Bladex.SetListenerPosition(%s, %s, %s, %s)\n\n' % Lumenx.GetListenerPosition())
 
         # ---------------------------
         # by Sryml: start

@@ -17,6 +17,8 @@ CLASSIC_VER = 0
 V109_VER = 1
 MAJOR_VER = 2
 
+MAX_FLOAT = 1.79769313486e308
+
 
 # private database
 class _DATA:
@@ -80,6 +82,7 @@ class _DATA:
     bod_inspector_loaded = 0
     opened_files_delta = 0  # 修正量
     nsave_num = 0
+    listener_pos = (1, 0, 0, 0)
 
 
 ######### Initialization #########
@@ -361,6 +364,7 @@ __bladex_decorators = [
     "SetCurrentMap",
     "SetGhostSectorGroupSound",
     "SetGhostSectorSound",
+    "SetListenerPosition",
     "ShowCriticalWarning",
 ]
 for __fn in __bladex_decorators:  # type: ignore
@@ -767,6 +771,10 @@ def GetInventoryStyle():
     return _DATA.config["InventoryStyle"]
 
 
+def GetListenerPosition():
+    return _DATA.listener_pos
+
+
 def GetLumenRoot():
     """Returns the root path of Lumen"""
     return _DATA.lumen_root
@@ -962,6 +970,7 @@ def LoadLevel(map_dir, mod_dir=""):
         # "Lumenx.SetBladeRoot(%s)" % repr(blade_root),
         #
         # "execfile('%s')" % sys_init,
+        "Lumenx.SetListenerPosition(1)",
         "execfile('Cfg.py')",
         "isMenuAppMode =  Bladex.GetAppMode() == 'Menu'",
         "Bladex.ResumeSoundSystem()",
@@ -1174,6 +1183,11 @@ def SetGhostSectorSound(
     )
 
 
+def SetListenerPosition(mode, x=0, y=0, z=0):
+    _DATA.listener_pos = (mode, x, y, z)
+    return Bladex_raw.SetListenerPosition(mode, x, y, z)
+
+
 def SetLumenRoot(path):
     _DATA.lumen_root = path
 
@@ -1294,6 +1308,7 @@ GetCurrentModMenu
 GetEntity
 GetGameVersion
 GetInventoryStyle
+GetListenerPosition
 GetLumenRoot
 GetMapList
 GetMapListItem
@@ -1331,6 +1346,7 @@ SetCurrentMod
 SetCurrentModMenu
 SetGhostSectorGroupSound
 SetGhostSectorSound
+SetListenerPosition
 SetLumenRoot
 SetMapListPath
 SetModRoot
