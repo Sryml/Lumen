@@ -75,7 +75,14 @@ B_PARTICLE_GTYPE_MUL=3
 execfile("../../Scripts/AutoGenTextures.py")
 
 
+#
+# Timers
+#
+from LumenLib import TimerAux
 
+TimerAux.CreateTimer("Timer60", 1.0 / 60.0)
+TimerAux.CreateTimer("Timer30", 1.0 / 30.0)
+TimerAux.CreateTimer("Timer15", 1.0 / 15.0)
 
 #
 # cam = Bladex.GetEntity("Camera")
@@ -112,14 +119,6 @@ Scorer.SetLevelBarValue(char.PartialLevel)
 Scorer.SetLevelValue(char.Level)
 
 
-
-
-#
-# Timers
-#
-Bladex.CreateTimer("Timer60",1.0/60.0)
-Bladex.CreateTimer("Timer30",1.0/30.0)
-Bladex.CreateTimer("Timer15",1.0/15.0)
 
 #import pywin.debugger
 #pywin.debugger.set_trace()

@@ -15,6 +15,7 @@
 #
 
 import Bladex
+import Lumenx
 import AuxTran
 import Actions
 import Blood
@@ -37,6 +38,7 @@ import BInput
 import InitDataField
 import CombosFX
 import SolidMask
+import darfuncs
 
 from LumenLib import Inventory
 
@@ -534,6 +536,65 @@ class PlayerPerson:
 	#_________________________________________#
 	# Define our functions                    #
 	#_________________________________________#
+
+	# ------------------------------------------
+	# Burn functions -Sryml
+	# ------------------------------------------
+	def BurnFunc(self, time):
+		me = Bladex.GetEntity(self.Name)
+		p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if me.Life <= 0:
+			darfuncs.RemoveQuema(self.Name)
+			ptls.DeathTime = Bladex.GetTime() + 0.5
+			return
+		if self.Invincibility:
+			return
+		#
+		spend_time = time - self.EnterBurnTime
+		res = (1.0 - self.GetResistance("Fire"))
+		damage = (spend_time ** 2) * darfuncs.FIRE_DAMAGE * res
+		if damage <= 0:
+			return
+		
+		me.Life = me.Life - damage
+		if me.Life <= 0:
+			Reference.debugprint("Burn Spent: %s" % spend_time)
+			darfuncs.RemoveQuema(self.Name)
+			ptls.DeathTime = Bladex.GetTime() + 0.5
+			Actions.FireDeath(self.Name)
+
+	def EnterBurnFunc(self):
+		me = Bladex.GetEntity(self.Name)
+		if me.Life <= 0:
+			return 0
+		#
+		p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if ptls:
+			Bladex.DeleteEntity(p_name)
+		x, y, z = me.Position
+		ptls = Bladex.CreateEntity(p_name, "Entity Particle System D1", x, y, z)
+		ptls.ParticleType = "DarkSmoke"
+		ptls.YGravity = -2500.0
+		ptls.Friction = 0.05
+		ptls.Velocity = 0.0, -25.0, 0.0
+		ptls.RandomVelocity = 14.0
+		ptls.PPS = 30
+		ptls.Time2Live = 80
+		node = 0
+		me.LinkToNode(ptls, node)
+
+		return 1
+
+	def LeaveBurnFunc(self):
+		me = Bladex.GetEntity(self.Name)
+		p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if ptls:
+			ptls.DeathTime = Bladex.GetTime() + 0.5
+	# ------------------------------------------
+
 	def MutilateFunc(self,EntityName,obj_name,x,y,z,nx,ny,nz,node):
 		# print EntityName+": MutilateFunc"
 		me = Bladex.GetEntity(EntityName)

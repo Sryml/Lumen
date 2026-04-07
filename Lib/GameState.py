@@ -752,7 +752,7 @@ class WorldState:
         import SaveGame
          
         saveNumber = string.split(os.path.basename(aux_dir), "_")[0][8:]
-        save_root = os.path.dirname(aux_dir)
+        # save_root = os.path.dirname(aux_dir)
 
         # temp_dir = save_root + "/SaveGame_Temp"
         temp_dir = aux_dir
@@ -1401,13 +1401,15 @@ for i in range(len(keys)):
 
 
     def SaveModulesToBeSaved(self,file,temp_dir,aux_dir,ModulesToBeSaved):
+        # -Sryml
         for i in ModulesToBeSaved:
-            tempname="%s/%sData.dat"%(temp_dir,i.__name__)
-            filemame="%s/%sData.dat"%(aux_dir,i.__name__)
+            m_name = i.__name__
+            tempname="%s/%sData.dat"%(temp_dir,m_name)
+            filemame="%s/%sData.dat"%(aux_dir,m_name)
             file.write('__load_bar.Increment("Module")\n')
             i.SaveData(tempname)
-            file.write('import %s\n'%(i.__name__,))
-            file.write('%s.LoadData("%s")\n\n'%(i.__name__,filemame,))
+            file.write('import %s\n'%(m_name,))
+            file.write('%s.LoadData("%s")\n\n'%(m_name,filemame,))
 
 
 

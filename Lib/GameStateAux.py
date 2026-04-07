@@ -178,6 +178,25 @@ def GetPickledData(filename):
   return ret
 
 
+# ----------------------------------
+def SaveData(filename, d):
+    funcfile = open(filename, "wt")
+    p = cPickle.Pickler(funcfile)
+    p.persistent_id = persistent_id
+    p.dump(d)
+    funcfile.close()
+
+
+def LoadData(filename):
+    funcfile = open(filename, "rt")
+    p = cPickle.Unpickler(funcfile)
+    p.persistent_load = persistent_load
+    ret = p.load()
+    funcfile.close()
+    return ret
+# ----------------------------------
+
+
 def GetPickledObjects(filename):
   "Loads the ObjStore file"
 

@@ -30,6 +30,8 @@ import Blood
 import ItemTypes
 import CharStats
 
+from LumenLib import TimerAux
+
 #------------------------------------------------------------------------#
 ActualLevel = Bladex.GetCurrentMap()
 ############ Misc camera fucs ############ 
@@ -367,30 +369,52 @@ def QuakeStop():
 	cam.EarthQuakeFactor = 0
 	cam.EarthQuake = 0
 
-######## FIRE SECTORS #######
-FIRE_DAMAGE = 1.0/50.0
+# ----------------------------------
+# FIRE SECTORS -Sryml
+# ----------------------------------
 
-def QuemaTimer(e_name, time):
-  char = Bladex.GetEntity(e_name)
-  char.Life = char.Life - FIRE_DAMAGE * CharStats.GetCharMaxLife(char.Kind,char.Level)
-  if char.Life <= 0:
-    Actions.FireDeath(e_name)
-    char.RemoveFromList("Timer15")
-    char.TimerFunc=""
+FIRE_DAMAGE = 1.0
+QUEMASMOKE_UID = "69CF663E" # hex of timestamp
+QuemaList = []
+
+EntraQuemaSnd = Bladex.CreateSound("../../Sounds/flus1.wav", "EntraQuemaSnd")
+EntraQuemaSnd.Volume = 0.8
+
+def QuemaTimer(time):
+	remove_lst = []
+	for name in QuemaList:
+		ent = Bladex.GetEntity(name)
+		func = getattr(ent.Data, "BurnFunc", None)
+		if func:
+			func(time)
+		else:
+			remove_lst.append(name)
+	for name in remove_lst:
+		QuemaList.remove(name)
+
+Bladex.AddScheduledFunc(-1, TimerAux.SubscribeToList, ("Timer30", QuemaTimer))
 
 def EntraQuema(triggername,entityname):
-  if entityname=="Player1":
-    char = Bladex.GetEntity("Player1")
-    if char.Life>0:
-        char.SubscribeToList("Timer15")
-        char.TimerFunc=QuemaTimer
+	ent = Bladex.GetEntity(entityname)
+	x,y,z = ent.Position
+	EntraQuemaSnd.Play(x,y,z)
+	burnable = getattr(ent.Data, "EnterBurnFunc", lambda: 0)()
+	if entityname not in QuemaList and burnable:
+		ent.Data.EnterBurnTime = Bladex.GetTime()
+		QuemaList.append(entityname)
 
 def SaleQuema(triggername,entityname):
-  if entityname=="Player1":
-    char = Bladex.GetEntity("Player1")
-    if char.Life>0:
-        char.RemoveFromList("Timer15")
-        char.TimerFunc=""
+	RemoveQuema(entityname)
+	ent = Bladex.GetEntity(entityname)
+	func = getattr(ent.Data, "LeaveBurnFunc", None)
+	if func:
+		func()
+
+def RemoveQuema(entityname):
+	if entityname in QuemaList:
+		QuemaList.remove(entityname)
+
+# ----------------------------------
 
 ######  Assignation funcs ######
 def FireOnGS(name):
