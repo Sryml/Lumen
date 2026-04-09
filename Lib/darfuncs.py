@@ -380,11 +380,13 @@ QuemaList = []
 EntraQuemaSnd = Bladex.CreateSound("../../Sounds/flus1.wav", "EntraQuemaSnd")
 EntraQuemaSnd.Volume = 0.8
 
+QuemaSnd = Bladex.CreateSound("../../Sounds/Ember-crackle.wav", "QuemaSnd")
+
 def QuemaTimer(time):
 	remove_lst = []
 	for name in QuemaList:
 		ent = Bladex.GetEntity(name)
-		func = getattr(ent.Data, "BurnFunc", None)
+		func = getattr(getattr(ent, "Data", None), "BurnFunc", None)
 		if func:
 			func(time)
 		else:
@@ -398,7 +400,8 @@ def EntraQuema(triggername,entityname):
 	ent = Bladex.GetEntity(entityname)
 	x,y,z = ent.Position
 	EntraQuemaSnd.Play(x,y,z)
-	burnable = getattr(ent.Data, "EnterBurnFunc", lambda: 0)()
+	QuemaSnd.Play(x,y,z, -1)
+	burnable = getattr(ent.Data, "EnterBurnFunc", lambda x: 0)("Timer30")
 	if entityname not in QuemaList and burnable:
 		ent.Data.EnterBurnTime = Bladex.GetTime()
 		QuemaList.append(entityname)
@@ -409,6 +412,8 @@ def SaleQuema(triggername,entityname):
 	func = getattr(ent.Data, "LeaveBurnFunc", None)
 	if func:
 		func()
+	if len(QuemaList) == 0:
+		QuemaSnd.Stop()
 
 def RemoveQuema(entityname):
 	if entityname in QuemaList:

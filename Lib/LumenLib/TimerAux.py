@@ -20,12 +20,14 @@ if typing.TYPE_CHECKING:
 
 # ----------------------------------
 SubscribedLists = {}
+TimerInfo = {}
 
 
 def CreateTimer(timer_name, period):
     if not SubscribedLists.has_key(timer_name):
         Bladex.CreateTimer(timer_name, period)
         SubscribedLists[timer_name] = []
+        TimerInfo[timer_name] = period
         o = Bladex.CreateEntity(timer_name, "GhostPointer", 0, 0, 0)
         InitDataField.Initialise(o, Name=timer_name)
         o.Alpha = 0
@@ -48,6 +50,10 @@ def TimerFunc(ent_name, time):
                 traceback.print_exc()
 
 
+def GetTimerInfo(name):
+    return float(TimerInfo.get(name, 0.1))
+
+
 def SubscribeToList(timer_name, func, func_args=(), func_kwds={}):
     l = SubscribedLists.get(timer_name)
     item = (func, func_args, func_kwds)
@@ -68,12 +74,12 @@ def RemoveFromList(timer_name, func, func_args, func_kwds):
 
 # ----------------------------------
 def SaveData(filename):
-    GameStateAux.SaveData(filename, SubscribedLists)
+    GameStateAux.SaveData(filename, (SubscribedLists, TimerInfo))
 
 
 def LoadData(filename):
-    global SubscribedLists
-    SubscribedLists = GameStateAux.LoadData(filename)
+    global SubscribedLists, TimerInfo
+    SubscribedLists, TimerInfo = GameStateAux.LoadData(filename)
     # Reference.debugprint("%s LoadData done." % __name__)
 
 

@@ -2457,7 +2457,7 @@ class Minotaur (Enm_Def.NPCPerson):
 		self.DamageFactorLight = 0.33
 		self.DamageFactorHeavy = 0.5
 
-		self.MutilatePickable = 1 << Reference.BODY_HEAD
+		# self.MutilatePickable = 1 << 1
 
 	def ResetSounds(self, EntityName):
 		AniSound.AsignarSonidosMinotaur(EntityName)

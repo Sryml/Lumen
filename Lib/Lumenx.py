@@ -349,6 +349,7 @@ __bladex_decorators = [
     "CreateSound",
     "GetCurrentMap",
     "GetEntity",
+    "GetListenerPosition",
     "GetResolution",
     "GetTimeActionHeld",
     "LoadAnmRaceData",
@@ -736,8 +737,10 @@ def GetBMPFiles():
     return _DATA.res_bmps
 
 
-def GetConfig():
-    return _DATA.config
+def GetConfig(key=None):
+    if key is None:
+        return _DATA.config
+    return _DATA.config.get(key)
 
 
 def GetControlCharacter():

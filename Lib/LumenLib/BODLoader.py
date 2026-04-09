@@ -375,12 +375,12 @@ def SetInvActivatedByNumbers(option):
 
 
 #
-def GetCacheOption(this):
-    return this.Options.index(_DATA.menu_config["Cache"])
+def GetEnableOption(this):
+    return this.Options.index(_DATA.menu_config[this.MenuDescr["Name"]])
 
 
-def SetCache(option):
-    _DATA.menu_config["Cache"] = option
+def SetEnable(option, this):
+    _DATA.menu_config[this.MenuDescr["Name"]] = option
     OnChangeMenu()
 
 
@@ -746,7 +746,6 @@ ModMenu = {
                     "VSep": "0.1346%",
                     # "VIndicator": BUIx.B_FrameWidget.B_FR_VRelative,
                     # "VAnchor": BUIx.B_FrameWidget.B_FR_VCenter,
-                    # "ListDescr": [],
                 },
                 {
                     "Name": "BackColor",
@@ -781,7 +780,7 @@ ModMenu = {
                     "Text": MenuText.GetMenuText("Inventory Style") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "1em",
+                    "VSep": "0.7em",
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Original", "Improved"],
                     "SelOptionFunc2": GetInvStyleOption,
@@ -810,15 +809,26 @@ ModMenu = {
                     "Command": SetInvActivatedByNumbers,
                 },
                 {
+                    "Name": "Grillable Limb",
+                    "Text": MenuText.GetMenuText("Grillable Limb") + ":",
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": "0.7em",
+                    "Kind": MenuWidget.B_MenuItemOption,
+                    "Options": ["Enabled", "Disabled"],
+                    "SelOptionFunc2": GetEnableOption,
+                    "Command2": SetEnable,
+                },
+                {
                     "Name": "Cache",
                     "Text": MenuText.GetMenuText("Cache") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
-                    "VSep": "1em",
+                    "VSep": "0.7em",
                     "Kind": MenuWidget.B_MenuItemOption,
                     "Options": ["Enabled", "Disabled"],
-                    "SelOptionFunc2": GetCacheOption,
-                    "Command": SetCache,
+                    "SelOptionFunc2": GetEnableOption,
+                    "Command2": SetEnable,
                 },
                 NoteLabel,
                 BackOptionCommon,

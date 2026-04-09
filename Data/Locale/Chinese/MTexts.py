@@ -161,6 +161,9 @@ ForeingDict = {
     "inventory 7": "库存7",
     "inventory 8": "库存8",
     "res": "耐久",
+    #
+    "grillable limb": "可烧烤的肢体",
+    "grilled meat": "烤肉",
     # Blade Arena
     "dives into the lava": "坠入熔岩",
     "flies too high": "飞的太高了",

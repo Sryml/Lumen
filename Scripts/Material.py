@@ -554,14 +554,22 @@ def Init():
     Bladex.SetDefaultMaterial('RollodeCuerda', 'generico2')     # Added
     Bladex.SetDefaultMaterial('Cantimplora','generico2')        #
 
-    # by Sryml: start
+    # -Sryml: start
     Bladex.SetDefaultMaterial("Libroabierto", "carne")
+    Bladex.SetDefaultMaterial("Hogaza", "carne")
+    Bladex.SetDefaultMaterial("Manzana", "carne")
+    Bladex.SetDefaultMaterial("Paletilla", "carne")
+    Bladex.SetDefaultMaterial("Queso", "carne")
+    Bladex.SetDefaultMaterial("Rabano", "carne")
+    Bladex.SetDefaultMaterial("Seta", "carne")
+    Bladex.SetDefaultMaterial("Setas", "carne")
 
     Bladex.SetDefaultMaterial("Gemaazul", "cristal")
     Bladex.SetDefaultMaterial("Gemapurpura", "cristal")
     Bladex.SetDefaultMaterial("Gemaroja", "cristal")
     Bladex.SetDefaultMaterial("Pivote", "cristal")
 
+    Bladex.SetDefaultMaterial("Raiz", "generico2")
     Bladex.SetDefaultMaterial("Camapaja", "generico2")
     Bladex.SetDefaultMaterial("Camavampiro", "generico2")
     Bladex.SetDefaultMaterial("Carcaj", "generico2")
@@ -724,4 +732,4 @@ def Init():
     Bladex.SetDefaultMaterial("Tumbacobra", "piedra ligera")
     Bladex.SetDefaultMaterial("Lapidareina", "piedra ligera")
     Bladex.SetDefaultMaterial("Lapidarey", "piedra ligera")
-    # by Sryml: end
+    # -Sryml: end
