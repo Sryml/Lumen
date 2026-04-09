@@ -543,9 +543,9 @@ class PlayerPerson:
 	def BurnFunc(self, time):
 		me = Bladex.GetEntity(self.Name)
 		p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
-		ptls = Bladex.GetEntity(p_name)
 		if me.Life <= 0:
 			darfuncs.RemoveQuema(self.Name)
+			ptls = Bladex.GetEntity(p_name)
 			ptls.DeathTime = Bladex.GetTime() + 0.5
 			return
 		if self.Invincibility:
@@ -561,10 +561,11 @@ class PlayerPerson:
 		if me.Life <= 0:
 			Reference.debugprint("Burn Spent: %s" % spend_time)
 			darfuncs.RemoveQuema(self.Name)
+			ptls = Bladex.GetEntity(p_name)
 			ptls.DeathTime = Bladex.GetTime() + 0.5
 			Actions.FireDeath(self.Name)
 
-	def EnterBurnFunc(self):
+	def EnterBurnFunc(self, timer_name):
 		me = Bladex.GetEntity(self.Name)
 		if me.Life <= 0:
 			return 0
@@ -608,12 +609,14 @@ class PlayerPerson:
 		#
 		Blood.Mutilate (EntityName,obj_name,x,y,z,nx,ny,nz,node)
 
+		InitDataField.Initialise(limb, NoFXOnHit=1)
+		Reference.debugprint(limb.Mass, node)
 		if self.MutilatePickable == -1 or (self.MutilatePickable>>node & 1):
-			InitDataField.Initialise(limb, NoFXOnHit=1)
-			# print limb.Mass, node
-			if limb.Mass > 1.0 and limb.Mass < 8.0:
+			if limb.Mass > 1.0:
 				Reference.EntitiesSelectionData[obj_name]= Reference.DefaultSelectionData["Limb"]
 				Reference.EntitiesObjectData[obj_name]= Reference.DefaultObjectData['Limb']
+				if self.GetResistance("Drain") < 1.0:
+					limb.Data = ItemTypes.BBQLimb(limb, me)
 		return limb
 
 	def TakeFunc (self, MyName):

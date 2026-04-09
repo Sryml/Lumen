@@ -18,8 +18,12 @@ import Auras
 import GenFX
 import ObjStore
 import GameStateAux
+import darfuncs
+import Blood
+import Lumenx
 
 from Lumenx import AutomatedAssets
+from LumenLib import TimerAux
 
 class PersistantItemType:
 	def __init__(self, me):
@@ -3252,8 +3256,145 @@ class Brazalete (ItemOfProtection):
 		# Manuel, termina el efecto magico aqui
 		ItemOfProtection.UseEnd (self, ObjectName, UserName)
 
+# ------------------------------------------
+class Barbecue(PersistantItemType):
+	def __init__ (self, me):
+		# type: (Bladex._entity.B_PyEntity) -> None
+		PersistantItemType.__init__(self, me)
+		self.Name = me.Name
+		self.Doneness = 0.0
+		
+		me.SendTriggerSectorMsgs = 1
 
+	def BurnFunc(self, time):
+		pass
 
+	def EnterBurnFunc(self, timer_name):
+		me = Bladex.GetEntity(self.Name)
+		p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if ptls:
+			Bladex.DeleteEntity(p_name)
+		ptls = Bladex.CreateEntity(p_name, "Entity Particle System D1", 0, 0, 0)
+		ptls.ParticleType = "DarkSmoke"
+		ptls.YGravity = -2500.0
+		ptls.Friction = 0.05
+		ptls.RandomVelocity = 5.0
+		ptls.PPS = 20
+		ptls.Time2Live = 80
+		me.Link(ptls)
+
+		return 1
+
+	def LeaveBurnFunc(self):
+		me = Bladex.GetEntity(self.Name)
+		p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if ptls:
+			ptls.DeathTime = Bladex.GetTime() + 0.5
+
+class BBQLimb(Barbecue):
+	BLOOD_UID = "69D62A24"
+	MaxBloodPrtlHit = 3
+
+	def __init__(self, me, owner):
+		# type: (Bladex._entity.B_PyEntity, Bladex._entity.B_PyEntity) -> None
+		Barbecue.__init__(self, me)
+		self.NoFXOnHit = 1
+		self.BloodPrtlHit = 0
+		self.BloodPrtlHitInterval = 1.0 / self.MaxBloodPrtlHit
+		self.Kind = owner.Kind
+
+		res = owner.Data.GetResistance("Drain")
+		CharMaxLife = CharStats.GetCharMaxLife(owner.Kind,owner.Level)
+		Increment = math.ceil(CharMaxLife * 0.6 * (1 - res) / 6)
+		self.Increment = min(Increment, 200)
+
+	def BurnFunc(self, time):
+		import pocimac
+
+		me = Bladex.GetEntity(self.Name)
+		self.Doneness = self.Doneness + self.DonenessInc
+		#
+		n = int(self.Doneness / self.BloodPrtlHitInterval)
+		if n == self.BloodPrtlHit:
+			self.BloodPrtlHit = n + 1
+			p_name = "%s_%s" % (me.Name, self.BLOOD_UID)
+			ptls = Bladex.GetEntity(p_name)
+			ptl = ptls.GetParticleEntity()
+			InitDataField.Initialise(ptl, evaporation=1)
+			if ptls.ParticleType=="GreenBlood":
+				ptl.HitFunc=Blood.GreenBloodPrtlHit
+			else:
+				ptl.HitFunc=Blood.BloodPrtlHit
+		#
+		if self.Doneness >= 1.0:
+			self.Doneness = 1.0
+			me.SubscribeToList("Pin")
+			darfuncs.RemoveQuema(self.Name)
+			p_name = "%s_%s" % (me.Name, darfuncs.QUEMASMOKE_UID)
+			ptls = Bladex.GetEntity(p_name)
+			me.Unlink(ptls)
+			ptls.DeathTime = Bladex.GetTime() + 0.5
+			#
+			parent = Bladex.GetEntity(me.Parent)
+			if parent and parent.Person:
+				inv = parent.GetInventory()
+				if parent.InvRight == me.Name:
+					inv.LinkRightHand("")
+				else:
+					inv.LinkLeftHand("")
+			#
+			x,y,z = me.Position
+			o = Bladex.CreateEntity("%s_cooked" % me.Name, "Paletilla", x, y, z)
+			SelectionData = Reference.DefaultSelectionData["Paletilla"]
+			Reference.EntitiesSelectionData[o.Name] = (SelectionData[0], SelectionData[1], "Grilled Meat")
+			pocimac.CreateDefaultPocimac(o.Name)
+			o.Data.Increment = self.Increment
+			Scale = max(me.Mass * 0.25, 0.45)
+			Scale = min(Scale, 1.8)
+			o.Scale = Scale
+			o.Impulse(0,0,0)
+			Reference.debugprint("Cooked: Increment %s" % (self.Increment,))
+
+	def EnterBurnFunc(self, timer_name):
+		if Lumenx.GetConfig("Grillable Limb") == "Disabled":
+			return
+		
+		me = Bladex.GetEntity(self.Name)
+		p_name = "%s_%s" % (me.Name, self.BLOOD_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if ptls:
+			Bladex.DeleteEntity(p_name)
+
+		if self.Kind == "Spidersmall":
+			ParticleType = "GreenBlood"
+		else:
+			ParticleType = "Blood"
+
+		ptls = Bladex.CreateEntity(p_name, "Entity Particle System D1", 0, 0, 0)
+		ptls.ParticleType = ParticleType
+		ptls.YGravity = 9800.0
+		ptls.Friction = 0.075
+		ptls.PPS = 128
+		ptls.Time2Live = 50
+		me.Link(ptls)
+
+		period = TimerAux.GetTimerInfo(timer_name)
+		self.DonenessInc = period / min(me.Mass*0.6, 8.0)
+
+		return Barbecue.EnterBurnFunc(self, timer_name)
+
+	def LeaveBurnFunc(self):
+		me = Bladex.GetEntity(self.Name)
+		p_name = "%s_%s" % (me.Name, self.BLOOD_UID)
+		ptls = Bladex.GetEntity(p_name)
+		if ptls:
+			ptls.DeathTime = Bladex.GetTime() + 0.3
+
+		return Barbecue.LeaveBurnFunc(self)
+
+# ------------------------------------------
 
 def MakeMagicShield(EntityName, owner):
 	shield= Bladex.CreateEntity(EntityName,"MagicShield",0,0,0,"Weapon")
