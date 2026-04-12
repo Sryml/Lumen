@@ -3145,3 +3145,21 @@ def QuickDeath(EntityName,EventName):
 		AuxFuncs.FadeTo(3.5,10.0,128,0,0)
 
 ##################################################################################################
+
+# ----------------------------------
+# -Sryml
+# ----------------------------------
+def TestJump(EntityName, EventName):
+	me = Bladex.GetEntity(EntityName)
+	mouse_move = Bladex.GetTimeActionHeld("RotateX")
+	right_pressed = Bladex.GetTimeActionHeld("Turn Right")
+	left_pressed = Bladex.GetTimeActionHeld("Turn Left")
+	back_pressed = Bladex.GetTimeActionHeld("Backwards")
+	if Lumenx.GetConfig("DodgeByMouseMovement") == "Disabled" and EntityName == Lumenx.GetControlCharacter().Name:
+		if right_pressed or left_pressed or back_pressed or mouse_move > 0.1:
+			me.RaiseEvent("Jump_Raw")
+	else:
+		me.RaiseEvent("Jump_Raw")
+
+# ----------------------------------
+

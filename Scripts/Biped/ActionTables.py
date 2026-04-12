@@ -39,6 +39,7 @@ def Init():
     firstTime= time.time()
     print "Creating tables for the bipeds..."
     import Bladex
+    import Lumenx
     import Actions
     ####################################################################################
     #
@@ -49,7 +50,8 @@ def Init():
 
     Bladex.SetEventTableFunc("Rlx","InstantAttack",Actions.InstantAttackSlow)
     Bladex.SetEventTableFuncC("Rlx","ActionEnd","RlxCycle")
-    Bladex.SetEventTableFuncC("Rlx","Jump","TestJump")
+    Bladex.SetEventTableFunc("Rlx","Jump",Actions.TestJump) # -Sryml
+    Bladex.SetEventTableFuncC("Rlx","Jump_Raw","TestJump")
     Bladex.SetEventTableFuncC("Rlx","ToggleFacing","ToggleFacing")
     Bladex.SetEventTableFuncC("Rlx","StartBlock","StartBlockAndUpdate")
     Bladex.SetEventTableFuncC("Rlx","StopBlock","StopBlockAndUpdate")
@@ -827,7 +829,8 @@ def Init():
     Bladex.SetEventTableFunc("ATTACKING","Swap180",Actions.Swap180Handler)
     Bladex.SetEventTableFuncC("ATTACKING","StartBlock","StartBlockAndChange")
     Bladex.SetEventTableFuncC("ATTACKING","StopBlock","StopBlockAndChange")
-    Bladex.SetEventTableFuncC("ATTACKING","Jump","BreakAndTestDodge")
+    Bladex.SetEventTableFunc("ATTACKING","Jump",Actions.TestJump) # -Sryml
+    Bladex.SetEventTableFuncC("ATTACKING","Jump_Raw","BreakAndTestDodge")
     Bladex.SetEventTableFuncC("ATTACKING","Interrupt","EndGenericAction")
 
     ####################################################################################
