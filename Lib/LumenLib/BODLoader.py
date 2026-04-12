@@ -432,6 +432,22 @@ def GetBackToGameItem(
     return ret
 
 
+def GenEnableOption(name, text="", VSep="0.7em"):
+    if text == "":
+        text = name
+    return {
+        "Name": name,
+        "Text": MenuText.GetMenuText(text) + ":",
+        "Font": Language.FontCommon,
+        "FontScale": Language.MFontScale["M"],
+        "VSep": VSep,
+        "Kind": MenuWidget.B_MenuItemOption,
+        "Options": ["Enabled", "Disabled"],
+        "SelOptionFunc2": GetEnableOption,
+        "Command2": SetEnable,
+    }
+
+
 def IsModInstalled(mod_dir):
     return _DATA.mod_info[mod_dir]["Installed"]
 
@@ -459,33 +475,6 @@ def SetEnableMod(mod_dir):
 
         EnableMod(Enabled, mod_info)
         SaveModInfo()
-
-
-# def GetEnableOption(
-#     VSep=Menu.FirstOptionVSep,
-#     Font=Language.FontCommon,
-#     FontScale=Language.MFontScale["M"],
-# ):
-#     ret = {
-#         "Name": "ENABLE MOD",
-#         "Text": MenuText.GetMenuText("Enable Mod") + ": ",
-#         "Font": Font,
-#         "VSep": VSep,
-#         "Kind": MenuWidget.B_MenuItemOption,
-#         "Options": ["No", "Yes"],
-#         "SelOptionFunc2": GetEnableMod,
-#         "Command2": SetEnableMod,
-#     }
-#     if FontScale is not None:
-#         ret["FontScale"] = FontScale
-#     return ret
-
-
-# def InstallMod(Installed, mod_info):
-#     if Installed == 1:
-#         LoadMod(mod_info)
-#     else:
-#         EnableMod(0, mod_info)
 
 
 def LoadMod(mod_info):
@@ -808,28 +797,12 @@ ModMenu = {
                     "SelOptionFunc2": GetInvActivatedByNumbersOption,
                     "Command": SetInvActivatedByNumbers,
                 },
-                {
-                    "Name": "Grillable Limb",
-                    "Text": MenuText.GetMenuText("Grillable Limb") + ":",
-                    "Font": Language.FontCommon,
-                    "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.7em",
-                    "Kind": MenuWidget.B_MenuItemOption,
-                    "Options": ["Enabled", "Disabled"],
-                    "SelOptionFunc2": GetEnableOption,
-                    "Command2": SetEnable,
-                },
-                {
-                    "Name": "Cache",
-                    "Text": MenuText.GetMenuText("Cache") + ":",
-                    "Font": Language.FontCommon,
-                    "FontScale": Language.MFontScale["M"],
-                    "VSep": "0.7em",
-                    "Kind": MenuWidget.B_MenuItemOption,
-                    "Options": ["Enabled", "Disabled"],
-                    "SelOptionFunc2": GetEnableOption,
-                    "Command2": SetEnable,
-                },
+                GenEnableOption("GrillableLimb", "Grillable Limb", VSep="0.7em"),
+                GenEnableOption(
+                    "DodgeByMouseMovement", "Dodge By Mouse Movement", VSep="0"
+                ),
+                GenEnableOption("ArcheryTrajectory", "Archery Trajectory", VSep="0"),
+                GenEnableOption("Cache", VSep="0"),
                 NoteLabel,
                 BackOptionCommon,
                 BackImageBannerItem,

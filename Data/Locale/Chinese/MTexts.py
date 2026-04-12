@@ -163,6 +163,8 @@ ForeingDict = {
     "res": "耐久",
     #
     "grillable limb": "可烧烤的肢体",
+    "dodge by mouse movement": "通过鼠标移动闪避",
+    "archery trajectory": "射箭轨迹",
     "grilled meat": "烤肉",
     # Blade Arena
     "dives into the lava": "坠入熔岩",

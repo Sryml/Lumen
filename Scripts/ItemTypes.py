@@ -3358,7 +3358,7 @@ class BBQLimb(Barbecue):
 			Reference.debugprint("Cooked: Increment %s" % (self.Increment,))
 
 	def EnterBurnFunc(self, timer_name):
-		if Lumenx.GetConfig("Grillable Limb") == "Disabled":
+		if Lumenx.GetConfig("GrillableLimb") == "Disabled":
 			return
 		
 		me = Bladex.GetEntity(self.Name)
