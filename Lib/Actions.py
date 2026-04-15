@@ -35,6 +35,7 @@ import ItemTypes
 
 from Lumenx import AutomatedAssets
 from LumenLib import Inventory
+from LumenLib.Trajectory import Trajectory
 
 #
 # Fade out values -> For Enric
@@ -2610,10 +2611,12 @@ def TestReleaseArrow(EntityName):
 
 def EndDrawBowEventHandler(EntityName, EventName):
 	me= Bladex.GetEntity(EntityName)
+	vector = (0,0,-40000)
+	isControlCharacter = (EntityName == Lumenx.GetControlCharacter().Name)
 	#print EntityName+" EndDrawBowEventHandler, "+me.AnimName+": "+`me.AnmPos`
+	arrow = Bladex.GetEntity(me.InvRight)
 	if me.Data.AimPressed==0:
 		me.Aim= 0
-		arrow= Bladex.GetEntity(me.InvRight)
 		if arrow:
 			#print EntityName+" EndDrawBowEventHandler:Letting Arrow Fly"
 			# exclude people from collision
@@ -2631,7 +2634,8 @@ def EndDrawBowEventHandler(EntityName, EventName):
 			if me.Data.NPC:
 				vx,vy,vz= me.AimVector
 			else:
-				vx,vy,vz= arrow.Rel2AbsVector(0,0,-40000)
+				vx,vy,vz= arrow.Rel2AbsVector(vector[0], vector[1], vector[2])
+				Trajectory.Deactivate()
 			arrow.Fly(vx,vy,vz)
 
 			arrow.MessageEvent(MESSAGE_START_WEAPON,0,0)
@@ -2660,6 +2664,8 @@ def EndDrawBowEventHandler(EntityName, EventName):
 			return
 	#print EntityName+" EndDrawBowEventHandler:b3"
 	me.LaunchAnmType ("b3")
+	if isControlCharacter and (not Trajectory.active) and arrow:
+		Trajectory.Activate(arrow, vector)
 
 
 def CheckRefireBowEventHandler(EntityName, EventName):

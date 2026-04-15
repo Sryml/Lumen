@@ -678,9 +678,9 @@ DefaultObjectData['Roca1Aurelio']=       [OBJ_WEAPON,  35, -5, 1.0,  THR_SPINNIN
 
 #Quiver
 #weapons          name                    type        #   type
-DefaultObjectData['Carcaj']=             [OBJ_QUIVER, 10, "Flecha"]
-DefaultObjectData['CarcajFuego']=        [OBJ_QUIVER, 10, "FlechaFuego"]
-DefaultObjectData['CarcajEnvenenado']=   [OBJ_QUIVER, 10, "FlechaEnvenenada"]
+DefaultObjectData['Carcaj']=             [OBJ_QUIVER, 20, "Flecha"]
+DefaultObjectData['CarcajFuego']=        [OBJ_QUIVER, 20, "FlechaFuego"]
+DefaultObjectData['CarcajEnvenenado']=   [OBJ_QUIVER, 20, "FlechaEnvenenada"]
 
 # Quiver variations
 DefaultObjectData['Carcaj_E']=           DefaultObjectData['Carcaj']

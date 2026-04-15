@@ -8,6 +8,7 @@
 import string
 import types
 import sys
+import math
 
 import ObjStore
 
@@ -275,6 +276,28 @@ def get_tb_namespace(depth=1):
             frame = frame.f_back
 
     return (frame.f_globals, frame.f_locals)
+
+
+# -------------------------------
+#
+# -------------------------------
+
+
+def ToQuat(axis, angle):
+    angle = angle * 0.5
+    w = math.cos(angle)
+    x = axis[0] * math.sin(angle)
+    y = axis[1] * math.sin(angle)
+    z = axis[2] * math.sin(angle)
+    return (w, x, y, z)
+
+
+def QuatMul(q1, q2):
+    w = q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2] - q1[3] * q2[3]
+    x = q1[0] * q2[1] + q1[1] * q2[0] + q1[2] * q2[3] - q1[3] * q2[2]
+    y = q1[0] * q2[2] - q1[1] * q2[3] + q1[2] * q2[0] + q1[3] * q2[1]
+    z = q1[0] * q2[3] + q1[1] * q2[2] - q1[2] * q2[1] + q1[3] * q2[0]
+    return (w, x, y, z)
 
 
 """
