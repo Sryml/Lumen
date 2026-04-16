@@ -1644,10 +1644,13 @@ class MagicShield:
 				fadeTime=0.5
 			self.FadeOut (self.CurrentName, r, g, b, nv, rv, pps, fadeTime)
 
-class Arco:
+class Arco(PersistantItemType):
 	def __init__(self, me):
+		PersistantItemType.__init__(self, me)
 		if not me.Actor:
 			me.Weapon=1
+
+		self.Range = 40 # Added
 		self.Name= me.Name
 		String1= self.CreateAndAttachString (self.Name+"StringTop", me.GraspPos("Top"))
 		self.String1Name= String1.Name
@@ -1724,10 +1727,14 @@ class Arco_Amz_seleccion (Arco):
 
 
 class Arco2 (Arco):
-	pass
+	def __init__(self, me):
+		Arco.__init__(self, me)
+		self.Range = 90
 
 class Arco3 (Arco):
-	pass
+	def __init__(self, me):
+		Arco.__init__(self, me)
+		self.Range = 60
 
 class Quiver:
 	def __init__ (self, me):

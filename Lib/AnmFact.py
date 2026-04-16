@@ -124,7 +124,7 @@ def AnmFactBarbarian():
 	
 	Bladex.SetAnimationFactor("Bar_1tw_h_f",3)
 	Bladex.SetAnimationFactor("Bar_1tw_l_f",3)
-	Bladex.SetAnimationFactor("Bar_b1",2)
+	Bladex.SetAnimationFactor("Bar_b1",2 * 1.5)
 	Bladex.SetAnimationFactor("Bar_b2",3)
 	
 	Bladex.SetAnimationFactor("Bar_attack_f",3)
@@ -331,8 +331,8 @@ def AnmFactKnight():
 	#Bladex.SetAnimationFactor("Kgt_attack_t_l",0.1)
 	Bladex.SetAnimationFactor("Kgt_1tw_h_f",3)
 	Bladex.SetAnimationFactor("Kgt_1tw_l_f",3)
-	Bladex.SetAnimationFactor("Kgt_b1",2)
-	Bladex.SetAnimationFactor("Kgt_b2",3)
+	Bladex.SetAnimationFactor("Kgt_b1",2 * 1.5 * 1.71)
+	Bladex.SetAnimationFactor("Kgt_b2",3 * 1.82)
 	Bladex.SetAnimationFactor("Kgt_g_magic",3)
 		
 	Bladex.SetAnimationFactor("Kgt_jmp_no",1.25) 
@@ -735,7 +735,7 @@ def AnmFactDwarf():
 	#Bladex.SetAnimationFactor("Dwf_attack_t_l",0.1)
 	Bladex.SetAnimationFactor("Dwf_1tw_h_f",3)
 	Bladex.SetAnimationFactor("Dwf_1tw_l_f",3)
-	Bladex.SetAnimationFactor("Dwf_b1",2)
+	Bladex.SetAnimationFactor("Dwf_b1",2 * 1.5)
 	Bladex.SetAnimationFactor("Dwf_b2",3)
 
 

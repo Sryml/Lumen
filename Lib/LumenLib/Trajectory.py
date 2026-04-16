@@ -11,6 +11,7 @@ import math
 import sys
 import GameState
 import GameStateAux
+import Interpolator
 
 from LumenLib.BUtils import ToQuat, QuatMul
 
@@ -61,6 +62,41 @@ class ClsTrajectory:
     def __init__(self):
         self.AfterFrameFuncName = Lumenx.GetNSaveName()
         self.active = 0
+        self.alpha = 0.65
+        self.alpha_gradient = (0.15, 0.05)
+        self.nGradients = 10
+
+        self.fader = Interpolator.LinearInt(1.0, 0.0)
+        self.fader.current_action = None
+        self.fader.Execute = self.ExecuteFadeOut
+        self.fader.EndExecute = self.EndExecute
+
+    # ----------------------------------
+    def CancelFade(self):
+        Interpolator.InterpGeneral.RemoveAction(self.fader.current_action)
+        self.fader.current_action = None
+
+    def FadeOut(self, period):
+        self.CancelFade()
+        t = Bladex.GetTime()
+        self.fader.current_action = Interpolator.InterpGeneral.AddAction(
+            t, t + period, self.fader
+        )
+
+    def ExecuteFadeOut(self, value):
+        for i in range(len(TRAJECTORYS)):
+            alpha = self.alpha
+            if i < self.nGradients:
+                alpha = min(self.alpha_gradient[0] + i * self.alpha_gradient[1], alpha)
+            v = alpha + (0 - alpha) * value
+            TRAJECTORYS[i].Alpha = v
+
+    def EndExecute(self):
+        self.fader.current_action = None
+        for i in TRAJECTORYS:
+            i.RemoveFromWorld()
+
+    # ----------------------------------
 
     # 获取子轨迹
     def GetSubTrajectory(
@@ -102,11 +138,14 @@ class ClsTrajectory:
         if self.active or Lumenx.GetConfig("ArcheryTrajectory") == "Disabled":
             return
 
+        self.CancelFade()
         self.active = 1
 
         self.arrow = arrow
         self.vector = vector
         self.m = m
+
+        self.Update(Bladex.GetTime())
         Bladex.SetAfterFrameFunc(self.AfterFrameFuncName, self.Update)
 
     # 更新箭的轨迹
@@ -119,8 +158,7 @@ class ClsTrajectory:
             self.active = 0
         if not self.active:
             Bladex.RemoveAfterFrameFunc(self.AfterFrameFuncName)
-            for i in TRAJECTORYS:
-                i.RemoveFromWorld()
+            self.FadeOut(1.0)
             return
 
         k = self.C / m  # Mass influence coefficient
@@ -147,7 +185,7 @@ class ClsTrajectory:
         h_speed = AuxFuncs.Module((v0_x, 0, v0_z))
         time = self.start_distance / h_speed
 
-        alpha = 0.65
+        alpha = self.alpha
         t_num = len(TRAJECTORYS)
         for i in range(self.max_sections):
             pos, tpos, pitch = self.GetSubTrajectory(
@@ -168,13 +206,16 @@ class ClsTrajectory:
                 o.Alpha = alpha
                 o.ExclusionGroup = 1
                 TRAJECTORYS.append(o)  # type: ignore
-                if i < 10:
-                    o.Alpha = min(i * 0.05 + 0.15, alpha)
-
+            #
             o = TRAJECTORYS[i]
             o.Position = pos[0], pos[1], pos[2]
             o.Orientation = q
             o.PutToWorld()
+
+            if i < self.nGradients:
+                o.Alpha = min(
+                    self.alpha_gradient[0] + i * self.alpha_gradient[1], alpha
+                )
 
             # 碰撞检测
             if self.TestHit(pos, q, i):
