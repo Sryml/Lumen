@@ -743,12 +743,15 @@ def Init():
     Bladex.SetEventTableFuncC("BOWING","FloorFail","FloorFail")
     Bladex.SetEventTableFuncC("BOWING","FloorFailAd","FloorFailAd")
     Bladex.SetEventTableFuncC("BOWING","SlipNeeded","SlipNeeded")
+    Bladex.SetEventTableFunc("BOWING","Jump",Actions.TestJump) # Added
+    Bladex.SetEventTableFuncC("BOWING","Jump_Raw","BreakAndTestDodge") # Added
 
     Bladex.SetEventTableFunc("RELOADING","ActionEnd",Actions.EndReloadBowEventHandler)
     Bladex.SetEventTableFuncC("RELOADING","FloorFail","FloorFail")
     Bladex.SetEventTableFuncC("RELOADING","FloorFailAd","FloorFailAd")
     Bladex.SetEventTableFuncC("RELOADING","SlipNeeded","SlipNeeded")
-
+    Bladex.SetEventTableFunc("RELOADING","Jump",Actions.TestJump) # Added
+    Bladex.SetEventTableFuncC("RELOADING","Jump_Raw","BreakAndTestDodge") # Added
 
 
 

@@ -236,6 +236,8 @@ class PlayerPerson:
 		self.InvQuiverQueue = []
 		self.InvObjectQueue = []
 		self.MutilatePickable = -1 # All can be picked up
+		self.AutoArchery = 0
+		self.AllowArchery = 1
 		#
 
 		self.Resistances= copy.copy(CharStats.GetCharResistances(me.Kind))

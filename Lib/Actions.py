@@ -1812,6 +1812,10 @@ def TestThrowLeft(EntityName):
 	throw_pressed = Bladex.GetTimeActionHeld ("Throw")
 	###Reference.debugprint(EntityName+": In TestThrowLeft: throw_pressed = "+`throw_pressed`)
 	if not throw_pressed:
+		if CurrentlyBowing(EntityName):
+			me.Data.AllowArchery = not me.Data.AimPressed
+			me.Wuea = Reference.WUEA_NONE
+			me.LaunchAnmType("Rlx_b")
 		return
 
 	# Only capable so far of dropping with the left
@@ -2122,7 +2126,7 @@ def TryDropLeft (EntityName):
 			#if object.TestHit:
 			#	###Reference.debugprint(EntityName+": Pre-colliding - abandoning drop")
 			#	return FALSE
-			if statL == LA_BOW:
+			if statL == LA_BOW and (not CurrentlyBowing(EntityName)):
 				if me.InvRight and Reference.GiveObjectFlag(me.InvRight) == Reference.OBJ_ARROW:
 					UnGraspString(EntityName,"UnGraspString")
 					me.AddAnmEventFunc("ChangeREvent", Toggle4DropBow)
@@ -2513,22 +2517,21 @@ def CurrentlyBowing(EntityName):
 	anm= me.AnimName
 	return (anm=="B1" or anm=="B2" or anm=="B3" or anm=="b1" or anm=="b2" or anm=="b3")
 
+def CheckEndBowMode(time):
+	me = Lumenx.GetControlCharacter()
+	EntityName = me.Name
+	if not CurrentlyBowing(EntityName):
+		Bladex.RemoveAfterFrameFunc("Actions.CheckEndBowMode")
+		EndBowMode(EntityName)
+
 def InitBowing(EntityName):
 	#print EntityName+" InitBowing"
 	me= Bladex.GetEntity(EntityName)
-	cam= Bladex.GetEntity("Camera")
-	if EntityName=='Player1':
-		try:
-			if me.Data.LastPViewType==None:
-				me.Data.LastPViewType= cam.PViewType
-		except AttributeError:
-			me.Data.LastPViewType= cam.PViewType
-		try:
-			if me.Data.LastReturns==None:
-				me.Data.LastReturns= me.Returns
-		except AttributeError:
-			me.Data.LastReturns= me.Returns
-		cam.PViewType= 3
+	if EntityName == Lumenx.GetControlCharacter().Name:
+		if getattr(me.Data, "LastReturns", None) == None:
+			me.Data.LastReturns = me.Returns
+		Bladex.SetAfterFrameFunc("Actions.CheckEndBowMode", CheckEndBowMode)
+
 	me.Returns= 0
 	me.Aim= 1
 	me.Data.AimPressed= 1
@@ -2537,10 +2540,17 @@ def InitBowing(EntityName):
 
 def TestDrawBow(EntityName):
 	me= Bladex.GetEntity(EntityName)
+
+	if EntityName == Lumenx.GetControlCharacter().Name:
+		last_attackup = BInput.GetInputManager().GetTimeActionActivated("Attack Release")
+		diff = Bladex.GetTime() - last_attackup
+		if diff>0.0 and diff<0.125:
+			me.Data.AutoArchery = 1
+
 	#print EntityName+" TestDrawBow"
 	#pdb.set_trace()
 	# Are we carrying a bow
-	if me.Aim==0 or not CurrentlyBowing(EntityName):
+	if me.Data.AllowArchery and (not CurrentlyBowing(EntityName)):
 		if me.InvLeft and Reference.GiveObjectFlag(me.InvLeft)==Reference.OBJ_BOW:
 			# check we can interrupt the animation
 			if me.Wuea==Reference.WUEA_WAIT:
@@ -2554,11 +2564,13 @@ def TestDrawBow(EntityName):
 				me.SetTmpAnmFlags(1,0,1,1,2,0)
 				me.LaunchAnmType ("b1")
 				arrow= Bladex.GetEntity(me.InvRight)
-				tensar_sound=Bladex.CreateEntity(arrow.Name+"RedrawSound", "Entity Sound", 0, 0, 0)
-				tensar_sound.SetSound(AutomatedAssets("../../Sounds/M-CREAKCUERDA-3b.wav"))
-				tensar_sound.MinDistance=5000
-				tensar_sound.MaxDistance=10000
-				arrow.Link(tensar_sound)
+				tensar_sound = Bladex.GetEntity(arrow.Name+"DrawSound")
+				if not tensar_sound:
+					tensar_sound=Bladex.CreateEntity(arrow.Name+"DrawSound", "Entity Sound", 0, 0, 0)
+					tensar_sound.SetSound(AutomatedAssets("../../Sounds/M-CREAKCUERDA-3b.wav"))
+					tensar_sound.MinDistance=5000
+					tensar_sound.MaxDistance=10000
+					arrow.Link(tensar_sound)
 				tensar_sound.PlaySound(0)
 					# Problems: Cannot get the animation to stay on last frame, or allow rotation
 			# else if we have arrows draw an arrow and continue
@@ -2584,39 +2596,45 @@ def EndBowMode(EntityName):
 	#import pdb
 	#pdb.set_trace()
 
-	try:
-		if me.Data.LastPViewType!=None:
+	if EntityName == Lumenx.GetControlCharacter().Name:
+		LastPViewType = getattr(me.Data, "LastPViewType", None)
+		if LastPViewType != None:
 			cam= Bladex.GetEntity("Camera")
-			cam.PViewType= me.Data.LastPViewType
+			cam.PViewType= LastPViewType
+			cam.Cut()
 			me.Data.LastPViewType= None
-	except AttributeError:
-		pass
-	try:
-		if me.Data.LastReturns!=None:
-			me.Returns= me.Data.LastReturns
+
+		LastReturns = getattr(me.Data, "LastReturns", None)
+		if LastReturns!=None:
+			me.Returns= LastReturns
 			me.Data.LastReturns= None
-	except AttributeError:
-		pass
+
 	me.Aim= 0
 	me.Data.AimPressed= 0
+	me.Data.AutoArchery = 0
 
 def TestReleaseArrow(EntityName):
 	me= Bladex.GetEntity(EntityName)
 	#print EntityName+' TestReleaseArrow setting AimPressed to 0'
 	me.Data.AimPressed= 0
-	if not CurrentlyBowing(EntityName):
+	me.Data.AutoArchery = 0
+	me.Data.AllowArchery = 1
+	# if not CurrentlyBowing(EntityName):
 		#print "    exited abnormally"
-		EndBowMode(EntityName)
+		# EndBowMode(EntityName)
 
 
 def EndDrawBowEventHandler(EntityName, EventName):
+	# type: (str, str) -> ...
 	me= Bladex.GetEntity(EntityName)
-	vector = (0,0,-40000)
 	isControlCharacter = (EntityName == Lumenx.GetControlCharacter().Name)
 	#print EntityName+" EndDrawBowEventHandler, "+me.AnimName+": "+`me.AnmPos`
 	arrow = Bladex.GetEntity(me.InvRight)
-	if me.Data.AimPressed==0:
-		me.Aim= 0
+	bow = Bladex.GetEntity(me.InvLeft)
+	Range = getattr(bow.Data, "Range", 40)
+	vector = (0,0,-1000 * Range)
+	if me.Data.AimPressed==0 or me.Data.AutoArchery:
+		# me.Aim= 0
 		if arrow:
 			#print EntityName+" EndDrawBowEventHandler:Letting Arrow Fly"
 			# exclude people from collision
@@ -2635,6 +2653,7 @@ def EndDrawBowEventHandler(EntityName, EventName):
 				vx,vy,vz= me.AimVector
 			else:
 				vx,vy,vz= arrow.Rel2AbsVector(vector[0], vector[1], vector[2])
+				Trajectory.Activate(arrow, vector)
 				Trajectory.Deactivate()
 			arrow.Fly(vx,vy,vz)
 
@@ -2648,11 +2667,13 @@ def EndDrawBowEventHandler(EntityName, EventName):
 			arrow.InflictHitFunc= ThrownWeaponInflictHitFunc
 			arrow.Data.ThrownBy= me
 
-			soltar_sound=Bladex.CreateEntity(arrow.Name+"FlySound", "Entity Sound", 0, 0, 0)
-			soltar_sound.SetSound(AutomatedAssets("../../Sounds/ARCO-DISPARO-3.wav"))
-			soltar_sound.MinDistance=5000
-			soltar_sound.MaxDistance=10000
-			arrow.Link(soltar_sound)
+			soltar_sound=Bladex.GetEntity(arrow.Name+"FlySound")
+			if not soltar_sound:
+				soltar_sound=Bladex.CreateEntity(arrow.Name+"FlySound", "Entity Sound", 0, 0, 0)
+				soltar_sound.SetSound(AutomatedAssets("../../Sounds/ARCO-DISPARO-3.wav"))
+				soltar_sound.MinDistance=5000
+				soltar_sound.MaxDistance=10000
+				arrow.Link(soltar_sound)
 			soltar_sound.PlaySound(0)
 			#"ARCO-DISPARO-3.wav"
 			#"M-CREAKCUERDA-44.wav"
@@ -2663,33 +2684,50 @@ def EndDrawBowEventHandler(EntityName, EventName):
 			me.LaunchAnmType ("b2")
 			return
 	#print EntityName+" EndDrawBowEventHandler:b3"
+	
+	if isControlCharacter:
+		if (not Trajectory.active) and arrow:
+			Trajectory.Activate(arrow, vector)
+		if getattr(me.Data, "LastPViewType", None) == None:
+			cam = Bladex.GetEntity("Camera")
+			me.Data.LastPViewType = cam.PViewType
+			cam.PViewType = 3
+			cam.Cut()
+
 	me.LaunchAnmType ("b3")
-	if isControlCharacter and (not Trajectory.active) and arrow:
-		Trajectory.Activate(arrow, vector)
 
 
 def CheckRefireBowEventHandler(EntityName, EventName):
 	me= Bladex.GetEntity(EntityName)
-	#print EntityName+" CheckRefireBowEventHandler, "+me.AnimName+": "+`me.AnmPos`
+	# print EntityName+" CheckRefireBowEventHandler, "+me.AnimName+": "+`me.AnmPos`
+	if not me.InvRight:
+		TakeArrowEventHandler(EntityName, EventName)
 	if me.InvRight:
-		action= BInput.GetInputManager().GetInputActions().Find("Attack")
-		if action and action.this!="NULL" and action.CurrentlyActivated():
-			me.Aim= 1
-			me.Data.AimPressed= 1
+		if EntityName == Lumenx.GetControlCharacter().Name:
+			action= BInput.GetInputManager().GetInputActions().Find("Attack")
+			if action and action.this!="NULL" and action.CurrentlyActivated():
+				# me.Aim= 1
+				me.Data.AimPressed= 1
 
 		if me.Data.AimPressed:
 			arrow= Bladex.GetEntity(me.InvRight)
 			if arrow:
 				#print "CheckRefireBowEventHandler:Refire"
 				GraspString (EntityName,"GraspString")
-				me.DoActionWI ("b1", FixedFootAutoInterp, 0.3, 0.9)
-				tensar_sound=Bladex.CreateEntity(arrow.Name+"RedrawSound", "Entity Sound", 0, 0, 0)
-				tensar_sound.SetSound(AutomatedAssets("../../Sounds/M-CREAKCUERDA-44.wav"))
-				tensar_sound.MinDistance=5000
-				tensar_sound.MaxDistance=10000
-				arrow.Link(tensar_sound)
+				TranTime = 0.3
+				if EntityName==Lumenx.GetControlCharacter().Name:
+					if me.Kind[:-2] == "Amazon":
+						TranTime=0.12
+				me.DoActionWI ("b1", FixedFootAutoInterp, TranTime, 0.9)
+				tensar_sound=Bladex.GetEntity(arrow.Name+"RedrawSound")
+				if not tensar_sound:
+					tensar_sound=Bladex.CreateEntity(arrow.Name+"RedrawSound", "Entity Sound", 0, 0, 0)
+					tensar_sound.SetSound(AutomatedAssets("../../Sounds/M-CREAKCUERDA-44.wav"))
+					tensar_sound.MinDistance=5000
+					tensar_sound.MaxDistance=10000
+					arrow.Link(tensar_sound)
 				tensar_sound.PlaySound(0)
-				return
+				return 1
 		#else:
 		#	print EntityName+" CheckRefireBowEventHandler, aimpressed: "+`me.Data.AimPressed`
 		#	print EntityName+" CheckRefireBowEventHandler, InvRight: "+me.InvRight
@@ -2699,17 +2737,11 @@ def CheckRefireBowEventHandler(EntityName, EventName):
 def EndReloadBowEventHandler(EntityName, EventName):
 	#print EntityName+" In EndReloadBowEventHandler"
 	me= Bladex.GetEntity(EntityName)
-	if me.Aim:
-		#print EntityName+" EndReloadBowEventHandler: b1"
-		me.DoAction ("b1")
-		#me.LaunchAnmType ("b1")
-	else:
-		# Default, go to rlx
-		#print EntityName+" EndReloadBowEventHandler: Rlx_b"
-		if not me.InvRight:
-			TakeArrowEventHandler(EntityName, EventName)
-		me.LaunchAnmType ("Rlx_b")
-		#me.DoAction ("Rlx_b")
+	if not me.InvRight:
+		TakeArrowEventHandler(EntityName, EventName)
+		if CheckRefireBowEventHandler(EntityName, EventName):
+			return
+	me.LaunchAnmType ("Rlx_b")
 
 
 def FadeMeOut(EntityName,timer):
