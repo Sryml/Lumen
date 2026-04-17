@@ -374,6 +374,15 @@ def SetInvActivatedByNumbers(option):
     OnChangeMenu()
 
 
+def GetAimingPerspectiveOption(this):
+    return this.Options.index(_DATA.menu_config["AimingPerspective"])
+
+
+def SetAimingPerspective(option):
+    _DATA.menu_config["AimingPerspective"] = option
+    OnChangeMenu()
+
+
 #
 def GetEnableOption(this):
     return this.Options.index(_DATA.menu_config[this.MenuDescr["Name"]])
@@ -801,8 +810,21 @@ ModMenu = {
                 GenEnableOption(
                     "DodgeByMouseMovement", "Dodge By Mouse Movement", VSep="0"
                 ),
-                GenEnableOption("ArcheryTrajectory", "Archery Trajectory", VSep="0"),
-                GenEnableOption("Cache", VSep="0"),
+                GenEnableOption(
+                    "ArcheryTrajectory", "Archery Trajectory", VSep="0.7em"
+                ),
+                {
+                    "Name": "AimingPerspective",
+                    "Text": MenuText.GetMenuText("Aiming Perspective") + ":",
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "Kind": MenuWidget.B_MenuItemOption,
+                    "Options": ["Nearest", "Maintain Current"],
+                    "SelOptionFunc2": GetAimingPerspectiveOption,
+                    "Command": SetAimingPerspective,
+                },
+                GenEnableOption("Cache", VSep="0.7em"),
                 NoteLabel,
                 BackOptionCommon,
                 BackImageBannerItem,

@@ -2688,7 +2688,7 @@ def EndDrawBowEventHandler(EntityName, EventName):
 	if isControlCharacter:
 		if (not Trajectory.active) and arrow:
 			Trajectory.Activate(arrow, vector)
-		if getattr(me.Data, "LastPViewType", None) == None:
+		if Lumenx.GetConfig("AimingPerspective") == "Nearest" and getattr(me.Data, "LastPViewType", None) == None:
 			cam = Bladex.GetEntity("Camera")
 			me.Data.LastPViewType = cam.PViewType
 			cam.PViewType = 3
@@ -3196,6 +3196,8 @@ def TestJump(EntityName, EventName):
 	if Lumenx.GetConfig("DodgeByMouseMovement") == "Disabled" and EntityName == Lumenx.GetControlCharacter().Name:
 		if right_pressed or left_pressed or back_pressed or mouse_move > 0.1:
 			me.RaiseEvent("Jump_Raw")
+			if back_pressed and CurrentlyBowing(EntityName):
+				me.LaunchAnimation("D_b")
 	else:
 		me.RaiseEvent("Jump_Raw")
 
