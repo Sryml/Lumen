@@ -15,6 +15,7 @@ import Language
 import MenuWidget
 import MenuText
 import GameText
+import ListWidget
 
 import string
 import math
@@ -328,7 +329,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         import Menu
         from LumenLib import BODLoader
 
-        BODLoader.SetInstallMod(self.MenuDescr["ModDir"])
+        BODLoader.SetEnableMod(self.MenuDescr["ModDir"])
         w = Menu.GetMenuWidget("MODS LIST")[0]
         w.SetStateLabel(self)
 
@@ -336,7 +337,7 @@ class ModGridItem(MenuWidget.B_MenuTreeItem, BUIx.B_FrameWidget):
         import Menu
         from LumenLib import BODLoader
 
-        BODLoader.SetEnableMod(self.MenuDescr["ModDir"])
+        BODLoader.SetInstallMod(self.MenuDescr["ModDir"])
         w = Menu.GetMenuWidget("MODS LIST")[0]
         w.SetStateLabel(self)
 
@@ -418,15 +419,14 @@ class B_GridWidget(MenuWidget.B_MenuTree):
             self.FocusRow = int(index / self.GridSize[0]) % self.GridSize[1]
             self.FocusCol = index % self.GridSize[0]
             self.wPageLable.SetText(
-                "%s/%s %s\n\n%s\n%s"
+                "%s/%s %s\n\n%s\n%s\n%s"
                 % (
                     self.FocusPage + 1,
                     self.MaxPages,
                     MenuText.GetMenuText("Pages"),
                     MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
-                    MenuText.GetMenuText(
-                        "Space to install/uninstall\nBackspace to enable/disable"
-                    ),
+                    MenuText.GetMenuText("Backspace to install/uninstall"),
+                    MenuText.GetMenuText("Space to enable/disable"),
                 )
             )
         #
@@ -633,15 +633,14 @@ class B_ModGridWidget(B_GridWidget):
         self.wPageLable = BUIx.B_TextWidget(
             self,
             Menudesc["Name"] + "PageLable",
-            "%s/%s %s\n\n%s\n%s"
+            "%s/%s %s\n\n%s\n%s\n%s"
             % (
                 1,
                 self.MaxPages,
                 MenuText.GetMenuText("Pages"),
                 MenuText.GetMenuText("Press <Ctrl + Up/Down> to turn pages"),
-                MenuText.GetMenuText(
-                    "Space to install/uninstall\nBackspace to enable/disable"
-                ),
+                MenuText.GetMenuText("Backspace to install/uninstall"),
+                MenuText.GetMenuText("Space to enable/disable"),
             ),
             Language.font_server,
             Language.FontCommon,
@@ -680,6 +679,93 @@ class B_ModGridWidget(B_GridWidget):
             col = index % self.GridSize[0]
             row = int(index / self.GridSize[0]) % self.GridSize[1]
             self.AddWidget(menu_element, (border_w + gap) * col, (border_h + gap) * row)
+
+
+# ----------------------------------
+class AssetsListItem(MenuWidget.B_MenuItemTextNoFX):
+    def AuxActivateItem(self):
+        from LumenLib import BODLoader
+
+        asset_type = self.Parent.Menudesc["Name"]
+        idx = int(self.MenuDescr["Name"])
+        item = BODLoader.GetConfig(asset_type)[idx]
+
+        item[1] = not item[1]
+        alpha = item[1] and 1.0 or 0.36
+        self.Alpha = alpha
+        self.MenuDescr["Alpha"] = alpha
+
+        BODLoader.OnChangeMenu()
+
+    def Draw(self, x, y, time):
+        self.Text = self.MenuDescr["Text"]
+        if self.GetHasFocus():
+            action = IManager.GetInputActions().Find("Menu_Control")
+            ctrl = action.this != "NULL" and action.CurrentlyActivated() or 0
+            if ctrl:
+                self.Text = "<- %s ->" % self.MenuDescr["Text"]
+        MenuWidget.B_MenuItemTextNoFX.Draw(self, x, y, time)
+
+
+class B_AssetsListWidget(ListWidget.B_ListWidget):
+    def __init__(self, Parent, Menudesc, StackMenu, VertPos=0):
+        ListWidget.B_ListWidget.__init__(self, Parent, Menudesc, StackMenu, VertPos)
+
+    def UpdateItems(self):
+        from LumenLib import BODLoader
+
+        asset_type = self.Menudesc["Name"]
+        asset_list = BODLoader.GetConfig(asset_type)
+        for i in range(self.nElements):
+            name, enabled = asset_list[i]
+            name = MenuText.GetMenuText(name)
+            alpha = enabled and 1.0 or 0.36
+            MenuItem = self.MenuItems[i]
+
+            MenuItem.Text = name
+            MenuItem.Alpha = alpha
+            MenuItem.MenuDescr["Text"] = name
+            MenuItem.MenuDescr["Alpha"] = alpha
+            MenuItem.MenuDescr["Name"] = str(i)
+
+    def MoveItem(self, val):
+        from LumenLib import BODLoader
+
+        wFoc = self.GetFocus()
+        idx = self.MenuItems.index(wFoc)
+        old_idx = (idx + val) % self.nElements
+        #
+        asset_type = self.Menudesc["Name"]
+        asset_list = BODLoader.GetConfig(asset_type)
+        if (idx, old_idx) in ((0, self.nElements - 1), (self.nElements - 1, 0)):
+            item = asset_list[old_idx]
+            del asset_list[old_idx]
+            asset_list.insert(idx, item)
+        else:
+            asset_list[idx], asset_list[old_idx] = asset_list[old_idx], asset_list[idx]
+        #
+        self.UpdateItems()
+        BODLoader.OnChangeMenu()
+
+    def PrevFocus(self):
+        ListWidget.B_ListWidget.PrevFocus(self)
+        if self.nElements <= 1:
+            return
+
+        action = IManager.GetInputActions().Find("Menu_Control")
+        ctrl = action.this != "NULL" and action.CurrentlyActivated() or 0
+        if ctrl:
+            self.MoveItem(1)
+
+    def NextFocus(self):
+        ListWidget.B_ListWidget.NextFocus(self)
+        if self.nElements <= 1:
+            return
+
+        action = IManager.GetInputActions().Find("Menu_Control")
+        ctrl = action.this != "NULL" and action.CurrentlyActivated() or 0
+        if ctrl:
+            self.MoveItem(-1)
 
 
 # ----------------------------------

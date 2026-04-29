@@ -2376,7 +2376,7 @@ Options_Menu = {"Name":MenuText.GetMenuText("OPTIONS"),
                                                     "Focusable": string.lower(Lumenx.GetCurrentMap()) == "casa"
 
                                      },
-                                     BODLoader.NoteLabel,
+                                     BODLoader.GetNoteLabelItem(),
                                      # {"Name":MenuText.GetMenuText("PLAY INTRO:"),
                                      #  "VSep":-5,
                                      #  "Font":MenuFontBig,

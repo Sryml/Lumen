@@ -38,7 +38,7 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         self.VertScroll = 0
 
         MenuWidget.B_MenuTree.__init__(self, Parent, Menudesc, StackMenu, VertPos)
-        self.SetAutoScale(0)
+        self.SetAutoScale(Menudesc.get("AutoScale", 0))
         self.SetClipDraw(1)
 
         self.nElements = len(self.MenuItems)
@@ -53,6 +53,10 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         #     wSubMenu = m_class(self, i, StackMenu)
         #     self.AddMenuElement(wSubMenu, vsep)
         # self.nElements = len(self.MenuItems)
+
+        if Menudesc.get("Border", 0):
+            self.SetBorder(1)
+            self.SetBorderColor(125, 91, 36)
 
         # self.SetFocus_Idx(1)
         ArrowHPos = Menudesc.get("ArrowHPos", 0.066)
@@ -99,6 +103,7 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         )
 
         self.AdjustScrollArrows()
+        self.SetDrawFunc(self.Draw)
 
     # def __del__(self):
     ##    print "B_ListWidget.__del__()",self.Name()
@@ -110,6 +115,21 @@ class B_ListWidget(MenuWidget.B_MenuTree):
 
     def __str__(self):
         printx("B_ListWidget", self.Name())
+
+    def Draw(self, x, y, time):
+        a = self.Menudesc.get("BackAlpha", 0)
+        if a > 0:
+            r, g, b = 0, 0, 0
+            w, h = self.GetSize()
+            Raster.SetFillColor(r, g, b)
+            Raster.SetAlpha(a)
+            Raster.SolidRectangle(
+                x,
+                y,
+                x + w,
+                y + h,
+            )
+        self.DefDraw(x, y, time)
 
     def AdjustScrollArrows(self):
         if self.VertScroll < 0:
@@ -133,10 +153,10 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         VIndicator=BUIx.B_FrameWidget.B_FR_AbsoluteTop,
         VAnchor=BUIx.B_FrameWidget.B_FR_Top,
     ):
-        self.WidgetsVPos.append(self.VertPos)
-        MenuWidget.B_MenuFrameWidget.AddMenuElement(
+        YPos = MenuWidget.B_MenuFrameWidget.AddMenuElement(
             self, menu_element, vsep, HPos, HIndicator, HAnchor, VIndicator, VAnchor
         )
+        self.WidgetsVPos.append(YPos)
         widget_height = menu_element.GetSize()[1] * self.ViewScale
         self.WidgetsHeights.append(widget_height)
         if self.MaxItems == 0 and self.VertPos >= self.GetSize()[1]:
@@ -149,11 +169,12 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         #   self.AdjustScrollArrows()
         #   return
 
-        MenuWidget.B_MenuFocusManager.NextFocus(self)
+        if not MenuWidget.B_MenuFocusManager.NextFocus(self):
+            return 0
         wFoc = self.GetFocus()
         i = self.MenuItems.index(wFoc)
         #
-        if self.nElements > self.MaxItems and i == 0:
+        if self.MaxItems != 0 and self.nElements > self.MaxItems and i == 0:
             self.DoScroll2(0)
         #
         elif (
@@ -170,12 +191,13 @@ class B_ListWidget(MenuWidget.B_MenuTree):
         #   self.AdjustScrollArrows()
         #   return
 
-        MenuWidget.B_MenuFocusManager.PrevFocus(self)
+        if not MenuWidget.B_MenuFocusManager.PrevFocus(self):
+            return 0
         wFoc = self.GetFocus()
         i = self.MenuItems.index(wFoc)
         # print self.WidgetsVPos[i]+ self.WidgetsHeights[i] +self.VertPos ,self.GetSize()[1]
         #
-        if self.nElements > self.MaxItems and i == (self.nElements - 1):
+        if self.MaxItems != 0 and self.nElements > self.MaxItems and i == (self.nElements - 1):
             self.DoScroll2(-reduce(lambda x, y: x + y, self.WidgetsHeights[self.MaxItems :], 0))  # type: ignore
         #
         elif self.WidgetsVPos[i] + self.WidgetsHeights[i] + self.VertScroll <= 0:
@@ -211,8 +233,8 @@ class B_ListWidget(MenuWidget.B_MenuTree):
     def EnsureVisible(self, index):
         pass
 
-    def AcceptsFocus(self):
-        return len(self.MenuItems) != 0
+    # def AcceptsFocus(self):
+    #     return len(self.MenuItems) != 0
 
 
 ##  def Draw(self,x,y,time):

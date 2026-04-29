@@ -60,6 +60,13 @@ DESCR_WRAPPED = 0
 # private database
 class _DATA:
     menu_config = BCopy.deepcopy(Lumenx.GetConfig())
+    asset_paths = {
+        "AssetAnimation": {"#Sorted": []},
+        "AssetImage": {"#Sorted": []},
+        "AssetModel": {"#Sorted": []},
+        "AssetSound": {"#Sorted": []},
+        "AssetOther": {"#Sorted": []},
+    }
     mod_info = {}
     mod_list = []
     selected_map = ""
@@ -91,17 +98,20 @@ BackImageBannerItem = {
     "Kind": MenuWidget.B_BackImageWidget,
 }
 
-NoteLabel = {
-    "Name": "NOTE",
-    "Text": MenuText.GetMenuText(
-        "Note: Current changes are not saved and will be saved when exiting this menu."
+
+# ----------------------------------
+
+AssetsLabel = {
+    "Name": "Label",
+    "Text": "%s, %s"
+    % (
+        MenuText.GetMenuText("Press <Ctrl + Up/Down> to move"),
+        MenuText.GetMenuText("Space to enable/disable"),
     ),
     "Font": Language.FontCommon,
-    "FontScale": Language.MFontScale["M"],
-    "VSep": Menu.NoteOptionVSep,
-    "Color": Language.FontColor.Yellow,
+    "FontScale": Language.MFontScale["S"],
+    "VSep": "0.7em",
     "Focusable": 0,
-    "Visible": 0,
 }
 
 
@@ -415,6 +425,12 @@ def GetLanguage(this):
 # ----------------------------------
 # Function
 # ----------------------------------
+def GetConfig(key=None):
+    if key is None:
+        return _DATA.menu_config
+    return _DATA.menu_config.get(key)
+
+
 def GetModList():
     return _DATA.mod_list
 
@@ -438,6 +454,22 @@ def GetBackToGameItem(
         "Command": Menu.BackToGame,
     }
 
+    return ret
+
+
+def GetNoteLabelItem(VSep=Menu.NoteOptionVSep):
+    ret = {
+        "Name": "NOTE",
+        "Text": MenuText.GetMenuText(
+            "Note: Current changes are not saved and will be saved when exiting this menu."
+        ),
+        "Font": Language.FontCommon,
+        "FontScale": Language.MFontScale["M"],
+        "VSep": VSep,
+        "Color": Language.FontColor.Yellow,
+        "Focusable": 0,
+        "Visible": 0,
+    }
     return ret
 
 
@@ -588,12 +620,6 @@ def AddMod(mod_dir, mod_root, BLModInfo):
             "Author": name_space["ModAuthor"],
             "AuthorInfo": name_space["ModAuthorInfo"],
             #
-            "AssetAnimation": name_space.get("AssetAnimation", []),
-            "AssetImage": name_space.get("AssetImage", []),
-            "AssetModel": name_space.get("AssetModel", []),
-            "AssetSound": name_space.get("AssetSound", []),
-            "AssetOther": name_space.get("AssetOther", []),
-            #
             "GameBasics": name_space.get("GameBasics", 0),
             "PrivateControl": name_space.get("PrivateControl", 0),
             "CloneEnvironment": CloneEnvironment,
@@ -609,6 +635,13 @@ def AddMod(mod_dir, mod_root, BLModInfo):
     )
     _DATA.mod_list.append(mod_dir)
     _DATA.mod_info[mod_dir] = mod_info
+    #
+    for k in _DATA.asset_paths.keys():
+        for name, path in name_space.get(k, []):
+            if name in _DATA.asset_paths[k]["#Sorted"]:
+                continue
+            _DATA.asset_paths[k][name] = os.path.join(mod_root, path)
+            _DATA.asset_paths[k]["#Sorted"].append(name)
 
 
 def SaveModInfo():
@@ -680,6 +713,45 @@ def Init():
         if k not in _DATA.mod_list:
             del _DATA.mod_info[k]
     SaveModInfo()
+    #
+    for k in _DATA.asset_paths.keys():
+        asset_list = _DATA.menu_config[k]
+        paths = []
+        for i in range(len(asset_list) - 1, -1, -1):
+            name, enabled = asset_list[i]
+            if not _DATA.asset_paths[k].has_key(name):
+                del asset_list[i]
+            elif enabled:
+                paths.append(_DATA.asset_paths[k][name])
+        if paths:
+            paths.reverse()
+
+        lst = map(lambda x: x[0], asset_list)
+        for name in _DATA.asset_paths[k]["#Sorted"]:
+            if name not in lst:
+                asset_list.append([name, 1])
+                paths.append(_DATA.asset_paths[k][name])
+        Lumenx.SetData("%sPath" % k, paths)
+        #
+        ListDescr = []
+        for i in range(len(asset_list)):
+            name, enabled = asset_list[i]
+            ListDescr.append(
+                {
+                    "Name": str(i),
+                    "Text": MenuText.GetMenuText(name),
+                    "Kind": UtilsWidget.AssetsListItem,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": "0.4em",
+                    "Alpha": enabled and 1 or 0.36,
+                }
+            )
+        Menu.GetMenuItem(["OPTIONS", k, k], ModMenu)["ListDescr"] = ListDescr
+        Menu.GetMenuItem(["OPTIONS", k, "Total Assets"], ModMenu)["Text"] = (
+            MenuText.GetMenuText("Total Assets") + ": " + str(len(asset_list))
+        )
+
+    Lumenx.SaveConfig(_DATA.menu_config)
     #
     for mod_info in _DATA.mod_info.values():
         Installed = mod_info["Installed"]
@@ -774,6 +846,159 @@ ModMenu = {
                     "Command": SetBasicClone,
                 },
                 {
+                    "Name": "AssetAnimation",
+                    "Text": MenuText.GetMenuText("Animation Assets"),
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": "0.7em",
+                    "OnLeave": LeaveMenu,
+                    "Size": (1920, 1080),
+                    "ListDescr": [
+                        {
+                            "Name": "Total Assets",
+                            "Font": Language.FontTitle,
+                            "VSep": "0.104f",
+                            "VAnchor": BUIx.B_FrameWidget.B_FR_VCenter,
+                            "Focusable": 0,
+                        },
+                        {
+                            "Name": "AssetAnimation",
+                            "VSep": Menu.FirstOptionVSep,
+                            "Kind": UtilsWidget.B_AssetsListWidget,
+                            "AutoScale": 1,
+                            "Border": 1,
+                            "BackAlpha": 0.3,
+                            "Size": (960, 630),
+                            "ListDescr": [],
+                        },
+                        AssetsLabel,
+                        GetNoteLabelItem("0.896f"),
+                        BackImageItem,
+                    ],
+                },
+                {
+                    "Name": "AssetImage",
+                    "Text": MenuText.GetMenuText("Image Assets"),
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "OnLeave": LeaveMenu,
+                    "Size": (1920, 1080),
+                    "ListDescr": [
+                        {
+                            "Name": "Total Assets",
+                            "Font": Language.FontTitle,
+                            "VSep": "0.104f",
+                            "VAnchor": BUIx.B_FrameWidget.B_FR_VCenter,
+                            "Focusable": 0,
+                        },
+                        {
+                            "Name": "AssetImage",
+                            "VSep": Menu.FirstOptionVSep,
+                            "Kind": UtilsWidget.B_AssetsListWidget,
+                            "AutoScale": 1,
+                            "Border": 1,
+                            "BackAlpha": 0.3,
+                            "Size": (960, 630),
+                            "ListDescr": [],
+                        },
+                        AssetsLabel,
+                        GetNoteLabelItem("0.896f"),
+                        BackImageItem,
+                    ],
+                },
+                {
+                    "Name": "AssetModel",
+                    "Text": MenuText.GetMenuText("Model Assets"),
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "OnLeave": LeaveMenu,
+                    "Size": (1920, 1080),
+                    "ListDescr": [
+                        {
+                            "Name": "Total Assets",
+                            "Font": Language.FontTitle,
+                            "VSep": "0.104f",
+                            "VAnchor": BUIx.B_FrameWidget.B_FR_VCenter,
+                            "Focusable": 0,
+                        },
+                        {
+                            "Name": "AssetModel",
+                            "VSep": Menu.FirstOptionVSep,
+                            "Kind": UtilsWidget.B_AssetsListWidget,
+                            "AutoScale": 1,
+                            "Border": 1,
+                            "BackAlpha": 0.3,
+                            "Size": (960, 630),
+                            "ListDescr": [],
+                        },
+                        AssetsLabel,
+                        GetNoteLabelItem("0.896f"),
+                        BackImageItem,
+                    ],
+                },
+                {
+                    "Name": "AssetSound",
+                    "Text": MenuText.GetMenuText("Sound Assets"),
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "OnLeave": LeaveMenu,
+                    "Size": (1920, 1080),
+                    "ListDescr": [
+                        {
+                            "Name": "Total Assets",
+                            "Font": Language.FontTitle,
+                            "VSep": "0.104f",
+                            "VAnchor": BUIx.B_FrameWidget.B_FR_VCenter,
+                            "Focusable": 0,
+                        },
+                        {
+                            "Name": "AssetSound",
+                            "VSep": Menu.FirstOptionVSep,
+                            "Kind": UtilsWidget.B_AssetsListWidget,
+                            "AutoScale": 1,
+                            "Border": 1,
+                            "BackAlpha": 0.3,
+                            "Size": (960, 630),
+                            "ListDescr": [],
+                        },
+                        AssetsLabel,
+                        GetNoteLabelItem("0.896f"),
+                        BackImageItem,
+                    ],
+                },
+                {
+                    "Name": "AssetOther",
+                    "Text": MenuText.GetMenuText("Other Assets"),
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": 0,
+                    "OnLeave": LeaveMenu,
+                    "Size": (1920, 1080),
+                    "ListDescr": [
+                        {
+                            "Name": "Total Assets",
+                            "Font": Language.FontTitle,
+                            "VSep": "0.104f",
+                            "VAnchor": BUIx.B_FrameWidget.B_FR_VCenter,
+                            "Focusable": 0,
+                        },
+                        {
+                            "Name": "AssetOther",
+                            "VSep": Menu.FirstOptionVSep,
+                            "Kind": UtilsWidget.B_AssetsListWidget,
+                            "AutoScale": 1,
+                            "Border": 1,
+                            "BackAlpha": 0.3,
+                            "Size": (960, 630),
+                            "ListDescr": [],
+                        },
+                        AssetsLabel,
+                        GetNoteLabelItem("0.896f"),
+                        BackImageItem,
+                    ],
+                },
+                {
                     "Name": "InventoryStyle",
                     "Text": MenuText.GetMenuText("Inventory Style") + ":",
                     "Font": Language.FontCommon,
@@ -825,7 +1050,7 @@ ModMenu = {
                     "Command": SetAimingPerspective,
                 },
                 GenEnableOption("Cache", VSep="0.7em"),
-                NoteLabel,
+                GetNoteLabelItem(),
                 BackOptionCommon,
                 BackImageBannerItem,
             ],
@@ -838,7 +1063,7 @@ ModMenu = {
             "OnLeave": LeaveMenu,
             "ListDescr": [],
         },
-        NoteLabel,
+        GetNoteLabelItem(),
         BackOption,
         {
             "Name": "Version",

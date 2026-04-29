@@ -175,6 +175,8 @@ class B_MenuFocusManager:
 
 
   def SetFocus_Idx(self,menu_element_idx):
+    if len(self.MenuItems) == 0:
+      return 0
     try:
       menu_element=self.MenuItems[menu_element_idx]
       ret = self.SetFocus(menu_element)
@@ -191,6 +193,8 @@ class B_MenuFocusManager:
 
 
   def NextFocus(self):
+    if len(self.MenuItems) == 0:
+      return 0
     try:
       old_focus=self.GetFocus()
       index=self.MenuItems.index(old_focus)
@@ -199,7 +203,7 @@ class B_MenuFocusManager:
         if self.SetFocus(i):
           if hasattr(i, "FocusCallBack") and i.FocusCallBack: # by Sryml
             i.FocusCallBack(i)
-          return
+          return 1
     except:
       print "B_MenuFocusManager::NextFocus() -> Exception ocurred."
       pass
@@ -207,6 +211,8 @@ class B_MenuFocusManager:
 
 
   def PrevFocus(self):
+    if len(self.MenuItems) == 0:
+      return 0
     try:
       old_focus=self.GetFocus()
       index=self.MenuItems.index(old_focus)
@@ -221,7 +227,7 @@ class B_MenuFocusManager:
         if self.SetFocus(i):
           if hasattr(i, "FocusCallBack") and i.FocusCallBack: # by Sryml
             i.FocusCallBack(i)
-          return
+          return 1
 
     except:
       print "B_MenuFocusManager::PrevFocus() -> Exception ocurred."
@@ -310,6 +316,7 @@ class B_MenuFrameWidget(B_MenuFocusManager, B_FrameWidget):
             VIndicator,
             VAnchor,
         )
+        return YPos
 
 # -----------------------------------------
 # by Sryml: end

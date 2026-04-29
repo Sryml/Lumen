@@ -26,7 +26,19 @@ class _DATA:
     config = {}
     config_default = {
         "Language": "English",
+        "InventoryStyle": "Improved",
+        "InventoryActivatedByFocus": "Weapon",
+        "InventoryActivatedByNumbers": "Object",
+        "GrillableLimb": "Enabled",
+        "DodgeByMouseMovement": "Disabled",
+        "ArcheryTrajectory": "Enabled",
+        "AimingPerspective": "Nearest",
         "Cache": "Disabled",
+        "AssetAnimation": [],
+        "AssetImage": [],
+        "AssetModel": [],
+        "AssetSound": [],
+        "AssetOther": [],
     }
     map_list = {
         "": {
@@ -69,11 +81,11 @@ class _DATA:
     lumen_root = ""
     blade_root = ""
     asset_path = []
-    asset_path_anim = []
-    asset_path_image = []
-    asset_path_model = []
-    asset_path_sound = []
-    asset_path_other = []
+    AssetAnimationPath = []
+    AssetImagePath = []
+    AssetModelPath = []
+    AssetSoundPath = []
+    AssetOtherPath = []
     #
     res_mmps = []
     res_bmps = {}
@@ -633,7 +645,7 @@ def BodInspector():
     LoadBar.opened_files_delta = _DATA.opened_files_delta
     if LoadBar.ProgressBarInst and LoadBar.ProgressBarInst.filehook:
         BBLib.RemoveOnOpenInputFileFunc()
-    for root_dir in _DATA.asset_path_model + _DATA.asset_path:
+    for root_dir in _DATA.AssetModelPath + _DATA.asset_path:
         if not root_dir:
             continue
         BodLink = os.path.join(root_dir, "BodLink.list")
@@ -1148,6 +1160,10 @@ def SetCurrentModMenu(mod_dir):
     _DATA.current_mod_menu = mod_dir
 
 
+def SetData(name, value):
+    _DATA.__dict__[name] = value
+
+
 def SetGhostSectorGroupSound(
     group_name,
     file_name,
@@ -1347,6 +1363,7 @@ SetControlCharacter
 SetCurrentMap
 SetCurrentMod
 SetCurrentModMenu
+SetData
 SetGhostSectorGroupSound
 SetGhostSectorSound
 SetListenerPosition
