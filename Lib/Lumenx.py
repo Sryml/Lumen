@@ -86,6 +86,7 @@ class _DATA:
     AssetModelPath = []
     AssetSoundPath = []
     AssetOtherPath = []
+    BodLink = {}
     #
     res_mmps = []
     res_bmps = {}
@@ -568,6 +569,18 @@ def AutomatedAssets(path, root_priority=[]):
     #
     base, ext = os.path.splitext(path)
     ext = string.lower(ext)
+    #
+    if ext == ".bmv":
+        root_priority = root_priority + _DATA.AssetAnimationPath
+    elif ext in (".bmp", ".jpg", ".jpeg", ".png", ".mmp"):
+        root_priority = root_priority + _DATA.AssetImagePath
+    elif ext == ".bod":
+        root_priority = root_priority + _DATA.AssetModelPath
+    elif ext in (".wav", ".mp3", ".ogg"):
+        root_priority = root_priority + _DATA.AssetSoundPath
+    else:
+        root_priority = root_priority + _DATA.AssetOtherPath
+    #
     check_ext = ()
     # if ext in (".wav", ".mp3"):
     #     check_ext = (".ogg",)
@@ -645,29 +658,31 @@ def BodInspector():
     LoadBar.opened_files_delta = _DATA.opened_files_delta
     if LoadBar.ProgressBarInst and LoadBar.ProgressBarInst.filehook:
         BBLib.RemoveOnOpenInputFileFunc()
-    for root_dir in _DATA.AssetModelPath + _DATA.asset_path:
+    for root_dir in _DATA.asset_path:
         if not root_dir:
             continue
-        BodLink = os.path.join(root_dir, "BodLink.list")
-        if os.path.isfile(BodLink):
-            f = open(BodLink, "rt")
-            line = f.readline()
-            while line:
-                f_path = string.strip(line)
-                if f_path:
-                    BBLib.ReadBOD(f_path)
-                    f.readline()
-                    # BBLib.LoadBOD(string.strip(f.readline()))
-                line = f.readline()
-            f.close()
-        else:
-            BodLink = open(os.path.join(root_dir, "BodLink.list"), "wt+")
-            AutoLoadAssets(os.path.join(root_dir, "3DChars"), BodLink)
-            AutoLoadAssets(os.path.join(root_dir, "3DObjs"), BodLink)
-            tell = BodLink.tell()
-            BodLink.close()
-            if tell == 0:
-                os.remove(BodLink.name)
+        AutoLoadAssets(os.path.join(root_dir, "3DChars"))
+        AutoLoadAssets(os.path.join(root_dir, "3DObjs"))
+        # BodLink = os.path.join(root_dir, "BodLink.list")
+        # if os.path.isfile(BodLink):
+        #     f = open(BodLink, "rt")
+        #     line = f.readline()
+        #     while line:
+        #         f_path = string.strip(line)
+        #         if f_path:
+        #             BBLib.ReadBOD(f_path)
+        #             f.readline()
+        #             # BBLib.LoadBOD(string.strip(f.readline()))
+        #         line = f.readline()
+        #     f.close()
+        # else:
+        #     BodLink = open(os.path.join(root_dir, "BodLink.list"), "wt+")
+        #     AutoLoadAssets(os.path.join(root_dir, "3DChars"), BodLink)
+        #     AutoLoadAssets(os.path.join(root_dir, "3DObjs"), BodLink)
+        #     tell = BodLink.tell()
+        #     BodLink.close()
+        #     if tell == 0:
+        #         os.remove(BodLink.name)
     #
     _DATA.bod_inspector_loaded = 1
     BBLib.ResetnOpenedInputFiles()
@@ -675,7 +690,7 @@ def BodInspector():
         BBLib.SetOnOpenInputFileFunc(LoadBar.ProgressBarInst.BarIncrement)
 
 
-def AutoLoadAssets(root_dir, BodLink, depth=0):
+def AutoLoadAssets(root_dir, BodLink=None):
     import BBLib
 
     if not os.path.isdir(root_dir):
@@ -688,23 +703,24 @@ def AutoLoadAssets(root_dir, BodLink, depth=0):
             dirs.append(f_path)
             continue
 
-        ext = os.path.splitext(f_name)[1]
-        ext = string.lower(ext)
-        if ext == ".bod":
+        name, ext = os.path.splitext(string.lower(f_name))
+        if ext == ".bod" and (not _DATA.BodLink.has_key(name)):
+            _DATA.BodLink[name] = 1
             f_path = string.replace(f_path, "\\", "/")
-            bodfile = open(f_path, "rb")
-            size = struct.unpack("I", bodfile.read(4))[0]
-            kind = struct.unpack("%ds" % size, bodfile.read(size))[0]
-            bodfile.close()
-
             BBLib.ReadBOD(f_path)
-            # BBLib.LoadBOD(kind)
-            if BodLink:
+
+            if BodLink is not None:
+                bodfile = open(f_path, "rb")
+                size = struct.unpack("I", bodfile.read(4))[0]
+                kind = struct.unpack("%ds" % size, bodfile.read(size))[0]
+                bodfile.close()
+
+                # BBLib.LoadBOD(kind)
                 BodLink.write(f_path + "\n")
                 BodLink.write(kind + "\n")
 
     for i in dirs:
-        AutoLoadAssets(i, BodLink, depth + 1)
+        AutoLoadAssets(i, BodLink)
 
 
 def CallPostloadCB():
