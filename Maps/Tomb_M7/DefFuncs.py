@@ -219,6 +219,7 @@ def PararPendulos(sector,entity):
 	if (entity == "Player1"):
 		if P1.Activado:
 			P1.Stop()
+			char.HitFunc = ExHitFunc # -Sryml
 			Pendulo_Sector1.OnEnter = Activar_Pendulos
 
 #####################################################################################

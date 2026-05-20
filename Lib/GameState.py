@@ -8,6 +8,7 @@ import time
 import types
 import cPickle
 import os
+import sys
 import shutil
 import string
 import GameStateAux
@@ -201,7 +202,8 @@ class EntityParticleSystemState(EntityState):
 class EntityFireState(EntityState):
     def __init__(self,entity):
         EntityState.__init__(self,entity)
-
+        if entity.FireParticleType != "Fire":
+            self.SpecialProps["FireParticleType"] = entity.FireParticleType
 
 
 
@@ -1074,14 +1076,16 @@ for i in range(len(keys)):
             print "Failed to save pickled objects"
             file.close()
             return 0
-        file.write('GameStateAux.GetPickledObjects("%s")\n'%("%s/%s.dat"%(aux_dir,"DinObjs"),))
-        file.write('__load_bar.Increment("Python Objects")\n')
+        file.write('GameStateAux.GetPickledObjects("%s")\n\n'%("%s/%s.dat"%(aux_dir,"DinObjs"),))
 
+        load_bar.Increment("Extra Modules")
+        self.SaveModulesToBeSaved(file,temp_dir,aux_dir,ModulesToBeSaved) # -Sryml
+
+        file.write('__load_bar.Increment("Python Objects")\n')
         load_bar.Increment("Python Objects")
         self.SaveObjects(file)
+
         file.write('__load_bar.Increment("MapState")\n')
-
-
         load_bar.Increment("Map State")
         self.MapState.SaveState(file,temp_dir)
         file.write('__load_bar.Increment("TriggerState")\n')
@@ -1112,9 +1116,6 @@ for i in range(len(keys)):
 
         load_bar.Increment("Extra Data")
         GameStateAux.SaveExtraDataAux(file,temp_dir)
-
-        load_bar.Increment("Extra Modules")
-        self.SaveModulesToBeSaved(file,temp_dir,aux_dir,ModulesToBeSaved)
 
         load_bar.Increment("Cleaning up")
         GameStateAux.EndGameState(temp_dir)
@@ -1299,6 +1300,14 @@ for i in range(len(keys)):
         except  IndexError:
             print "SaveVars Integer Variables out of range"
             return 0
+        global_vars=self.GetGlobalsAux(types.LongType,globs) # -Sryml
+        file.write('\n# Long Integer variables\n')
+        try:
+            for i in global_vars:
+                file.write('%s=%s\n'%(str(i[0]),str(i[1])))
+        except  IndexError:
+            print "SaveVars Long Integer Variables out of range"
+            return 0
         global_vars=self.GetGlobalsAux(types.FloatType,globs)
         file.write('\n# Float variables\n')
         try:
@@ -1356,31 +1365,45 @@ for i in range(len(keys)):
             file.write('%s=Bladex.GetEntity("%s")\n'%(i[0],i[1]))
         file.write('\n\n')
 
-    def SaveObjects(self,file):
-        "Saves objects (from Lib/Object.py) in the global scope."
+    def SaveObjects(self,file): # -Sryml
+        "Saves objects in the global scope."
 
-        import Objects
-        obj=Objects.DinObj()
-        obj_vars=self.GetGlobalsAux(type(obj))
+        file.write('\n# Objects\n\n')
 
-        file.write('\n# Object objects\n')
-        obj_vars_names=[]
-        omit_objs=["__main__.Flecha","state","InputManager"]
-        for i in obj_vars:
-            if i is not self and str(i[1].__class__):
-                if (str(i[0]) not in omit_objs):
-                    obj_vars_names.append((str(i[0]),i[1]))
-##                print "WorldState.SaveObjects() Added"
-                else:
-                    print "Omited",str(i[0])
+        # InstanceType
+        file.write('# InstanceType\n')
+        import BInput
+        # omit_objs=["__main__.Flecha","state","InputManager"]
+        omit_cls = [BInput.B_InputManagerPtr]
+        elems=self.GetGlobalsAux(types.InstanceType)
+        for k,v in elems:
+            if v is not self:
+                if v.__class__ in omit_cls:
+                    printx("Omited", (k,v.__class__))
+                    continue
+                #
+                try:
+                    SavePickDataAux(file,v,k+"=%s\n")
+                except:
+                    printx("Failed saving of",(k,v))
+                    traceback.print_exc()
 
-        for i in obj_vars_names:
+        file.write('\n')
+
+        # FunctionType/MethodType
+        file.write('# FunctionType/MethodType\n')
+        elems=self.GetGlobalsAux((types.FunctionType, types.MethodType))
+        for k,v in elems:
+            module_name = getattr(v, "func_globals", {}).get("__name__")
+            if module_name == "__main__" and k == v.func_name:
+                continue
+            #
             try:
-                SavePickDataAux(file,i[1],i[0]+"=%s\n")
-            except Exception,exc:
-                print "Failed saving of",i
-                print exc
-
+                SavePickDataAux(file,v,k+"=%s\n")
+            except:
+                printx("Failed saving of",(k,v))
+                traceback.print_exc()
+        #
         file.write('\n\n')
 
 
@@ -1477,16 +1500,15 @@ for i in range(len(keys)):
         return 1
 
 
-    def GetGlobalsAux(self,req_type,globs=None):
-        g=None
-        if globs:
-            g=globs
-        else:
-            g=GetGlobals()
+    def GetGlobalsAux(self,req_type,globs=None): # -Sryml
+        if globs is None:
+            globs = GetGlobals()
 
+        if type(req_type) not in (types.TupleType,types.ListType):
+            req_type = (req_type,)
         elems=[]
-        for i in g.items():
-            if type(i[1])==req_type:
+        for i in globs.items():
+            if type(i[1]) in req_type:
                 elems.append(i)
         return elems
 
@@ -1558,15 +1580,5 @@ for i in range(len(keys)):
         return self.__AuxGetResFilesAndNames(BBLib.B_CID_ALPHABMP)
 
 
-def GetGlobals():
-    import sys
-    try:
-        1 + ''
-    except:
-        frame = sys.exc_info()[2].tb_frame.f_back
-
-    while frame:
-        globs=frame.f_globals
-        frame=frame.f_back
-
-    return globs
+def GetGlobals(): # -Sryml
+    return sys.modules["__main__"].__dict__
