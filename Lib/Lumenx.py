@@ -96,6 +96,8 @@ class _DATA:
     opened_files_delta = 0  # 修正量
     nsave_num = 0
     listener_pos = (1, 0, 0, 0)
+    anm_event_funcs = {}
+    sampled_animations = {}
 
 
 ######### Initialization #########
@@ -273,16 +275,22 @@ class __FunctionDecorator:
         return self.RawFunc.execfile(filename, globals, locals)
 
     def type(self, obj):
-        if hasattr(obj, "is_proxy"):
+        if getattr(obj, "__class__", None) == B_PyEntity_Proxy:
             obj = obj.target
         elif obj == self.type:
             obj = self.RawFunc.type
-        elif self.RawFunc.type(obj) in (types.FunctionType, types.MethodType):
-            name = obj.__name__
-            if name in self.NameList or name in globals()["__bladex_decorators"]:
-                return types.BuiltinFunctionType
+        # elif self.RawFunc.type(obj) in (types.FunctionType, types.MethodType):
+        #     name = obj.__name__
+        #     if name in self.NameList or name in globals()["__bladex_decorators"]:
+        #         return types.BuiltinFunctionType
 
         return self.RawFunc.type(obj)
+
+    def isinstance(self, obj, cls):
+        if getattr(obj, "__class__", None) == B_PyEntity_Proxy:
+            obj = obj.target
+
+        return self.RawFunc.isinstance(obj, cls)
 
     def getattr(self, obj, name, default=Ellipsis):
         if hasattr(obj, name):
@@ -360,6 +368,7 @@ __bladex_decorators = [
     "BodInspector",
     "CreateEntity",
     "CreateSound",
+    "DeleteEntity",
     "GetCurrentMap",
     "GetEntity",
     "GetListenerPosition",
@@ -388,36 +397,162 @@ for __fn in __bladex_decorators:  # type: ignore
 ######### Proxy
 class B_PyEntity_Proxy:
     def __init__(self, target):
-        self.target = target
-        self.is_proxy = 1
-
-    def __getstate__(self):
-        return hasattr(self.target, "Name") and self.target.Name or None
-
-    def __setstate__(self, state):
-        if state:
-            self.target = Bladex.GetEntity(state)
-        else:
-            self.target = None
-        self.is_proxy = 1
+        self.target = target  # type: Bladex._entity.B_PyEntity | None
+        # self.is_proxy = 1
 
     def __getattr__(self, attr):
+        if not self.__dict__.get("target", 1):
+            Raisex(AttributeError, "B_PyEntity_Proxy has no attribute '%s'" % attr)
+        if attr == "__methods__":  # for dir()
+            return dir(self.target)
+
         return getattr(self.target, attr)
 
     def __setattr__(self, attr, value):
-        if attr in ("target", "is_proxy"):
+        if not self.__dict__.get("target", 1):
+            Raisex(AttributeError, "B_PyEntity_Proxy has no attribute '%s'" % attr)
+        if attr == "target":
             self.__dict__[attr] = value
+        # elif attr == "Animation":
+        #     pass
         else:
             setattr(self.target, attr, value)
 
-    def __repr__(self):
-        return "<B_PyEntity_Proxy for %s>" % (
-            hasattr(self.target, "Name") and self.target.Name or "destroyed"
-        )
+    #
+    def __getstate__(self):
+        return getattr(self.target, "Name", None)
 
-    # def SetSound(self, file_name):
-    #     file_name = AutomatedAssets(file_name)
-    #     return self.target.SetSound(file_name)
+    def __setstate__(self, state):
+        ent_name = state
+        #
+        if ent_name is None:
+            self.target = None
+        else:
+            self.target = Bladex_raw.GetEntity(ent_name)
+
+    # for bool test
+    def __nonzero__(self):
+        return hasattr(self.target, "Name")
+
+    def __cmp__(self, other):
+        if getattr(other, "__class__", None) == B_PyEntity_Proxy:
+            other = other.target
+
+        return cmp(self.target, other)
+
+    def __repr__(self):
+        return "<B_PyEntity_Proxy for %s>" % getattr(self.target, "Name", "destroyed")
+
+    # -----------------------------
+    def AddAnmEventFunc(self, anm_event, func):
+        if not self:
+            return 0
+
+        me = self.target
+        name = me.Name
+        if not _DATA.anm_event_funcs.has_key(name):
+            _DATA.anm_event_funcs[name] = {}
+        # Override event function
+        _DATA.anm_event_funcs[name][anm_event] = func
+
+        return me.AddAnmEventFunc(anm_event, func)
+
+    def DelAnmEventFunc(self, anm_event):
+        if not self:
+            return 0
+
+        me = self.target
+        name = me.Name
+        if not _DATA.anm_event_funcs.has_key(name):
+            _DATA.anm_event_funcs[name] = {}
+        if _DATA.anm_event_funcs[name].has_key(anm_event):
+            del _DATA.anm_event_funcs[name][anm_event]
+
+        return me.DelAnmEventFunc(anm_event)
+
+    def SubscribeToList(self, name):
+        if not self:
+            return 0
+
+        me = self.target
+
+        def _on_destroy(this, ent_name):
+            if _DATA.anm_event_funcs.has_key(ent_name):
+                del _DATA.anm_event_funcs[ent_name]
+            this.target = None
+
+        if name == "Pin":
+            Bladex.AddScheduledFunc(-1, _on_destroy, (self, me.Name), GetNSaveName())
+
+        return me.SubscribeToList(name)
+
+    # -----------------------------
+    def Abs2RelVector(self, *args):
+        if len(args) == 1 and hasattr(args[0], "target"):
+            args = (args[0].target,)
+        return apply(self.target.Abs2RelVector, args)
+
+    def CanISee(self, entity):
+        entity = entity.target
+        return self.target.CanISee(entity)
+
+    def CanISeeFrom(self, entity, x, y, z):
+        entity = entity.target
+        return self.target.CanISeeFrom(entity, x, y, z)
+
+    def Chase(self, enemy, action_area):
+        enemy = enemy.target
+        return self.target.Chase(enemy, action_area)
+
+    def CheckAnimCol(self, anm_name, obj, unknown):
+        obj = obj.target
+        return self.target.CheckAnimCol(anm_name, obj, unknown)
+
+    def ExcludeHitFor(self, entity):
+        entity = entity.target
+        return self.target.ExcludeHitFor(entity)
+
+    def ExcludeHitInAnimationFor(self, entity):
+        entity = entity.target
+        return self.target.ExcludeHitInAnimationFor(entity)
+
+    def Link(self, child):
+        child = child.target
+        return self.target.Link(child)
+
+    def LinkAnchors(self, entity_anchor, child, child_anchor):
+        child = child.target
+        return self.target.LinkAnchors(entity_anchor, child, child_anchor)
+
+    def LinkToNode(self, child, node):
+        child = child.target
+        return self.target.LinkToNode(child, node)
+
+    def Rel2AbsVector(self, *args):
+        if len(args) == 1 and hasattr(args[0], "target"):
+            args = (args[0].target,)
+        return apply(self.target.Rel2AbsVector, args)
+
+    def SQDistance2(self, entity):
+        entity = entity.target
+        return self.target.SQDistance2(entity)
+
+    def SetActiveEnemy(self, entity):
+        entity = getattr(entity, "target", entity)
+        return self.target.SetActiveEnemy(entity)
+
+    def SetEnemy(self, enemy):
+        enemy = enemy.target
+        return self.target.SetEnemy(enemy)
+
+    def Unlink(self, child):
+        child = child.target
+        return self.target.Unlink(child)
+
+    # -----------------------------
+    def SetSound(self, file_name):
+        file_name = AutomatedAssets(file_name)
+        return self.target.SetSound(file_name)
 
     def SetMaxCamera(self, cam_file_name, start, end):
         cam_file_name = AutomatedAssets(cam_file_name)
@@ -744,12 +879,28 @@ def CreateEntity(name, kind, x, y, z, *args):
     )
     # if kind == "Entity Sound":
     #     return B_PyEntity_Proxy(ret)
-    return ret
+    # return ret
+    return B_PyEntity_Proxy(ret)
 
 
 def CreateSound(file_name, sound_name):
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.CreateSound(file_name, sound_name)
+
+
+def DeleteEntity(arg):
+    if getattr(arg, "__class__", None) == B_PyEntity_Proxy:
+        me = arg.target
+        arg.target = None
+    else:
+        me = Bladex_raw.GetEntity(arg)
+    #
+    if me is not None:
+        if _DATA.anm_event_funcs.has_key(me.Name):
+            del _DATA.anm_event_funcs[me.Name]
+
+        return Bladex_raw.DeleteEntity(me)
+    return 0
 
 
 def GetAlphaBMPFiles():
@@ -789,9 +940,9 @@ def GetCurrentModMenu():
 
 def GetEntity(arg):
     ret = Bladex_raw.GetEntity(arg)
-    if ret and ret.Kind == "Entity Camera":
-        return B_PyEntity_Proxy(ret)
-    return ret
+    if ret is None:
+        return None
+    return B_PyEntity_Proxy(ret)
 
 
 def GetGameVersion():
@@ -1029,7 +1180,10 @@ def LoadLevel(map_dir, mod_dir=""):
 def LoadSampledAnimation(file, anm_name, *args):
     # type=0, race_name="", interp=20):
     file = AutomatedAssets(file)
-    return apply(Bladex_raw.LoadSampledAnimation, (file, anm_name) + args)
+    ret = apply(Bladex_raw.LoadSampledAnimation, (file, anm_name) + args)
+    if ret:
+        _DATA.sampled_animations[anm_name] = args and args[0] or 0
+    return ret
 
 
 def LoadWorld(file_name):
@@ -1285,6 +1439,7 @@ FunctionDecorator = __FunctionDecorator()
 for obj, name in (
     (sys.modules["__builtin__"], "execfile"),
     (sys.modules["__builtin__"], "type"),
+    (sys.modules["__builtin__"], "isinstance"),
     (sys.modules["__builtin__"], "getattr"),
     (BBLibc, "B_BitMap24_ReadFromBMP"),
     (BBLibc, "B_BitMap24_ReadFromJPEG"),
@@ -1306,6 +1461,30 @@ SetCurrentMap(os.path.basename(os.getcwd()))
 # Clean up
 del __fn, obj, name
 
+# ----------------------------------
+import GameState
+
+
+def SaveData(filename):
+    import GameStateAux
+
+    GameStateAux.SaveData(filename, _DATA.anm_event_funcs)
+
+
+def LoadData(filename):
+    import GameStateAux
+
+    _DATA.anm_event_funcs = GameStateAux.LoadData(filename)
+    for ent_name, event_funcs in _DATA.anm_event_funcs.items():
+        ent = Bladex_raw.GetEntity(ent_name)
+        if ent:
+            for anm_event, func in event_funcs.items():
+                ent.AddAnmEventFunc(anm_event, func)
+        else:
+            del _DATA.anm_event_funcs[ent_name]
+
+
+GameState.ModulesToBeSaved.append(sys.modules[__name__])
 
 #  _    _   _ __  __ _____ _   _
 # | |  | | | |  \/  | ____| \ | |
@@ -1332,6 +1511,7 @@ CallPreloadCB
 ConnectionService
 CreateEntity
 CreateSound
+DeleteEntity
 GetAlphaBMPFiles
 GetBladeRoot
 GetBMPFiles

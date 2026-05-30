@@ -28,12 +28,12 @@ def GetPickFileName(data):
     try:
         filename="%s/%s.dat"%("f",data.persistent_id())
     except:
-        if type(data) in (types.DictionaryType,types.ListType,types.TupleType):
-            filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId())
-        elif type(data) == types.FunctionType:
-            filename="%s/%s%s.dat"%("f",data.func_name,ObjStore.GetAutoId())
-        elif type(data) == types.MethodType:
-            filename="%s/%s%s.dat"%("f",data.im_func.func_name,ObjStore.GetAutoId())
+        # if type(data) in (types.DictionaryType,types.ListType,types.TupleType):
+        #     filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId())
+        # elif type(data) == types.FunctionType:
+        #     filename="%s/%s%s.dat"%("f",data.func_name,ObjStore.GetAutoId())
+        if type(data) in (types.FunctionType, types.MethodType, types.BuiltinFunctionType):
+            filename="%s/%s%s.dat"%("f",data.__name__,ObjStore.GetAutoId())
         else:
 ##            filename="%s/%s.dat"%("f",ObjStore.GetNewId())
             filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId()) # -Sryml
@@ -42,17 +42,19 @@ def GetPickFileName(data):
 
 
 
-def SavePickDataAux(file,data,assign):
+def SavePickDataAux(file,data,assign,**kwargs):
 ##    if type(data)==types.MethodType:
 ##        print "SavePickDataAux() -> Warning: omiting method."
 ##        return
+    if kwargs.has_key("default"):
+        if data == kwargs["default"]:
+            return
+    #
+    filename=GetPickFileName(data)
+    restorestring='GameStateAux.GetPickledData("%s")'%(filename,)
+    file.write(assign%(restorestring,))
 
-    if data is not None:
-        filename=GetPickFileName(data)
-        restorestring='GameStateAux.GetPickledData("%s")'%(filename,)
-        file.write(assign%(restorestring,))
-
-        GameStateAux.SavePickData(filename,data)
+    GameStateAux.SavePickData(filename,data)
 
 
 ## Aproximadamente 2.5 segundos sobre 87, Se puede optimizar pasandolo a binario?
@@ -143,6 +145,7 @@ class EntityState:
             file.write('o=Bladex.GetEntity("%s")\n'%(self.CreationProps["Name"]))
             self.SaveSpecialProperties(file,aux_dir)
             file.write('\n\n')
+            return 1
 ##        if save or self.SpecialProps["Data"]:
 ##            file.write('o=Bladex.GetEntity("%s")\n'%(self.CreationProps["Name"]))
 ##            self.SaveSpecialProperties(file,aux_dir)
@@ -450,11 +453,12 @@ class EntityPersonState(EntityBipedState):
             # SetBreakable?
 
         #print "end PersonEntity.SaveStatePass2() "
+        return 1
 
 
 
 
-v__entities_saved=0
+v__entities_saved = 0
 
 class EntitiesStateAux:
     def __init__(self,EntClass):
@@ -470,12 +474,12 @@ class EntitiesStateAux:
             i.SaveState(file,aux_dir)
 
     def SaveStatesPass2(self,file,aux_dir):
+        global v__entities_saved
         for i in self.Entities:
-            global v__entities_saved
-            v__entities_saved=v__entities_saved+1
-            if not v__entities_saved%10: # by Sryml
-                file.write('__load_bar.Increment("Entity")\n')
-            i.SaveStatePass2(file,aux_dir)
+            if i.SaveStatePass2(file,aux_dir):
+                v__entities_saved = v__entities_saved + 1
+                if not v__entities_saved % 10: # -Sryml
+                    file.write('__load_bar.Increment("Entity")\n')
 
     def DestroyEntities(self):
         for i in self.Entities:
@@ -492,6 +496,9 @@ class EntitiesStateAux:
 
 class EntitiesState:
     def __init__(self):
+        global v__entities_saved
+        v__entities_saved = 0
+        
         self.State={}
         #self.State["Entity"]=EntitiesStateAux(EntityState)
         self.State["Entity Object"]=EntitiesStateAux(EntityObjectState)
@@ -634,7 +641,7 @@ class SectorState:
 
     def __SaveCallbackFunction(self,file,cbname,aux_dir,function):
         r_cb_str='s.%s='%(cbname,)
-        SavePickDataAux(file,function,r_cb_str+'%s\n')
+        SavePickDataAux(file,function,r_cb_str+'%s\n',default=None)
 
 
 class MapState:
@@ -679,9 +686,9 @@ class TriggerSectorState:
 
     def SaveState(self,file,aux_dir):
         file.write('Bladex.AddTriggerSector("%s","%s",%f,%f,%s)\n'%(self.Name,self.Grupo,self.FloorHeight,self.RoofHeight,self.Points))
-        SavePickDataAux(file,self.OnEnter,'Bladex.SetTriggerSectorFunc("'+self.Name+'","OnEnter",%s)\n')
-        SavePickDataAux(file,self.OnLeave,'Bladex.SetTriggerSectorFunc("'+self.Name+'","OnLeave",%s)\n')
-        SavePickDataAux(file,self.Data,'Bladex.SetTriggerSectorData("'+self.Name+'",%s)\n')
+        SavePickDataAux(file,self.OnEnter,'Bladex.SetTriggerSectorFunc("'+self.Name+'","OnEnter",%s)\n',default=None)
+        SavePickDataAux(file,self.OnLeave,'Bladex.SetTriggerSectorFunc("'+self.Name+'","OnLeave",%s)\n',default=None)
+        SavePickDataAux(file,self.Data,'Bladex.SetTriggerSectorData("'+self.Name+'",%s)\n',default=None)
         file.write('\n\n')
 
 
@@ -799,7 +806,14 @@ class WorldState:
         file.write('############################################################\n\n\n\n')
         file.write('import Bladex\n')
         file.write('Bladex.SetTime(%f)\n'%(Bladex.GetTime(),))
+        file.write('Bladex.KillMusic()\n')             #
+        file.write('Bladex.ShutDownSoundChannels()\n') #
+        file.write('Bladex.PauseSoundSystem()\n')      #
+        file.write('Bladex.BeginLoadGame()\n')         #
+        file.write('import Lumenx\n\n')                # -Sryml
+
         file.write('execfile("../../Scripts/sys_init.py")\n\n')
+
         file.write('import BBLib\n')
         file.write('import cPickle\n')
         file.write('import GameStateAux\n')
@@ -812,17 +826,9 @@ class WorldState:
         file.write('import darfuncs\n\n\n\n')
         file.write('import LoadBar\n\n\n\n')
         file.write('import Language\n\n')
-        # file.write('from LumenLib import BODLoader\n')
-        file.write('############################################################\n')
-        file.write('#\n\n\n')
+        file.write('############################################################\n\n\n')
 
         file.write('my_last_player_ctype="%s"\n'%(Bladex.GetLastPlayerCType(),))
-
-        file.write('Bladex.KillMusic()\n')
-        file.write('Bladex.ShutDownSoundChannels()\n')
-        file.write('Bladex.PauseSoundSystem()\n')
-
-        file.write('Bladex.BeginLoadGame()\n')
         file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/10 + 40,'"../../Data/Locale/" + Language.Current + "/Image/Cargando_hi.jpg"')) # by Sryml
         file.write('GameStateAux.aux_dir="%s"\n'%(aux_dir,))
 
@@ -836,7 +842,7 @@ class WorldState:
         # file.write('Bladex.SetCurrentMap(\"%s\")\n'%(Bladex.GetCurrentMap(),))
         # file.write('sys.path.insert(0,os.getcwd())\n')
         file.write('Bladex.SetSaveInfo(%s)\n'%(str(Bladex.GetSaveInfo(),)))
-        file.write('Bladex.SetListenerPosition(%s, %s, %s, %s)\n\n' % Lumenx.GetListenerPosition())
+        file.write('Bladex.SetListenerPosition(%s, %s, %s, %s)\n\n' % Lumenx.GetListenerPosition()) #
 
         # ---------------------------
         # by Sryml: start
@@ -1390,9 +1396,9 @@ for i in range(len(keys)):
 
         file.write('\n')
 
-        # FunctionType/MethodType
-        file.write('# FunctionType/MethodType\n')
-        elems=self.GetGlobalsAux((types.FunctionType, types.MethodType))
+        # FunctionType/MethodType/BuiltinFunctionType
+        file.write('# FunctionType/MethodType/BuiltinFunctionType\n')
+        elems=self.GetGlobalsAux((types.FunctionType, types.MethodType, types.BuiltinFunctionType))
         for k,v in elems:
             module_name = getattr(v, "func_globals", {}).get("__name__")
             if module_name == "__main__" and k == v.func_name:
@@ -1403,6 +1409,19 @@ for i in range(len(keys)):
             except:
                 printx("Failed saving of",(k,v))
                 traceback.print_exc()
+
+        file.write('\n')
+
+        # Other Types
+        file.write('# Other Types\n')
+        elems=self.GetGlobalsAux((types.EllipsisType, types.NoneType, types.ClassType))
+        for k,v in elems:
+            try:
+                SavePickDataAux(file,v,k+"=%s\n")
+            except:
+                printx("Failed saving of",(k,v))
+                traceback.print_exc()
+
         #
         file.write('\n\n')
 
@@ -1445,8 +1464,11 @@ for i in range(len(keys)):
         #print "SaveScheduledFuncs(). There are ",n_sched_funcs,"functions."
         for i in range(n_sched_funcs):
             f=Bladex.GetScheduledFunc(i)
-            if f and f[2] not in exclude_funcs and string.find(f[2],"[NSAVE]") == -1: # by Sryml
-                func_string='GameStateAux.LoadFunctionAux(%s)'%(GameStateAux.SaveFunctionAux(f[0]),)
+            if f and f[2] not in exclude_funcs and string.find(f[2],"[NSAVE]") == -1: # -Sryml
+                filename=GetPickFileName(f[0])
+                GameStateAux.SavePickData(filename,f[0])
+                func_string='GameStateAux.GetPickledData("%s")'%(filename,)
+
                 filename=GetPickFileName(f[1])
                 func_parms='GameStateAux.GetPickledData("%s")'%(filename,)
                 #print "SaveScheduledFuncs() ",filename,f[1],f[2]

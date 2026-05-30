@@ -6,7 +6,6 @@ import os
 import cPickle
 import BBLib
 import Bladex
-import Reference
 ##import ItemTypes
 import Breakings
 import PickInit
@@ -14,9 +13,17 @@ import types
 import ObjStore
 import cStringIO
 import string
+import traceback
 
 from Lumenx import printx
 
+#
+import typing
+
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
+    cmp = lambda x, y: None
 
 
 PickDataBase={}
@@ -161,6 +168,7 @@ def SavePickData(filename,data):
   string_file=cStringIO.StringIO()
   p=cPickle.Pickler(string_file)
   p.persistent_id=persistent_id
+  data = SavePickleEnsure(data) #
   p.dump(data)
   PickDataBase[filename]=string_file.getvalue()
 
@@ -175,10 +183,33 @@ def GetPickledData(filename):
 
   u.persistent_load=persistent_load
   ret=u.load()
+  ret = LoadPickleEnsure(ret) #
   return ret
 
 
-# ----------------------------------
+# ---------------------------------- Sryml
+def SavePickleEnsure(data):
+    data_t = type(data)
+    if data_t == types.MethodType:
+        return PickInit.RedMethod(data)
+    elif data_t == types.FunctionType:
+        return PickInit.RedFunction(data)
+    elif data_t == types.BuiltinFunctionType:
+        return PickInit.RedCFunction(data)
+    return (None, data)
+
+
+def LoadPickleEnsure(data_ex, res_obj=None, res_field=""):
+    reconstructor, data = data_ex
+    if reconstructor is not None:
+        data = apply(reconstructor, data + (res_obj, res_field))
+    
+    if res_obj:
+        setattr(res_obj, res_field, data)
+    else:
+        return data
+
+
 def SaveData(filename, d):
     funcfile = open(filename, "wt")
     p = cPickle.Pickler(funcfile)
@@ -199,6 +230,7 @@ def LoadData(filename):
 
 def GetPickledObjects(filename):
   "Loads the ObjStore file"
+  import Reference
 
   f=open(filename,'rt')
   u=cPickle.Unpickler(f)
@@ -207,32 +239,34 @@ def GetPickledObjects(filename):
 
   global FixDataBase
   for i in FixDataBase:
-    Reference.debugprint("Fixing",i)
+    # Reference.debugprint("Fixing",i)
     func_id=i[0]
-    ob_id=func_id[0]
+    ob_id, method_name = func_id
     if ObjStore.ObjectsStore.has_key(ob_id):
       cl=ObjStore.ObjectsStore[ob_id]
       #print i[1]
       cl_to_assign=None
       if i[4]=="Entity":
         cl_to_assign=Bladex.GetEntity(i[1])
-        Reference.debugprint("Found Entity",cl_to_assign)
+        # Reference.debugprint("Found Entity",cl_to_assign)
       else:
         cl_to_assign=ObjStore.ObjectsStore[i[1]]
-        Reference.debugprint("Found class",cl_to_assign)
+        # Reference.debugprint("Found class",cl_to_assign)
 
       if cl_to_assign:
         if i[4]=="Object":
-          exec("cl_to_assign."+i[2]+"=cl")
+          setattr(cl_to_assign, i[2], cl)
+          # exec("cl_to_assign."+i[2]+"=cl")
           #print "Fixed relationship for object",i
           #print "Executed cl_to_assign."+str(i[2])+"=cl"
           #print "cl_to_assign:",cl_to_assign
           #print "cl:",cl
         else:
-          exec("cl_to_assign."+i[2]+"=cl."+func_id[1])
+          setattr(cl_to_assign, i[2], getattr(cl, method_name))
+          # exec("cl_to_assign."+i[2]+"=cl."+method_name)
           #print "Fixed relationship for function",i
       else:
-        Reference.debugprint("Can't fix FixDataBase.",ob_id,"Not found.",i)
+        Reference.debugprint("Can't fix FixDataBase.",i[1],"Not found.",i)
 
 
 
@@ -281,6 +315,7 @@ def LoadBODs(files):
 
 
 def AddWeaponToInventory(inv,weapon_name):
+  import Reference
 
   object_flag=Reference.GiveObjectFlag(weapon_name)
   if object_flag == Reference.OBJ_BOW:
@@ -318,88 +353,58 @@ def AddQuiverToInventory(inv,quiver_name):
   inv.AddQuiver(quiver_name)
 
 
-def SaveFunctionAux(func):
+def SaveFunctionAux(func): # -Sryml
+  return SavePickleEnsure(func)
+  # func_type = type(func)
+  # if func_type == types.MethodType:
+  #   return ("m", PickInit.RedMethod(func)[1])
+  # elif func_type == types.FunctionType:
+  #   return ("f", PickInit.RedFunction(func)[1])
+  # elif func_type == types.BuiltinFunctionType:
+  #   return ("cf", PickInit.RedCFunction(func)[1])
 
-  try:
-    func_type=type(func)
-    if  func_type == types.MethodType:
-      ob_id=func.im_self.persistent_id()
-      #print "Saving Method:",ob_id,func.im_func.func_name
-      return ("m",(ob_id,func.im_func.func_name))
-  ##    try:
-  ##      id=func.im_class.persistent_id()
-  ##      return (id,func.im_func.func_name)
-  ##    except:
-  ##      print "WARNING, SaveFunctionAux()-> Omiting method",func.im_func.func_name
-  ##      return None
-
-    elif func_type==types.FunctionType:
-      return ("f",(func.func_name,GetFunctionFile(func)))
-    elif func_type==types.BuiltinFunctionType:
-      if getattr(func, "__self__", None) is None:
-        return ("cf",(func.__name__,None))
-      else: # Asumo que son entidades
-        this = func.__self__
-        this_type = type(this)
-        if this_type == type(Bladex.GetEntity(0)):
-          func_self = ("Entity",this.Name)
-        elif this_type == type(Bladex.GetSound("GolpeMaderaMediana")):
-          func_self = ("Sound",this.Name)
-        elif this_type == type(Bladex.GetSector(0)):
-          func_self = ("Sector",this.Index)
-        elif this_type == type(Bladex.GetEntity(0).GetInventory()):
-          func_self = ("Inventory",this.Owner)
-
-        return ("cf",(func.__name__,func_self))
-
-    return ("n",(None,None))
-
-  except Exception,exc:
-    print "Exception in SaveFunctionAux()",exc," with function",func
-    return ("n",(None,None))
+  # return ("n",(None,None))
 
 
-
-
-
-
-def LoadFunctionAux(func_id_ex,res_obj=None,res_field=None,aux=None):
+def LoadFunctionAux(func_id_ex,res_obj=None,res_field="",aux=None): # -Sryml
+  return LoadPickleEnsure(func_id_ex,res_obj,res_field)
 
   assign_func=None
   
   if type(func_id_ex) != types.TupleType:
-    print "LoadFunctionAux() ERROR, invalid parameters",type(func_id_ex)
+    printx("LoadFunctionAux() ERROR, invalid parameters",type(func_id_ex))
     return
 
   func_id=func_id_ex[1]
 
   func_kind=func_id_ex[0]
   if func_kind=="m": # Metodo
-    ob_id=func_id[0]
-    if ObjStore.ObjectsStore.has_key(ob_id):
-      cl=ObjStore.ObjectsStore[ob_id]
-      #res_obj.__dict__[res_field]=eval("cl."+func_id[1])
-      assign_func=eval("cl."+func_id[1])
-    else:
-      if res_obj is not None:
-        if type(res_obj) == type(Bladex.GetEntity("Camera")): # -Sryml
-          #print "FixDataBase.append() Entity->",func_id,res_obj.Name,res_field,ob_id
-          FixDataBase.append((func_id,res_obj.Name,res_field,ob_id,"Entity"))
-        else:
-          #print "FixDataBase.append() class->",func_id,res_obj.ObjId,res_field,ob_id
-          FixDataBase.append((func_id,res_obj.ObjId,res_field,ob_id,None))
-      else:
-        print "Can not find object to add to FixDataBase",func_id_ex
+    assign_func=PickInit.ConstMethod(func_id[0],func_id[1],res_obj,res_field)
+    # ob_id=func_id[0]
+    # if ObjStore.ObjectsStore.has_key(ob_id):
+    #   cl=ObjStore.ObjectsStore[ob_id]
+    #   #res_obj.__dict__[res_field]=eval("cl."+func_id[1])
+    #   assign_func=eval("cl."+func_id[1])
+    # else:
+    #   if res_obj is not None:
+    #     if type(res_obj) == type(Bladex.GetEntity("Camera")): # -Sryml
+    #       #print "FixDataBase.append() Entity->",func_id,res_obj.Name,res_field,ob_id
+    #       FixDataBase.append((func_id,res_obj.Name,res_field,ob_id,"Entity"))
+    #     else:
+    #       #print "FixDataBase.append() class->",func_id,res_obj.ObjId,res_field,ob_id
+    #       FixDataBase.append((func_id,res_obj.ObjId,res_field,ob_id,None))
+    #   else:
+    #     printx("Can not find object to add to FixDataBase",func_id_ex)
   elif func_kind=="f":  # Funcion
-    assign_func=(PickInit.ConstFunction(func_id[0],func_id[1]))
+    assign_func=PickInit.ConstFunction(func_id[0],func_id[1])
   elif func_kind=="cf": # Funcion C
-    assign_func=(PickInit.ConstCFunction(func_id[0],func_id[1]))
+    assign_func=PickInit.ConstCFunction(func_id[0],func_id[1])
   elif func_kind=="n":  # None
     assign_func=None
 
   #res_obj.__dict__[res_field]=assign_func
   if res_obj:
-    exec("res_obj."+res_field+"=assign_func")
+    setattr(res_obj, res_field, assign_func)
   else:
     return assign_func
 
@@ -441,6 +446,7 @@ def SaveEntityAux(ent):
     try:
       return ent.Name
     except:
+      # traceback.print_exc()
       print "Error getting entity name",ent
       return None
   return None
@@ -510,17 +516,17 @@ def SaveNewMembers(check_class):
     return ()
 
   ret=[]
-  entity_type=type(Bladex.GetEntity("Camera")) # -Sryml
+  # entity_type=type(Bladex.GetEntity("Camera")) # -Sryml
   members=GetNewMembers(check_class)
   members_keys=members.keys()
   for i in members_keys:
     member=members[i]
     member_t=type(member)
     #print check_class,i,member_t
-    if member_t==types.FunctionType or member_t==types.MethodType:
+    if member_t in (types.FunctionType, types.MethodType, types.BuiltinFunctionType):
       ret.append(("Function",i,SaveFunctionAux(member)))
-    elif member_t==entity_type:
-      ret.append(("Entity",i,SaveEntityAux(member)))
+    # elif member_t==entity_type:
+    #   ret.append(("Entity",i,SaveEntityAux(member)))
     else:
       ret.append(("Other",i,member))
 

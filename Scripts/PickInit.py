@@ -5,25 +5,25 @@ import Bladex
 import copy_reg
 import types
 import sys
+import traceback
+import Lumenx
 
 from Lumenx import printx
+
+#
+import typing
+
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
+    cmp = lambda x, y: None
 
 GlobalModulesCache=None
 GlobalFunctionsCache=None
 GlobalCFunctionsCache=None
 
-def GetGlobalsAux():
-    import sys
-    try:
-        1 + ''
-    except:
-        frame = sys.exc_info()[2].tb_frame.f_back
-
-    while frame:
-        globs=frame.f_globals
-        frame=frame.f_back
-
-    return globs
+def GetGlobalsAux(): # -Sryml
+    return sys.modules["__main__"].__dict__
 
 
 def GetGlobalsAux2(req_type):
@@ -121,7 +121,7 @@ def FindFunctionAux(module,fun_name):
 
 
 
-def ConstFunction(fun_name, lib_name):
+def ConstFunction(fun_name, lib_name, res_obj=None, res_field=""):
     # Rewritten -Sryml
     if fun_name == "<lambda>":
         return None
@@ -150,32 +150,44 @@ def RegisterPickFunction():
 
 
 
-def ConstMethod(obj_id,method_name):
-  import types
+def ConstMethod(obj_id, method_name, res_obj=None, res_field=""): # -Sryml
+  import Reference
   import ObjStore
+  import GameStateAux
 
-  try:
-    obj=ObjStore.ObjectsStore[obj_id]
-    assign_func=eval("obj."+method_name)
-    return assign_func
-  except Exception,exc:
-##    import pdb
-##    pdb.set_trace()
-    print "PickInit.ConstMethod() can not find method",obj_id,method_name
-    if ObjStore.ObjectsStore.has_key(obj_id):
-        print "Object ",obj_id,"exists. -> ",ObjStore.ObjectsStore[obj_id]
+  if ObjStore.ObjectsStore.has_key(obj_id):
+    obj = ObjStore.ObjectsStore[obj_id]
+    if hasattr(obj, method_name):
+        return getattr(obj, method_name)
+  #   Reference.debugprint("PickInit.ConstMethod() can not find method",method_name,"in object",obj_id)
+  # else:
+  #   Reference.debugprint("PickInit.ConstMethod() can not find object",obj_id)
+  #
+  if res_obj is not None:
+    if type(res_obj) == type(Bladex.GetEntity("Camera")):
+      # printx("FixDataBase.append() Entity->",(obj_id, method_name),res_obj.Name,res_field,obj_id)
+      GameStateAux.FixDataBase.append(((obj_id, method_name), res_obj.Name,res_field,obj_id,"Entity"))
     else:
-        print "Object ",obj_id,"does not exist."
-        print ObjStore.ObjectsStore
+      #print "FixDataBase.append() class->",(obj_id, method_name),res_obj.ObjId,res_field,obj_id
+      GameStateAux.FixDataBase.append(((obj_id, method_name), res_obj.ObjId,res_field,obj_id,None))
+  else:
+    Reference.debugprint("Can not find object to add to FixDataBase", (obj_id, method_name))
 
-    print "Exception",exc
-    return None
+  return None
 
-def RedMethod(f):
+
+def RedMethod(f): # -Sryml
+  im_class = f.im_class
+  func_name = f.im_func.func_name
+  if im_class == Lumenx.__FunctionDecorator:
+    return ConstCFunction,(func_name, "Module")
+  elif im_class == Lumenx.B_PyEntity_Proxy:
+    return ConstCFunction,(func_name, f.im_self.target)
+  #
   try:
-    return ConstMethod,(f.im_class.persistent_id(f.im_self),f.im_func.func_name)
+    return ConstMethod,(f.im_class.persistent_id(f.im_self),func_name)
   except:
-    print "PickInit.RedMethod() can not register method",f
+    printx("PickInit.RedMethod() can not register method",f)
     return ConstMethod,(None,None)
 
 
@@ -189,60 +201,82 @@ def RegisterPickMethod():
 
 
 
-def ConstCFunction(fun_name,func_self):
+def ConstCFunction(fun_name, func_self, res_obj=None, res_field=""): # -Sryml
   import Reference
-  Reference.debugprint("ConstCFunction: '",fun_name,"','",func_self,"'")
-  if func_self is not None:
-    this_type = func_self[0]
-    if this_type == "Entity":
-      o = Bladex.GetEntity(func_self[1])
-    elif this_type == "Sound":
-      o = Bladex.GetSound(func_self[1])
-    elif this_type == "Sector":
-      o = Bladex.GetSector(func_self[1])
-    elif this_type == "Inventory":
-      o = Bladex.GetEntity(func_self[1])
-      if hasattr(o, "GetInventory"):
-        o = o.GetInventory()
-      else:
-        o = None
 
-    assign_func = getattr(o, fun_name, None)
-    return assign_func
+  if func_self is None:
+    return None
+
+  # Reference.debugprint("ConstCFunction: '%s'," % fun_name, func_self)
+  # if func_self is not None:
+  #   this_type = func_self[0]
+  #   if this_type == "Entity":
+  #     o = Bladex.GetEntity(func_self[1])
+  #   elif this_type == "Sound":
+  #     o = Bladex.GetSound(func_self[1])
+  #   elif this_type == "Sector":
+  #     o = Bladex.GetSector(func_self[1])
+  #   elif this_type == "Inventory":
+  #     o = Bladex.GetEntity(func_self[1])
+  #     if hasattr(o, "GetInventory"):
+  #       o = o.GetInventory()
+  #     else:
+  #       o = None
+
+  #   assign_func = getattr(o, fun_name, None)
+  #   return assign_func
 
   # La busco en funciones C
-  funcs=GetGlobalsAux2(types.BuiltinFunctionType)
-  for i in funcs:
-    if i[1].__name__==fun_name:
-      return i[1]
-  # La busco en los modulos
-  # Primero en los de Blade
-  # import Bladex
-  import Traps_C
-  import B3DLib
-  mods=(Bladex,B3DLib,Traps_C)
-  for i in mods:
-    func=FindFunctionAux(i,fun_name)
-    if func:
-        return func
-  # Y luego en los otros
-  global_mods=GetGlobalsAux2(types.ModuleType)
-  for i in global_mods:
-    if i not in mods:
-        func=FindFunctionAux(i[1],fun_name)
-        if func:
-            return func
+  if func_self == "Module":
+    if sys.modules["__builtin__"].__dict__.has_key(fun_name):
+      return sys.modules["__builtin__"].__dict__[fun_name]
+    # La busco en los modulos
+    # Primero en los de Blade
+    import Bladex,Traps_C,B3DLib,BUIxc,BBLibc
+    mods=(Bladex,Traps_C,B3DLib,BUIxc,BBLibc)
+    for i in mods:
+      func=FindFunctionAux(i,fun_name)
+      if func:
+          return func
+    # Y luego en los otros
+    # global_mods=GetGlobalsAux2(types.ModuleType)
+    # for i in global_mods:
+    #   if i not in mods:
+    #       func=FindFunctionAux(i[1],fun_name)
+    #       if func:
+    #           return func
+  elif hasattr(func_self, fun_name):
+    return getattr(func_self, fun_name)
 
-  print "Warning, can't find global function",fun_name
+  printx("Warning, can't find builtin function", (fun_name,func_self))
   return None
 
 
 
 def RedCFunction(f):
-  if getattr(f, "__self__", None) is None: # Asume que es una entidad
-    return ConstCFunction,(f.__name__,None)
-  else:
-    return ConstCFunction,(f.__name__,f.__self__.Name)
+  func_self = getattr(f, "__self__", "Module")
+  if func_self is None:
+    func_self = "Module"
+  return ConstCFunction,(f.__name__, func_self)
+  # import Reference
+  # if getattr(f, "__self__", None) is None: # Asume que es una entidad
+  #   return ConstCFunction,(f.__name__,None)
+  # else:
+  #   this = f.__self__
+  #   this_type = type(this)
+  #   if this_type == type(Bladex.GetEntity(0)) and hasattr(this, "Name"):
+  #     func_self = ("Entity",this.Name)
+  #   elif this_type == type(Bladex.GetSound("GolpeMaderaMediana")) and hasattr(this, "Name"):
+  #     func_self = ("Sound",this.Name)
+  #   elif this_type == type(Bladex.GetSector(0)):
+  #     func_self = ("Sector",this.Index)
+  #   elif this_type == type(Bladex.GetEntity(0).GetInventory()) and hasattr(this, "Owner"):
+  #     func_self = ("Inventory",this.Owner)
+  #   else:
+  #     Reference.debugprint("RedCFunction() Warning, unknown type for builtin function",f)
+  #     return ConstCFunction,(None,None)
+    
+  #   return ConstCFunction,(f.__name__,func_self)
 
 
 def RegisterPickCFunction():
@@ -299,6 +333,18 @@ def RegisterPickEntInventory():
     copy_reg.pickle(type(gmadlig), RedEntInventory, ConstEntInventory)
 
 
+def ConstEllipsis():
+    return Ellipsis
+
+def RedEllipsis(o):
+    return ConstEllipsis, ()
+
+def RegisterPickEllipsis():
+    copy_reg.pickle(types.EllipsisType,RedEllipsis,ConstEllipsis)
+
+
+# ---------------------------------
+
 def ClearCaches():
   global GlobalModulesCache
   global GlobalFunctionsCache
@@ -315,9 +361,10 @@ def Init():
   ClearCaches()
   RegisterPickSound()
   RegisterPickEntity()
-  RegisterPickFunction()
+  # RegisterPickFunction() # Unable to cover serialization behavior
   RegisterPickSector()
   RegisterPickMethod()
-  RegisterPickCFunction()
+  # RegisterPickCFunction() # Unable to cover serialization behavior
   RegisterPickEntInventory()
+  RegisterPickEllipsis()
   print "Executed PickInit.Init()"
