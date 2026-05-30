@@ -2150,7 +2150,7 @@ class NPCAlly (Basic_Funcs.PlayerPerson):
 #Ally: Save ally functions
 									  GameStateAux.SaveFunctionAux(self.HLCFunc)
 									  )
-		print PlayerPerson_state
+		Reference.debugprint("NPCAlly.__getstate__():", PlayerPerson_state)
 		return PlayerPerson_state
 
 	def __setstate__(self,parm):
@@ -2223,7 +2223,7 @@ class NPCAlly (Basic_Funcs.PlayerPerson):
 
 
 def AddMyWatchAnims(EntityName):
-	Reference.debugprint(EntityName + " adding WatchAnims")
+	# Reference.debugprint(EntityName + " adding WatchAnims")
 	me = Bladex.GetEntity(EntityName)
 	#me.AddWatchAnim("PATROL_LOOK_D")
 	#me.AddWatchAnim("PATROL_LOOK_U")

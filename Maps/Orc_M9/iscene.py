@@ -94,4 +94,4 @@ AuxFuncs.SingleFrameFade()
 Scorer.SetVisible(0)
 
 
-Bladex.AddScheduledFunc(Bladex.GetTime(), Lanzador, ())
+Bladex.AddScheduledFunc(-1, Lanzador, ())

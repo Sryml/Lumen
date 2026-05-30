@@ -173,6 +173,16 @@ class PlayerPerson:
 
 		self.ObjectsTaken= []
 		self.LevelUpParticleData=[]
+
+		# Automatically saved by SaveNewMembers -Sryml
+		self.InvWeaponQueue = []
+		self.InvShieldQueue = []
+		self.InvQuiverQueue = []
+		self.InvObjectQueue = []
+		self.MutilatePickable = -1 # All can be picked up
+		self.AutoArchery = 0
+		self.AllowArchery = 1
+
 		#_________________________________________#
 		#  Record some personal data              #
 		#_________________________________________#
@@ -230,15 +240,6 @@ class PlayerPerson:
 		inv.maxShields = Inventory.MAXSHIELDS
 		inv.maxQuivers = Inventory.MAXQUIVERS
 		inv.maxObjects = Inventory.MAXOBJECTS
-		# Automatically saved by SaveNewMembers
-		self.InvWeaponQueue = []
-		self.InvShieldQueue = []
-		self.InvQuiverQueue = []
-		self.InvObjectQueue = []
-		self.MutilatePickable = -1 # All can be picked up
-		self.AutoArchery = 0
-		self.AllowArchery = 1
-		#
 
 		self.Resistances= copy.copy(CharStats.GetCharResistances(me.Kind))
 		self.ResetSounds(self.Name)
@@ -512,19 +513,19 @@ class PlayerPerson:
 		#_________________________________________#
 		# Initialise core                         #
 		#_________________________________________#
-		me.AddAnmEventFunc("TakeArrow", Actions.TakeArrowEventHandler)
-		me.AddAnmEventFunc("CheckRefireBow", Actions.CheckRefireBowEventHandler)
+		# me.AddAnmEventFunc("TakeArrow", Actions.TakeArrowEventHandler)
+		# me.AddAnmEventFunc("CheckRefireBow", Actions.CheckRefireBowEventHandler)
 
-		me.AddAnmEventFunc("W2hToLeft", Actions.W2hToLeftHandler)
-		me.AddAnmEventFunc("W2hToRight", Actions.W2hToRightHandler)
-		me.AddAnmEventFunc("LaunchTrail", self.LaunchTrail)
-		me.AddAnmEventFunc("Start_Weapon", Actions.Start_Weapon)
-		me.AddAnmEventFunc("Stop_Weapon", Actions.Stop_Weapon)
-		me.AddAnmEventFunc("Start_Trail", Actions.Start_Trail)
-		me.AddAnmEventFunc("Stop_Trail", Actions.Stop_Trail)
-		me.AddAnmEventFunc("Start_Weapon_Special", Actions.Start_Weapon_Special)
-		me.AddAnmEventFunc("Stop_Weapon_Special", Actions.Stop_Weapon_Special)
-		me.AddAnmEventFunc("ElevatorDeath", Actions.QuickDeath)
+		# me.AddAnmEventFunc("W2hToLeft", Actions.W2hToLeftHandler)
+		# me.AddAnmEventFunc("W2hToRight", Actions.W2hToRightHandler)
+		# me.AddAnmEventFunc("LaunchTrail", self.LaunchTrail)
+		# me.AddAnmEventFunc("Start_Weapon", Actions.Start_Weapon)
+		# me.AddAnmEventFunc("Stop_Weapon", Actions.Stop_Weapon)
+		# me.AddAnmEventFunc("Start_Trail", Actions.Start_Trail)
+		# me.AddAnmEventFunc("Stop_Trail", Actions.Stop_Trail)
+		# me.AddAnmEventFunc("Start_Weapon_Special", Actions.Start_Weapon_Special)
+		# me.AddAnmEventFunc("Stop_Weapon_Special", Actions.Stop_Weapon_Special)
+		# me.AddAnmEventFunc("ElevatorDeath", Actions.QuickDeath)
 
 		if me.CharTypeExt in ("Kgt", "Bar", "Amz", "Dwf"):
 			exec_string="CombosFX."+me.CharTypeExt+"CombosFX(me.Name)"

@@ -1101,7 +1101,7 @@ def iSceneStart():
 	iSceneCamA()
 	iSceneAnim()
 	iSceneTrapAnim()
-	ScriptSkip.SkipScriptStart("orcsal")
+	# ScriptSkip.SkipScriptStart("orcsal")
 	
 	time = Bladex.GetTime()
 	
@@ -1121,7 +1121,7 @@ def iSceneStart():
 	Bladex.AddScheduledFunc(time + 25.0, iSceneTrapDust, ())
 
 def Lanzador():	
-	
+	ScriptSkip.SkipScriptStart("orcsal")
 	AuxFuncs.FadeFrom(4.5, 0.0)	
 
 

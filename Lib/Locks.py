@@ -180,7 +180,7 @@ class Lock:
 			GameStateAux.LoadFunctionAux(parm[6],self,"OnUnLockFunc")
 			self.OnUnLockArgs=parm[7]			
 			self.UnUsed=parm[8]
-			self.obj=GameStateAux.LoadEntityAux(parm[9]),
+			self.obj=GameStateAux.LoadEntityAux(parm[9]) # -Sryml
 			GameStateAux.LoadNewMembers(self,parm[10])
 		else:
 			print "Lever.__setstate__() -> Version mismatch"

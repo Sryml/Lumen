@@ -2098,7 +2098,7 @@ class NPCPerson (Basic_Funcs.PlayerPerson):
 
 
 def AddMyWatchAnims(EntityName):
-	Reference.debugprint(EntityName + " adding WatchAnims")
+	# Reference.debugprint(EntityName + " adding WatchAnims")
 	me = Bladex.GetEntity(EntityName)
 	#me.AddWatchAnim("PATROL_LOOK_D")
 	#me.AddWatchAnim("PATROL_LOOK_U")
