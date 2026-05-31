@@ -414,7 +414,7 @@ class B_PyEntity_Proxy:
         if attr == "target":
             self.__dict__[attr] = value
         # elif attr == "Animation":
-        #     pass
+        #     self.__dict__["Set%s" % attr](attr, value)
         else:
             setattr(self.target, attr, value)
 
@@ -442,49 +442,6 @@ class B_PyEntity_Proxy:
 
     def __repr__(self):
         return "<B_PyEntity_Proxy for %s>" % getattr(self.target, "Name", "destroyed")
-
-    # -----------------------------
-    def AddAnmEventFunc(self, anm_event, func):
-        if not self:
-            return 0
-
-        me = self.target
-        name = me.Name
-        if not _DATA.anm_event_funcs.has_key(name):
-            _DATA.anm_event_funcs[name] = {}
-        # Override event function
-        _DATA.anm_event_funcs[name][anm_event] = func
-
-        return me.AddAnmEventFunc(anm_event, func)
-
-    def DelAnmEventFunc(self, anm_event):
-        if not self:
-            return 0
-
-        me = self.target
-        name = me.Name
-        if not _DATA.anm_event_funcs.has_key(name):
-            _DATA.anm_event_funcs[name] = {}
-        if _DATA.anm_event_funcs[name].has_key(anm_event):
-            del _DATA.anm_event_funcs[name][anm_event]
-
-        return me.DelAnmEventFunc(anm_event)
-
-    def SubscribeToList(self, name):
-        if not self:
-            return 0
-
-        me = self.target
-
-        def _on_destroy(this, ent_name):
-            if _DATA.anm_event_funcs.has_key(ent_name):
-                del _DATA.anm_event_funcs[ent_name]
-            this.target = None
-
-        if name == "Pin":
-            Bladex.AddScheduledFunc(-1, _on_destroy, (self, me.Name), GetNSaveName())
-
-        return me.SubscribeToList(name)
 
     # -----------------------------
     def Abs2RelVector(self, *args):
@@ -557,6 +514,92 @@ class B_PyEntity_Proxy:
     def SetMaxCamera(self, cam_file_name, start, end):
         cam_file_name = AutomatedAssets(cam_file_name)
         return self.target.SetMaxCamera(cam_file_name, start, end)
+
+    def AddAnmEventFunc(self, anm_event, func):
+        if not self:
+            return 0
+
+        me = self.target
+        name = me.Name
+        if not _DATA.anm_event_funcs.has_key(name):
+            _DATA.anm_event_funcs[name] = {}
+        # Override event function
+        _DATA.anm_event_funcs[name][anm_event] = func
+
+        return me.AddAnmEventFunc(anm_event, func)
+
+    def DelAnmEventFunc(self, anm_event):
+        if not self:
+            return 0
+
+        me = self.target
+        name = me.Name
+        if not _DATA.anm_event_funcs.has_key(name):
+            _DATA.anm_event_funcs[name] = {}
+        if _DATA.anm_event_funcs[name].has_key(anm_event):
+            del _DATA.anm_event_funcs[name][anm_event]
+
+        return me.DelAnmEventFunc(anm_event)
+
+    def SubscribeToList(self, name):
+        if not self:
+            return 0
+
+        me = self.target
+
+        def _on_destroy(this, ent_name):
+            if _DATA.anm_event_funcs.has_key(ent_name):
+                del _DATA.anm_event_funcs[ent_name]
+            this.target = None
+
+        if name == "Pin":
+            Bladex.AddScheduledFunc(-1, _on_destroy, (self, me.Name), GetNSaveName())
+
+        return me.SubscribeToList(name)
+
+    def LaunchAnimation(self, anm_name):
+        ret = self.target.LaunchAnimation(anm_name)
+        if not ret:
+            prefix = self.target.CharTypeExt[:3] + "_"
+            full_anm_name = anm_name
+            if full_anm_name[:4] != prefix:
+                full_anm_name = prefix + full_anm_name
+            else:
+                anm_name = anm_name[4:]
+
+            file_path = AutomatedAssets("../../Anm/%s.bmv" % anm_name)
+            if not os.path.exists(file_path):
+                file_path = AutomatedAssets("../../Anm/%s.bmv" % full_anm_name)
+
+            Bladex.LoadSampledAnimation(file_path, full_anm_name, 0, self.target.Kind)
+            ret = self.target.LaunchAnimation(full_anm_name)
+        return ret
+
+    def LaunchAnmType(self, anm_type, *args):
+        ret = apply(self.target.LaunchAnmType, (anm_type,) + args)
+        if not ret:
+            prefix = self.target.CharTypeExt[:3] + "_"
+            full_anm_name = anm_type
+            if full_anm_name[:4] != prefix:
+                full_anm_name = prefix + full_anm_name
+            else:
+                anm_type = anm_type[4:]
+
+            file_path = AutomatedAssets("../../Anm/%s.bmv" % anm_type)
+            if not os.path.exists(file_path):
+                file_path = AutomatedAssets("../../Anm/%s.bmv" % full_anm_name)
+
+            Bladex.LoadSampledAnimation(file_path, full_anm_name, 0, self.target.Kind)
+            ret = apply(self.target.LaunchAnmType, (full_anm_name,) + args)
+        return ret
+
+    # -----------------------------
+    # def SetAnimation(self, attr, value):
+    #     if not _DATA.sampled_animations.has_key(value):
+    #         Bladex.LoadSampledAnimation(
+    #             "../../Anm/%s" % value, value, 0, self.target.Kind
+    #         )
+    #     setattr(self.target, attr, value)
 
 
 ######### Function Start
@@ -1181,7 +1224,7 @@ def LoadSampledAnimation(file, anm_name, *args):
     # type=0, race_name="", interp=20):
     file = AutomatedAssets(file)
     ret = apply(Bladex_raw.LoadSampledAnimation, (file, anm_name) + args)
-    if ret:
+    if ret == 1:
         _DATA.sampled_animations[anm_name] = args and args[0] or 0
     return ret
 
