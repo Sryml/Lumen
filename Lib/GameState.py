@@ -67,12 +67,13 @@ def SavePickledObjects(file,aux_dir):
     try:
         funcfile=open(filename,"wt")
         p=cPickle.Pickler(funcfile)
+        p.persistent_id = GameStateAux.ManualReduction
         p.dump(ObjStore.ObjectsStore)
         funcfile.close()
     except IOError:
         print "Failed to open file" + filename
         return 0
-    except cPickle.PicklingError: # by Sryml
+    except cPickle.PicklingError: # -Sryml
         print "Failed to pickle file"+filename
         return 0
     return 1
@@ -725,6 +726,7 @@ class WorldState:
             traceback.print_exc()
 
     def SaveState(self,save_dir,quick=0):
+        start_time = time.time()
         printx("[SAVE STARTED]")
         ObjStore.AutoStoreIndex = 0 # -Sryml
         if quick:
@@ -747,6 +749,7 @@ class WorldState:
             save_success = 0
         else:
             printx("[SAVE COMPLETED]")
+            printx("Save Time = %.3f" % (time.time()-start_time))
         # if(self.SaveLState(path)==0):
         #     printx("[SAVE FAILED]: "+path)
         #     Bladex.ShowCriticalWarning("SaveWarning","failed to save"+path);
@@ -1282,12 +1285,12 @@ for i in range(len(keys)):
             
         try:
             p=cPickle.Pickler(globfile)
-        except cPickle.PicklingError: # by Sryml
+        except cPickle.PicklingError: #
             print "Failed to pickle file"+globfile
             globfile.close()
             return 0
             
-
+        p.persistent_id=GameStateAux.persistent_id # -Sryml
         p.dump(globs_dict)
         globfile.close()
         return 1

@@ -7,6 +7,7 @@ import types
 import sys
 import traceback
 import Lumenx
+import cPickle
 
 from Lumenx import printx
 
@@ -121,7 +122,7 @@ def FindFunctionAux(module,fun_name):
 
 
 
-def ConstFunction(fun_name, lib_name, res_obj=None, res_field=""):
+def ConstFunction(fun_name, lib_name):
     # Rewritten -Sryml
     if fun_name == "<lambda>":
         return None
@@ -150,10 +151,16 @@ def RegisterPickFunction():
 
 
 
-def ConstMethod(obj_id, method_name, res_obj=None, res_field=""): # -Sryml
+def ConstMethod(im_self, method_name): # -Sryml
   import Reference
   import ObjStore
   import GameStateAux
+
+  if hasattr(im_self, method_name):
+    return getattr(im_self, method_name)
+  else:
+    printx("PickInit.ConstMethod() can not find method",method_name,"in object",im_self)
+    return None
 
   if ObjStore.ObjectsStore.has_key(obj_id):
     obj = ObjStore.ObjectsStore[obj_id]
@@ -180,12 +187,12 @@ def RedMethod(f): # -Sryml
   im_class = f.im_class
   func_name = f.im_func.func_name
   if im_class == Lumenx.__FunctionDecorator:
-    return ConstCFunction,(func_name, "Module")
+    return RedCFunction(f.im_func)
   elif im_class == Lumenx.B_PyEntity_Proxy:
-    return ConstCFunction,(func_name, f.im_self.target)
+    return RedCFunction(getattr(f.im_self.target, func_name))
   #
   try:
-    return ConstMethod,(f.im_class.persistent_id(f.im_self),func_name)
+    return ConstMethod,(f.im_self,func_name)
   except:
     printx("PickInit.RedMethod() can not register method",f)
     return ConstMethod,(None,None)
@@ -201,9 +208,10 @@ def RegisterPickMethod():
 
 
 
-def ConstCFunction(fun_name, func_self, res_obj=None, res_field=""): # -Sryml
+def ConstCFunction(fun_name, func_self): # -Sryml
   import Reference
 
+  func_self = cPickle.loads(func_self)
   if func_self is None:
     return None
 
@@ -257,7 +265,7 @@ def RedCFunction(f):
   func_self = getattr(f, "__self__", "Module")
   if func_self is None:
     func_self = "Module"
-  return ConstCFunction,(f.__name__, func_self)
+  return ConstCFunction,(f.__name__, cPickle.dumps(func_self))
   # import Reference
   # if getattr(f, "__self__", None) is None: # Asume que es una entidad
   #   return ConstCFunction,(f.__name__,None)

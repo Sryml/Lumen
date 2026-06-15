@@ -1257,7 +1257,9 @@ class VampWeapon:
 		return (1,
 				self.ObjId,
 				self.Name,
-				self.PeriodicDrainTime)
+				self.PeriodicDrainTime,
+				self.Active,
+				)
 
 	def __setstate__(self,parm):
 		version=parm[0]
@@ -1266,8 +1268,8 @@ class VampWeapon:
 			ObjStore.ObjectsStore[self.ObjId]=self
 			self.Name=parm[2]
 			self.PeriodicDrainTime =parm[3]
-			self.Active=0
-			self.Activate()
+			self.Active = parm[4] # -Sryml
+			# self.Activate()
 		else:
 			print "Opps! Invalid Version ;_("
 

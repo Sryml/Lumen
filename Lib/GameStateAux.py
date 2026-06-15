@@ -14,6 +14,7 @@ import ObjStore
 import cStringIO
 import string
 import traceback
+import sys
 
 from Lumenx import printx
 
@@ -121,22 +122,18 @@ def EndGameState(aux_dir):
 
 
 def persistent_id(obj):
-  ret=None
-  try:
-    ret=obj.persistent_id()
-  except AttributeError:
-    pass
-  except Exception,exc:
-    print "GameStateAux.persistent_id()",exc
-  return ret
-
+  if hasattr(obj, "persistent_id"):
+    return obj.persistent_id()
+  else:
+    return ManualReduction(obj)
 
 
 def persistent_load(obj_id):
-
-  if ObjStore.ObjectsStore.has_key(obj_id):
+  if obj_id[0] == "*":
+    return ManualConstruction(obj_id)
+  else:
     #print "Found at ObjStore",ObjStore.ObjectsStore[obj_id],obj_id
-    return ObjStore.ObjectsStore[obj_id]
+    return ObjStore.ObjectsStore.get(obj_id, None)
 
 ##  if LoadedPickledData.has_key(filename):
 ##    print "GameStateAux.persistent_load Found in LoadedPickledData",obj_id
@@ -168,7 +165,7 @@ def SavePickData(filename,data):
   string_file=cStringIO.StringIO()
   p=cPickle.Pickler(string_file)
   p.persistent_id=persistent_id
-  data = SavePickleEnsure(data) #
+  # data = SavePickleEnsure(data) #
   p.dump(data)
   PickDataBase[filename]=string_file.getvalue()
 
@@ -183,31 +180,53 @@ def GetPickledData(filename):
 
   u.persistent_load=persistent_load
   ret=u.load()
-  ret = LoadPickleEnsure(ret) #
+  # ret = LoadPickleEnsure(ret) #
   return ret
 
 
 # ---------------------------------- Sryml
-def SavePickleEnsure(data):
-    data_t = type(data)
-    if data_t == types.MethodType:
-        return PickInit.RedMethod(data)
-    elif data_t == types.FunctionType:
-        return PickInit.RedFunction(data)
+# 手动归约函数
+def ManualReduction(obj):
+    ret = None
+    construction = None
+
+    data_t = type(obj)
+    if data_t == types.FunctionType:
+        construction, args = PickInit.RedFunction(obj)
     elif data_t == types.BuiltinFunctionType:
-        return PickInit.RedCFunction(data)
-    return (None, data)
+        construction, args = PickInit.RedCFunction(obj)
+
+    if construction is not None:
+        ret = "*%s" % repr(((construction.__name__, GetFunctionFile(construction)), args))
+    return ret
+
+# 手动构造函数
+def ManualConstruction(obj_id):
+    (func_name, lib_name), args = eval(obj_id[1:])
+    __import__(lib_name)
+    construction = sys.modules[lib_name].__dict__[func_name]
+
+    return apply(construction, args)
+
+# def SavePickleEnsure(data):
+#     data_t = type(data)
+#     if data_t == types.FunctionType:
+#         return PickInit.RedFunction(data)
+#     elif data_t == types.BuiltinFunctionType:
+#         return PickInit.RedCFunction(data)
+
+#     return (None, data)
 
 
-def LoadPickleEnsure(data_ex, res_obj=None, res_field=""):
-    reconstructor, data = data_ex
-    if reconstructor is not None:
-        data = apply(reconstructor, data + (res_obj, res_field))
+# def LoadPickleEnsure(data_ex, res_obj=None, res_field=""):
+#     reconstructor, data = data_ex
+#     if reconstructor is not None:
+#         data = apply(reconstructor, data)
     
-    if res_obj:
-        setattr(res_obj, res_field, data)
-    else:
-        return data
+#     if res_obj:
+#         setattr(res_obj, res_field, data)
+#     else:
+#         return data
 
 
 def SaveData(filename, d):
@@ -234,6 +253,7 @@ def GetPickledObjects(filename):
 
   f=open(filename,'rt')
   u=cPickle.Unpickler(f)
+  u.persistent_load = ManualConstruction
   ret=u.load()
   f.close()
 
@@ -354,59 +374,17 @@ def AddQuiverToInventory(inv,quiver_name):
 
 
 def SaveFunctionAux(func): # -Sryml
-  return SavePickleEnsure(func)
-  # func_type = type(func)
-  # if func_type == types.MethodType:
-  #   return ("m", PickInit.RedMethod(func)[1])
-  # elif func_type == types.FunctionType:
-  #   return ("f", PickInit.RedFunction(func)[1])
-  # elif func_type == types.BuiltinFunctionType:
-  #   return ("cf", PickInit.RedCFunction(func)[1])
-
-  # return ("n",(None,None))
+  return func
+  # return SavePickleEnsure(func)
 
 
 def LoadFunctionAux(func_id_ex,res_obj=None,res_field="",aux=None): # -Sryml
-  return LoadPickleEnsure(func_id_ex,res_obj,res_field)
-
-  assign_func=None
-  
-  if type(func_id_ex) != types.TupleType:
-    printx("LoadFunctionAux() ERROR, invalid parameters",type(func_id_ex))
-    return
-
-  func_id=func_id_ex[1]
-
-  func_kind=func_id_ex[0]
-  if func_kind=="m": # Metodo
-    assign_func=PickInit.ConstMethod(func_id[0],func_id[1],res_obj,res_field)
-    # ob_id=func_id[0]
-    # if ObjStore.ObjectsStore.has_key(ob_id):
-    #   cl=ObjStore.ObjectsStore[ob_id]
-    #   #res_obj.__dict__[res_field]=eval("cl."+func_id[1])
-    #   assign_func=eval("cl."+func_id[1])
-    # else:
-    #   if res_obj is not None:
-    #     if type(res_obj) == type(Bladex.GetEntity("Camera")): # -Sryml
-    #       #print "FixDataBase.append() Entity->",func_id,res_obj.Name,res_field,ob_id
-    #       FixDataBase.append((func_id,res_obj.Name,res_field,ob_id,"Entity"))
-    #     else:
-    #       #print "FixDataBase.append() class->",func_id,res_obj.ObjId,res_field,ob_id
-    #       FixDataBase.append((func_id,res_obj.ObjId,res_field,ob_id,None))
-    #   else:
-    #     printx("Can not find object to add to FixDataBase",func_id_ex)
-  elif func_kind=="f":  # Funcion
-    assign_func=PickInit.ConstFunction(func_id[0],func_id[1])
-  elif func_kind=="cf": # Funcion C
-    assign_func=PickInit.ConstCFunction(func_id[0],func_id[1])
-  elif func_kind=="n":  # None
-    assign_func=None
-
-  #res_obj.__dict__[res_field]=assign_func
   if res_obj:
-    setattr(res_obj, res_field, assign_func)
+    setattr(res_obj, res_field, func_id_ex)
   else:
-    return assign_func
+    return func_id_ex
+  # return LoadPickleEnsure(func_id_ex,res_obj,res_field)
+
 
 
 def SaveObjectAux(obj):

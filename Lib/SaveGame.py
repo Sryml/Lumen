@@ -192,7 +192,9 @@ def QuickSave():
     import Actions
     import ObjStore
 
-    if string.lower(Lumenx.GetCurrentMap()) not in ("casa", "2dmap"):
+    map_name = Lumenx.GetMapListItem(Lumenx.GetCurrentMap(), Lumenx.GetCurrentMod())
+    # if string.lower(Lumenx.GetCurrentMap()) not in ("casa", "2dmap"):
+    if Bladex.GetEntity("Player1").Life > 0 and map_name:
         ObjStore.CheckStore()
         SaveGameToDisk(clave="1", quick=1)
         Actions.ReportMsg(MenuText.GetMenuText("Quick Save"))

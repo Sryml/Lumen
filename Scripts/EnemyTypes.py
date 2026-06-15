@@ -30,6 +30,7 @@ import GenFX
 import OnOff
 import DMusic
 import ObjStore
+import types
 
 from Lumenx import AutomatedAssets
 
@@ -1006,8 +1007,8 @@ class Little_Demon (Enm_Def.NPCPerson):
 		self.SoundPriorities[Reference.SND_PC]      = 80.0
 
 		# Create a linear interpolator for fading
-		FadeList=[me.Name]
-		self.Fader= EntitiesFader (FadeList)
+		# FadeList=[me.Name]
+		self.Fader= EntitiesFader (me.Name)
 
 		self.DamageFactorNone  = 0.1
 		self.DamageFactorLight = 0.2
@@ -1024,7 +1025,7 @@ class Little_Demon (Enm_Def.NPCPerson):
 		if(NPCPerson_state[0]!=1):
 			print "ERROR: Little_Demon.__getstate__(): Base class version differs."
 			return NPCPerson_state
-		NPCPerson_state[1]["Little_Demon"]=(self.AGE_Number,)
+		NPCPerson_state[1]["Little_Demon"]=(self.AGE_Number,self.Fader)
 		return NPCPerson_state
 
 	def __setstate__(self,parm):
@@ -1034,11 +1035,12 @@ class Little_Demon (Enm_Def.NPCPerson):
 		if version==1:
 			parms=parm[1]["Little_Demon"]
 			self.AGE_Number=parms[0]
+			self.Fader=parms[1]
 
 		me=Bladex.GetEntity(self.Name)
 		# Create a linear interpolator for fading
-		FadeList=[me.Name]
-		self.Fader= EntitiesFader (FadeList)
+		# FadeList=[me.Name]
+		# self.Fader= EntitiesFader (FadeList)
 		self.FadeOutTime= 0.23333
 		self.FadeInTime= 0.23333
 		self.TransitTime= 0.0
@@ -1868,16 +1870,18 @@ class Spidersmall (Enm_Def.NPCPerson):
 class EntitiesFader(Interpolator.LinearInt):
 	"Clase para hacer desaparecer una entidad"
 
-	def __init__(self, Entities2Fade):
-		Interpolator.LinearInt.__init__ (self,1.0,0.0)
+	def __init__(self, Owner, init_value=1.0, end_value=0.0):
+		Interpolator.LinearInt.__init__ (self,init_value,end_value)
 		self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
 		ObjStore.ObjectsStore[self.ObjId]=self
 
-		name= "Entity Fader for; "
-		for entity_name in Entities2Fade:
-			name= name+entity_name+", "
-		self.Interpolator= Interpolator.Interp(name)
-		self.Entities2Fade= Entities2Fade
+		if type(Owner) in (types.ListType, types.TupleType):
+			Owner = Owner[0]
+
+		name= "Entity Fader for; " + Owner
+		self.Owner = Owner
+		self.Interpolator = Interpolator.Interp(name)
+		self.Entities2Fade = []
 
 	#def __del__(self):
 	#	Interpolator.LinearInt.__del__(self)
@@ -1891,30 +1895,47 @@ class EntitiesFader(Interpolator.LinearInt):
 		# Tiene que devolver c䮯 poder guardar el estado de la clase
 		return (1,
 			self.ObjId,
+			self.Owner,
 			self.Interpolator,
-			self.Entities2Fade
+			self.Entities2Fade,
+			self.init_value,
+			self.end_value,
+			self.period,
+			self.Execute,
 			)
 
 	def __setstate__(self,parm):
 		# Toma como par⮥tro lo que devuelve __getstate__() y debe recrear la clase
 		if parm[0]==1:
-			self.ObjId=parm[1]
+			(
+				self.ObjId,
+				self.Owner,
+				self.Interpolator,
+				self.Entities2Fade,
+				self.init_value,
+				self.end_value,
+				self.period,
+				self.Execute,
+			) = parm[1:]
 			ObjStore.ObjectsStore[self.ObjId]=self
-			self.Interpolator=parm[2]
-			self.Entities2Fade=parm[3]
-			self.init_value=1.0
-			self.end_value=0.0
-			self.period=self.end_value-self.init_value
 		else:
 			print "Warning -> Version mismatch in EntitiesFader.__setstate__()"
 			self.Interpolator= None
-			self.Entities2Fade= None
+			self.Entities2Fade= []
 			self.init_value=1.0
 			self.end_value=0.0
 			self.period=self.end_value-self.init_value
 
 			self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
 			ObjStore.ObjectsStore[self.ObjId]=self
+
+	def SetEntities2Fade(self):
+		me = Bladex.GetEntity(self.Owner)
+		self.Entities2Fade = [self.Owner]
+		if me.InvRight:
+			self.Entities2Fade.append(me.InvRight)
+		if me.InvLeft:
+			self.Entities2Fade.append(me.InvLeft)
 
 	def ExecuteFadeOut(self,value):
 		#pdb.set_trace()
@@ -1932,6 +1953,7 @@ class EntitiesFader(Interpolator.LinearInt):
 				entity.Alpha= 1.0-ret
 
 	def FadeOut(self, period):
+		self.SetEntities2Fade()
 		self.Interpolator.Actions=[]
 		self.Execute= self.ExecuteFadeOut
 		time= Bladex.GetTime()
@@ -1939,6 +1961,7 @@ class EntitiesFader(Interpolator.LinearInt):
 
 	def FadeIn(self, period):
 		#pdb.set_trace()
+		self.SetEntities2Fade()
 		self.Interpolator.Actions=[]
 		self.Execute= self.ExecuteFadeIn
 		time= Bladex.GetTime()
@@ -1984,12 +2007,12 @@ class Vamp (Enm_Def.NPCPerson):
 		self.SoundPriorities[Reference.SND_PC]      = 80.0
 
 		# constants
-		FadeList=[me.Name]
-		if Actions.StatR(me.Name)!=Actions.RA_NO_WEAPON:
-			FadeList.append (me.InvRight)
-		if Actions.StatL(me.Name)!=Actions.LA_NO_WEAPON:
-			FadeList.append (me.InvLeft)
-		self.Fader= EntitiesFader (FadeList)
+		# FadeList=[me.Name]
+		# if Actions.StatR(me.Name)!=Actions.RA_NO_WEAPON:
+		# 	FadeList.append (me.InvRight)
+		# if Actions.StatL(me.Name)!=Actions.LA_NO_WEAPON:
+		# 	FadeList.append (me.InvLeft)
+		self.Fader= EntitiesFader (me.Name)
 
 		me.AddAnmEventFunc("Disappear", self.DisappearEvent)
 
@@ -2001,7 +2024,7 @@ class Vamp (Enm_Def.NPCPerson):
 		if(NPCPerson_state[0]!=1):
 			print "ERROR: Vamp.__getstate__(): Base class version differs."
 			return NPCPerson_state
-		NPCPerson_state[1]["Vamp"]=(self.Enemy, self.EnemyAngle)
+		NPCPerson_state[1]["Vamp"]=(self.Enemy, self.EnemyAngle, self.Fader)
 		return NPCPerson_state
 
 	def __setstate__(self,parm):
@@ -2012,15 +2035,16 @@ class Vamp (Enm_Def.NPCPerson):
 			parms=parm[1]["Vamp"]
 			self.Enemy=parms[0]
 			self.EnemyAngle=parms[1]
+			self.Fader=parms[2]
 
 		me=Bladex.GetEntity(self.Name)
 		# Create a linear interpolator for fading
-		FadeList=[me.Name]
-		if Actions.StatR(me.Name)!=Actions.RA_NO_WEAPON:
-			FadeList.append (me.InvRight)
-		if Actions.StatL(me.Name)!=Actions.LA_NO_WEAPON:
-			FadeList.append (me.InvLeft)
-		self.Fader= EntitiesFader (FadeList)
+		# FadeList=[me.Name]
+		# if Actions.StatR(me.Name)!=Actions.RA_NO_WEAPON:
+		# 	FadeList.append (me.InvRight)
+		# if Actions.StatL(me.Name)!=Actions.LA_NO_WEAPON:
+		# 	FadeList.append (me.InvLeft)
+		# self.Fader= EntitiesFader (FadeList)
 		self.FadeOutTime= 0.45
 		self.FadeInTime= 0.65
 		self.TransitTime= 0.20
@@ -2684,8 +2708,8 @@ class Great_Demon (Enm_Def.NPCPerson):
 		me.ImDeadFunc=self.ImDeadFunc
 
 		# Create a linear interpolator for fading
-		FadeList=[me.Name]
-		self.Fader= EntitiesFader (FadeList)
+		# FadeList=[me.Name]
+		self.Fader= EntitiesFader (me.Name)
 
 		pos= me.Position
 
@@ -2756,7 +2780,8 @@ class Great_Demon (Enm_Def.NPCPerson):
 						shield_light_Name,
 						shield_particle_system_Name,
 						self.LifeUpCalled,
-						self.RingName)
+						self.RingName,
+						self.Fader,)
 		return NPCPerson_state
 
 	def __setstate__(self,parm):
@@ -2778,6 +2803,7 @@ class Great_Demon (Enm_Def.NPCPerson):
 			shield_particle_system_Name=parms[4]
 			self.LifeUpCalled=parms[5]
 			self.RingName=parms[6]
+			self.Fader=parms[7]
 
 			self.shield_light=Bladex.GetEntity(shield_light_Name)
 			self.shield_particle_system=Bladex.GetEntity(shield_particle_system_Name)
@@ -2797,8 +2823,8 @@ class Great_Demon (Enm_Def.NPCPerson):
 			self.ShieldLife= 10000.0
 
 			# Create a linear interpolator for fading
-			FadeList=[me.Name]
-			self.Fader= EntitiesFader (FadeList)
+			# FadeList=[me.Name]
+			# self.Fader= EntitiesFader (FadeList)
 			self.FadeOutTime= 0.23333
 			self.FadeInTime= 0.23333
 			self.TransitTime= 0.0
@@ -4349,8 +4375,8 @@ class DalGurak (Enm_Def.NPCPerson):
 
 		#constants
 		# Create a linear interpolator for fading
-		FadeList=[me.Name]
-		self.Fader= EntitiesFader (FadeList)
+		# FadeList=[me.Name]
+		self.Fader= EntitiesFader (me.Name)
 		me.AddAnmEventFunc("StartBall", self.StartBall)
 		me.AddAnmEventFunc("FireBall", self.ShootBall)
 		me.AddAnmEventFunc("Diskcreate", self.CreateDisk)
@@ -4409,7 +4435,8 @@ class DalGurak (Enm_Def.NPCPerson):
 										self.BallName,
 										self.MissileName,
 										DalweaponName,
-										DalshieldName)
+										DalshieldName,
+										self.Fader,)
 		return NPCPerson_state
 
 	def __setstate__(self,parm):
@@ -4426,6 +4453,8 @@ class DalGurak (Enm_Def.NPCPerson):
 			self.MissileName= parms[6]
 			DalweaponName=  parms[7]
 			DalshieldName=  parms[8]
+			self.Fader= parms[9]
+
 
 			if DalweaponName: self.Dalweapon= Bladex.GetEntity(DalweaponName)
 			else: self.Dalweapon= None
@@ -4436,8 +4465,8 @@ class DalGurak (Enm_Def.NPCPerson):
 			#constants
 			# Create a linear interpolator for fading
 			me=Bladex.GetEntity(self.Name)
-			FadeList=[me.Name]
-			self.Fader= EntitiesFader (FadeList)
+			# FadeList=[me.Name]
+			# self.Fader= EntitiesFader (FadeList)
 			self.FadeOutTime= 0.23333
 			self.FadeInTime= 0.23333
 			self.TransitTime= 0.0
