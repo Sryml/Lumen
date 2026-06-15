@@ -88,6 +88,7 @@ class ClsFadeText(Interpolator.LinearInt):
 
   def Abort(self):
     Interpolator.InterpGeneral.RemoveAction(self.current_action)
+    self.current_action = None
 
   def Execute(self,value):
     import Scorer

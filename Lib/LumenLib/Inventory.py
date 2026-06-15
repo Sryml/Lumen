@@ -676,7 +676,7 @@ class InventoryUI:
         self.fader.current_action = None
         self.fader.EndExecute = self.EndExecute
 
-        self.interpolator = Interpolator.Interp("LumenInventory", 0)
+        self.interpolator = Interpolator.InterpGeneral
         #
         max_items = MAX_PAGES * 8
         # (name, kind, number, max_stack, star_flag)

@@ -84,12 +84,11 @@ class Interp:
 
 
   def Kill(self):
-    Bladex.RemoveAfterFrameFunc("Interp"+self.name)
+    Bladex.RemoveAfterFrameFunc(self.name)
 
 
   def __init__(self,name,make_persistent=1):
     self.Actions=[]
-    self.name=name
     suffix = ""
     if make_persistent:
       self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
@@ -97,11 +96,18 @@ class Interp:
     else:
       self.ObjId = None
       suffix = "[NSAVE]"
-    Bladex.SetAfterFrameFunc("Interp"+name+suffix,self.ExecuteActions)
+
+    name = "Interp" + name + suffix
+    self.name = name
+    f = Bladex.GetAfterFrameFunc(name)
+    if f is not None:
+      im_self = f.im_self
+      im_self.Actions = []
+    Bladex.SetAfterFrameFunc(name,self.ExecuteActions)
 
 
-  def __del__(self):
-    self.Kill()
+  # def __del__(self):
+  #   self.Kill()
 
   def persistent_id(self):
     return self.ObjId
