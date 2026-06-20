@@ -33,7 +33,7 @@ import Netval
 import Torchs
 import ItemTypes
 
-from Lumenx import AutomatedAssets
+from Lumenx import AutomatedAssets, printx
 from LumenLib import Inventory
 from LumenLib.Trajectory import Trajectory
 
@@ -3187,19 +3187,47 @@ def QuickDeath(EntityName,EventName):
 # ----------------------------------
 # -Sryml
 # ----------------------------------
+TestJumpLock = 0
+
 def TestJump(EntityName, EventName):
+	global TestJumpLock
+
 	me = Bladex.GetEntity(EntityName)
-	mouse_move = Bladex.GetTimeActionHeld("RotateX")
-	right_pressed = Bladex.GetTimeActionHeld("Turn Right")
-	left_pressed = Bladex.GetTimeActionHeld("Turn Left")
-	back_pressed = Bladex.GetTimeActionHeld("Backwards")
 	if Lumenx.GetConfig("DodgeByMouseMovement") == "Disabled" and EntityName == Lumenx.GetControlCharacter().Name:
-		if right_pressed or left_pressed or back_pressed or mouse_move > 0.1:
-			me.RaiseEvent("Jump_Raw")
-			if back_pressed and CurrentlyBowing(EntityName):
-				me.LaunchAnimation("D_b")
+		if not TestJumpLock:
+			TestJumpLock = 1
+			Bladex.RemoveBoundFunc("RotateX", "RotateMouseX")
+			Bladex.AddScheduledFunc(Bladex.GetTime()+0.01, TestJumpDelay, (), "Actions.TestJumpDelay[NSAVE]")
+			# Lumenx.SetAfterFrameFunc2("Actions.TestJumpDelay[NSAVE]", TestJumpDelay, 1)
 	else:
 		me.RaiseEvent("Jump_Raw")
+
+	# me = Bladex.GetEntity(EntityName)
+	# mouse_move = Bladex.GetTimeActionHeld("RotateX")
+	# right_pressed = Bladex.GetTimeActionHeld("Turn Right")
+	# left_pressed = Bladex.GetTimeActionHeld("Turn Left")
+	# back_pressed = Bladex.GetTimeActionHeld("Backwards")
+	# if Lumenx.GetConfig("DodgeByMouseMovement") == "Disabled" and EntityName == Lumenx.GetControlCharacter().Name:
+	# 	if right_pressed or left_pressed or back_pressed or mouse_move > 0.1:
+	# 		me.RaiseEvent("Jump_Raw")
+	# 		if back_pressed and CurrentlyBowing(EntityName):
+	# 			me.LaunchAnimation("D_b")
+	# else:
+	# 	me.RaiseEvent("Jump_Raw")
+
+
+def TestJumpDelay():
+	global TestJumpLock
+
+	me = Lumenx.GetControlCharacter()
+	me.RaiseEvent("Jump_Raw")
+	back_pressed = Bladex.GetTimeActionHeld("Backwards")
+	if back_pressed and CurrentlyBowing(me.Name):
+		me.LaunchAnimation("D_b")
+
+	Bladex.AddBoundFunc("RotateX", "RotateMouseX")
+	TestJumpLock = 0
+
 
 # ----------------------------------
 
