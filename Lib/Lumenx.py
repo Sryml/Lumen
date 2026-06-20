@@ -60,13 +60,13 @@ class _DATA:
             "tower_m16": "Tower of Dal Gurak",
             "chaos_m17": "The Abyss",
             #
-            "palace_back": "The Temple of Ianna",
-            "mine_back": "Mines of Kelbegen",
-            "labyrinth_back": "Fortress of Tell Halaf",
-            "tomb_back": "Tombs of Ephyra",
-            "ice_back": "Fortress of Nemrut",
-            "btomb_back": "The Oasis of Nejeb",
-            "desert_back": "Temple of Al Farum",
+            "palace_back": "The Temple of Ianna (Back)",
+            "mine_back": "Mines of Kelbegen (Back)",
+            "labyrinth_back": "Fortress of Tell Halaf (Back)",
+            "tomb_back": "Tombs of Ephyra (Back)",
+            "ice_back": "Fortress of Nemrut (Back)",
+            "btomb_back": "The Oasis of Nejeb (Back)",
+            "desert_back": "Temple of Al Farum (Back)",
         }
     }
     #
@@ -508,7 +508,7 @@ class B_PyEntity_Proxy:
 
     # -----------------------------
     def SetSound(self, file_name):
-        file_name = AutomatedAssets(file_name)
+        file_name = AutomatedAssets(file_name, multi_ext=1)
         return self.target.SetSound(file_name)
 
     def SetMaxCamera(self, cam_file_name, start, end):
@@ -642,7 +642,14 @@ def AddMusicEventADPCM(
     loop,
     unknown=0,
 ):
+    base, ext = os.path.splitext(file)
+    ext_raw = ""
+    if string.lower(ext) == ".mp3":
+        ext_raw = ext
+        file = "%s.ogg" % base
     file = AutomatedAssets(file)
+    if ext_raw:
+        file = "%s%s" % (os.path.splitext(file)[0], ext_raw)
     return Bladex_raw.AddMusicEventADPCM(
         event_name, file, f_in, f_out, volume, priority, background, loop, unknown
     )
@@ -659,7 +666,14 @@ def AddMusicEventMP3(
     loop,
     unknown=0,
 ):
+    base, ext = os.path.splitext(file)
+    ext_raw = ""
+    if string.lower(ext) == ".mp3":
+        ext_raw = ext
+        file = "%s.ogg" % base
     file = AutomatedAssets(file)
+    if ext_raw:
+        file = "%s%s" % (os.path.splitext(file)[0], ext_raw)
     return Bladex_raw.AddMusicEventMP3(
         event_name, file, f_in, f_out, volume, priority, background, loop, unknown
     )
@@ -676,7 +690,14 @@ def AddMusicEventWAV(
     loop,
     opened=0,
 ):
+    base, ext = os.path.splitext(file)
+    ext_raw = ""
+    if string.lower(ext) == ".mp3":
+        ext_raw = ext
+        file = "%s.ogg" % base
     file = AutomatedAssets(file)
+    if ext_raw:
+        file = "%s%s" % (os.path.splitext(file)[0], ext_raw)
     return Bladex_raw.AddMusicEventWAV(
         event_name, file, f_in, f_out, volume, priority, background, loop, opened
     )
@@ -740,30 +761,10 @@ def AssocKey(action_name, device, key, on_press=1):
     return 1
 
 
-def AutomatedAssets(path, root_priority=[]):
+def AutomatedAssets(path, root_priority=[], multi_ext=0):
     """AutomatedAssets("../../3DObjs/3dObjs.mmp")\n"""
     if path == "":
         return path
-    #
-    base, ext = os.path.splitext(path)
-    ext = string.lower(ext)
-    #
-    if ext == ".bmv":
-        root_priority = root_priority + _DATA.AssetAnimationPath
-    elif ext in (".bmp", ".jpg", ".jpeg", ".png", ".mmp"):
-        root_priority = root_priority + _DATA.AssetImagePath
-    elif ext == ".bod":
-        root_priority = root_priority + _DATA.AssetModelPath
-    elif ext in (".wav", ".mp3", ".ogg"):
-        root_priority = root_priority + _DATA.AssetSoundPath
-    else:
-        root_priority = root_priority + _DATA.AssetOtherPath
-    #
-    check_ext = ()
-    # if ext in (".wav", ".mp3"):
-    #     check_ext = (".ogg",)
-    # elif ext in (".jpg", ".png", ".bmp") and string.lower(base[-3:]) != "_hi":
-    #     check_ext = ("_hi.jpg", "_hi.png", "_hi.bmp")
     #
     base_path = os.path.relpath(path, _DATA.mod_root)
     if base_path is None:
@@ -782,45 +783,53 @@ def AutomatedAssets(path, root_priority=[]):
                 break
         base_path = os.path.relpath(path, base_root)
     #
+    base, ext = os.path.splitext(base_path)
+    ext = string.lower(ext)
+    check_ext = [ext]
+    #
+    if ext == ".bmv":
+        root_priority = root_priority + _DATA.AssetAnimationPath
+    elif ext in (".bmp", ".jpg", ".jpeg", ".png", ".mmp"):
+        root_priority = root_priority + _DATA.AssetImagePath
+    elif ext == ".bod":
+        root_priority = root_priority + _DATA.AssetModelPath
+    elif ext in (".wav", ".mp3", ".ogg"):
+        root_priority = root_priority + _DATA.AssetSoundPath
+        if multi_ext:
+            check_ext = [".wav", ".ogg", ".mp3"]
+            idx = check_ext.index(ext)
+            check_ext[0], check_ext[idx] = check_ext[idx], check_ext[0]
+    else:
+        root_priority = root_priority + _DATA.AssetOtherPath
+    #
     new_path = path
+    exists = 0
     for root in root_priority:
         if not root:
             continue
         # if root == base_root or os.path.commonprefix([root, base_root]) != root:
-        _path = os.path.join(root, base_path)
-        if os.path.exists(_path):
-            new_path = _path
+        for e in check_ext:
+            _path = os.path.join(root, "%s%s" % (base, e))
+            if os.path.exists(_path):
+                new_path = _path
+                exists = 1
+                break
+        if exists:
             break
-        elif check_ext:
-            base = os.path.splitext(_path)[0]
-            for ext in check_ext:
-                _path = base + ext
-                if os.path.exists(_path):
-                    new_path = _path
-                    break
-            else:
+    #
+    if not exists and (not os.path.exists(new_path)):
+        for root in _DATA.asset_path:
+            if len(root) < base_root_len:
                 continue
-            break
-    # 如果没有发生break
-    else:
-        if not os.path.exists(new_path):
-            for root in _DATA.asset_path:
-                if len(root) < base_root_len:
-                    continue
-                #
-                exists = 0
-                new_path = os.path.join(root, base_path)
-                if check_ext:
-                    base = os.path.splitext(new_path)[0]
-                    for ext in check_ext:
-                        _path = base + ext
-                        if os.path.exists(_path):
-                            new_path = _path
-                            exists = 1
-                            break
-                if not exists:
-                    if os.path.exists(new_path):
-                        break
+            #
+            for e in check_ext:
+                new_path = os.path.join(root, "%s%s" % (base, e))
+                if os.path.exists(new_path):
+                    exists = 1
+                    break
+            if exists:
+                break
+
     #
     return new_path
 
@@ -927,7 +936,7 @@ def CreateEntity(name, kind, x, y, z, *args):
 
 
 def CreateSound(file_name, sound_name):
-    file_name = AutomatedAssets(file_name)
+    file_name = AutomatedAssets(file_name, multi_ext=1)
     return Bladex_raw.CreateSound(file_name, sound_name)
 
 
@@ -1005,7 +1014,7 @@ def GetLumenRoot():
     return _DATA.lumen_root
 
 
-def GetMapList(mod_dir):
+def GetMapList(mod_dir=""):
     mod_dir = string.lower(mod_dir)
     return _DATA.map_list.get(mod_dir, {})
 
@@ -1273,6 +1282,7 @@ def ReadLevel(file_name):
             if len(lst) != 2:
                 continue
             key, val = lst
+            val = re.split(r"\s+", val)[0]
             val = string.replace(val, "\\", "/")
             if key != "GammaC":
                 if key in ("Bitmaps", "WorldDome"):
@@ -1349,6 +1359,10 @@ def SaveConfig(config):
     f.write(pp.pformat(config))
     f.close()
     printx("Lumen: Config saved.")
+
+
+def SetAfterFrameFunc2(name, callback, t_frame):
+    AfterFrameFunc2(name, callback, t_frame)
 
 
 def SetBladeRoot(path):
@@ -1443,6 +1457,25 @@ def ShowCriticalWarning(*args):
 # -----------------------------
 # Class Start
 # -----------------------------
+
+
+class AfterFrameFunc2:
+    def __init__(self, name, callback, t_frame):
+        self.current_frame = 0
+        self.name = name
+        self.callback = callback
+        self.t_frame = t_frame
+
+        Bladex.SetAfterFrameFunc(self.name, self.AfterFrameFunc)
+
+    def AfterFrameFunc(self, time):
+        if self.current_frame >= self.t_frame:
+            Bladex.RemoveAfterFrameFunc(self.name)
+            self.callback()
+        else:
+            self.current_frame = self.current_frame + 1
+
+
 # class CameraData:
 #     def __init__(self, me):
 #         # type: (Bladex._entity.B_Entity_Camera) -> None
@@ -1597,6 +1630,7 @@ RemoveBoundFunc
 RemoveInputAction
 SaveAnmRaceData
 SaveConfig
+SetAfterFrameFunc2
 SetBladeRoot
 SetControlCharacter
 SetCurrentMap
