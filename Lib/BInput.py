@@ -179,18 +179,13 @@ class B_InputActionPtr:
             IActions = InputManager.GetInputActions()
             # If already bound, unbind and overwrite
             if device_obj.IsBinded(key):
-                interrupt = 0
                 for name in IActions.names:
                     # Actions with IsConst set to 1 will not be overridden, skipped
                     if IActions.actions[name]["IsConst"] or name == self.name:
                         continue
-                    for _key, _on_press in IActions.actions[name]["Devices"][device]:
-                        if (_key, _on_press) == key_tuple:
-                            IAction = IActions.Find(name)
-                            IAction.RemoveEvent(device_obj, key, on_press)
-                            interrupt = 1
-                            break
-                    if interrupt:
+                    if key_tuple in IActions.actions[name]["Devices"][device]:
+                        IAction = IActions.Find(name)
+                        IAction.RemoveEvent(device_obj, key, on_press)
                         break
             #
             self.action["Devices"][device].append(key_tuple)
@@ -382,18 +377,13 @@ class B_InputManagerPtr:
         # If already bound, unbind and overwrite
         device_obj = GetInputManager().GetAttachedDevice(device)
         if device_obj.IsBinded(key):
-            interrupt = 0
             for name in IActions.names:
                 # Actions with IsConst set to 1 will not be overridden, skipped
                 if IActions.actions[name]["IsConst"] or name == action_name:
                     continue
-                for _key, _on_press in IActions.actions[name]["Devices"][device]:
-                    if (_key, _on_press) == key_tuple:
-                        IAction = IActions.Find(name)
-                        IAction.RemoveEvent(device_obj, key, on_press)
-                        interrupt = 1
-                        break
-                if interrupt:
+                if key_tuple in IActions.actions[name]["Devices"][device]:
+                    IAction = IActions.Find(name)
+                    IAction.RemoveEvent(device_obj, key, on_press)
                     break
         #
         IActions.actions[action_name]["Devices"][device].append(key_tuple)
@@ -520,4 +510,5 @@ def GetInputManager():
 
 # -------------- INITIALIZATION ------------------
 
+GetInputManager().AddInputActionsSet("EmptySet")
 GetInputManager().AddInputActionsSet("Default")

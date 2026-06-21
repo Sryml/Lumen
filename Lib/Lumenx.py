@@ -98,6 +98,7 @@ class _DATA:
     listener_pos = (1, 0, 0, 0)
     anm_event_funcs = {}
     sampled_animations = {}
+    last_input_set = ""
 
 
 ######### Initialization #########
@@ -359,6 +360,7 @@ def __empty_func(*args, **kwargs):
 
 # Backup Bladex functions to Bladex_raw
 __bladex_decorators = [
+    "ActivateInput",
     "AddBoundFunc",
     "AddInputAction",
     "AddMusicEventADPCM",
@@ -368,6 +370,7 @@ __bladex_decorators = [
     "BodInspector",
     "CreateEntity",
     "CreateSound",
+    "DeactivateInput",
     "DeleteEntity",
     "GetCurrentMap",
     "GetEntity",
@@ -603,6 +606,16 @@ class B_PyEntity_Proxy:
 
 
 ######### Function Start
+def ActivateInput():
+    InputManager = BInput.InputManager
+    IAS = InputManager.GetInputActionsSet()
+    if IAS != "EmptySet":
+        return 0
+    InputManager.SetInputActionsSet(_DATA.last_input_set)
+    return 1
+    # Bladex_raw.ActivateInput()
+
+
 def AddBoundFunc(action_name, proc):
     IActions = BInput.GetInputManager().GetInputActions()
     action_name = BInput.GetInternalName(IActions.ID, action_name)
@@ -938,6 +951,17 @@ def CreateEntity(name, kind, x, y, z, *args):
 def CreateSound(file_name, sound_name):
     file_name = AutomatedAssets(file_name, multi_ext=1)
     return Bladex_raw.CreateSound(file_name, sound_name)
+
+
+def DeactivateInput():
+    InputManager = BInput.InputManager
+    IAS = InputManager.GetInputActionsSet()
+    if IAS == "EmptySet":
+        return 0
+    _DATA.last_input_set = IAS
+    InputManager.SetInputActionsSet("EmptySet")
+    return 1
+    # Bladex_raw.DeactivateInput()
 
 
 def DeleteEntity(arg):
@@ -1615,6 +1639,7 @@ GetTimeActionHeld
 InventoryActivatedByFocus
 InventoryActivatedByNumbers
 IsCacheEnabled
+IsSavedGame
 LinkAbs
 LoadAnmRaceData
 LoadComponent
