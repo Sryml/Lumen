@@ -445,6 +445,7 @@ class ClsTSDB:
     Ignore = []
     JrlTxt = {}
     JrlIds = []
+    FreeHandsWhenTalk = 1
 
     def __init__(self):
         self.ObjId = ObjStore.GetNewId()  # Para identificarlo al grabar/guardar
@@ -460,6 +461,7 @@ class ClsTSDB:
             # self.ObjId,
             self.Var,
             self.JrlIds,
+            self.FreeHandsWhenTalk,
             # GameStateAux.SaveNewMembers(self),
             # GameStateAux.SaveFunctionAux(self.InitGenFunc),
         )
@@ -471,9 +473,8 @@ class ClsTSDB:
             pass
             # GameStateAux.LoadFunctionAux(parm[13],self,"InitGenFunc")
         elif parm[0] == 2:
-            TSDB.Var = parm[1]
-            TSDB.JrlIds = parm[2]
-            # GameStateAux.LoadNewMembers(self, parm[3])
+            TSDB.Var, TSDB.JrlIds, TSDB.FreeHandsWhenTalk = parm[1:]
+            # GameStateAux.LoadNewMembers(TSDB, parm[-1])
 
     def Init(self, module=None):
         if module:
@@ -645,7 +646,7 @@ class ClsTS:
         TSText.AddText(self.Parse("%" + person + ": " + CurrentDlg["Text"]))
         if CurrentDlg.has_key("ExtraDlg"):
             TSText.AddText(
-                self.Parse(CurrentDlg["ExtraDlg"][0] + ": " + CurrentDlg["ExtraDlg"][1])
+                self.Parse("%" + CurrentDlg["ExtraDlg"][0] + ": " + CurrentDlg["ExtraDlg"][1])
             )
 
         nAnswers = 0
@@ -1256,7 +1257,7 @@ class ClsTSWidgets:
                 Bladex.GetTime() + AnimFPS_T,  # 60 FPS
                 self.SlideFrame,
                 (OnOff, time + AnimFPS_T),
-                "TS_SlideFrame",
+                "TS_SlideFrame[NSAVE]",
             )
         else:
             f = 1.0
@@ -1288,11 +1289,14 @@ class ClsTSWidgets:
         Bladex.RemoveBoundFunc("Attack", "Attack")
         IManager.SetInputActionsSet("TalkSystem")
         Bladex.RemoveBoundFunc("Attack", "Attack")
-        Actions.FreeBothHands("Player1")
+
+        if TSDB.FreeHandsWhenTalk:
+            Actions.FreeBothHands("Player1")
+
         Scorer.PowDefWidgets.Deactivate()
-        Bladex.RemoveScheduledFunc("TS_Hide")
+        Bladex.RemoveScheduledFunc("TS_Hide[NSAVE]")
         Bladex.RemoveScheduledFunc("TS_Disable")
-        Bladex.RemoveScheduledFunc("TS_SlideFrame")
+        Bladex.RemoveScheduledFunc("TS_SlideFrame[NSAVE]")
         self.DialogFrame.SetVisible(1)
         self.SlideFrame(0)
         Bladex.AddScheduledFunc(
@@ -1302,16 +1306,16 @@ class ClsTSWidgets:
     def Show(self):
         for i in range(1, TSText.MaxLines + 1):
             self.TextWidget[i].SetVisible(1)
-        TSText.ShowText()
+        # TSText.ShowText() # Repeated calls
 
     def Disable(self):
         for i in range(1, TSText.MaxLines + 1):
             self.TextWidget[i].SetVisible(0)
         Bladex.RemoveScheduledFunc("TS_Show")
-        Bladex.RemoveScheduledFunc("TS_SlideFrame")
+        Bladex.RemoveScheduledFunc("TS_SlideFrame[NSAVE]")
         self.SlideFrame(1)
         Bladex.AddScheduledFunc(
-            Bladex.GetTime() + 1 / AnimSpeed, self.Hide, (), "TS_Hide"
+            Bladex.GetTime() + 1 / AnimSpeed, self.Hide, (), "TS_Hide[NSAVE]"
         )
         IManager = BInput.GetInputManager()
         IManager.SetInputActionsSet(self.LastIAS)
@@ -1327,8 +1331,8 @@ class ClsTSWidgets:
 
     def jEnable(self):
         # Bladex.RemoveScheduledFunc("TS_Disable")
-        Bladex.RemoveScheduledFunc("TS_HideNewEntry")
-        Bladex.RemoveScheduledFunc("TS_ShowNewEntry")
+        Bladex.RemoveScheduledFunc("TS_HideNewEntry[NSAVE]")
+        Bladex.RemoveScheduledFunc("TS_ShowNewEntry[NSAVE]")
         self.jNewEntry.SetVisible(0)
 
         TSJ.PlayStereo()
@@ -1363,7 +1367,7 @@ class ClsTSWidgets:
                     Bladex.AssocKey("TSDisableJournal", "Keyboard", key)
         #
         Bladex.RemoveBoundFunc("Attack", "Attack")
-        Bladex.RemoveScheduledFunc("TS_ShowJournal")
+        Bladex.RemoveScheduledFunc("TS_ShowJournal[NSAVE]")
         self.JournalFrame.SetVisible(1)
         self.ShowJournal(0)
         self.jShow()
@@ -1381,7 +1385,7 @@ class ClsTSWidgets:
         self.jMoreWidget.SetVisible(0)  # type: ignore
         for i in range(1, TSjText.MaxLines + 1):
             self.jTextWidget[i].SetVisible(0)
-        Bladex.RemoveScheduledFunc("TS_ShowJournal")
+        Bladex.RemoveScheduledFunc("TS_ShowJournal[NSAVE]")
         self.ShowJournal(1)
         IManager = BInput.GetInputManager()
         IManager.SetInputActionsSet(self.LastIAS)
@@ -1415,13 +1419,13 @@ class ClsTSWidgets:
                 Bladex.GetTime() + AnimFPS_T,
                 self.ShowJournal,
                 (OnOff, increment),
-                "TS_ShowJournal",
+                "TS_ShowJournal[NSAVE]",
             )
 
     def SlidejNE(self, dir):
         TSJw.PlayStereo()
-        Bladex.RemoveScheduledFunc("TS_HideNewEntry")
-        Bladex.RemoveScheduledFunc("TS_ShowNewEntry")
+        Bladex.RemoveScheduledFunc("TS_HideNewEntry[NSAVE]")
+        Bladex.RemoveScheduledFunc("TS_ShowNewEntry[NSAVE]")
         self.SlidejNE2(dir)
         self.jNewEntry.SetVisible(1)
 
@@ -1435,12 +1439,12 @@ class ClsTSWidgets:
                 Bladex.GetTime() + AnimFPS_T,  # 60 FPS
                 self.SlidejNE2,
                 (dir, time + AnimFPS_T),
-                "TS_ShowNewEntry",
+                "TS_ShowNewEntry[NSAVE]",
             )
         else:
             f = 1.0
             Bladex.AddScheduledFunc(
-                Bladex.GetTime() + 7, self.HidejNE, (), "TS_HideNewEntry"
+                Bladex.GetTime() + 7, self.HidejNE, (), "TS_HideNewEntry[NSAVE]"
             )
 
         if dir:  # off
@@ -1451,8 +1455,8 @@ class ClsTSWidgets:
         self.MainFrame.MoveWidgetTo("jNewEntry", x, 0.5)
 
     def HidejNE(self):
-        Bladex.RemoveScheduledFunc("TS_HideNewEntry")
-        Bladex.RemoveScheduledFunc("TS_ShowNewEntry")
+        Bladex.RemoveScheduledFunc("TS_HideNewEntry[NSAVE]")
+        Bladex.RemoveScheduledFunc("TS_ShowNewEntry[NSAVE]")
         self.jNewEntry.SetVisible(0)  # type: ignore
 
 
@@ -1560,3 +1564,7 @@ def RemoveFromJournal(jrlId):
 
 def SetBitMap(Name, File):
     TSWidgets.SetBitMap(Name, File)
+
+
+def SetFreeHandsWhenTalk(val):
+    TSDB.FreeHandsWhenTalk = val
