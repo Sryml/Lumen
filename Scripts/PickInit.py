@@ -91,9 +91,9 @@ def ConstEntity(ent_name):
 
 def RedEntity(e):
   # -Sryml
-  if hasattr(e, "Name"):
+  try:
     return ConstEntity,(e.Name,)
-  else:
+  except:
     printx("PickInit.RedEntity() can not get entity name")
     return ConstEntity,(None,)
 
@@ -115,10 +115,7 @@ def RegisterPickEntity():
 
 
 def FindFunctionAux(module,fun_name):
-
-  if module.__dict__.has_key(fun_name):
-    return module.__dict__[fun_name]
-  return None
+  return module.__dict__.get(fun_name, None)
 
 
 
@@ -126,12 +123,12 @@ def ConstFunction(fun_name, lib_name):
     # Rewritten -Sryml
     if fun_name == "<lambda>":
         return None
-    try:
-        __import__(lib_name)
-        return sys.modules[lib_name].__dict__[fun_name] # Considering the case of module packages
-    except:
+        
+    __import__(lib_name)
+    ret = sys.modules[lib_name].__dict__.get(fun_name, None) # Considering the case of module packages
+    if not ret:
         printx("Error: Cannot find function %s in library %s" % (fun_name, lib_name))
-        return None
+    return ret
 
 
 
@@ -156,11 +153,10 @@ def ConstMethod(im_self, method_name): # -Sryml
   import ObjStore
   import GameStateAux
 
-  if hasattr(im_self, method_name):
-    return getattr(im_self, method_name)
-  else:
+  ret = getattr(im_self, method_name, None)
+  if not ret:
     printx("PickInit.ConstMethod() can not find method",method_name,"in object",im_self)
-    return None
+  return ret
 
   if ObjStore.ObjectsStore.has_key(obj_id):
     obj = ObjStore.ObjectsStore[obj_id]
@@ -191,9 +187,10 @@ def RedMethod(f): # -Sryml
   elif im_class == Lumenx.B_PyEntity_Proxy:
     return RedCFunction(getattr(f.im_self.target, func_name))
   #
-  try:
-    return ConstMethod,(f.im_self,func_name)
-  except:
+  im_self = f.im_self
+  if 1: #hasattr(im_self, "persistent_id"):
+    return ConstMethod,(im_self,func_name)
+  else:
     printx("PickInit.RedMethod() can not register method",f)
     return ConstMethod,(None,None)
 
@@ -236,14 +233,15 @@ def ConstCFunction(fun_name, func_self): # -Sryml
 
   # La busco en funciones C
   if func_self == "Module":
-    if sys.modules["__builtin__"].__dict__.has_key(fun_name):
-      return sys.modules["__builtin__"].__dict__[fun_name]
+    func = sys.modules["__builtin__"].__dict__.get(fun_name, None)
+    if func:
+      return func
     # La busco en los modulos
     # Primero en los de Blade
     import Bladex,Traps_C,B3DLib,BUIxc,BBLibc
     mods=(Bladex,Traps_C,B3DLib,BUIxc,BBLibc)
     for i in mods:
-      func=FindFunctionAux(i,fun_name)
+      func=i.__dict__.get(fun_name, None)
       if func:
           return func
     # Y luego en los otros
@@ -253,11 +251,10 @@ def ConstCFunction(fun_name, func_self): # -Sryml
     #       func=FindFunctionAux(i[1],fun_name)
     #       if func:
     #           return func
-  elif hasattr(func_self, fun_name):
-    return getattr(func_self, fun_name)
-
-  printx("Warning, can't find builtin function", (fun_name,func_self))
-  return None
+  ret = getattr(func_self, fun_name, None)
+  if ret is None:
+    printx("Warning, can't find builtin function", (fun_name,func_self))
+  return ret
 
 
 

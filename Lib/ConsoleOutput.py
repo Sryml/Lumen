@@ -16,10 +16,10 @@ class ConsoleOutput:
     else:
       Console.ConsoleOutput(message)
       sys.__stdout__.write(message)
-    sys.__stdout__.flush()
+    # sys.__stdout__.flush()
 
   def flush(self):
-    pass
+    sys.__stdout__.flush()
 
 
 def InitConsole():

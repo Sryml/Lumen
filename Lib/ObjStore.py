@@ -45,9 +45,7 @@ def CheckStore():
             ret=obj.persistent_check()
             if not ret:
                 del ObjectsStore[i]
-        except AttributeError:
-            pass
-        except TypeError:
+        except:
             pass
     
  

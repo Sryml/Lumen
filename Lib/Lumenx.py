@@ -71,6 +71,7 @@ class _DATA:
     }
     #
     game_version = 1
+    is_saved_game = 0
     current_map = ""
     current_mod = ""
     current_mod_menu = ""
@@ -191,6 +192,8 @@ def __fn():
     else:
         _DATA.game_version = CLASSIC_VER
 
+    _DATA.is_saved_game = __main__.__dict__.get("IsSavedGame", 0)
+
 
 __fn()
 
@@ -209,8 +212,8 @@ def printx(*values, **kwargs):
         file = sys.stdout
     file.write(output)
     file.write(end)
-    # if flush:
-    #     file.flush()
+    if flush:
+        file.flush()
 
 
 # sys.modules["__builtin__"].printx = printx  # type: ignore
@@ -294,11 +297,12 @@ class __FunctionDecorator:
         return self.RawFunc.isinstance(obj, cls)
 
     def getattr(self, obj, name, default=Ellipsis):
-        if hasattr(obj, name):
+        # 大概率存在使用try
+        try:
             return self.RawFunc.getattr(obj, name)
-        elif default is not Ellipsis:
-            return default
-        else:
+        except:
+            if default is not Ellipsis:
+                return default
             Raisex(AttributeError, "object has no attribute '%s'" % name)
 
     # BBLibc module
@@ -562,6 +566,8 @@ class B_PyEntity_Proxy:
 
     def LaunchAnimation(self, anm_name):
         ret = self.target.LaunchAnimation(anm_name)
+        if not ret and string.lower(anm_name) == "rlx":
+            ret = self.target.LaunchAnimation("Rlx_no")
         if not ret:
             prefix = self.target.CharTypeExt[:3] + "_"
             full_anm_name = anm_name
@@ -580,6 +586,8 @@ class B_PyEntity_Proxy:
 
     def LaunchAnmType(self, anm_type, *args):
         ret = apply(self.target.LaunchAnmType, (anm_type,) + args)
+        if not ret and string.lower(anm_type) == "rlx":
+            ret = apply(self.target.LaunchAnmType, ("Rlx_no",) + args)
         if not ret:
             prefix = self.target.CharTypeExt[:3] + "_"
             full_anm_name = anm_type
@@ -1108,6 +1116,10 @@ def IsCacheEnabled():
     return _DATA.config["Cache"] == "Enabled"
 
 
+def IsSavedGame():
+    return _DATA.is_saved_game
+
+
 def LinkAbs(parent, child):
     # type: (Bladex._entity.B_PyEntity, Bladex._entity.B_PyEntity) -> ...
     """Absolute link two entities"""
@@ -1234,7 +1246,9 @@ def LoadLevel(map_dir, mod_dir=""):
         "Bladex.ResumeSoundSystem()",
         "Bladex.DoneLoadGame()",
         "isMenuAppMode and Bladex.SetAppMode('Menu')",
-        "print 'Load Time =', round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
+        "b3028472_681f_5be2_8aeb_c7011b166583 = round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
+        "Lumenx.printx('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583, flush=1)",
+        # "import Actions;Actions.ReportMsg('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583)",
         "del b3028472_681f_5be2_8aeb_c7011b166583",
         "del isMenuAppMode",
         "Bladex.SetTime(0.0)",

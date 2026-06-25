@@ -42,6 +42,7 @@ class BaseProgressBar:
     self.filehook = 0
     self.n_file = 0
 
+    BBLib.ResetnOpenedInputFiles()
     if not self.SolidBar:
       Bladex.ReadBitMap("../../Data/Gray_progress_bar.bmp","LoadBarBmp")
       self.hBmpBar=Raster.BmpHandle("LoadBarBmp")
@@ -180,7 +181,6 @@ class ProgressBar(BaseProgressBar,BackImageBar):
     BaseProgressBar.__init__(self,total_increments)
     BackImageBar.__init__(self,background_image)
 
-    BBLib.ResetnOpenedInputFiles()
     BBLib.SetOnOpenInputFileFunc(self.BarIncrement)
     self.filehook=1
     self.cleared=0

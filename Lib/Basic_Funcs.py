@@ -313,7 +313,7 @@ class PlayerPerson:
 		for i in funcs:
 			exec('f = me.'+i[0])
 			if (i[1] <> f):
-				print "Save Core Func para",me.Name," callback ",i[0]," funcion ", f
+				# print "Save Core Func para",me.Name," callback ",i[0]," funcion ", f
 				core_funcs.append((j,GameStateAux.SaveFunctionAux(f)))
 			j = j + 1
 
@@ -336,7 +336,7 @@ class PlayerPerson:
 			for i in funcs2:
 				exec('f = me.'+i)
 				if (f <> None):
-					print "Save Core Func para",me.Name," callback ",i," funcion ", f
+					# print "Save Core Func para",me.Name," callback ",i," funcion ", f
 					core_funcs.append((j,GameStateAux.SaveFunctionAux(f)))
 				j = j + 1
 

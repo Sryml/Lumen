@@ -99,7 +99,7 @@ def LoadGameAux(clave, mod_dir=None):
 
     # uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:LoadStartTime")
     lines = [
-        "import sys;import time;b3028472_681f_5be2_8aeb_c7011b166583=time.time();isLumen = 1"
+        "import sys;import time;b3028472_681f_5be2_8aeb_c7011b166583=time.time();isLumen = 1;IsSavedGame=1"
     ]
     new_mod_root = "..\\.."
     new_blade_root = new_lumen_root + "\\.."
@@ -123,7 +123,9 @@ def LoadGameAux(clave, mod_dir=None):
         "InNewMap = %d"
         % (string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
         "execfile(%s)" % (repr(string.replace(save_file, "\\", "/")),),
-        "print 'Load Time =', round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
+        "b3028472_681f_5be2_8aeb_c7011b166583 = round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
+        "Lumenx.printx('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583, flush=1)",
+        # "import Actions;Actions.ReportMsg('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583)",
         "del b3028472_681f_5be2_8aeb_c7011b166583",
     ]
 

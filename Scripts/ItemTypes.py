@@ -26,12 +26,21 @@ from Lumenx import AutomatedAssets
 from LumenLib import TimerAux
 
 class PersistantItemType:
+	ObjId = ""
+
 	def __init__(self, me):
 		self.ObjId= ObjStore.GetNewId()
 		ObjStore.ObjectsStore[self.ObjId]= self
+		self.Name = me.Name
 
 	def persistent_id(self):
 		return self.ObjId
+
+	def persistent_check(self):
+		me=Bladex.GetEntity(self.Name)
+		if not me:
+			return 0
+		return 1
 
 	def __getstate__(self):
 		# Tiene que devolver cómo poder guardar el estado de la clase
