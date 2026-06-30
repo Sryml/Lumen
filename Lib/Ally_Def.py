@@ -2073,8 +2073,8 @@ class NPCAlly (Basic_Funcs.PlayerPerson):
 				("ToggleCombatFunc",      self.StdToggleCombat)]
 
 		for i in funcs:
-			exec('f = me.'+i[0])
-			if (i[1] <> f):
+			f = getattr(me, i[0])
+			if (i[1] != f):
 				#print "Save Core Func para",me.Name," callback ",i[0]," funcion ", f
 				core_funcs.append((j,GameStateAux.SaveFunctionAux(f)))
 			j = j + 1
@@ -2112,6 +2112,7 @@ class NPCAlly (Basic_Funcs.PlayerPerson):
 				GameStateAux.LoadFunctionAux(i[1],self,funcs[i[0]])
 				#assign_func=eval("obj."+method_name)
 				exec("me.%s=self.%s"%(funcs[i[0]],funcs[i[0]]))
+				Reference.debugprint("Exception in __load_core_funcs__ par ",me.Name,funcs[i[0]],i[1])
 				#print "Loaded for class"
 ##			except Exception,exc:
 ##				print "Exception in __load_core_funcs__ par ",me.Name,funcs[i[0]],i[1]

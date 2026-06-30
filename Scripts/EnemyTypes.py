@@ -5098,9 +5098,11 @@ class Ragnar(Enm_Def.NPCPerson):
 ################################################################################
 classes_defined= dir()
 def EnemyDefaultFuncs (pers):
-	if pers.CharType in classes_defined:
-		exec_string = 'pers.Data=' + pers.CharType + '(pers)'
-		exec (exec_string)
+	cls = globals().get(pers.CharType)
+	if cls:
+		# exec_string = 'pers.Data=' + pers.CharType + '(pers)'
+		# exec (exec_string)
+		pers.Data = cls(pers)
 		Bladex.CheckPyErrors()
 		if not pers.Data:
 			raise NameError, 'CharType must not have valid associated class'

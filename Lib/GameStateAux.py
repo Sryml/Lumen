@@ -191,9 +191,9 @@ def ManualReduction(obj):
     construction = None
 
     data_t = type(obj)
-    if data_t == types.FunctionType:
-        construction, args = PickInit.RedFunction(obj)
-    elif data_t == types.BuiltinFunctionType:
+    # if data_t == types.FunctionType:
+    #     construction, args = PickInit.RedFunction(obj)
+    if data_t == types.BuiltinFunctionType:
         construction, args = PickInit.RedCFunction(obj)
 
     if construction is not None:
@@ -208,25 +208,25 @@ def ManualConstruction(obj_id):
 
     return apply(construction, args)
 
-# def SavePickleEnsure(data):
-#     data_t = type(data)
-#     if data_t == types.FunctionType:
-#         return PickInit.RedFunction(data)
-#     elif data_t == types.BuiltinFunctionType:
-#         return PickInit.RedCFunction(data)
+def SavePickleEnsure(data):
+    data_t = type(data)
+    # if data_t == types.FunctionType:
+    #     return PickInit.RedFunction(data)
+    if data_t == types.BuiltinFunctionType:
+        return PickInit.RedCFunction(data)
 
-#     return (None, data)
+    return (None, data)
 
 
-# def LoadPickleEnsure(data_ex, res_obj=None, res_field=""):
-#     reconstructor, data = data_ex
-#     if reconstructor is not None:
-#         data = apply(reconstructor, data)
+def LoadPickleEnsure(data_ex, res_obj=None, res_field=""):
+    reconstructor, data = data_ex
+    if reconstructor is not None:
+        data = apply(reconstructor, data)
     
-#     if res_obj:
-#         setattr(res_obj, res_field, data)
-#     else:
-#         return data
+    if res_obj:
+        setattr(res_obj, res_field, data)
+    else:
+        return data
 
 
 def SaveData(filename, d):
@@ -374,16 +374,16 @@ def AddQuiverToInventory(inv,quiver_name):
 
 
 def SaveFunctionAux(func): # -Sryml
-  return func
-  # return SavePickleEnsure(func)
+  # return func
+  return SavePickleEnsure(func)
 
 
 def LoadFunctionAux(func_id_ex,res_obj=None,res_field="",aux=None): # -Sryml
-  if res_obj:
-    setattr(res_obj, res_field, func_id_ex)
-  else:
-    return func_id_ex
-  # return LoadPickleEnsure(func_id_ex,res_obj,res_field)
+  # if res_obj:
+  #   setattr(res_obj, res_field, func_id_ex)
+  # else:
+  #   return func_id_ex
+  return LoadPickleEnsure(func_id_ex,res_obj,res_field)
 
 
 

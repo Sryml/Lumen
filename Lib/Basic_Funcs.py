@@ -311,13 +311,13 @@ class PlayerPerson:
 				("BigFallFunc",           self.StdBigFall)]
 
 		for i in funcs:
-			exec('f = me.'+i[0])
-			if (i[1] <> f):
+			f = getattr(me, i[0]) # -Sryml
+			if (i[1] != f):
 				# print "Save Core Func para",me.Name," callback ",i[0]," funcion ", f
 				core_funcs.append((j,GameStateAux.SaveFunctionAux(f)))
 			j = j + 1
 
-		if (self.inheritance <> 1):
+		if (self.inheritance != 1):
 			funcs2=["SeeFunc",
 				    "HearFunc",
 				    "DelayNoSeenFunc",
@@ -334,13 +334,14 @@ class PlayerPerson:
 				    "ToggleCombatFunc"]
 
 			for i in funcs2:
-				exec('f = me.'+i)
-				if (f <> None):
+				f = getattr(me, i) # -Sryml
+				if (f != None):
 					# print "Save Core Func para",me.Name," callback ",i," funcion ", f
 					core_funcs.append((j,GameStateAux.SaveFunctionAux(f)))
 				j = j + 1
 
-			if me.ImDeadFunc <> self.PCImDead:
+			f = me.ImDeadFunc
+			if f != self.PCImDead:
 				core_funcs.append((j,GameStateAux.SaveFunctionAux(f)))
 
 
@@ -383,6 +384,7 @@ class PlayerPerson:
 			except:
 				GameStateAux.LoadFunctionAux(i[1],self,funcs[i[0]])
 				exec("me.%s=self.%s"%(funcs[i[0]],funcs[i[0]]))
+				Reference.debugprint("Exception in __load_core_funcs__ par ",me.Name,funcs[i[0]],i[1])
 
 	def __getstate__(self):
 		# Tiene que devolver c�mo poder guardar el estado de la clase

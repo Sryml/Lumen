@@ -3495,9 +3495,11 @@ classes_defined= dir()
 def ItemDefaultFuncs (item):
 	import pocimac
 	class_found=0
-	if item.Kind in classes_defined:
-		exec_string = 'item.Data=' + item.Kind + '(item)'
-		exec (exec_string)
+	cls = globals().get(item.Kind)
+	if cls:
+		# exec_string = 'item.Data=' + item.Kind + '(item)'
+		# exec (exec_string)
+		item.Data = cls(item)
 		if not item.Data:
 			raise NameError, 'Kind must have valid associated class'
 			class_found=0

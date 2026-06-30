@@ -23,7 +23,10 @@ from Lumenx import printx
 NotSave          = []
 ModulesToBeSaved = []
 
+v__entities_saved = 0
+
 def GetPickFileName(data):
+    # return "f/%s.dat" % ObjStore.GetAutoId()
     filename=None
     try:
         filename="%s/%s.dat"%("f",data.persistent_id())
@@ -33,10 +36,10 @@ def GetPickFileName(data):
         # elif type(data) == types.FunctionType:
         #     filename="%s/%s%s.dat"%("f",data.func_name,ObjStore.GetAutoId())
         if type(data) in (types.FunctionType, types.MethodType, types.BuiltinFunctionType):
-            filename="%s/%s%s.dat"%("f",data.__name__,ObjStore.GetAutoId())
+            filename="%s/%s %s.dat"%("f",data.__name__,ObjStore.GetAutoId())
         else:
 ##            filename="%s/%s.dat"%("f",ObjStore.GetNewId())
-            filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId()) # -Sryml
+            filename="%s/%s %s.dat"%("f",str(type(data)),ObjStore.GetAutoId()) # -Sryml
 
     return filename
 
@@ -459,7 +462,6 @@ class EntityPersonState(EntityBipedState):
 
 
 
-v__entities_saved = 0
 
 class EntitiesStateAux:
     def __init__(self,EntClass):
@@ -713,6 +715,8 @@ class TriggersState:
 
 class WorldState:
     def __init__(self):
+        printx("[SAVE STARTED]")
+        self.start_time = time.time()
         self.EntitiesState=EntitiesState()
         self.MapState=MapState()
         self.TriggersState=TriggersState()
@@ -722,12 +726,12 @@ class WorldState:
         try:
             self.EntitiesState.GetState()
             self.MapState.GetState()
+            CheckGlobals()
+            # printx("GetState done. Time %.3f" % (time.time()-self.start_time)) # Time
         except:
             traceback.print_exc()
 
     def SaveState(self,save_dir,quick=0):
-        start_time = time.time()
-        printx("[SAVE STARTED]")
         ObjStore.AutoStoreIndex = 0 # -Sryml
         if quick:
             load_bar = LoadBar.QuickProgressBar()
@@ -748,8 +752,8 @@ class WorldState:
             printx("[SAVE FAILED]: "+save_dir)
             save_success = 0
         else:
-            printx("[SAVE COMPLETED]")
-            printx("Save Time = %.3f" % (time.time()-start_time))
+            printx("Save Time = %.3f" % (time.time()-self.start_time))
+            printx("[SAVE COMPLETED]", flush=1)
         # if(self.SaveLState(path)==0):
         #     printx("[SAVE FAILED]: "+path)
         #     Bladex.ShowCriticalWarning("SaveWarning","failed to save"+path);
@@ -832,7 +836,9 @@ class WorldState:
         file.write('############################################################\n\n\n')
 
         file.write('my_last_player_ctype="%s"\n'%(Bladex.GetLastPlayerCType(),))
-        file.write('__load_bar=LoadBar.AutoProgressBar(%d,"Loading ",%s)\n'%(Bladex.nEntities()/10 + 40,'"../../Data/Locale/" + Language.Current + "/Image/Cargando_hi.jpg"')) # by Sryml
+        total_inc_pos = file.tell()
+        file.write('total_increments =           \n')
+        file.write('__load_bar=LoadBar.AutoProgressBar(total_increments,"Loading ",%s)\n'%('"../../Data/Locale/" + Language.Current + "/Image/Cargando_hi.jpg"')) # by Sryml
         file.write('GameStateAux.aux_dir="%s"\n'%(aux_dir,))
 
         # file.write('InNewMap=0\n')
@@ -895,10 +901,13 @@ for i in range(len(keys)):
         #file.write('if InNewMap:\n')
         file.write('Bladex.LoadSoundDataBase("%s/Sounds.sdb")\n'%(aux_dir,))
         #can return false
-        if(Bladex.SaveSoundDataBase('%s/Sounds.sdb'%(temp_dir,))==0):
-            print "Didn't save "+('%s/Sounds.sdb'%(temp_dir,))
-        else:
-            print "Saved "+('%s/Sounds.sdb'%(temp_dir,))
+        path = '%s/Sounds.sdb'%(temp_dir,)
+        start_time = time.time()
+        ret = Bladex.SaveSoundDataBase(path)
+        printx("Saved %s, %s, Time %.3f" % (path, ret, time.time()-start_time)) #
+        #     print "Didn't save "+('%s/Sounds.sdb'%(temp_dir,))
+        # else:
+        #     print "Saved "+('%s/Sounds.sdb'%(temp_dir,))
         #file.write('else:\n')
         #file.write('  if Bladex.GetLastPlayerCType()<>my_last_player_ctype:\n')
         #file.write('    Bladex.LoadSoundDataBase("%s/Sounds.sdb")\n'%(temp_dir,))
@@ -912,10 +921,13 @@ for i in range(len(keys)):
         psys_data_file=temp_dir+'/psys_data.dat'
         load_bar.Increment("ParticleSystem")
         #can return false
-        if(Bladex.SaveParticleSystemsData(psys_data_file)==1):
-            print "Saved "+psys_data_file
-        else:
-            print "Didn't save "+psys_data_file
+        start_time = time.time()
+        ret = Bladex.SaveParticleSystemsData(psys_data_file)
+        printx("Saved %s, %s, Time %.3f" % (psys_data_file, ret, time.time()-start_time)) #
+        # if(Bladex.SaveParticleSystemsData(psys_data_file)==1):
+        #     print "Saved "+psys_data_file
+        # else:
+        #     print "Didn't save "+psys_data_file
             
         file.write('__load_bar.Increment("Particle Systems")\n')
         file.write('Bladex.LoadParticleSystemsData("%s")\n'%(aux_dir+'/psys_data.dat',))
@@ -987,10 +999,13 @@ for i in range(len(keys)):
 
         combustion_data_file=temp_dir+'/combustion_data.dat'
         load_bar.Increment("Combustion Data")
-        if(Bladex.SaveCombustionData(combustion_data_file)==0):
-            print "Didn't save "+ combustion_data_file
-        else:
-            print "Saved "+ combustion_data_file
+        start_time = time.time()
+        ret = Bladex.SaveCombustionData(combustion_data_file)
+        printx("Saved %s, %s, Time %.3f" % (combustion_data_file, ret, time.time()-start_time)) #
+        # if(Bladex.SaveCombustionData(combustion_data_file)==0):
+        #     print "Didn't save "+ combustion_data_file
+        # else:
+        #     print "Saved "+ combustion_data_file
       
         file.write('print "About to load Combustion data"\n')
         file.write('if InNewMap:\n')
@@ -1003,10 +1018,13 @@ for i in range(len(keys)):
 ##        self.EntitiesState.SaveStatePass1(file,temp_dir)
         ent_data_file=temp_dir+'/ent_data.dat'
         load_bar.Increment("Entities Data")
-        if(Bladex.SaveEntitiesData(ent_data_file)==0):
-           print "Failed to save "+ ent_data_file
-        else:
-            print "Saved "+ ent_data_file
+        start_time = time.time()
+        ret = Bladex.SaveEntitiesData(ent_data_file)
+        printx("Saved %s, %s, Time %.3f" % (ent_data_file, ret, time.time()-start_time)) #
+        # if(Bladex.SaveEntitiesData(ent_data_file)==0):
+        #    print "Failed to save "+ ent_data_file
+        # else:
+        #     print "Saved "+ ent_data_file
         file.write('__load_bar.Increment("Entities")\n')
         file.write('Bladex.LoadEntitiesData("%s")\n'%(aux_dir+'/ent_data.dat',))
         file.write('__load_bar.Increment()\n')
@@ -1047,10 +1065,13 @@ for i in range(len(keys)):
         file.write('Bladex.LoadMusicState("%s/MusState.sdb")\n'%(aux_dir,))
         load_bar.Increment("MusicState")
         musicStateName = '%s/MusState.sdb'%(temp_dir,);
-        if(Bladex.SaveMusicState(musicStateName)==0):
-            print "Didn't to save "+musicStateName
-        else:
-            print "Saved "+musicStateName
+        start_time = time.time()
+        ret = Bladex.SaveMusicState(musicStateName)
+        printx("Saved %s, %s, Time %.3f" % (musicStateName, ret, time.time()-start_time)) #
+        # if(Bladex.SaveMusicState(musicStateName)==0):
+        #     print "Didn't to save "+musicStateName
+        # else:
+        #     print "Saved "+musicStateName
 
         file.write('try:\n')
         file.write('  execfile("TextureMaterials.py")\n')
@@ -1063,6 +1084,7 @@ for i in range(len(keys)):
         file.write('GameStateAux.InitGameState("%s")\n\n'%(aux_dir,))
         file.write('__load_bar.Increment()\n')
 
+        start_time = time.time()
         file.write('__load_bar.Increment("Modules")\n')
         load_bar.Increment("Modules")
         self.SaveModules(file)
@@ -1081,33 +1103,60 @@ for i in range(len(keys)):
         self.SaveEntities(file)
         file.write('__load_bar.Increment("PickledObjects")\n')
         load_bar.Increment("PickledObjects")
-        if(SavePickledObjects(file,temp_dir)==0):
+        # printx("Saved global variables, Time %.3f" % (time.time()-start_time)) # Time
+
+        start_time = time.time()
+        ret = SavePickledObjects(file,temp_dir)
+        if(ret==0):
             print "Failed to save pickled objects"
             file.close()
             return 0
+        printx("Saved pickled objects, Time %.3f" % (time.time()-start_time)) # Time
         file.write('GameStateAux.GetPickledObjects("%s")\n\n'%("%s/%s.dat"%(aux_dir,"DinObjs"),))
 
+        start_time = time.time()
         load_bar.Increment("Extra Modules")
         self.SaveModulesToBeSaved(file,temp_dir,aux_dir,ModulesToBeSaved) # -Sryml
 
         file.write('__load_bar.Increment("Python Objects")\n')
         load_bar.Increment("Python Objects")
         self.SaveObjects(file)
+        # printx("Saved Python objects, Time %.3f" % (time.time()-start_time)) # Time
 
+        start_time = time.time()
         file.write('__load_bar.Increment("MapState")\n')
         load_bar.Increment("Map State")
         self.MapState.SaveState(file,temp_dir)
+        # printx("Saved map state, Time %.3f" % (time.time()-start_time)) # Time
+
+        start_time = time.time()
         file.write('__load_bar.Increment("TriggerState")\n')
         load_bar.Increment("Triggers State")
         self.TriggersState.GetState()
         self.TriggersState.SaveState(file,temp_dir)
+        # printx("Saved triggers state, Time %.3f" % (time.time()-start_time)) # Time
+
+        start_time = time.time()
         file.write('__load_bar.Increment("State pass2")\n')
         load_bar.Increment("Entities State pass 2")
         self.EntitiesState.SaveStatePass2(file,temp_dir)
+        printx("Saved Entities State pass 2, Time %.3f" % (time.time()-start_time)) # Time
+
+        f_pos = file.tell()
+        file.seek(total_inc_pos)
+        total_increments = (len(ModulesToBeSaved) + (v__entities_saved / 10) + 30
+                            + len(Lumenx.GetMMPFiles()) / 2
+                            + len(Lumenx.GetBMPFiles().keys()) / 5
+                            + len(Lumenx.GetAlphaBMPFiles().keys()) / 5
+                            )
+        file.write('total_increments = %s' % total_increments)
+        file.seek(f_pos)
+
         file.write('__load_bar.Increment()\n')
         file.write('print "About set objects relations"\n')
         file.write('__load_bar.Increment("Scheduled functions")\n')
 
+        start_time = time.time()
         load_bar.Increment("Comp Vars")
         if(self.SaveCompVars(file,temp_dir)==0):
             print "SaveCompVars failed" + temp_dir
@@ -1125,9 +1174,12 @@ for i in range(len(keys)):
 
         load_bar.Increment("Extra Data")
         GameStateAux.SaveExtraDataAux(file,temp_dir)
+        # printx("Saved Comp Vars, Time %.3f" % (time.time()-start_time)) # Time
 
+        start_time = time.time()
         load_bar.Increment("Cleaning up")
         GameStateAux.EndGameState(temp_dir)
+        # printx("EndGameState, Time %.3f" % (time.time()-start_time)) # Time
 
         file.write('\n')
         file.write('Bladex.SetCombos("Player1",%s)'%(Bladex.GetCombos("Player1"),))
@@ -1215,6 +1267,8 @@ for i in range(len(keys)):
 
         file.write('#   Good Bye! (Enjoy The Silence)\n')
         GameStateAux.CleanSaveTemp()
+        global GlobalsToBeSaved
+        GlobalsToBeSaved = {}
 
         file.close()
 
@@ -1526,15 +1580,12 @@ for i in range(len(keys)):
 
 
     def GetGlobalsAux(self,req_type,globs=None): # -Sryml
-        if globs is None:
-            globs = GetGlobals()
-
+        elems = []
         if type(req_type) not in (types.TupleType,types.ListType):
             req_type = (req_type,)
-        elems=[]
-        for i in globs.items():
-            if type(i[1]) in req_type:
-                elems.append(i)
+
+        for t in req_type:
+            elems = elems + GlobalsToBeSaved.get(str(t),[])
         return elems
 
 
@@ -1607,3 +1658,41 @@ for i in range(len(keys)):
 
 def GetGlobals(): # -Sryml
     return sys.modules["__main__"].__dict__
+
+def CheckGlobals():
+    global GlobalsToBeSaved
+
+    SoundType = type(Bladex.CreateSound('../../sounds/golpe-madera-mediana.wav', 'GolpeMaderaMediana'))
+    EntityType = type(Bladex.GetEntity("Camera"))
+    SectorType = type(Bladex.GetSector(0))
+
+    GlobalsToBeSaved = {
+        str(SoundType): [],
+        str(EntityType): [],
+        str(SectorType): [],
+        str(types.DictionaryType): [],
+        str(types.ListType): [],
+        str(types.TupleType): [],
+        str(types.IntType): [],
+        str(types.LongType): [],
+        str(types.FloatType): [],
+        str(types.StringType): [],
+        str(types.InstanceType): [],
+        str(types.FunctionType): [],
+        str(types.MethodType): [],
+        str(types.BuiltinFunctionType): [],
+        str(types.ModuleType): [],
+        str(types.EllipsisType): [],
+        str(types.NoneType): [],
+        str(types.ClassType): [],
+    }
+
+    for k,v in sys.modules["__main__"].__dict__.items():
+        t = type(v)
+        if t in (SoundType, EntityType, SectorType,
+                 types.DictionaryType, types.ListType, types.TupleType,
+                 types.IntType, types.LongType, types.FloatType, types.StringType,
+                 types.InstanceType, types.FunctionType, types.MethodType, types.BuiltinFunctionType,
+                 types.ModuleType, types.EllipsisType, types.NoneType, types.ClassType,
+                 ):
+            GlobalsToBeSaved[str(t)].append((k,v))
