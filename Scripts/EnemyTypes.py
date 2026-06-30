@@ -2906,7 +2906,7 @@ class Great_Demon (Enm_Def.NPCPerson):
 			if (object.Physic or object.Weapon) and not object.Parent:
 				op= object.Position;
 				x= op[0]-mp[0]; y= op[1]-mp[1]; z= op[2]-mp[2]
-				dist= ((x**2.0) + (y**2.0) + (z**2.0))**0.5
+				dist= ((x**2) + (y**2) + (z**2))**0.5 # Fix: negative number to float power
 				x,y,z= B3DLib.Normalize((x,y-500.0,z))
 				factor= ((QuakeRange-dist)/QuakeRange) * impulse
 				object.Impulse(x*factor, y*factor,z*factor)
