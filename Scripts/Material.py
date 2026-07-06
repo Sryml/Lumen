@@ -652,6 +652,10 @@ def Init():
     Bladex.SetDefaultMaterial("Amuleto", "metal ligero")
     Bladex.SetDefaultMaterial("Armadura", "metal ligero")
     Bladex.SetDefaultMaterial("ArmaduraBlade", "metal ligero")
+    Bladex.SetDefaultMaterial("ArmaduraAmazonaLigera", "metal ligero")
+    Bladex.SetDefaultMaterial("ArmaduraBarbaroLigera", "metal ligero")
+    Bladex.SetDefaultMaterial("ArmaduraCaballeroLigera", "metal ligero")
+    Bladex.SetDefaultMaterial("ArmaduraEnanoLigera", "metal ligero")
     Bladex.SetDefaultMaterial("LlaveNegra", "metal ligero")
     Bladex.SetDefaultMaterial("BlasonAurelio", "metal ligero")
     Bladex.SetDefaultMaterial("Blason1", "metal ligero")
@@ -698,6 +702,11 @@ def Init():
     Bladex.SetDefaultMaterial("Trillo", "metal ligero")
     Bladex.SetDefaultMaterial("Vagoneta", "metal ligero")
     Bladex.SetDefaultMaterial("Xkorpyon", "metal ligero")
+
+    Bladex.SetDefaultMaterial('ArmaduraCaballeroMedia', 'metal mediano')
+    Bladex.SetDefaultMaterial('ArmaduraEnanoMedia', 'metal mediano')
+
+    Bladex.SetDefaultMaterial('ArmaduraCaballeroCompleta', 'metal pesado')
 
     Bladex.SetDefaultMaterial("Alfeizar", "piedra ligera")
     Bladex.SetDefaultMaterial("BloqueTallado", "piedra ligera")

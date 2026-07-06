@@ -718,6 +718,13 @@ class PlayerPerson:
 								resistance= resistance+extra_resistance
 								resistance= min(resistance,1.0)
 				except AttributeError: pass
+				if Reference.GiveObjectFlag(obj_name) == Reference.OBJ_ARMOUR:
+					object_data = Reference.GetObjectData(obj_name)
+					if len(object_data) > 6:
+						for k,v in object_data[6].items():
+							if k == DamageType:
+								extra_resistance = v*(1.0-resistance)
+								resistance = min(resistance + extra_resistance, 1.0)
 		return resistance
 
 

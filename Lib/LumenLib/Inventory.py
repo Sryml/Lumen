@@ -73,6 +73,13 @@ IManager = BInput.GetInputManager()
 Reference.DefaultInvScaleData["BotellaSagrada"] = 2.9
 Reference.DefaultInvScaleData["Fetiche"] = 2.9
 Reference.DefaultInvScaleData["Pergamino2"] = 2.7
+Reference.DefaultInvScaleData["ArmaduraAmazonaLigera"] = 1.72
+Reference.DefaultInvScaleData["ArmaduraBarbaroLigera"] = 1.8
+Reference.DefaultInvScaleData["ArmaduraCaballeroLigera"] = 2.0
+Reference.DefaultInvScaleData["ArmaduraCaballeroMedia"] = 1.4
+Reference.DefaultInvScaleData["ArmaduraCaballeroCompleta"] = 0.85
+Reference.DefaultInvScaleData["ArmaduraEnanoLigera"] = 1.15
+Reference.DefaultInvScaleData["ArmaduraEnanoMedia"] = 1.15
 # -------------------------------
 
 
@@ -1076,8 +1083,8 @@ class InventoryUI:
 
     def DrawDetail(self, x, y, time):
         selected_inventory = self.selected_inventory
-        if selected_inventory not in ("Weapon", "Shield"):
-            return
+        # if selected_inventory not in ("Weapon", "Shield"):
+        #     return
         focus = self.current_focus
         if focus == -1:
             return
@@ -1088,6 +1095,8 @@ class InventoryUI:
         label = self.detail_label
         name_text = Reference.GetFriendlyNameByEntName(ent_name)
         power, defence, res, res_max = Reference.GiveObjectPowDefResResMaxData(ent_name)
+        special_damage = Reference.GetObjectSpecialDamage(ent_name)
+        resistance = Reference.GetObjectResistanceData(ent_name)
         n = 0
         offset_y = 13
         scale = Language.FontScale["M"] * 0.8
@@ -1116,22 +1125,23 @@ class InventoryUI:
                 pow_color = Language.FontColor.LightBlue
                 prefix = "+"
             pow_text = "%s%s %s" % (prefix, power, MenuText.GetMenuText("POW"))
-        if def_text:
-            width = Language.font_behaviour_common.GetTextWidth(def_text) * scale
-            label.SetColor(def_color[0], def_color[1], def_color[2])
-            label.SetText(def_text)
-            label.DefDraw(x - width - 2, y + n * offset_y, time)
+        if def_text or pow_text:
+            if def_text:
+                width = Language.font_behaviour_common.GetTextWidth(def_text) * scale
+                label.SetColor(def_color[0], def_color[1], def_color[2])
+                label.SetText(def_text)
+                label.DefDraw(x - width - 2, y + n * offset_y, time)
 
-            width = Language.font_behaviour_common.GetTextWidth(pow_text) * scale
-            label.SetColor(pow_color[0], pow_color[1], pow_color[2])
-            label.SetText(pow_text)
-            label.DefDraw(x + 2, y + n * offset_y, time)
-        else:
-            width = Language.font_behaviour_common.GetTextWidth(pow_text) * scale
-            label.SetColor(pow_color[0], pow_color[1], pow_color[2])
-            label.SetText(pow_text)
-            label.DefDraw(x - width * 0.5, y + n * offset_y, time)
-        n = n + 1
+                width = Language.font_behaviour_common.GetTextWidth(pow_text) * scale
+                label.SetColor(pow_color[0], pow_color[1], pow_color[2])
+                label.SetText(pow_text)
+                label.DefDraw(x + 2, y + n * offset_y, time)
+            else:
+                width = Language.font_behaviour_common.GetTextWidth(pow_text) * scale
+                label.SetColor(pow_color[0], pow_color[1], pow_color[2])
+                label.SetText(pow_text)
+                label.DefDraw(x - width * 0.5, y + n * offset_y, time)
+            n = n + 1
         # RES
         if (res is not None) and (res_max is not None):
             res_text = "%s: %s / %s" % (
@@ -1145,6 +1155,36 @@ class InventoryUI:
             label.SetText(res_text)
             label.DefDraw(x - width * 0.5, y + n * offset_y, time)
             n = n + 1
+        # special_damage
+        for k, v in special_damage.items():
+            if v != 0:
+                prefix = ""
+                if v < 0:
+                    r, g, b = Language.FontColor.Red
+                else:
+                    prefix = "+"
+                    r, g, b = Language.FontColor.LightBlue
+                text = "%s%d %s" % (prefix, v, MenuText.GetMenuText(string.upper(k) + " ATK"))
+                width = Language.font_behaviour_common.GetTextWidth(text) * scale
+                label.SetColor(r, g, b)
+                label.SetText(text)
+                label.DefDraw(x - width * 0.5, y + n * offset_y, time)
+                n = n + 1
+        # resistance
+        for k, v in resistance.items():
+            if v != 0:
+                prefix = ""
+                if v < 0:
+                    r, g, b = Language.FontColor.Red
+                else:
+                    prefix = "+"
+                    r, g, b = Language.FontColor.LightBlue
+                text = "%s: %s%.1f%%" % (MenuText.GetMenuText(string.upper(k) + " RES"), prefix, v * 100)
+                width = Language.font_behaviour_common.GetTextWidth(text) * scale
+                label.SetColor(r, g, b)
+                label.SetText(text)
+                label.DefDraw(x - width * 0.5, y + n * offset_y, time)
+                n = n + 1
         #
         # self.main_frame.RecalcLayout()
 

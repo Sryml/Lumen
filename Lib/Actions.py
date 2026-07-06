@@ -32,6 +32,7 @@ import Select
 import Netval
 import Torchs
 import ItemTypes
+import SolidMask
 
 from Lumenx import AutomatedAssets, printx
 from LumenLib import Inventory
@@ -171,7 +172,8 @@ def RemoveNoTravelObjects(EntityName):
 
 	while objname:
 		obj     = Bladex.GetEntity(objname)
-		if obj.Kind in Reference.TravelObjects:
+		obj_flag = Reference.GiveObjectFlag(objname)
+		if obj.Kind in Reference.TravelObjects or (obj_flag == Reference.OBJ_ARMOUR):
 			counterid = counterid + 1
 		else:
 			inv.RemoveObject(objname)
@@ -363,6 +365,33 @@ def ExtendedTakeObject(inv,Object2TakeName):
 
 	o = Bladex.GetEntity(Object2TakeName)
 	if o:
+		#
+		me = Bladex.GetEntity(inv.Owner) # type: Bladex._entity.B_Entity_Person
+		object = Bladex.GetEntity(Object2TakeName)
+		object_data = Reference.GetObjectData(Object2TakeName)
+		object_flag = Reference.GiveObjectFlag(Object2TakeName)
+		if object_flag == Reference.OBJ_ARMOUR:
+			if me.CharTypeExt == object_data[1]:
+				object.RemoveFromWorld()
+				if me.Data.armour_level != 0:
+					for i in range(inv.nKindObjects):
+						auxname = inv.GetObject(i)
+						obj = Bladex.GetEntity(auxname)
+						if Reference.GiveObjectFlag(auxname) == object_flag:
+								inv.RemoveObject(auxname)
+								obj.ExcludeHitFor(me)
+								obj.Orientation = (0.707, 0.707, 0.0, 0.0)
+								obj.Rotate(0,0,1, me.Angle)
+								obj.Position = object.Position[0],min(object.Position[1], me.Position[1])-200,object.Position[2]
+								obj.Static = 0
+								obj.Solid = 1
+								obj.ExclusionGroup = SolidMask.EXG_MAGIC
+								obj.Impulse(0,100,0)
+								break
+				TakeArmour(me.Name, Object2TakeName)
+			else:
+				return
+		#
 		if o.Kind in Reference.StackObjects.keys():
 			inv.AddObject(Object2TakeName,Reference.StackObjects[o.Kind]-1)
 		else:
@@ -374,7 +403,7 @@ def ExtendedTakeObject(inv,Object2TakeName):
 
 def TakeObject(EntityName,Object2TakeName, force_take=TRUE):
 	#print "Take object "+EntityName+", "+Object2TakeName
-	me=Bladex.GetEntity(EntityName)
+	me=Bladex.GetEntity(EntityName) # type: Bladex._entity.B_Entity_Person
 	inv=me.GetInventory()
 
 	#if me.Data and me.Data.pickup_entity:
@@ -425,6 +454,8 @@ def TakeObject(EntityName,Object2TakeName, force_take=TRUE):
 	elif object_flag == Reference.OBJ_ARROW:
 		pass
 	elif object_flag == Reference.OBJ_USEME and EntityName != "Player1" :
+		ExtendedTakeObject(inv,Object2TakeName)
+	elif object_flag == Reference.OBJ_ARMOUR:
 		ExtendedTakeObject(inv,Object2TakeName)
 	else:
 		print "ERROR adding an object to a character !!!"
@@ -1239,7 +1270,7 @@ def IntermediateTake(EntityName,ObjectName):
 			me.AnmEndedFunc=TakeMainAnm
 
 	#Do we have sthing on the hands?
-	if object_flag==Reference.OBJ_SHIELD:
+	elif object_flag==Reference.OBJ_SHIELD:
 		###Reference.debugprint("Taking a shield...")
 		if me.InvRight:
 			if ToggleRight4Taking(EntityName)==FALSE:
@@ -1397,10 +1428,10 @@ def RemoveRightHandler(EntityName, EventName):
 
 
 
-def TakeArmour(EntityName):
+def TakeArmour(EntityName, ObjectName):
 	me = Bladex.GetEntity(EntityName)
 	Data = me.Data
-	ObjectName=Data.pickup_entity
+	# ObjectName=Data.pickup_entity
 	object=Bladex.GetEntity(ObjectName)
 
 	# Get object type
@@ -1409,17 +1440,7 @@ def TakeArmour(EntityName):
 	else:
 		object_data = Reference.DefaultObjectData[object.Kind]
 
-	if object_data[0]<>Reference.OBJ_ARMOUR:
-		print "ERROR in Actions.TakeArmour , object is not an armour!!!"
-		return
-
 	ct = Bladex.GetCharType(me.CharType,me.CharTypeExt)
-
-	sound=Bladex.CreateSound("../../Sounds/cambio-armadura2.wav",EntityName+"SoundNewArmour")
-	sound.Volume=0.6
-	sound.MinDistance=10000
-	sound.MaxDistance=20000
-	sound.PlayStereo()
 
 	right= me.InvRight
 	left= me.InvLeft
@@ -1435,16 +1456,19 @@ def TakeArmour(EntityName):
 	Data.UnlinkAll (EntityName, "")  # Dettatch arrows
 	me.ResetWounds()
 
-	if object_data[2]==0:
-		me.SetMesh(ct.NoArmour)
-	elif object_data[2]==1:
-		me.SetMesh(ct.LowArmour)
-	elif object_data[2]==2:
-		me.SetMesh(ct.MedArmour)
-	elif object_data[2]==3:
-		me.SetMesh(ct.HighArmour)
+	if len(object_data) > 5:
+		me.SetMesh(object_data[5])
 	else:
-		print "ERROR in Actions.TakeArmour , armour level!!!"
+		if object_data[2]==0:
+			me.SetMesh(ct.NoArmour)
+		elif object_data[2]==1:
+			me.SetMesh(ct.LowArmour)
+		elif object_data[2]==2:
+			me.SetMesh(ct.MedArmour)
+		elif object_data[2]==3:
+			me.SetMesh(ct.HighArmour)
+		else:
+			print "ERROR in Actions.TakeArmour , armour level!!!"
 
 	#
 	# Link again the stuff
@@ -1452,11 +1476,11 @@ def TakeArmour(EntityName):
 
 	# Right Back
 	if rightback:
-		inv.LinkRightHand (rightback)
+		# inv.LinkRightHand (rightback)
 		inv.LinkRightBack(rightback)
 	# Left Back
 	if leftback:
-		inv.LinkLeftHand (leftback)
+		# inv.LinkLeftHand (leftback)
 		inv.LinkLeftBack(leftback)
 
 	# Right hand
@@ -1470,14 +1494,14 @@ def TakeArmour(EntityName):
 	Data.armour_level=object_data[2]
 	Data.armour_prot_factor=object_data[3]
 
-	object.SubscribeToList("Pin")
+	# object.SubscribeToList("Pin")
 
 	# to fix bug with taking objects later.....
-	me=Bladex.GetEntity(EntityName)
-	if me:
-		me.AnmEndedFunc(EntityName)
-	else:
-		pass
+	# me=Bladex.GetEntity(EntityName)
+	# if me:
+	# 	me.AnmEndedFunc(EntityName)
+	# else:
+	# 	pass
 
 	return
 
@@ -1509,10 +1533,18 @@ def TakeMainAnm(EntityName):
 
 	obj2inv=TakeObject2Inv(EntityName)
 	me.Data.obj2left= TakeObject2Left(EntityName)
+	object = Bladex.GetEntity(object_name)
 
 	if Reference.GiveObjectFlag(object_name)==Reference.OBJ_ARMOUR:
-		Bladex.AddScheduledFunc(Bladex.GetTime()+0.5, AuxFuncs.FadeTo, (0.5, 0.5))
-		Bladex.AddScheduledFunc(Bladex.GetTime()+1.0, TakeArmour, (EntityName,))
+		object.Static = 1
+		AuxFuncs.FadeFrom(0.7, 0.3)
+		Bladex.AddScheduledFunc(Bladex.GetTime()+0.1, TakeObject, (EntityName, object_name))
+
+		sound=Bladex.CreateSound("../../Sounds/cambio-armadura2.wav",EntityName+"SoundNewArmour")
+		sound.Volume=0.6
+		sound.MinDistance=10000
+		sound.MaxDistance=20000
+		Bladex.AddScheduledFunc(Bladex.GetTime()+0.1, sound.PlayStereo, ())
 
 
 	elif me.Data.last_heightdiff <= chartype.MaxTake1:
@@ -1757,6 +1789,7 @@ def PickupEventHandler(EntityName, EventName, force_take=TRUE):
 
 	me.Data.RegisterObjectAsTaken(object_name)
 
+	return True
 
 #
 # Throwing Actions

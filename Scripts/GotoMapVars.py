@@ -27,7 +27,7 @@ class MainCharState(GameState.EntityPersonState):
 		self.Props["Level"]=entity.Level
 		self.Props["PartialLevel"]=entity.PartialLevel
 		self.Props["Energy"]=entity.Energy
-		self.Props["Armor"]=(entity.MeshName,entity.Data.armour_level,entity.Data.armour_prot_factor)
+		# self.Props["Armor"]=(entity.MeshName,entity.Data.armour_level,entity.Data.armour_prot_factor)
 		self.Props["Saves"]=Reference.TimesSaved
 		self.Props["SpecialsTB"]=Reference.SpecialsTB
 		self.Props["Combos"]=Bladex.GetCombos("Player1")
@@ -131,7 +131,8 @@ def CreateEntAux(obj_tuple,obj_kind,props=1):
 	import ItemTypes
 	obj=Bladex.GetEntity(obj_tuple[0])
 	if not obj:
-		BBLib.ReadBOD(obj_tuple[2])
+		if obj_tuple[2]:
+			BBLib.ReadBOD(obj_tuple[2])
 		obj=Bladex.CreateEntity(obj_tuple[0],obj_tuple[1],0,0,0,obj_kind)
 		if props:
 			ItemTypes.ItemDefaultFuncs(obj)
@@ -163,9 +164,9 @@ def CreateMainCharWithProps(props):
 	char.Data.ObjectsTaken=Props["ObjectsTaken"]
 
 	char.Energy=Props["Energy"]
-	char.SetMesh(Props["Armor"][0])
-	char.Data.armour_level       = Props["Armor"][1]
-	char.Data.armour_prot_factor = Props["Armor"][2]
+	# char.SetMesh(Props["Armor"][0])
+	# char.Data.armour_level       = Props["Armor"][1]
+	# char.Data.armour_prot_factor = Props["Armor"][2]
 	# -Sryml
 	if Props.has_key("InventoryQueue"):
 		char.Data.InvWeaponQueue = Props["InventoryQueue"][0]

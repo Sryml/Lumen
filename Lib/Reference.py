@@ -424,14 +424,14 @@ Escudo 1	40.26
 DEG2RADS= TWOPI/360.0
 
 
-
-DefaultObjectData['ArmaduraAmazonaLigera']=     [OBJ_ARMOUR,  "Amz", 1 , 25]
-DefaultObjectData['ArmaduraBarbaroLigera']=     [OBJ_ARMOUR,  "Bar", 1 , 25]
-DefaultObjectData['ArmaduraCaballeroLigera']=   [OBJ_ARMOUR,  "Kgt", 1 , 10]
-DefaultObjectData['ArmaduraCaballeroMedia']=    [OBJ_ARMOUR,  "Kgt", 2 , 40]
-DefaultObjectData['ArmaduraCaballeroCompleta']= [OBJ_ARMOUR,  "Kgt", 3 , 80]
-DefaultObjectData['ArmaduraEnanoLigera']=       [OBJ_ARMOUR,  "Dwf", 1 , 15]
-DefaultObjectData['ArmaduraEnanoMedia']=        [OBJ_ARMOUR,  "Dwf", 2 , 35]
+# type, char_type, level, pow, def, mesh_name, resistance
+DefaultObjectData['ArmaduraAmazonaLigera']=     [OBJ_ARMOUR,  "Amz", 1, 25, 0, "Amazon_L", {"Impale": 0.1}]
+DefaultObjectData['ArmaduraBarbaroLigera']=     [OBJ_ARMOUR,  "Bar", 1, 25, 0, "Barbarian_L", {"Impale": 0.1}]
+DefaultObjectData['ArmaduraCaballeroLigera']=   [OBJ_ARMOUR,  "Kgt", 1, 10, 0, "Knight_L", {"Impale": 0.1}]
+DefaultObjectData['ArmaduraCaballeroMedia']=    [OBJ_ARMOUR,  "Kgt", 2, 40, 0, "Knight_M", {"Impale": 0.2}]
+DefaultObjectData['ArmaduraCaballeroCompleta']= [OBJ_ARMOUR,  "Kgt", 3, 80, 0, "Knight_F", {"Impale": 0.3}]
+DefaultObjectData['ArmaduraEnanoLigera']=       [OBJ_ARMOUR,  "Dwf", 1, 15, 0, "Dwarf_L", {"Impale": 0.1}]
+DefaultObjectData['ArmaduraEnanoMedia']=        [OBJ_ARMOUR,  "Dwf", 2, 35, 0, "Dwarf_M", {"Impale": 0.2}]
 
 #                 #bod                    #type      #POW #RES  #Sound              #cone             #height #rad #Brk
 DefaultObjectData['Escudo1']=            [OBJ_SHIELD,   0,300, GolpeArmaEscudoMetal, 180.0*DEG2RADS,   2000,  750,  6]
@@ -1114,6 +1114,7 @@ def ObjType(ObjKind):
 
 ######################################
 def GiveObjectPowDefResResMaxData(ObjectName):
+	# power, defence, res, res_max
 	if ObjectName:
 		object=Bladex.GetEntity(ObjectName)
 		if object:
@@ -1143,7 +1144,44 @@ def GiveObjectPowDefResResMaxData(ObjectName):
 						return object_data[1], None, object_data[2], def_object_data[2]
 					else:
 						return object_data[1], None, object_data[2], object_data[2]
+				elif object_data[0]==OBJ_ARMOUR:
+					return object_data[4], object_data[3], None, None
 	return None,None,None,None
+
+
+def GetObjectResistanceData(ObjectName):
+	object_data = GetObjectData(ObjectName)
+	obj_flag = object_data[0]
+	ret = {}
+	if obj_flag == OBJ_ARMOUR:
+		ret = object_data[6]
+
+	return ret
+
+
+def GetObjectSpecialDamage(ObjectName):
+	object_data = GetObjectData(ObjectName)
+	obj_flag = object_data[0]
+	ret = {}
+	if obj_flag in (OBJ_STANDARD, OBJ_WEAPON, OBJ_BOW, OBJ_ARROW):
+		for k,v in object_data[6:]:
+			if not ret.has_key(k):
+				ret[k] = 0
+			ret[k] = ret[k] + v
+
+	return ret
+
+
+def GetObjectData(ObjectName):
+	object = Bladex.GetEntity(ObjectName)
+	object_data = []
+	if object:
+		if EntitiesObjectData.has_key(ObjectName):
+			object_data = EntitiesObjectData[ObjectName]
+		elif DefaultObjectData.has_key(object.Kind):
+			object_data = DefaultObjectData[object.Kind]
+	return object_data
+
 
 def GiveObjectFlag(ObjectName):
 	if ObjectName:

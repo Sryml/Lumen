@@ -261,9 +261,35 @@ def ReviveSave(this):
             traceback.print_exc()
     props = MemPersistence.Get("MainChar")
     if props:
-        maxWeapons = props[2].get("maxWeapons", 4)
+        CreationProps = props[0]
+        Props = props[1]
+        Inventory = props[2]
+        compatible = 0
+
+        maxWeapons = Inventory.get("maxWeapons", 4)
         if maxWeapons < Inventory.MAXWEAPONS:
-            props[2]["maxWeapons"] = Inventory.MAXWEAPONS
+            compatible = 1
+            Inventory["maxWeapons"] = Inventory.MAXWEAPONS
+        Armor = Props.get("Armor", ())
+        if Armor:
+            Armor_dict = {
+                "Knight_N": (
+                    "ArmaduraCaballeroLigera",
+                    "ArmaduraCaballeroMedia",
+                    "ArmaduraCaballeroCompleta",
+                ),
+                "Dwarf_N": ("ArmaduraEnanoLigera", "ArmaduraEnanoMedia"),
+                "Amazon_N": ("ArmaduraAmazonaLigera"),
+                "Barbarian_N": ("ArmaduraBarbaroLigera"),
+            }
+            _, arm_level, _ = Armor
+            lst = Armor_dict.get(CreationProps["Kind"], [])
+            if arm_level > 0 and len(lst) >= arm_level:
+                kind = lst[arm_level - 1]
+                Inventory["Objects"].append(("compat_armor", kind, ""))
+                compatible = 1
+
+        if compatible:
             MemPersistence.Store("MainChar", props)
     Lumenx.LoadLevel(this.MenuDescr["ReviveMapDir"], this.MenuDescr["ReviveModDir"])
 
@@ -443,9 +469,7 @@ def CreateSLMenu(menu_class):
                     save_map_name = Lumenx.GetMapListItem(map_dir, mod_dir)
                     tup = string.split(string.strip(lines[1]), ", ")
                     lvl, kind, cadtime, timesaved, score = tup
-                    name = Reference.EnemiesDefaultScorerData.get(
-                        kind, ("", kind)
-                    )[1]
+                    name = Reference.EnemiesDefaultScorerData.get(kind, ("", kind))[1]
                     slot_name = "%s - Lv.%s %s - %s - %s (%s)" % (
                         MenuText.GetMenuText(save_map_name),
                         lvl,
