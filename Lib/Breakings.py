@@ -3,6 +3,8 @@ import InitDataField
 import B3DLib
 import Interpolator
 import netgame
+import types
+import whrandom
 
 EXGRP_TOTALEXCLUSION=1
 
@@ -53,7 +55,14 @@ class FadeOutPiece(Interpolator.LinearInt):
 
 
 
-
+def DropHideObj(obj):
+  brkobj = obj.Data.brkobjdata
+  for i in brkobj.hidobjname:
+    hidobj = Bladex.GetEntity(i)
+    hidobj.Position = obj.Rel2AbsPoint(hidobj.Position[0], hidobj.Position[1], hidobj.Position[2])
+    hidobj.Impulse(0, 1, 0)
+  # Box RNG
+  # rnd = whrandom.random()
 
 
 def RemovePieces(brkobj):
@@ -106,8 +115,8 @@ def ExplodeSpecialObject(obj_name, expl_imp,delta = (0,0,0)):
 		brkobj.pieza[n]=Bladex.GetEntity(obj_name+"Pieza"+`n+1`)
 		brkobj.pieza[n].Position=brkobj.piezapos[n][0], brkobj.piezapos[n][1], brkobj.piezapos[n][2]
 		brkobj.pieza[n].Orientation=obj.Orientation
-	if brkobj.hidobjname:
-		brkobj.hidobj.Position=obj.Rel2AbsPoint(brkobj.hidobj.Position[0], brkobj.hidobj.Position[1], brkobj.hidobj.Position[2])
+	# if brkobj.hidobjname:
+	# 	brkobj.hidobj.Position=obj.Rel2AbsPoint(brkobj.hidobj.Position[0], brkobj.hidobj.Position[1], brkobj.hidobj.Position[2])
 	#obj.Static=1
 	#obj.RemoveFromWorld()
 
@@ -125,8 +134,7 @@ def ExplodeSpecialObject(obj_name, expl_imp,delta = (0,0,0)):
 #	for n in range(brkobj.n_piezas):
 	for n in brkobj.n_piezas:
 		brkobj.pieza[n].Impulse(brkobj.piezavector[n][0]*expl_imp+delta[0], brkobj.piezavector[n][1]*expl_imp+delta[1], brkobj.piezavector[n][2]*expl_imp+delta[2])
-	if brkobj.hidobjname:
-		brkobj.hidobj.Impulse(0, 1, 0)
+	DropHideObj(obj)
 	if brkobj.life_time:
 #		for n in range(brkobj.n_piezas):
 		for n in brkobj.n_piezas:
@@ -146,6 +154,11 @@ def BreakSpecialObject(hit_entity, hitting_entity, xhit_point, yhit_point, zhit_
     return 0
 
   brkobj=obj.Data.brkobjdata
+  #
+  brkobj.hit_count = brkobj.hit_count + 1
+  if brkobj.hit_count < brkobj.max_hit_count:
+    return 1
+  #
 #	for n in range(brkobj.n_piezas):
   for n in brkobj.n_piezas:
     brkobj.piezapos[n]=obj.Rel2AbsPoint(brkobj.piezaposrel[n][0], brkobj.piezaposrel[n][1], brkobj.piezaposrel[n][2])
@@ -154,8 +167,8 @@ def BreakSpecialObject(hit_entity, hitting_entity, xhit_point, yhit_point, zhit_
     brkobj.pieza[n]=Bladex.GetEntity(hit_entity+"Pieza"+`n+1`)
     brkobj.pieza[n].Position=brkobj.piezapos[n][0], brkobj.piezapos[n][1], brkobj.piezapos[n][2]
     brkobj.pieza[n].Orientation=obj.Orientation
-  if brkobj.hidobjname:
-    brkobj.hidobj.Position=obj.Rel2AbsPoint(brkobj.hidobj.Position[0], brkobj.hidobj.Position[1], brkobj.hidobj.Position[2])
+  # if brkobj.hidobjname:
+  #   brkobj.hidobj.Position=obj.Rel2AbsPoint(brkobj.hidobj.Position[0], brkobj.hidobj.Position[1], brkobj.hidobj.Position[2])
 
   brkobj.sonido_rotura.Play(obj.Position[0], obj.Position[1], obj.Position[2], 0)
   if netgame.GetNetState() == 1:
@@ -184,8 +197,7 @@ def BreakSpecialObject(hit_entity, hitting_entity, xhit_point, yhit_point, zhit_
   for n in brkobj.n_piezas:
     brkobj.pieza[n].ImpulseC(xhit_point, yhit_point, zhit_point, ximpulse, yimpulse, zimpulse)
 #		brkobj.pieza[n].Impulse(brkobj.piezavector[n][0]*mod_imp, brkobj.piezavector[n][1]*mod_imp, brkobj.piezavector[n][2]*mod_imp)
-  if brkobj.hidobjname:
-    brkobj.hidobj.Impulse(0, 1, 0)
+  DropHideObj(obj)
   if brkobj.life_time:
 #	  for n in range(brkobj.n_piezas):
     for n in brkobj.n_piezas:
@@ -1385,7 +1397,7 @@ def GetBreakingData(obj):
   brkobj.Broken=0
   return (brkobj, fichero_sonido)
 
-def SetBreakable(obj_name, life_time=0, max_life_time=0, hiddenobject=""):
+def SetBreakable(obj_name, life_time=0, max_life_time=0, hiddenobject="", max_hit_count=1):
   obj=Bladex.GetEntity(obj_name)
   try:
   	if obj.Data.brkobjdata:
@@ -1429,11 +1441,20 @@ def SetBreakable(obj_name, life_time=0, max_life_time=0, hiddenobject=""):
   if ceros:
     for n in range(ceros):
       brkobj.piezanoborrada.remove(0)
-  if hiddenobject:
-    brkobj.hidobj=Bladex.GetEntity(hiddenobject)
-#		brkobj.hidobj.ExclusionGroup=EXGRP_TOTALEXCLUSION
-    brkobj.hidobj.RemoveFromWorld()
+  #
+  if type(hiddenobject) not in (types.TupleType, types.ListType):
+    if hiddenobject:
+      hiddenobject = (hiddenobject,)
+    else:
+      hiddenobject = ()
+  for i in hiddenobject:
+    hidobj=Bladex.GetEntity(i)
+    if hidobj:
+      # hidobj.ExclusionGroup=EXGRP_TOTALEXCLUSION
+      hidobj.RemoveFromWorld()
   brkobj.hidobjname=hiddenobject
+  brkobj.hit_count = 0
+  brkobj.max_hit_count = max_hit_count
   InitDataField.Initialise(obj)
   obj.Data.brkobjdata=brkobj
 
