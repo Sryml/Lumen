@@ -40,6 +40,7 @@ from Lumenx import printx
 B_FrameWidget = BUIx.B_FrameWidget
 B_TextWidget = BUIx.B_TextWidget
 FontColor = Language.FontColor
+IManager = BInput.GetInputManager()
 #
 
 #if netgame.GetNetState()==0:
@@ -382,6 +383,24 @@ class B_MenuTreeItem:
       except KeyError:
         pass
 
+  def PrevFocus(self):
+      action = IManager.GetInputActions().Find("Menu_Control")
+      ctrl = action.this != "NULL" and action.CurrentlyActivated() or 0
+      if ctrl:
+          self.IncMenuItem()
+      else:
+          w = self.StackMenu.Top()
+          w.PrevFocus()
+  
+  def NextFocus(self):
+      action = IManager.GetInputActions().Find("Menu_Control")
+      ctrl = action.this != "NULL" and action.CurrentlyActivated() or 0
+      if ctrl:
+          self.DecMenuItem()
+      else:
+          w = self.StackMenu.Top()
+          w.NextFocus()
+
   def ActivateItem(self, activate):
       if activate == 1:
           if not self.AcceptsFocus():
@@ -476,8 +495,11 @@ class B_MenuTree(B_MenuFrameWidget):
         ValidIndex = 0
         isValidIndex = 0
         for i in Menudesc["ListDescr"]:
+            if type(i) in (types.FunctionType, types.MethodType):
+                i(self)
+                break
             if not i:
-              continue
+                continue
             
             m_class = i.get("Kind", B_MenuItemTextNoFX)
             wSubMenu = m_class(self, i, StackMenu)

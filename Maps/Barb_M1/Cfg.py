@@ -17,6 +17,13 @@ execfile("../../Scripts/BladeInit.py")
 #char=Bladex.GetEntity("Player1")
 #char.Position= -108000,7000,-95000
 
+#
+import ItemTypes
+import Actions
+import Breakings
+import Sparks
+#
+
 execfile("ActorsInit.py")
 execfile("DefFuncs.py")
 execfile("MusicEvents.py")

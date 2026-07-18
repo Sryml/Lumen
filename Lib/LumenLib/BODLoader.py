@@ -26,9 +26,10 @@ import traceback
 import time
 import typing
 import pprint
+import types
 
 from Lumenx import printx, Raisex
-from LumenLib import UtilsWidget
+from LumenLib import UtilsWidget, AnyMapAux
 
 if typing.TYPE_CHECKING:
     apply = lambda fn, args=(), kwds={}: None
@@ -69,10 +70,12 @@ class _DATA:
     }
     mod_info = {}
     mod_list = []
+    #
     selected_map = ""
     character = ""
     character_skin = 0
-    skin_available = 1
+    # skin_available = 1
+    #
 
 
 # ----------------------------------
@@ -119,35 +122,41 @@ AssetsLabel = {
 # Start Game Option
 # ----------------------------------
 def GetCharType(this):
-    return this.Options.index(_DATA.character)
+    _DATA.character = this.Options[0]
+    _DATA.character_skin = 0
+    return 0
 
 
 def SetCharType(option):
     _DATA.character_skin = 0
     _DATA.character = option
-    Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
-        UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
-    )
-    Menu.GetMenuWidget("Character Skin")[0].Focusable = (
-        len(UtilsWidget.CHARACTER[_DATA.character]) > 1 and _DATA.skin_available
+    w = Menu.GetMenuWidget("CharPreview")[0]
+    if w:
+        w.SetBitmap(
+            UtilsWidget.CHARACTER.get(_DATA.character, ["empty"])[_DATA.character_skin]
+        )
+    w = Menu.GetMenuWidget("Character Skin")[0]
+    w.Focusable = (
+        len(UtilsWidget.CHARACTER.get(_DATA.character, ["empty"])) > 1
+        and w.MenuDescr["SkinAvailable"]
     )
 
 
 def NextSkin(this):
     _DATA.character_skin = (_DATA.character_skin + 1) % len(
-        UtilsWidget.CHARACTER[_DATA.character]
+        UtilsWidget.CHARACTER.get(_DATA.character, ["empty"])
     )
     Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
-        UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
+        UtilsWidget.CHARACTER.get(_DATA.character, ["empty"])[_DATA.character_skin]
     )
 
 
 def PreviousSkin(this):
     _DATA.character_skin = (_DATA.character_skin - 1) % len(
-        UtilsWidget.CHARACTER[_DATA.character]
+        UtilsWidget.CHARACTER.get(_DATA.character, ["empty"])
     )
     Menu.GetMenuWidget("CharPreview")[0].SetBitmap(
-        UtilsWidget.CHARACTER[_DATA.character][_DATA.character_skin]
+        UtilsWidget.CHARACTER.get(_DATA.character, ["empty"])[_DATA.character_skin]
     )
 
 
@@ -161,105 +170,189 @@ def SetSelectedMap(option):
 
 
 def StartGame(this):
+    import CharStats
+    from LumenLib import Inventory
+
     map_dir = ""
     mod_dir = Lumenx.GetCurrentModMenu()
     MapList = Lumenx.GetMapList(mod_dir)
-    default_map = 0
+    DefaultMaps = this.MenuDescr["DefaultMaps"]
+    MainCharData = this.MenuDescr["MainCharData"]
+
     if string.lower(_DATA.selected_map) == "default":
-        default_map = 1
+        map_dir = DefaultMaps.get(_DATA.character, "")
     else:
         for k, v in MapList.items():
             if v == _DATA.selected_map:
                 map_dir = k
                 break
-    if map_dir or default_map:
+    if map_dir:
         MemPersistence.Delete("2DMapValues")
         MemPersistence.Delete("MainChar")
         #
         character = UtilsWidget.CHARACTER
-        MemPersistence.Store(
-            "SelectedChar",
-            (
-                character[_DATA.character][0],
-                character[_DATA.character][_DATA.character_skin],
-            ),
-        )
-        if not default_map:
-            Lumenx.LoadLevel(map_dir, mod_dir)
-        else:
-            maps = {
-                "Sargon": "ragnar_m2",
-                "Naglfar": "dwarf_m3",
-                "Zoe": "ruins_m4",
-                "Tukaram": "barb_m1",
-            }
-            Lumenx.LoadLevel(maps[_DATA.character], mod_dir)
+        if character.has_key(_DATA.character):
+            Kind = character[_DATA.character][0]
+            SkinName = character[_DATA.character][_DATA.character_skin]
+            MemPersistence.Store("SelectedChar", (Kind, SkinName))
+            #
+            if MainCharData:
+                CreationProps, Props, Inventory_Dict = MainCharData["Default"]
+                Props_Map, Inventory_Map = MainCharData.get(map_dir, {}).get(
+                    "Default", ({}, {})
+                )
+                Props_Char, Inventory_Char = MainCharData.get(map_dir, {}).get(
+                    Kind, ({}, {})
+                )
+                #
+                inv_count = 1
+                for d in (Props_Map, Props_Char):
+                    for k, v in d.items():
+                        if type(Props[k]) == types.ListType:
+                            for e in v:
+                                Props[k].append(e)
+                        else:
+                            Props[k] = v
+                for d in (Inventory_Map, Inventory_Char):
+                    for k, v in d.items():
+                        if type(Inventory_Dict[k]) == types.ListType:
+                            for e in v:
+                                if k == "Quivers":
+                                    (name, kind, bod_path), arrow_num = e
+                                    if name == "":
+                                        name = "Player1_AutoInv_%s" % inv_count
+                                        inv_count = inv_count + 1
+                                    val = ((name, kind, bod_path), arrow_num)
+                                else:
+                                    name, kind, bod_path = e
+                                    if name == "":
+                                        name = "Player1_AutoInv_%s" % inv_count
+                                        inv_count = inv_count + 1
+                                    val = (name, kind, bod_path)
+                                Inventory_Dict[k].append(val)
+                        else:
+                            Inventory_Dict[k] = v
+
+                CreationProps["Kind"] = Kind
+                Inventory_Dict["maxWeapons"] = Inventory.MAXWEAPONS
+                Props["Life"] = CharStats.GetCharMaxLife(Kind, Props["Level"])
+                Props["Energy"] = CharStats.GetCharMaxEnergy(Kind, Props["Level"])
+                if SkinName != Kind:
+                    Props["SkinName"] = SkinName
+
+                VisitedMaps = [0] * 17  #
+                PlacedTablets = [0, 0, 0, 0, 0, 0]  #
+                MText = [[]] * 17
+                PWeapons = []
+                PItems = []
+                BaList = []  #
+                try:
+                    if string.lower(map_dir[-5:]) == "_back":
+                        index = 14
+                        VisitedMaps[index] = 1
+                    else:
+                        index = string.atoi(string.split(map_dir, "_m")[-1]) - 1
+
+                    for i in range(index):
+                        VisitedMaps[i] = 1
+                    if index > 7:
+                        BaList.append("SALATABLILLAS")
+                        BaList.append("ISLANDMURAL")
+                    if index > 8:
+                        BaList.append("ORCMURAL")
+                    if index > 11:
+                        BaList.append("NEJEVMURAL")
+                    if index > 14:
+                        PlacedTablets = [1] * 6
+                except:
+                    pass
+
+                Reference.debugprint("Weapons: %s" % Inventory_Dict["Weapons"])
+                MemPersistence.Store(
+                    "2DMapValues",
+                    [VisitedMaps, PlacedTablets, MText, PWeapons, PItems, BaList],
+                )
+                MemPersistence.Store("MainChar", (CreationProps, Props, Inventory_Dict))
+        #
+        Lumenx.LoadLevel(map_dir, mod_dir)
+    else:
+        printx("Map not found: %s" % _DATA.selected_map)
 
 
-def SetStartGameOption(this):
-    options = []
-    map_name = []
-    mod_dir = Lumenx.GetCurrentModMenu()
-
-    _DATA.skin_available = this.MenuDescr.get("SkinAvailable", 1)
-    optional_map = this.MenuDescr.get("OptionalMap", [])
-    optional_char = this.MenuDescr.get(
+def GetStartGameList(MenuDescr):
+    OptionalChar = MenuDescr.get(
         "OptionalChar", ["Sargon", "Naglfar", "Zoe", "Tukaram"]
     )
-    banner = this.MenuDescr.get("Banner")
-    background = this.MenuDescr.get(
+    SkinAvailable = MenuDescr.get("SkinAvailable", 1)
+    MapList = MenuDescr.get("MapList", {})
+    OptionalMap = MenuDescr.get("OptionalMap", [])
+    DefaultMaps = MenuDescr.get(
+        "DefaultMaps",
+        {
+            "Sargon": "ragnar_m2",
+            "Naglfar": "dwarf_m3",
+            "Zoe": "ruins_m4",
+            "Tukaram": "barb_m1",
+        },
+    )
+    MainCharData = MenuDescr.get("MainCharData", {})
+    Banner = MenuDescr.get("Banner")
+    Background = MenuDescr.get(
         "Background",
         {
             "Name": "BackColor",
             "Kind": UtilsWidget.B_BackColor,
         },
     )
-    startgame_command = this.MenuDescr.get("StartGameCommand", StartGame)
+    StartGameCommand = MenuDescr.get("StartGameCommand", StartGame)
+    #
+    map_name = []
+    ListDescr = []
 
-    _DATA.character = optional_char[0]
-    _DATA.character_skin = 0
-    if banner:
-        options.append(banner)
-
-    for map_dir in optional_map:
-        name = Lumenx.GetMapListItem(map_dir, mod_dir)
+    if Banner:
+        ListDescr.append(Banner)
+    for map_dir in OptionalMap:
+        name = MapList.get(map_dir)
         if name:
             map_name.append(name)
+        elif string.lower(map_dir) == "default":
+            map_name.append("Default")
 
     if map_name:
-        if len(map_name) > 1:
-            map_option = {
-                "Name": "Map",
-                "Text": MenuText.GetMenuText("Map") + ": ",
-                "VSep": "0.015%",
-                "FontScale": Language.MFontScale["M"],
-                "Kind": MenuWidget.B_MenuItemOption,
-                "Options": map_name,
-                "SelOptionFunc2": GetSelectedMap,
-                "Command": SetSelectedMap,
-            }
-        else:
-            map_option = None
+        # if len(map_name) > 1:
+        map_option = {
+            "Name": "Map",
+            "Text": MenuText.GetMenuText("Map") + ": ",
+            "VSep": "0.015%",
+            "FontScale": Language.MFontScale["M"],
+            "Kind": MenuWidget.B_MenuItemOption,
+            "Options": map_name,
+            "SelOptionFunc2": GetSelectedMap,
+            "Command": SetSelectedMap,
+            "Focusable": len(map_name) > 1,
+        }
+        # else:
+        #     map_option = None
 
-        options = options + [
+        ListDescr = ListDescr + [
             {
                 "Name": "Character",
-                "Text": "",
+                "Text": MenuText.GetMenuText("Character") + ": ",
                 "VSep": Menu.FirstOptionVSep,
                 "FontScale": Language.MFontScale["M"],
                 "Kind": MenuWidget.B_MenuItemOption,
-                "Options": optional_char,
+                "Options": OptionalChar,
                 "SelOptionFunc2": GetCharType,
                 "Command": SetCharType,
-                "Focusable": len(optional_char) > 1,
+                "Focusable": len(OptionalChar) > 1,
             },
             {
                 "Name": "CharPreview",
                 "Kind": UtilsWidget.B_BitmapWidget,
                 "VSep": "0.01%",
-                "GetImageName": lambda this: UtilsWidget.CHARACTER[_DATA.character][
-                    _DATA.character_skin
-                ],
+                "GetImageName": lambda this: UtilsWidget.CHARACTER.get(
+                    _DATA.character, ["empty"]
+                )[_DATA.character_skin],
                 "Size": (200, 200),
                 "FitHeight": "0.19%",
                 "Focusable": 0,
@@ -272,8 +365,10 @@ def SetStartGameOption(this):
                 "Command": NextSkin,
                 "LeftCommand": NextSkin,
                 "RightCommand": PreviousSkin,
-                "Focusable": len(UtilsWidget.CHARACTER[_DATA.character]) > 1
-                and _DATA.skin_available,
+                "Focusable": len(UtilsWidget.CHARACTER.get(OptionalChar[0], ["empty"]))
+                > 1
+                and SkinAvailable,
+                "SkinAvailable": SkinAvailable,
             },
             map_option,
             {
@@ -281,15 +376,18 @@ def SetStartGameOption(this):
                 "Text": MenuText.GetMenuText("Start"),
                 "FontScale": Language.MFontScale["M"],
                 "VSep": "0.015%",
-                "Command": startgame_command,
+                "DefaultMaps": DefaultMaps,
+                "MainCharData": MainCharData,
+                "Command": StartGameCommand,
             },
         ]
     #
-    options = options + [
+    ListDescr = ListDescr + [
         BackOptionCommon,
-        background,
+        Background,
     ]
-    this.MenuDescr["ListDescr"] = options
+
+    return ListDescr
 
 
 # ----------------------------------
@@ -339,9 +437,9 @@ def OnEnterModMenu(this):
 
     Lumenx.SetCurrentModMenu(this.Menudesc.get("ModDir", ""))
     #
-    start_game = Menu.GetMenuWidget("START GAME", this)[0]
-    if start_game:
-        SetStartGameOption(start_game)
+    # start_game = Menu.GetMenuWidget("START GAME", this)[0]
+    # if start_game:
+    #     SetStartGameOption(start_game)
     #
     SaveGame.CreateSLMenu(this)
 
@@ -908,7 +1006,6 @@ ModMenu = {
                 {
                     "Name": "AssetModel",
                     "Text": MenuText.GetMenuText("Model Assets"),
-                    "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
                     "VSep": 0,
                     "OnLeave": LeaveMenu,
@@ -939,7 +1036,6 @@ ModMenu = {
                 {
                     "Name": "AssetSound",
                     "Text": MenuText.GetMenuText("Sound Assets"),
-                    "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
                     "VSep": 0,
                     "OnLeave": LeaveMenu,
@@ -970,7 +1066,6 @@ ModMenu = {
                 {
                     "Name": "AssetOther",
                     "Text": MenuText.GetMenuText("Other Assets"),
-                    "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
                     "VSep": 0,
                     "OnLeave": LeaveMenu,
@@ -1061,7 +1156,55 @@ ModMenu = {
             "Font": Language.FontTitle,
             "VSep": "1em",
             "OnLeave": LeaveMenu,
-            "ListDescr": [],
+            "ListDescr": [
+                {
+                    "Name": "Any Map",
+                    "Text": MenuText.GetMenuText("Any Map"),
+                    # "FontScale": Language.MFontScale["M"],
+                    "VSep": Menu.FirstOptionVSep,
+                    "ListDescr": GetStartGameList(
+                        {
+                            # "OptionalChar": ["Sargon"],
+                            # "SkinAvailable": 0,
+                            "MapList": Lumenx.GetMapList(),
+                            "OptionalMap": [
+                                "barb_m1",
+                                "ragnar_m2",
+                                "dwarf_m3",
+                                "ruins_m4",
+                                "mine_m5",
+                                "labyrinth_m6",
+                                "tomb_m7",
+                                "island_m8",
+                                "orc_m9",
+                                "orlok_m10",
+                                "ice_m11",
+                                "btomb_m12",
+                                "desert_m13",
+                                "volcano_m14",
+                                "palace_m15",
+                                "tower_m16",
+                                "chaos_m17",
+                                "mine_back",
+                                "labyrinth_back",
+                                "tomb_back",
+                                "ice_back",
+                                "btomb_back",
+                                "desert_back",
+                                # "palace_back",
+                            ],
+                            # "DefaultMaps": DefaultMaps,
+                            "MainCharData": AnyMapAux.MainCharData,
+                            # "Banner": BannerItem,
+                            "Background": BackImageBannerItem,
+                            # "StartGameCommand": StartGame,
+                        }
+                    ),
+                },
+                GetNoteLabelItem(),
+                BackOptionCommon,
+                BackImageBannerItem,
+            ],
         },
         GetNoteLabelItem(),
         BackOption,

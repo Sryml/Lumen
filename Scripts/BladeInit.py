@@ -92,7 +92,7 @@ TimerAux.CreateTimer("Timer15", 1.0 / 15.0)
 # PJ Init
 #
 import GotoMapVars
-if string.lower(Bladex.GetCurrentMap()) in ['tutorial','2dmap','casa','barb_m1','ragnar_m2','dwarf_m3','ruins_m4']: # Caso especial
+if string.lower(Bladex.GetCurrentMap()) in ['2dmap','casa']: # Caso especial
   execfile("pj.py")
   print "Found 2DMap"
 elif not GotoMapVars.BeginLevel():

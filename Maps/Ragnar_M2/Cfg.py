@@ -4,6 +4,10 @@ LoadBar.LanguageProgressBar(371,"Blade_progress.jpg")
 
 from library import *
 
+#
+import Sparks
+import Breakings
+#
 
 execfile("DefFuncs.py")
 

@@ -150,6 +150,7 @@ def CreateMainCharWithProps(props):
 	import Sparks
 	import Breakings
 	import Actions
+	import CharStats
 
 
 	char=Bladex.CreateEntity("Player1",CreationProps["Kind"],0,0,0,"Person")
@@ -159,7 +160,10 @@ def CreateMainCharWithProps(props):
 	AniSound.AsignarSonidosCaballero('Player1')
 
 	char.Level=Props["Level"]
-	char.PartialLevel=Props["PartialLevel"]
+	PartialLevel = Props["PartialLevel"]
+	if 0 < PartialLevel < 1:
+		PartialLevel = PartialLevel * CharStats.GetCharExperienceCost(CreationProps["Kind"],Props["Level"])
+	char.PartialLevel=PartialLevel
 	char.Life=Props["Life"]
 	char.Data.ObjectsTaken=Props["ObjectsTaken"]
 
@@ -187,6 +191,10 @@ def CreateMainCharWithProps(props):
 	for i in Inventory["Objects"]:
 		CreateEntAux(i,"Physic")
 		Actions.ExtendedTakeObject(inv,i[0])
+	#
+	SkinName = Props.get("SkinName")
+	if SkinName:
+		char.SetMesh(SkinName)
 
 	inv.maxWeapons=Inventory["maxWeapons"]
 	for i in Inventory["Weapons"]:

@@ -10,7 +10,10 @@ Bladex.ReadLevel("ruins.lvl")
 
 execfile("../../Scripts/BladeInit.py")
 
-
+#
+import Breakings
+import ItemTypes
+#
 import Flechas
 
 execfile("DefFuncs.py")
