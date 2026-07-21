@@ -1306,7 +1306,8 @@ def ActivateMenu(caller_id = None):
     Bladex.AssocKey("Menu Supr","Gamepad","ButtonNorth")
     Bladex.AddBoundFunc("Menu Supr",_MainMenu.MenuSuprItem)
 
-    Bladex.AssocKey("Menu ActivateItem","Mouse","LeftButton")
+    Bladex.AssocKey("Menu ActivateItem","Mouse","LeftButton", 0)
+    Bladex.AssocKey("Menu ActivateItem","Keyboard","E")
     Bladex.AssocKey("Menu ActivateItem","Keyboard","Enter")
     Bladex.AssocKey("Menu ActivateItem","Gamepad","ButtonSouth")
     Bladex.AddBoundFunc("Menu ActivateItem",_MainMenu.ActivateMenuItem)

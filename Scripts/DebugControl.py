@@ -59,9 +59,20 @@ def MataEnemigoEncarado():
 			victim.Life=1
 
 
+def NextLevel():
+	import GotoMapVars
+	char = Bladex.GetEntity("Player1")
+	if char.Life > 0.0:		
+		Bladex.AddScheduledFunc(Bladex.GetTime()+0.0, GotoMapVars.EndOfLevel,(),"ChangingLevel")
+
+
 Bladex.AddInputAction("Mata", 0)
 Bladex.AssocKey("Mata", "Keyboard", "K")
 Bladex.AddBoundFunc("Mata", MataEnemigoEncarado)
+
+Bladex.AddInputAction("NextLevel", 0)
+Bladex.AssocKey("NextLevel", "Keyboard", "F9", 1)
+Bladex.AddBoundFunc("NextLevel", NextLevel)
 
 import cPickle
 import ObjStore

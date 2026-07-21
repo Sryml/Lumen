@@ -1321,6 +1321,7 @@ def ReadLevel(file_name):
                 continue
             key, val = lst
             val = re.split(r"\s+", val)[0]
+            val = string.replace(val, "\\\\", "/")
             val = string.replace(val, "\\", "/")
             if key != "GammaC":
                 if key in ("Bitmaps", "WorldDome"):

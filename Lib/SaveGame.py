@@ -263,13 +263,13 @@ def ReviveSave(this):
     if props:
         CreationProps = props[0]
         Props = props[1]
-        Inventory = props[2]
+        Inventory_dict = props[2]
         compatible = 0
 
-        maxWeapons = Inventory.get("maxWeapons", 4)
+        maxWeapons = Inventory_dict.get("maxWeapons", 4)
         if maxWeapons < Inventory.MAXWEAPONS:
             compatible = 1
-            Inventory["maxWeapons"] = Inventory.MAXWEAPONS
+            Inventory_dict["maxWeapons"] = Inventory.MAXWEAPONS
         Armor = Props.get("Armor", ())
         if Armor:
             Armor_dict = {
@@ -286,7 +286,7 @@ def ReviveSave(this):
             lst = Armor_dict.get(CreationProps["Kind"], [])
             if arm_level > 0 and len(lst) >= arm_level:
                 kind = lst[arm_level - 1]
-                Inventory["Objects"].append(("compat_armor", kind, ""))
+                Inventory_dict["Objects"].append(("compat_armor", kind, ""))
                 compatible = 1
 
         if compatible:

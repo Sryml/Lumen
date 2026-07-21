@@ -26,26 +26,29 @@ def DisplaceAndRotateObjectFunc(obj_name, time):
 		obj.RemoveFromList(dinobj.Timer)
 		obj.TimerFunc=""
 		return
-			
-	theta =min((max((time-dinobj.start_time),0)/dinobj.displ_time),1)
-	speed = 10
+
 	if (dinobj.OnMovement==1):
-		if (theta<1):
-			x=dinobj.start_pos[0]+dinobj.displ_vector[0]*theta*dinobj.maxDisp
-			y=dinobj.start_pos[1]+dinobj.displ_vector[1]*theta*dinobj.maxDisp
-			z=dinobj.start_pos[2]+dinobj.displ_vector[2]*theta*dinobj.maxDisp
-			obj.SetPosition(x,y,z)
+		if (time<dinobj.end_time):
+			itime=time-dinobj.last_time
+			dinobj.displ=dinobj.init_vel*itime+(dinobj.acc*(itime**2))/2.0
+			x=dinobj.displ_vector[0]*dinobj.displ
+			y=dinobj.displ_vector[1]*dinobj.displ
+			z=dinobj.displ_vector[2]*dinobj.displ
+			obj.Move(x,y,z)
+			iend_vel=dinobj.init_vel+dinobj.acc*itime
+			dinobj.init_vel=iend_vel
+			dinobj.last_time=time
 			if (dinobj.while_displ_sound):
 				dinobj.while_displ_sound.Position=dinobj.obj.Position
 			if (dinobj.WhileDisplFunc):
 				apply(dinobj.WhileDisplFunc, dinobj.WhileDisplArgs)
 		else:
-			theta =1.0
-			x=dinobj.start_pos[0]+dinobj.displ_vector[0]*theta*dinobj.maxDisp
-			y=dinobj.start_pos[1]+dinobj.displ_vector[1]*theta*dinobj.maxDisp
-			z=dinobj.start_pos[2]+dinobj.displ_vector[2]*theta*dinobj.maxDisp
-			obj.SetPosition(x,y,z)
-
+			itime=dinobj.end_time-dinobj.last_time
+			dinobj.displ=dinobj.init_vel*itime+(dinobj.acc*(itime**2))/2.0
+			x=dinobj.displ_vector[0]*dinobj.displ
+			y=dinobj.displ_vector[1]*dinobj.displ
+			z=dinobj.displ_vector[2]*dinobj.displ
+			obj.Move(x,y,z)
 			dinobj.OnMovement=0
 			if (dinobj.while_displ_sound and (dinobj.while_displ_sound!=dinobj.next_while_displ_sound or dinobj.last_displ)):
 				dinobj.while_displ_sound.StopSound()
@@ -107,7 +110,6 @@ class DinObj:
 	Activado=0
 	OnMovement=0
 	OnRotation=0
-	maxDisp=0
 	prev_while_displ_sound=None
 	while_displ_sound=None
 	next_while_displ_sound=None
@@ -119,9 +121,6 @@ class DinObj:
 	next_while_rot_sound=None
 	end_rot_sound=None
 	last_rot=1
-	start_pos=(0,0,0)
-	start_time=0
-	displ_time=0
 	Timer="Timer60"
 	obj=None
 
@@ -157,6 +156,7 @@ class DinObj:
 		ObjStore.ObjectsStore[self.ObjId]=self
 
 	def DisplaceDinObj(self):
+
 		self.OnMovement=1
 		if (self.OnRotation==0):
 			self.obj.TimerFunc=DisplaceAndRotateObjectFunc
@@ -329,12 +329,9 @@ def DisplaceObject(dinobj, displ, displ_vector, init_vel, end_vel, init_displ_so
 	if (dinobj.while_displ_sound and dinobj.while_displ_sound!=dinobj.prev_while_displ_sound):
 		dinobj.while_displ_sound.Position=dinobj.obj.Position
 		dinobj.while_displ_sound.PlaySound(-1)
+	start_time=Bladex.GetTime()
 	dinobj.last_time=Bladex.GetTime()
-	dinobj.displ_time = displ_time
-	dinobj.start_time = Bladex.GetTime()
-	dinobj.end_time = dinobj.start_time+displ_time
-	dinobj.start_pos = dinobj.obj.Position
-	dinobj.maxDisp = (dinobj.init_vel*dinobj.displ_time+(dinobj.acc*(dinobj.displ_time**2))/2.0)
+	dinobj.end_time=start_time+displ_time
 	dinobj.DisplaceDinObj()
 
 
@@ -374,9 +371,7 @@ def RotateObject(dinobj, angle, init_w, end_w, center, axis, rotation_type=REL, 
 	if (dinobj.while_rot_sound and dinobj.while_rot_sound!=dinobj.prev_while_rot_sound):
 		dinobj.while_rot_sound.Position=dinobj.obj.Position
 		dinobj.while_rot_sound.PlaySound(-1)
-	start_time = Bladex.GetTime()
-	dinobj.displ_time = rotat_time
-	dinobj.start_time = start_time
+	start_time=Bladex.GetTime()
 	dinobj.last_time_w=Bladex.GetTime()
 	dinobj.end_time_w=start_time+rotat_time
 	dinobj.RotateDinObj()
