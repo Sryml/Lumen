@@ -13,7 +13,7 @@ import GameState
 import GameStateAux
 import Interpolator
 
-from LumenLib.BUtils import ToQuat, QuatMul
+from LumenLib.mathutils import ToQuat, QuatMul
 
 # ----------------------------------
 TRAJECTORY_UID = "69DE623E"
