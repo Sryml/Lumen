@@ -215,7 +215,18 @@ def InventorySelectByNumber(index):
     if not INVENTORY.SetFocus(index):
         return
     # printx("Select Inventory by Number: %d" % index)
-    InventoryUse(Lumenx.GetControlCharacter())
+    me = Lumenx.GetControlCharacter()
+
+    if me.Wuea == Reference.WUEA_ENDED:
+        return
+    if me.Wuea == Reference.WUEA_WAIT:
+        return
+    if me.AnimName == "Rlx" and me.AnmEndedFunc:
+        me.AnmEndedFunc = None
+    if me.AnmEndedFunc:
+        return
+
+    InventoryUse(me)
 
 
 # -------------------------------
@@ -1164,7 +1175,11 @@ class InventoryUI:
                 else:
                     prefix = "+"
                     r, g, b = Language.FontColor.LightBlue
-                text = "%s%d %s" % (prefix, v, MenuText.GetMenuText(string.upper(k) + " ATK"))
+                text = "%s%d %s" % (
+                    prefix,
+                    v,
+                    MenuText.GetMenuText(string.upper(k) + " ATK"),
+                )
                 width = Language.font_behaviour_common.GetTextWidth(text) * scale
                 label.SetColor(r, g, b)
                 label.SetText(text)
@@ -1179,7 +1194,11 @@ class InventoryUI:
                 else:
                     prefix = "+"
                     r, g, b = Language.FontColor.LightBlue
-                text = "%s: %s%.1f%%" % (MenuText.GetMenuText(string.upper(k) + " RES"), prefix, v * 100)
+                text = "%s: %s%.1f%%" % (
+                    MenuText.GetMenuText(string.upper(k) + " RES"),
+                    prefix,
+                    v * 100,
+                )
                 width = Language.font_behaviour_common.GetTextWidth(text) * scale
                 label.SetColor(r, g, b)
                 label.SetText(text)
@@ -1250,10 +1269,19 @@ class InventoryUI:
         border = self.child_frame[index].widgets[1]
         border.SetColor(240, 240, 30)
         _, CycleItem, GetSelectedItem, GetItem, nItems = self.inv_operations
-        if item_name != GetSelectedItem():
-            for i in range(nItems):
-                if GetItem(i) == item_name:
-                    for _ in range(i):
+        SelectedItem = GetSelectedItem()
+        if item_name != SelectedItem:
+            for target_idx in range(nItems):
+                if GetItem(target_idx) == item_name:
+                    if self.selected_inventory == "Object":
+                        for curr_idx in range(nItems):
+                            if GetItem(curr_idx) == SelectedItem:
+                                break
+                        num = (target_idx - curr_idx) % nItems
+                    else:
+                        num = target_idx
+
+                    for _ in range(num):
                         CycleItem()
                     break
         #
