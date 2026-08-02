@@ -105,8 +105,8 @@ def InvObjectUse(me, inv):
     return 0
 
 
-def InventoryUse(me):
-    # type: (Bladex._entity.B_Entity_Person) -> int
+def InventoryUse(me, by_number=0):
+    # type: (Bladex._entity.B_Entity_Person, ...) -> int
     import Actions, ScorerActions
 
     EntityName = me.Name
@@ -126,6 +126,9 @@ def InventoryUse(me):
     if item_name == "" or (not inv.CarringObject(item_name)):
         ShowInventory(init=0, next_page=0, update_focus=1)  # refresh
         return 0
+    if not by_number:
+        # 修复攻击后 inv.GetSelectedWeapon() 被重置的问题
+        INVENTORY.SetFocus(INVENTORY.current_focus)
 
     Bladex.RemoveScheduledFunc(INVENTORY_FADEOU_TNAME)
     INVENTORY.CancelFade()
@@ -226,7 +229,7 @@ def InventorySelectByNumber(index):
     if me.AnmEndedFunc:
         return
 
-    InventoryUse(me)
+    InventoryUse(me, by_number=1)
 
 
 # -------------------------------
@@ -385,7 +388,8 @@ def ShowInventory(init=1, next_page=0, update_focus=1):
         if inv.HasBowOnBack or inv.HoldingBow:
             focus_item = inv.GetBow()
         else:
-            focus_item = char.InvRightBack or char.InvRight
+            focus_item = inv.GetActiveWeapon()
+            # focus_item = char.InvRightBack or char.InvRight
     elif selected_inventory == "Shield":
         CycleItem = inv.CycleShields
         GetSelectedItem = inv.GetSelectedShield
