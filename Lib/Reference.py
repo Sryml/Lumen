@@ -1164,7 +1164,12 @@ def GetObjectSpecialDamage(ObjectName):
 	obj_flag = object_data[0]
 	ret = {}
 	if obj_flag in (OBJ_STANDARD, OBJ_WEAPON, OBJ_BOW, OBJ_ARROW):
-		for k,v in object_data[6:]:
+		for SpecialDamage in object_data[6:]:
+			k = SpecialDamage[0]
+			if len(SpecialDamage) > 1:
+				v = SpecialDamage[1]
+			else:
+				v = 0
 			if not ret.has_key(k):
 				ret[k] = 0
 			ret[k] = ret[k] + v

@@ -1172,23 +1172,25 @@ class InventoryUI:
             n = n + 1
         # special_damage
         for k, v in special_damage.items():
-            if v != 0:
-                prefix = ""
-                if v < 0:
-                    r, g, b = Language.FontColor.Red
-                else:
-                    prefix = "+"
-                    r, g, b = Language.FontColor.LightBlue
+            prefix = ""
+            if v < 0:
+                r, g, b = Language.FontColor.Red
+            else:
+                prefix = "+"
+                r, g, b = Language.FontColor.LightBlue
+            if v == 0:
+                text = MenuText.GetMenuText(string.upper(k) + " ATK")
+            else:
                 text = "%s%d %s" % (
                     prefix,
                     v,
                     MenuText.GetMenuText(string.upper(k) + " ATK"),
                 )
-                width = Language.font_behaviour_common.GetTextWidth(text) * scale
-                label.SetColor(r, g, b)
-                label.SetText(text)
-                label.DefDraw(x - width * 0.5, y + n * offset_y, time)
-                n = n + 1
+            width = Language.font_behaviour_common.GetTextWidth(text) * scale
+            label.SetColor(r, g, b)
+            label.SetText(text)
+            label.DefDraw(x - width * 0.5, y + n * offset_y, time)
+            n = n + 1
         # resistance
         for k, v in resistance.items():
             if v != 0:
