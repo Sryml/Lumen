@@ -1,3 +1,10 @@
+##///
+##||| ANISOUNDDWFX.PY TITANIUM
+##||| Change list:
+##||| * Normalized "draw weapon" sound for all 4 characters.
+##||| * Added fire sound for Fire Axe special attack.
+##\\\ 
+
 import Bladex
 
 # *********************************
@@ -58,9 +65,13 @@ TajoCortanteDwf.SendNotify=0
 TajoMutilacionDwf=Bladex.CreateSound('../../sounds/slice-splat1.wav', 'TajoMutilacionDwf')
 TajoMutilacionDwf.SendNotify=0
 
-Enfundar=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'Enfundar')
-Enfundar.SendNotify=1
-Enfundar.Volume=0.8
+Enfundar=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'Enfundar')                # PLAGUE: wtf, all 4 characters use the same sound, but all of them have different parameters.
+Enfundar.SendNotify=1                                                                       # Normalized across all characters, I guess
+Enfundar.Volume=0.8                                                                         #
+Enfundar.MinDistance=2000                                                                   #                   -LeadHead
+Enfundar.MaxDistance=4000
+
+
 EsfuerzoCortoDwf=Bladex.CreateSound('../../sounds/esfuerzo-Dwf2.wav', 'EsfuerzoCortoDwf')
 EsfuerzoCortoDwf.SendNotify=1
 EsfuerzoCortoDwf.Volume=1
@@ -293,6 +304,12 @@ SesgadoEspecialLargo2.Volume=1.0
 SesgadoEspecialLargo2.MinDistance=1000
 SesgadoEspecialLargo2.MaxDistance=25000
 
+### Below added for Fire Axe -LeadHead
 
+AtaqueFuego4=Bladex.CreateSound('../../sounds/fuego-ascende.wav', 'AtaqueFuego4')
+AtaqueFuego4.SendNotify=1
+AtaqueFuego4.Volume=1.0
+AtaqueFuego4.MinDistance=3000
+AtaqueFuego4.MaxDistance=15000
 
 print "Sonidos para el Enano creados..."

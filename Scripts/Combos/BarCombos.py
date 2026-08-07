@@ -173,18 +173,22 @@ bar.AddLevels("Bar_g_07",0,40)
 
 #GM1 group
 bar.AddAttack("GM1_1H","Bar_g_18")
+bar.AttackWindow("Bar_g_18",0.300,0.900,"GM1_1H_Window")
 bar.AddLevels("Bar_g_18",0,40)
 
 #GM2 group
 bar.AddAttack("GM2_1H","Bar_g_17")
+bar.AttackWindow("Bar_g_17",0.300,0.900,"GM2_1H_Window")
 bar.AddLevels("Bar_g_17",0,40)
 
 #GM3 group
 bar.AddAttack("GM3_1H","Bar_g_16")
+bar.AttackWindow("Bar_g_16",0.300,0.900,"GM3_1H_Window")
 bar.AddLevels("Bar_g_16",0,40)
 
 #GM4 group
 bar.AddAttack("GM4_1H","Bar_g_11")
+bar.AttackWindow("Bar_g_11",0.300,0.900,"GM4_1H_Window")
 bar.AddLevels("Bar_g_11",0,40)
 
 #COMBO QUEENSWORD
@@ -239,23 +243,23 @@ bar.MetaAttack("GM","GM5_1H")
 #####################
 
 #GM1
-bar.AllowAttack("GM1_1H","A+F","","GM,GM","","1H")
-bar.AllowAttack("GM1_1H","&A+F","","GM,GM","","1H")
+bar.AllowAttack("GM1_1H","A+F","","","GM1_1H_Window","1H")
+bar.AllowAttack("GM1_1H","&A+F","","","GM1_1H_Window","1H")
 
 #GM2
-bar.AllowAttack("GM2_1H","A+R","","GM,GM","","1H")
-bar.AllowAttack("GM2_1H","&A+R","","GM,GM","","1H")					
+bar.AllowAttack("GM2_1H","A+R","","","GM2_1H_Window","1H")
+bar.AllowAttack("GM2_1H","&A+R","","","GM2_1H_Window","1H")					
 
 #GM3
-bar.AllowAttack("GM3_1H","A+L","","GM,GM","","1H")
-bar.AllowAttack("GM3_1H","&A+L","","GM,GM","","1H")	
+bar.AllowAttack("GM3_1H","A+L","","","GM3_1H_Window","1H")
+bar.AllowAttack("GM3_1H","&A+L","","","GM3_1H_Window","1H")	
 
 #COMBO QUEENSWORD
 bar.AllowAttack("GM5_1H","R+B","GM3_1H","","","QueenSword")					
 
 #GM4
-bar.AllowAttack("GM4_1H","A+B","","GM,GM","","1H")
-bar.AllowAttack("GM4_1H","&A+B","","GM,GM","","1H")
+bar.AllowAttack("GM4_1H","A+B","","","GM4_1H_Window","1H")
+bar.AllowAttack("GM4_1H","&A+B","","","GM4_1H_Window","1H")
 
 
 #GI
@@ -285,7 +289,7 @@ bar.AddLevels("Bar_g2h_08",0,40)
 
 #COMBO1 "group"
 bar.AddAttack("GM1_2H","Bar_g2h_b6kata")
-bar.AttackWindow("Bar_g2h_b6kata",0.443,0.569,"GM1_2H_Window")
+bar.AttackWindow("Bar_g2h_b6kata",0.13,0.569,"GM1_2H_Window") # 0.443,0.569
 bar.AddLevels("Bar_g2h_b6kata",0,40)
 
 #COMBO1 "group"
@@ -297,7 +301,7 @@ bar.AddLevels("Bar_g2h_b7",7,40)
 
 #COMBO2 "group"
 bar.AddAttack("GM7_2H","Bar_g2h_s7")
-bar.AttackWindow("Bar_g2h_s7",0.402,0.662,"GM7_2H_Window")
+bar.AttackWindow("Bar_g2h_s7",0.2,0.662,"GM7_2H_Window") # 0.402,0.662
 bar.AddLevels("Bar_g2h_s7",0,40)
 
 #COMBO2 "group"
@@ -309,7 +313,7 @@ bar.AddLevels("Bar_g2h_02kata",1,40)
 
 #COMBO3 "group"
 bar.AddAttack("GM4_2H","Bar_g2h_11")
-bar.AttackWindow("Bar_g2h_11",0.272,0.502,"GM4_2H_Window")
+bar.AttackWindow("Bar_g2h_11",0.2,0.502,"GM4_2H_Window") # 0.272,0.502
 bar.AddLevels("Bar_g2h_11",0,40)
 
 #COMBO3 "group"
@@ -321,7 +325,7 @@ bar.AddLevels("Bar_g2h_01",5,40)
 
 #COMBO4 "group"
 bar.AddAttack("GM10_2H","Bar_g2h_12low")
-bar.AttackWindow("Bar_g2h_12low",0.312,0.595,"GM10_2H_Window")
+bar.AttackWindow("Bar_g2h_12low",0.2,0.595,"GM10_2H_Window") # 0.312,0.595
 bar.AddLevels("Bar_g2h_12low",0,40)
 
 #COMBO4 "group"
@@ -370,13 +374,13 @@ bar.AddLevels("Bar_g2h_s8",10,40)
 #COMBOFIREBIGSWORD1 "group"
 bar.AddAttack("GM44_2H","Bar_g2h_21_2")
 bar.AttackWindow("Bar_g2h_21_2",0.186,0.610,"GM44_2H_Window")
-bar.AssignTrail("GM44_2H","","EstelaRoja1")
+bar.AssignTrail("GM44_2H","","EstelaOrange")
 bar.AddLevels("Bar_g2h_21_2",12,40)
 
 #COMBOFIREBIGSWORD2 "group"
 bar.AddAttack("GM45_2H","Bar_g2h_earthpow")
 bar.AttackWindow("Bar_g2h_earthpow",0.620,0.732,"GM45_2H_Window")
-bar.AssignTrail("GM45_2H","","EstelaRoja1")
+bar.AssignTrail("GM45_2H","","EstelaOrange")
 bar.AddLevels("Bar_g2h_earthpow",17,40)
 
 #COMBOSAWSWORD "group"
@@ -393,13 +397,13 @@ else:
 
 #COMBORAPIDOEXTRA1 "group"
 bar.AddAttack("GM23_2H","Bar_g2h_21_6kata")
-bar.AttackWindow("Bar_g2h_21_6kata",0.328,0.731,"GM23_2H_Window")
+bar.AttackWindow("Bar_g2h_21_6kata",0.128,0.731,"GM23_2H_Window")
 bar.AssignTrail("GM23_2H","","EstelaAmarilla1")
 bar.AddLevels("Bar_g2h_21_6kata",8,40)
 
 #COMBORAPIDOEXTRA2 "group"
 bar.AddAttack("GM24_2H","Bar_g2h_26_b6")
-bar.AttackWindow("Bar_g2h_26_b6",0.329,0.713,"GM24_2H_Window")
+bar.AttackWindow("Bar_g2h_26_b6",0.129,0.713,"GM24_2H_Window")
 bar.AssignTrail("GM24_2H","","EstelaRoja1")
 bar.AddLevels("Bar_g2h_26_b6",11,40)
 
@@ -420,7 +424,7 @@ bar.AddLevels("Bar_g_axe08",0,40)
 
 #COMBOHACHA1 "group"
 bar.AddAttack("GM17_AXE","Bar_g_axe18")
-bar.AttackWindow("Bar_g_axe18",0.350,0.537,"GM17_AXE_Window")
+bar.AttackWindow("Bar_g_axe18",0.2,0.537,"GM17_AXE_Window") # 0.350,0.537
 bar.AddLevels("Bar_g_axe18",0,40)
 
 #COMBOHACHA1 "group"
@@ -438,13 +442,13 @@ bar.AddLevels("Bar_g_axe02",0,40)
 
 #COMBOHACHA3 "group"
 bar.AddAttack("GM21_AXE","Bar_g_axe13")
-bar.AttackWindow("Bar_g_axe13",0.348,0.600,"GM21_AXE_Window")
+bar.AttackWindow("Bar_g_axe13",0.2,0.600,"GM21_AXE_Window") # 0.348,0.600
 bar.AddLevels("Bar_g_axe13",0,40)
 
 
 #COMBOHACHA4 "group"
 bar.AddAttack("GM28_AXE","Bar_g_axe111")
-bar.AttackWindow("Bar_g_axe111",0.299,0.604,"GM28_AXE_Window")
+bar.AttackWindow("Bar_g_axe111",0.2,0.604,"GM28_AXE_Window") # 0.299,0.604
 bar.AddLevels("Bar_g_axe111",0,40)
 
 
@@ -520,12 +524,12 @@ bar.AddLevels("Bar_g_bad_spear",0,40)
 
 #COMBO BLADEESTELA
 bar.AddAttack("GM60_2H","Bar_g_magic2")
-bar.AssignTrail("GM60_2H","","EstelaRoja1")
+bar.AssignTrail("GM60_2H","","EstelaLight")
 bar.AddLevels("Bar_g_magic2",18,40)
 
 #COMBO BLADECONCENTRACION
 bar.AddAttack("GM61_2H","Bar_g_magic")
-bar.AssignTrail("GM61_2H","","EstelaRoja1")
+bar.AssignTrail("GM61_2H","","EstelaLight")
 bar.AddLevels("Bar_g_magic",19,40)
 
 ############################################################

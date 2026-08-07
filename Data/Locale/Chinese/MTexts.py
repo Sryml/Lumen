@@ -189,6 +189,7 @@ ForeingDict = {
     "aiming perspective": "瞄准视角",
     "nearest": "最近的",
     "maintain current": "保持当前",
+    "one-handed weapon mastery (knight)": "单手武器精通（骑士）",
     "total assets": "总资产数",
     "animation assets": "动画资产",
     "image assets": "图像资产",

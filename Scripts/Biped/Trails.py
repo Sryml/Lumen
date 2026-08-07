@@ -46,7 +46,26 @@ def Init():
 		
 		trail=Bladex.GetTrailType("EstelaAzul1")
 		trail.Time2Live=0.6
-		trail.Color=0,0,40
+		trail.Color=0,15,70 # 0,0,40
+		trail.Transparency=0.65 # 0.7
+		trail.ShrinkFactor=1.0
+
+		# Added
+		trail=Bladex.GetTrailType("EstelaLight")
+		trail.Time2Live=0.6
+		trail.Color=33,30,80
+		trail.Transparency=0.65
+		trail.ShrinkFactor=1.0
+
+		trail=Bladex.GetTrailType("EstelaGreen")
+		trail.Time2Live=0.6
+		trail.Color=10,45,0
+		trail.Transparency=0.7
+		trail.ShrinkFactor=1.0
+
+		trail=Bladex.GetTrailType("EstelaOrange")
+		trail.Time2Live=0.6
+		trail.Color=75,22,0
 		trail.Transparency=0.7
 		trail.ShrinkFactor=1.0
 

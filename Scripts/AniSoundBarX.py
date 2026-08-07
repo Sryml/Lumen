@@ -1,3 +1,10 @@
+##///
+##||| ANISOUNDBARX.PY TITANIUM
+##||| Change list:
+##||| * Normalized "draw weapon" sound for all 4 characters.
+##||| * 
+##\\\ 
+
 import Bladex
 
 # *********************************
@@ -42,10 +49,12 @@ GolpeContundenteBarb=Bladex.CreateSound('../../sounds/golpe-maza-carne.wav', 'Go
 GolpeContundenteBarb.SendNotify=0
 
 
-Enfundar=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'Enfundar')
-Enfundar.SendNotify=1
-Enfundar.MinDistance=2000
-Enfundar.MaxDistance=4000
+Enfundar=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'Enfundar')                     # PLAGUE: wtf, all 4 characters use the same sound, but all of them have different parameters.
+Enfundar.SendNotify=1                                                                            # Normalized across all characters, I guess
+Enfundar.MinDistance=2000                                                                        #
+Enfundar.MaxDistance=4000                                                                        #                   -LeadHead
+Enfundar.Volume=0.8
+
 
 CogerArma=Bladex.CreateSound('../../sounds/M-guardar.wav', 'CogerArma')
 CogerArma.SendNotify=0
@@ -266,13 +275,13 @@ Caida2.Volume=0.8
 Caida2.MinDistance=3000
 Caida2.MaxDistance=6000
 
-Caida3=Bladex.CreateSound('../../sounds/caida-pie.wav', 'Caida3')
+Caida3=Bladex.CreateSound('../../sounds/caida-pie.wav', 'Caida3')   # PLAGUE: same as 1
 Caida3.SendNotify=1
 Caida3.Volume=0.8
 Caida3.MinDistance=3000
 Caida3.MaxDistance=6000
 
-Caida4=Bladex.CreateSound('../../sounds/caida-mano.wav', 'Caida4')
+Caida4=Bladex.CreateSound('../../sounds/caida-mano.wav', 'Caida4')  # PLAGUE: same as 2
 Caida4.SendNotify=1
 Caida4.Volume=0.8
 Caida4.MinDistance=3000

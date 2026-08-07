@@ -1,3 +1,12 @@
+##///
+##||| ANISOUNDBAR.PY TITANIUM
+##||| Change list:
+##||| * Removed unnecessary aditional death sound.
+##||| * g_magic2 whoosh sound timing corrected
+##||| * "Fire Storm" more powerful attack sounds.
+##||| * "Frostbite" more powerful attack sounds.
+##\\\ 
+
 import Bladex
 import NetSounds
 import netgame
@@ -488,7 +497,7 @@ def AsignarSonidosBarbaro(Personaje):
 	NetSounds.AddAnimSound(per,"Bar_dth_c7", Roce2, 0.7200)
 	NetSounds.AddAnimSound(per,"Bar_dth_c7", Caida1, 0.6300)
 	NetSounds.AddAnimSound(per,"Bar_dth_c7", Caida2, 0.6900)
-	NetSounds.AddAnimSound(per,"Bar_dth0", MuerteBarb2, 0.1100)
+	# NetSounds.AddAnimSound(per,"Bar_dth0", MuerteBarb2, 0.1100)   # PLAGUE: Why play 2 death sounds you lunatic? 
 	NetSounds.AddAnimSound(per,"Bar_dth0", Caida1, 0.5710)
 	NetSounds.AddAnimSound(per,"Bar_dth0", Caida2, 0.7700)
 	NetSounds.AddAnimSound(per,"Bar_dth0", MuerteBarb1, 0.1100)
@@ -582,11 +591,23 @@ def AsignarSonidosBarbaro(Personaje):
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_7', AtaquesEspeciales2, 0.532)
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_7', EsfuerzosEspeciales1, 0.700)
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_7', AtaquesEspeciales1, 0.716)
+	
+	""" # Old "FireStorm" fire greatsword
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', EsfuerzoCorto2Barb, 0.1700)
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', SesgadoLargoAgudo, 0.1950)
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', SesgadoCorto, 0.3150)
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', SesgadoLargoGrave, 0.5290)
 	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', EsfuerzoGolpeAtrasBarb, 0.5290)
+	"""
+	
+	# New Fire Storm attack sounds  -LeadHead
+	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', EsfuerzoCorto2Barb, 0.1700)
+	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', AtaquesEspeciales4, 0.1950)
+	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', AtaquesEspeciales3, 0.3150)
+	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', AtaqueFuego1, 0.4840)
+	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', AtaquesEspeciales1, 0.5290)
+	NetSounds.AddAnimSound(per,'Bar_g2h_21_2', EsfuerzoGolpeAtrasBarb, 0.5290)
+	
 	NetSounds.AddAnimSound(per,'Bar_g2h_02kata', EsfuerzoCorto5Barb, 0.1540)
 	NetSounds.AddAnimSound(per,'Bar_g2h_02kata', EsfuerzoGolpeCabezaBarb, 0.3100)
 	NetSounds.AddAnimSound(per,'Bar_g2h_02kata', SesgadoLargoGrave, 0.3300)
@@ -785,11 +806,18 @@ def AsignarSonidosBarbaro(Personaje):
 	NetSounds.AddAnimSound(per,'Bar_g_axe_b2kata', SesgadoLargo, 0.5540)
 	NetSounds.AddAnimSound(per,'Bar_g_axe_b2kata', Roce3, 0.1500)
 	NetSounds.AddAnimSound(per,'Bar_g_axe_b2kata', Roce3, 0.7000)
-	NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoLargo, 0.1470)
-	NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoCortoGrave, 0.3000)
-	NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoCortoAgudo, 0.4400)
-	NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoLargoGrave, 0.5400)
-	NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoLargo, 0.6650)
+	""" Old IceAxe's Frostbite attack."""
+	# NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoLargo, 0.1470)
+	# NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoCortoGrave, 0.3000)
+	# NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoCortoAgudo, 0.4400)
+	# NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoLargoGrave, 0.5400)
+	# NetSounds.AddAnimSound(per,'Bar_g_axe30', SesgadoLargo, 0.6650)
+	
+	NetSounds.AddAnimSound(per,'Bar_g_axe30', AtaquesEspeciales1, 0.1470)   # Now uses strong whooshes
+	NetSounds.AddAnimSound(per,'Bar_g_axe30', AtaquesEspeciales3, 0.3000)   #
+	NetSounds.AddAnimSound(per,'Bar_g_axe30', AtaquesEspeciales4, 0.4400)   #
+	NetSounds.AddAnimSound(per,'Bar_g_axe30', AtaquesEspeciales1, 0.5400)   #
+	NetSounds.AddAnimSound(per,'Bar_g_axe30', AtaquesEspeciales2, 0.6150)   #       -LeadHead
 	NetSounds.AddAnimSound(per,'Bar_g_axe30', EsfuerzoCortoBarb, 0.1460)
 	NetSounds.AddAnimSound(per,'Bar_g_axe30', EsfuerzoCorto2Barb, 0.6600)
 	NetSounds.AddAnimSound(per,'Bar_g_axe30', Roce1, 0.7000)
@@ -807,7 +835,7 @@ def AsignarSonidosBarbaro(Personaje):
 	NetSounds.AddAnimSound(per,"Bar_g_magic",SesgadoLargoGrave, 0.5500)
 	NetSounds.AddAnimSound(per,'Bar_g_magic2',ConcBladeSword2, 0.1000)
 	NetSounds.AddAnimSound(per,"Bar_g_magic2",EsfuerzoBarbMediano, 0.1700)
-	NetSounds.AddAnimSound(per,"Bar_g_magic2",SesgadoLargoGrave, 0.5500)
+	NetSounds.AddAnimSound(per,"Bar_g_magic2",SesgadoLargoGrave, 0.3210)    # 0.05500 -LeadHead
 	NetSounds.AddAnimSound(per,"Bar_g_back",SesgadoCortoGrave, 0.1290)
 	NetSounds.AddAnimSound(per,"Bar_g_back",EsfuerzoCorto4Barb, 0.3300)
 	NetSounds.AddAnimSound(per,"Bar_g_back",EsfuerzoCorto4Barb, 0.3480)

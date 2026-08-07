@@ -127,13 +127,22 @@ def AnmFactBarbarian():
 	Bladex.SetAnimationFactor("Bar_b1",2 * 1.5)
 	Bladex.SetAnimationFactor("Bar_b2",3)
 	
-	Bladex.SetAnimationFactor("Bar_attack_f",3)
+	### Adjusted to have approximately consistent movement speed
+	###	across all weapon types. 				  -LeadHead
+	Bladex.SetAnimationFactor("Bar_attack_f",3.3)		# was 3.0
+	Bladex.SetAnimationFactor("Bar_attack_b",1.3)		# added
+	Bladex.SetAnimationFactor("Bar_attack_r",1.3)		# added
+	Bladex.SetAnimationFactor("Bar_attack_l",1.3)		# added
+	
 	Bladex.SetAnimationFactor("Bar_attack_f_2w",1.6)
 	Bladex.SetAnimationFactor("Bar_attack_b_2w",3)
 	Bladex.SetAnimationFactor("Bar_attack_r_2w",1.35)
 	Bladex.SetAnimationFactor("Bar_attack_l_2w",1.35)
 	Bladex.SetAnimationFactor("Bar_attack_f_axe",1.6)
 	Bladex.SetAnimationFactor("Bar_attack_b_axe",3)
+	Bladex.SetAnimationFactor("Bar_attack_r_axe",1.3)	# added
+	Bladex.SetAnimationFactor("Bar_attack_l_axe",1.3)	# added
+	
 	Bladex.SetAnimationFactor("Bar_jmp_no",1.40)
 	Bladex.SetAnimationFactor("Bar_jmp_1h",1.40) 
 	Bladex.SetAnimationFactor("Bar_jmph0_no",1.50) 
@@ -144,8 +153,12 @@ def AnmFactBarbarian():
 	###movimientos###
 
 	Bladex.SetAnimationFactor("Jog_no_Bar",3.35)
-	Bladex.SetAnimationFactor("Jog_1h_Bar",2.7)
+	Bladex.SetAnimationFactor("Jog_1h_Bar",2.9)		# was 2.7
 	Bladex.SetAnimationFactor("Jog_b_Bar",1.25)
+	Bladex.SetAnimationFactor("Jog_axe_Bar",3.35)
+	Bladex.SetAnimationFactor("Jog_2w_Bar",3.4)
+	Bladex.SetAnimationFactor("Jog_2h_Bar",3.2)
+	
 	Bladex.SetAnimationFactor("Wlk_no_Bar",1.6)
 	Bladex.SetAnimationFactor("Wlk_1h_Bar",1.7)
 	Bladex.SetAnimationFactor("Wlk_2h_Bar",1.7)
@@ -158,10 +171,15 @@ def AnmFactBarbarian():
 	Bladex.SetAnimationFactor("Wbk_no_Bar",1.5)
 	Bladex.SetAnimationFactor("Wbk_1h_Bar",1.5)
 	Bladex.SetAnimationFactor("Wbk_b_Bar",1.5)
-	Bladex.SetAnimationFactor("Jog_axe_Bar",3.35)
-	Bladex.SetAnimationFactor("Jog_2w_Bar",3.4)
-	Bladex.SetAnimationFactor("Jog_2h_Bar",3.2)
-	Bladex.SetAnimationFactor("Bar_jogb_axe",3.5)
+
+	
+	### Running backwards should no longer be just as slow as walking backwards
+	Bladex.SetAnimationFactor("Bar_jogb_axe",3.6)	# was 3.5
+	Bladex.SetAnimationFactor("Bar_jogb_b",1.2)		# added
+	Bladex.SetAnimationFactor("Bar_jogb_no",1.2)	# added
+	Bladex.SetAnimationFactor("Bar_jogb_b",1.2)		# added
+	Bladex.SetAnimationFactor("Bar_jogb_2w",1.2)	# Added		-LeadHead
+
 	Bladex.SetAnimationFactor("Bar_wlk_turn",1.7)
 	Bladex.SetAnimationFactor("Bar_snk_turn",1.5)
 	Bladex.SetAnimationFactor("Bar_jog_turn",1.5)
@@ -175,6 +193,9 @@ def AnmFactBarbarian():
 	Bladex.SetAnimationFactor("Bar_d_b_2w",1.2)
 	Bladex.SetAnimationFactor("Bar_g2h_d_l",3.5)
 	Bladex.SetAnimationFactor("Bar_g2h_d_r",3.5)
+	
+	Bladex.SetAnimationFactor("FallLow_Bar",1.8) ### Added -LeadHead
+	Bladex.SetAnimationFactor("Bar_drink",1.3)
 
 
 	#
@@ -298,7 +319,7 @@ def AnmFactKnight():
 	Bladex.SetAnimationFactor("Kgt_g_09_07_s6low_new",3.6)
 	Bladex.SetAnimationFactor("Kgt_g_12_new",4)
 	Bladex.SetAnimationFactor("Kgt_g_18_11_22_new",3.6)
-	Bladex.SetAnimationFactor("Kgt_g_22kata_23_new",3)
+	Bladex.SetAnimationFactor("Kgt_g_22kata_23_new",3.6)	# was 3.0	-LeadHead
 	Bladex.SetAnimationFactor("Kgt_g_22lowkata_new",4.1)
 	Bladex.SetAnimationFactor("Kgt_g_b06_new",4.5)
 	Bladex.SetAnimationFactor("Kgt_g_27kata_new",3.5)
@@ -391,7 +412,8 @@ def AnmFactKnight():
 	Bladex.SetAnimationFactor("Kgt_attack_f_s",1.5)
 	Bladex.SetAnimationFactor("Kgt_attack_b_s",1.5)
 
-
+	Bladex.SetAnimationFactor("FallLow_Kgt",1.8) ### Added -LeadHead
+	Bladex.SetAnimationFactor("Kgt_drink",1.3)
 
 	#
 	# TRANSICIONES DEL CABALLERO
@@ -636,6 +658,9 @@ def AnmFactAmazon():
 	Bladex.SetAnimationFactor("Amz_drp_r",1.60)
 	Bladex.SetAnimationFactor("Amz_drp_l",1.60)
 	Bladex.SetAnimationFactor("Amz_tke_r_01",1.60)
+	
+	Bladex.SetAnimationFactor("FallLow_Amz",1.8) ### Added -LeadHead
+	Bladex.SetAnimationFactor("Amz_drink",1.3)
 
 
 
@@ -827,6 +852,9 @@ def AnmFactDwarf():
 	Bladex.SetAnimationFactor("Dwf_jmp_no",1.25)
 	Bladex.SetAnimationFactor("Dwf_jmp_1h",1.25)
 	Bladex.SetAnimationFactor("Dwf_jmph0_no",1.25)
+	
+	Bladex.SetAnimationFactor("FallLow_Dwf",1.8) ### Added 
+	Bladex.SetAnimationFactor("Dwf_drink",1.45)	 ### 	-LeadHead
 
 
 
@@ -982,6 +1010,7 @@ def AnmFactTraitorKnight():
 		Bladex.AddTranTime("Tkn","","JOG",0.3)
 		Bladex.AddTranTime("Tkn","","WLK",0.3)
 		Bladex.AddTranTime("Tkn","","WBK",0.3)
+		Bladex.AddTranTime("Tkn","","b3",0.3,0)         ### Added -LeadHead
 
 		Bladex.AddTranTime("Dkn","","Attack_f",0.2)
 		Bladex.AddTranTime("Dkn","","Attack_r",0.2)
@@ -1014,7 +1043,8 @@ def AnmFactChosKnight():
 	Bladex.SetAnimationFactor("Attack_b_Chk",1.7) 
 	Bladex.SetAnimationFactor("Attack_b_s_Chk",1.7)
 	
-	Bladex.SetAnimationFactor("Chk_hurt01",3)
+	Bladex.SetAnimationFactor("Chk_hurt01",3.2)		# was 3.0
+	Bladex.SetAnimationFactor("Chk_hurt_hip",2.0)	# Added -LeadHead
 
 	#
 	# TRANSICIONES DEL CABALLERO CAOS
@@ -1156,16 +1186,36 @@ def AnmFactOrk():
 	#
 	# TRANSICIONES DEL ORCO
 	#
-	Bladex.AddTranTime("Ork","","Attack_f",0.2)
-	Bladex.AddTranTime("Ork","","Attack_r",0.2)
-	Bladex.AddTranTime("Ork","","Attack_l",0.2)
-	Bladex.AddTranTime("Ork","","Attack_b",0.2)
-	Bladex.AddTranTime("Ork","","Rlx",0.3)
-	Bladex.AddTranTime("Ork","","JOG",0.3)
-	Bladex.AddTranTime("Ork","","WLK",0.3)
-	Bladex.AddTranTime("Ork","","WBK",0.3)
-	Bladex.AddTranTime("Ork","","b3",0.3,0)
-
+		Bladex.AddTranTime("Ork","","Attack_f",0.2)
+		Bladex.AddTranTime("Ork","","Attack_r",0.2)
+		Bladex.AddTranTime("Ork","","Attack_l",0.2)
+		Bladex.AddTranTime("Ork","","Attack_b",0.2)
+		Bladex.AddTranTime("Ork","","Rlx",0.3)
+		Bladex.AddTranTime("Ork","","JOG",0.3)
+		Bladex.AddTranTime("Ork","","WLK",0.3)
+		Bladex.AddTranTime("Ork","","WBK",0.3)
+		Bladex.AddTranTime("Ork","","b3",0.3,0)
+	    
+		Bladex.AddTranTime("Org","","Attack_f",0.2)     # Have to add these, otherwise TranTimes don't work properly -LeadHead
+		Bladex.AddTranTime("Org","","Attack_r",0.2)
+		Bladex.AddTranTime("Org","","Attack_l",0.2)
+		Bladex.AddTranTime("Org","","Attack_b",0.2)
+		Bladex.AddTranTime("Org","","Rlx",0.3)
+		Bladex.AddTranTime("Org","","JOG",0.3)
+		Bladex.AddTranTime("Org","","WLK",0.3)
+		Bladex.AddTranTime("Org","","WBK",0.3)
+		Bladex.AddTranTime("Org","","b3",0.3,0)
+	
+		Bladex.AddTranTime("Dok","","Attack_f",0.2)
+		Bladex.AddTranTime("Dok","","Attack_r",0.2)
+		Bladex.AddTranTime("Dok","","Attack_l",0.2)
+		Bladex.AddTranTime("Dok","","Attack_b",0.2)
+		Bladex.AddTranTime("Dok","","Rlx",0.3)
+		Bladex.AddTranTime("Dok","","JOG",0.3)
+		Bladex.AddTranTime("Dok","","WLK",0.3)
+		Bladex.AddTranTime("Dok","","WBK",0.3)
+		Bladex.AddTranTime("Dok","","b3",0.3,0)
+		done_ork=1
 
 
 
@@ -1312,6 +1362,12 @@ def AnmFactLittleDemon():
 	Bladex.SetAnimationFactor("Ldm_g_jumpl",3)
 	Bladex.SetAnimationFactor("Ldm_g_jumpr",3)
 	Bladex.SetAnimationFactor("Ldm_g_spit",3)
+	
+	Bladex.SetAnimationFactor("Ldm_hurt_f_big", 1.1)
+	Bladex.SetAnimationFactor("Ldm_hurt_f_big", 1.1)
+	Bladex.SetAnimationFactor("Ldm_hurt_f_big", 1.1)
+	Bladex.SetAnimationFactor("Ldm_hurt_f_big", 1.1)
+	
 	Bladex.AddTranTime("Ldm","","g_jumpl",0.1, 0)
 	Bladex.AddTranTime("Ldm","","g_jumpr",0.1, 0)
 
@@ -1334,8 +1390,9 @@ def AnmFactGreatDemon():
 	Bladex.SetAnimationFactor("Gdm_g_spitball",1.8)
 	Bladex.SetAnimationFactor("Gdm_g_spit_around",1.9)
 	Bladex.SetAnimationFactor("Gdm_g_01",4.1)
+	Bladex.SetAnimationFactor("Gdm_g_back",2.4)		# Add -LeadHead
 	Bladex.SetAnimationFactor("Gdm_g_12",1.6)
-	Bladex.SetAnimationFactor("Gdm_g_quake",1.4)
+	Bladex.SetAnimationFactor("Gdm_g_quake",1.6)	# Sped up from 1.4	-LeadHead
 
 #
 # Salamander
@@ -1498,6 +1555,7 @@ def AnmFactGolem():
 		Bladex.SetAnimationFactor("Glm_g_21",1.25)
 		Bladex.SetAnimationFactor("Glm_g_31",1.25)
 		Bladex.SetAnimationFactor("Glm_1tw",1.25)
+		Bladex.SetAnimationFactor("Glm_g_spit",1.25)	# add
 		
 		Bladex.AddTranTime("Glm","","",0.4) #last thing
 		done_golem=1

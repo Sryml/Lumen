@@ -1,3 +1,14 @@
+##///
+##||| ANISOUNDKGT.PY TITANIUM
+##||| Change list:
+##||| * Added whoosh for Dodge attacks.
+##||| * Commented duplicate entries for dodge sounds.
+##||| * Reworked Fire Sword special attack sounds.
+##||| * Additional whoosh for Sharp Sword speical. 
+##||| * g_magic2 whoosh sound timing corrected
+##||| * Ice Sword uses special wooshes.
+##\\\ 
+
 import Bladex
 import NetSounds
 import netgame
@@ -156,7 +167,9 @@ def AsignarSonidosCaballero(Personaje):
 	NetSounds.AddAnimSound(per,'Kgt_d_b',EsfuerzoCorto2Barb, 0.2990)
 	
 	NetSounds.AddAnimSound(per,'Kgt_g_d_r',EsfuerzoCortoBarb, 0.2100)
+	NetSounds.AddAnimSound(per,"Kgt_g_d_r",SesgadoCortoGrave, 0.4270)   # Added. -LeadHead
 	NetSounds.AddAnimSound(per,'Kgt_g_d_l',EsfuerzoCortoBarb, 0.2100)
+	NetSounds.AddAnimSound(per,"Kgt_g_d_l",SesgadoCortoGrave, 0.4140)   # Added. -LeadHead
 	NetSounds.AddAnimSound(per,'Kgt_g_d_b',EsfuerzoCorto2Barb, 0.2990)
 	
 	
@@ -487,10 +500,14 @@ def AsignarSonidosCaballero(Personaje):
 	
 	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', EsfuerzoCorto1Barb, 0.1000)
 	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', EsfuerzoCorto2Barb, 0.2000)
-	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoCorto, 0.1000)
-	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoCortoAgudo, 0.2000)
+	# NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoCorto, 0.1000)
+	# NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoCortoAgudo, 0.2000)
 	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', EsfuerzoGolpeLateralBarb, 0.4000)
 	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', AndarKgt2, 0.5000)
+	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoEspecialCorto2, 0.1000)	# Heavier woosh sound
+	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoEspecialCorto1, 0.2000)	# IceSword
+	NetSounds.AddAnimSound(per,'Kgt_g_12_7_s1new', SesgadoEspecialLargo2, 0.4900)	#		-LeadHead
+
 	
 	NetSounds.AddAnimSound(per,'Kgt_g_21_6_s8new', EsfuerzoGolpeAtras1Barb, 0.170)
 	NetSounds.AddAnimSound(per,'Kgt_g_21_6_s8new', EsfuerzoGolpeAtrasBarb, 0.310)
@@ -508,10 +525,22 @@ def AsignarSonidosCaballero(Personaje):
 	NetSounds.AddAnimSound(per,'Kgt_g_32_5_3new', EsfuerzoGolpeAtras1Barb, 0.508)
 	NetSounds.AddAnimSound(per,'Kgt_g_32_5_3new', SesgadoEspecialLargo2, 0.518)
 	
-	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoLargoAgudo, 0.2640)
-	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoCortoAgudo, 0.5550)
-	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', EsfuerzoCorto4Barb, 0.2120)
-	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', AndarKgt1, 0.6000)
+	#NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoLargoAgudo, 0.2640)
+	#NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoCortoAgudo, 0.5550)
+	#NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', EsfuerzoCorto4Barb, 0.2120)
+	#NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', AndarKgt1, 0.6000)
+	###
+	#Firesword special, replaced all with new ones -LeadHead
+	###
+	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoCortoAgudo, 0.1240)
+	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoEspecialLargo1, 0.2850)
+	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', SesgadoEspecialLargo2, 0.5050)
+	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', AndarKgt1, 0.6500)
+	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', EsfuerzoCorto4Barb, 0.1620)
+	NetSounds.AddAnimSound(per,'Kgt_g_s28kata_new', EsfuerzoBarbMediano, 0.5780)
+	
+	
+	
 	
 	NetSounds.AddAnimSound(per,'Kgt_g_01', EsfuerzoCorto6Barb, 0.3117)
 	NetSounds.AddAnimSound(per,'Kgt_g_01', AndarKgt1, 0.3500)
@@ -644,12 +673,12 @@ def AsignarSonidosCaballero(Personaje):
 	
 	NetSounds.AddAnimSound(per,'Kgt_g_magic2', ConcBladeSword2, 0.1000)
 	NetSounds.AddAnimSound(per,'Kgt_g_magic2', EsfuerzoBarbMediano, 0.3250)
-	NetSounds.AddAnimSound(per,'Kgt_g_magic2', SesgadoLargoGrave, 0.5530)
+	NetSounds.AddAnimSound(per,'Kgt_g_magic2', SesgadoLargoGrave, 0.5530)   # 0.5530 -LeadHead
 	
 	
-	NetSounds.AddAnimSound(per,'Kgt_d_r',EsfuerzoCortoBarb, 0.2100)
-	NetSounds.AddAnimSound(per,'Kgt_d_l',EsfuerzoCorto1Barb, 0.3770)
-	NetSounds.AddAnimSound(per,'Kgt_d_b',EsfuerzoCorto2Barb, 0.2990)
+	# NetSounds.AddAnimSound(per,'Kgt_d_r',EsfuerzoCortoBarb, 0.2100)
+	# NetSounds.AddAnimSound(per,'Kgt_d_l',EsfuerzoCorto1Barb, 0.3770)
+	# NetSounds.AddAnimSound(per,'Kgt_d_b',EsfuerzoCorto2Barb, 0.2990)
 	
 	
 	NetSounds.AddAnimSound(per,'Kgt_g_08_new',SesgadoCorto, 0.2100)
@@ -722,6 +751,7 @@ def AsignarSonidosCaballero(Personaje):
 	NetSounds.AddAnimSound(per,'Kgt_g_22kata_23_new',EsfuerzoBarbMediano, 0.500)
 	NetSounds.AddAnimSound(per,'Kgt_g_22kata_23_new',AndarKgt1, 0.400)
 	
+	NetSounds.AddAnimSound(per,'Kgt_g_09_07_s6low_new',SesgadoEspecialCorto1, 0.093)	    # Added -LeadHead
 	NetSounds.AddAnimSound(per,'Kgt_g_09_07_s6low_new',SesgadoEspecialCorto2, 0.223)
 	NetSounds.AddAnimSound(per,'Kgt_g_09_07_s6low_new',SesgadoEspecialLargo1, 0.646)
 	NetSounds.AddAnimSound(per,'Kgt_g_09_07_s6low_new',EsfuerzoGolpeAtras1Barb, 0.646)

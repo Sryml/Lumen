@@ -1,3 +1,13 @@
+##///
+##||| ANISOUNDKGTX.PY TITANIUM
+##||| Change list:
+##||| * Commented out duplicate entries.
+##||| * Normalized "draw weapon" sound for all 4 characters.
+##||| * PLAGUE: Lots of sound variable names are still named after Barbarian. This will innevitably cause problems.
+##||| 
+##\\\ 
+
+
 import Bladex
 
 # *********************************
@@ -18,7 +28,7 @@ RuidoLlaveCerradura.MaxDistance=25000
 RuidoLlave=Bladex.CreateSound('../../sounds/Manipulado-llave2.wav', 'RuidoLlave')
 RuidoLlave.SendNotify=0
 
-Ruidook=Bladex.CreateSound('../../sounds/Manipulado-llave2.wav', 'Ruidook')
+Ruidook=Bladex.CreateSound('../../sounds/Manipulado-llave2.wav', 'Ruidook')         # PLAGUE: It's identical to above????
 Ruidook.SendNotify=0
 
 SonidoVaciarBotella=Bladex.CreateSound('../../sounds/agua-fuente-sobre-agua.wav', 'SonidoVaciarBotella')
@@ -52,12 +62,13 @@ CogerArma.SendNotify=0
 CambiarEscudo=Bladex.CreateSound('../../sounds/M-ARMA-U-OBJETO.wav', 'CambiarEscudo')
 CambiarEscudo.SendNotify=0
 
-Enfundar=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'Enfundar')
-Enfundar.SendNotify=1
-Enfundar.MinDistance=1000
-Enfundar.MaxDistance=25000
+Enfundar=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'Enfundar')                                      # PLAGUE: wtf, all 4 characters use the same sound, but all of them have different parameters.
+Enfundar.SendNotify=1                                                                                             # Normalized across all characters, I guess
+Enfundar.Volume=0.8                                                                                               #
+Enfundar.MinDistance=2000                                                                                         #                   -LeadHead
+Enfundar.MaxDistance=4000
 
-EsfuerzoEspecialKgt2=Bladex.CreateSound('../../sounds/esfuerzo-caballero-especial1.wav', 'EsfuerzoEspecialKgt2')
+EsfuerzoEspecialKgt2=Bladex.CreateSound('../../sounds/esfuerzo-caballero-especial1.wav', 'EsfuerzoEspecialKgt2') #PLAGUE: Duplicated later down
 EsfuerzoEspecialKgt2.SendNotify=1
 EsfuerzoEspecialKgt2.Volume=1
 EsfuerzoEspecialKgt2.MinDistance=1000
@@ -318,19 +329,19 @@ HeridaKgt2=Bladex.CreateSound('../../sounds/herida-caballero1.wav', 'HeridaKgt2'
 HeridaKgt3=Bladex.CreateSound('../../sounds/herida-caballero.wav', 'HeridaKgt3')
 #HeridaBarb3.SendNotify=0
 
-AndarKgt1=Bladex.CreateSound('../../sounds/correajes-55.wav', 'AndarKgt1')
+AndarKgt1=Bladex.CreateSound('../../sounds/correajes-55.wav', 'AndarKgt1') #PLAGUE: Same as 2
 AndarKgt1.SendNotify=0
 AndarKgt1.Volume=0.5
 AndarKgt2=Bladex.CreateSound('../../sounds/correajes-55.wav', 'AndarKgt2')
 AndarKgt2.SendNotify=0
 AndarKgt2.Volume=0.5
-AndarKgt3=Bladex.CreateSound('../../sounds/Correajes-66.wav', 'AndarKgt3')
+AndarKgt3=Bladex.CreateSound('../../sounds/Correajes-66.wav', 'AndarKgt3') #PLAGUE: Same as 4
 AndarKgt3.SendNotify=0
 AndarKgt3.Volume=0.5
 AndarKgt4=Bladex.CreateSound('../../sounds/Correajes-66.wav', 'AndarKgt4')
 AndarKgt4.SendNotify=0
 AndarKgt4.Volume=0.5
-AndarKgt5=Bladex.CreateSound('../../sounds/Correajes-77.wav', 'AndarKgt5')
+AndarKgt5=Bladex.CreateSound('../../sounds/Correajes-77.wav', 'AndarKgt5') #PLAGUE: Same as 6
 AndarKgt5.SendNotify=0
 AndarKgt5.Volume=0.5
 AndarKgt6=Bladex.CreateSound('../../sounds/Correajes-77.wav', 'AndarKgt6')

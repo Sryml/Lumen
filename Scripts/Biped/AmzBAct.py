@@ -348,7 +348,7 @@ Bladex.AddBipedAction("Amz","g_spear_2katab6low","Amz_g_spear_2katab6low",0.0,1.
 Bladex.AddBipedAction("Amz","g_spear_sb11","Amz_g_spear_sb11",0.0,1.0,0)
 Bladex.AddBipedAction("Amz","g_spear17","Amz_g_spear17",0.0,1.0,0)
 Bladex.AddBipedAction("Amz","g_spear16","Amz_g_spear16",0.0,1.0,0)
-Bladex.AddBipedAction("Amz","g_spear_b6_26","Amz_g_spear_b6_26",0.0,1.0,0)
+Bladex.AddBipedAction("Amz","g_spear_b6_26","Amz_g_spear_b6_26",0.0,0.794,0)
 Bladex.AddBipedAction("Amz","g_spear19_13","Amz_g_spear19_13",0.0,1.0,0)
 Bladex.AddBipedAction("Amz","g_spear_b06","Amz_g_spear_b06",0.0,1.0,0)
 Bladex.AddBipedAction("Amz","g_spear_bs21","Amz_g_spear_bs21",0.0,1.0,0)

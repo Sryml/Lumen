@@ -100,7 +100,7 @@ amz=Bladex.GetCharType("Amazon_N","Amz_N")
 
 #GI "group"
 amz.AddAttack("GI_SP","Amz_g_spears1")
-amz.AttackWindow("Amz_g_spears1",0.334,0.642,"GI_SP_Window")
+amz.AttackWindow("Amz_g_spears1",0.1,0.8,"GI_SP_Window") # 0.334,0.642
 #amz.AttackTypeFlag("GI_SP",ATK_UNIQUE) #If only one attack given , UNIQUE flag is applied
 
 
@@ -122,20 +122,20 @@ amz.AddLevels("Amz_g_spears12",0,40)
 
 #COMBO3 group
 amz.AddAttack("GM6_SP","Amz_g_spears6")
-amz.AttackWindow("Amz_g_spears6",0.345,0.454,"GM6_SP_Window")
+amz.AttackWindow("Amz_g_spears6",0.15,0.854,"GM6_SP_Window") # 0.245,0.854
 amz.AddLevels("Amz_g_spears6",0,40)
 
 
 #COMBO4 group
 amz.AddAttack("GM8_SP","Amz_g_spear16low")
-amz.AttackWindow("Amz_g_spear16low",0.341,0.475,"GM8_SP_Window")
+amz.AttackWindow("Amz_g_spear16low",0.2,0.475,"GM8_SP_Window") # 0.341,0.475
 amz.AddLevels("Amz_g_spear16low",0,40)
 
 
 
 #EXTRAGOLPE1 group
 amz.AddAttack("GM15_SP","Amz_g_spear26kata")
-amz.AttackWindow("Amz_g_spear26kata",0.626,0.781,"GM15_SP_Window")
+amz.AttackWindow("Amz_g_spear26kata",0.126,0.781,"GM15_SP_Window")
 amz.AssignTrail("GM15_SP","","EstelaAmarilla1")
 amz.AddLevels("Amz_g_spear26kata",1,40)
 
@@ -249,7 +249,7 @@ amz.AddLevels("Amz_g_spear_kata23",11,40)
 #GOLPE FIREBO
 amz.AddAttack("GM30_SP","Amz_g_spear_b6_26")
 amz.AttackWindow("Amz_g_spear_b6_26",0.467,0.670,"GM30_SP_Window")
-amz.AssignTrail("GM30_SP","","EstelaRoja1")
+amz.AssignTrail("GM30_SP","","EstelaOrange")
 amz.AddLevels("Amz_g_spear_b6_26",13,40)
 
 #GOLPE AXPEAR
@@ -273,13 +273,13 @@ amz.AddLevels("Amz_g_spear_b29",16,40)
 #GOLPE STEELFEATHER
 amz.AddAttack("GM34_SP","Amz_g_spear19_bs1")
 amz.AttackWindow("Amz_g_spear19_bs1",0.020,0.900,"GM34_SP_Window")
-amz.AssignTrail("GM34_SP","","EstelaRoja1")
+amz.AssignTrail("GM34_SP","","EstelaGreen")
 amz.AddLevels("Amz_g_spear19_bs1",17,40)
 
 #GOLPE ICEWAND
 amz.AddAttack("GM36_SP","Amz_g_spear16")
 amz.AttackWindow("Amz_g_spear16",0.020,0.900,"GM36_SP_Window")
-amz.AssignTrail("GM36_SP","","EstelaRoja1")
+amz.AssignTrail("GM36_SP","","EstelaAzul1")
 amz.AddLevels("Amz_g_spear16",12,40)
 
 #GOLPE QUEENSWORD
@@ -308,13 +308,13 @@ amz.AddEnergyLevel("Amz_g_spear_back", 0)
 
 #COMBO LANZAESTELA
 amz.AddAttack("GM80_1H","Amz_g_magic2")
-amz.AssignTrail("GM80_1H","","EstelaRoja1")
+amz.AssignTrail("GM80_1H","","EstelaLight")
 amz.AddLevels("Amz_g_magic2",18,40)
 amz.AddEnergyLevel("Amz_g_magic2", 0)
 
 #COMBO CONCENTRACION
 amz.AddAttack("GM81_1H","Amz_g_magic")
-amz.AssignTrail("GM81_1H","","EstelaRoja1")
+amz.AssignTrail("GM81_1H","","EstelaLight")
 amz.AddLevels("Amz_g_magic",19,40)
 amz.AddEnergyLevel("Amz_g_magic", 0)
 
@@ -435,6 +435,7 @@ amz.AllowAttack("GM35_SP","L+R+B","","","","SP")
 amz.AllowAttack("GM80_1H","&B","GM16_1H","","","BladeSword2")
 
 #COMBO CONCENTRACION
+amz.AllowAttack("GM81_1H","A+F","GM16_1H","","","BladeSword2")
 amz.AllowAttack("GM81_1H","&A+F","GM16_1H","","","BladeSword2")
 
 #COMBOHACHATORPE
@@ -484,25 +485,25 @@ amz.AllowAttack("GM37_1H","R+B","GM19_1H","","","QueenSword")
 #EXTRAGOLPE1
 amz.AllowAttack("GM15_SP","R+L","GI_SP","COMBOEXTRA","GM15_SP_Window","SP")
 
-#GOLPEARMA1MANOINICIAL
-amz.AllowAttack("GM16_1H","A","","COMBO1","","1H")
 
 #GOLPEARMA1MANOARRIBA
-amz.AllowAttack("GM17_1H","A+F","","COMBO1","","1H")
-amz.AllowAttack("GM17_1H","&A+F","","COMBO1","","1H")
+amz.AllowAttack("GM17_1H","A+F","","GM17_1H","","1H")
+amz.AllowAttack("GM17_1H","&A+F","","GM17_1H","","1H")
 
 #GOLPEARMA1MANODERECHA
-amz.AllowAttack("GM18_1H","A+R","","COMBO1","","1H")
-amz.AllowAttack("GM18_1H","&A+R","","COMBO1","","1H")
+amz.AllowAttack("GM18_1H","A+R","","GM18_1H","","1H")
+amz.AllowAttack("GM18_1H","&A+R","","GM18_1H","","1H")
 
 #GOLPEARMA1MANOIZQUIERDA
-amz.AllowAttack("GM19_1H","A+L","","COMBO1","","1H")
-amz.AllowAttack("GM19_1H","&A+L","","COMBO1","","1H")
+amz.AllowAttack("GM19_1H","A+L","","GM19_1H","","1H")
+amz.AllowAttack("GM19_1H","&A+L","","GM19_1H","","1H")
 
 #GOLPEARMA1MANOABAJO
-amz.AllowAttack("GM20_1H","A+B","","COMBO1","","1H")
-amz.AllowAttack("GM20_1H","&A+B","","COMBO1","","1H")
+amz.AllowAttack("GM20_1H","A+B","","GM20_1H","","1H")
+amz.AllowAttack("GM20_1H","&A+B","","GM20_1H","","1H")
 
+#GOLPEARMA1MANOINICIAL
+amz.AllowAttack("GM16_1H","A","","GIM_1H","","1H")
 
 #COMBO TECLA ARRIBA1
 amz.AllowAttack("GM1_SP","A+F","","GM1_SP","","SP")
@@ -537,7 +538,7 @@ amz.AllowAttack("GM6_SP","A+L","","GM6_SP","","SP")
 amz.AllowAttack("GM6_SP","&A+L","","GM6_SP","","SP")
 
 #GOLPE AXPEAR
-amz.AllowAttack("GM31_SP","L","GM6_SP","","","Axpear")
+amz.AllowAttack("GM31_SP","L","GM6_SP","","GM6_SP_Window","Axpear")
 
 #COMBO CROSSPEAR
 amz.AllowAttack("GM7_SP","F+L","GM6_SP","","GM6_SP_Window","Crosspear")

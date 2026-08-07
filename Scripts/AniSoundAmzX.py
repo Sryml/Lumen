@@ -1,3 +1,10 @@
+##///
+##||| ANISOUNDAMZX.PY TITANIUM
+##||| Change list:
+##||| * Normalized "draw weapon" sound for all 4 characters.
+##||| * Added fire sound for Fire Bo special attack.
+##\\\ 
+
 import Bladex
 
 # *********************************
@@ -31,7 +38,7 @@ CogerArma.SendNotify=0
 CambiarEscudo=Bladex.CreateSound('../../sounds/M-ARMA-U-OBJETO.wav', 'CambiarEscudo')
 CambiarEscudo.SendNotify=0
 
-#GritoHerida=Bladex.CreateSound('../../sounds/esfuerzo-barb-corto.wav', 'GritoHerida')
+#GritoHerida=Bladex.CreateSound('../../sounds/esfuerzo-barb-corto.wav', 'GritoHerida')      #PLAGUE: Why is this here AND commented out?
 #GritoHerida.SendNotify=1
 #GritoHerida.Volume=0.8
 
@@ -68,11 +75,11 @@ GolpeContundenteAmz.SendNotify=1
 GolpeContundenteAmz.MinDistance=1000
 GolpeContundenteAmz.MaxDistance=25000
 
-EnfundarAmz=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'EnfundarAmz')
-EnfundarAmz.SendNotify=1
-EnfundarAmz.Volume=1
-EnfundarAmz.MinDistance=1000
-EnfundarAmz.MaxDistance=25000
+EnfundarAmz=Bladex.CreateSound('../../sounds/M-DESENFUNDADING.wav', 'EnfundarAmz')      # PLAGUE: wtf, all 4 characters use the same sound, but all of them have different parameters.
+EnfundarAmz.SendNotify=1                                                                # Normalized across all characters, I guess
+EnfundarAmz.Volume=0.8                                                                  #
+EnfundarAmz.MinDistance=2000                                                            #                   -LeadHead
+EnfundarAmz.MaxDistance=4000
 
 EsfuerzoCortoAmz=Bladex.CreateSound('../../sounds/esfuerzo-corto-amz.wav', 'EsfuerzoCortoAmz')
 EsfuerzoCortoAmz.SendNotify=1
@@ -107,7 +114,7 @@ EsfuerzoCorto5Amz.Volume=1
 EsfuerzoCorto5Amz.MinDistance=1000
 EsfuerzoCorto5Amz.MaxDistance=25000
 
-EsfuerzoCorto6Amz=Bladex.CreateSound('../../sounds/esfuerzo-corto-amz3.wav', 'EsfuerzoCorto6Amz')
+EsfuerzoCorto6Amz=Bladex.CreateSound('../../sounds/esfuerzo-corto-amz3.wav', 'EsfuerzoCorto6Amz')   #PLAGUE: same as Corto2
 EsfuerzoCorto6Amz.SendNotify=1
 EsfuerzoCorto6Amz.Volume=1
 EsfuerzoCorto6Amz.MinDistance=1000
@@ -268,7 +275,8 @@ AndarAmz2=Bladex.CreateSound('../../sounds/Mov-Amazona-2.wav', 'AndarAmz2')
 AndarAmz2.SendNotify=0
 AndarAmz2.Volume=0.3
 
-
+#PLAGUE: "Caida" sounds are incredibly inconsistent.
+#         Must normalize across all chars.
 CaidaAmz1=Bladex.CreateSound('../../sounds/caida-pie.wav', 'CaidaAmz1')
 CaidaAmz1.SendNotify=1
 CaidaAmz1.Volume=1
@@ -313,6 +321,9 @@ EsfuerzoCorto7Amz.Volume=1
 EsfuerzoCorto7Amz.MinDistance=1000
 EsfuerzoCorto7Amz.MaxDistance=25000
 
+
+# PLAGUE: Below MinDistance for Barb is 3000 and MaxDist for everyone else is 2500.
+#         must normalize across characters.
 AtaquesEspecialesAmz1=Bladex.CreateSound('../../sounds/sesgado-especial-largo.wav', 'AtaquesEspecialesAmz1')
 AtaquesEspecialesAmz1.SendNotify=1
 AtaquesEspecialesAmz1.Volume=1.0
@@ -334,7 +345,13 @@ AtaquesEspecialesAmz4.Volume=1.0
 AtaquesEspecialesAmz4.MinDistance=1000
 AtaquesEspecialesAmz4.MaxDistance=15000
 
+### Below added for Fire Bo -LeadHead
 
+AtaqueFuego4=Bladex.CreateSound('../../sounds/fuego-ascende.wav', 'AtaqueFuego4')
+AtaqueFuego4.SendNotify=1
+AtaqueFuego4.Volume=1.0
+AtaqueFuego4.MinDistance=3000
+AtaqueFuego4.MaxDistance=15000
 
 
 print "Sonidos para la amazona creados..."

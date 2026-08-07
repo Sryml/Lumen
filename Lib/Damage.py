@@ -145,6 +145,28 @@ InflictDamageFXData['Amz_g_spear33']=(300.0, 0.8, 240, 20, 0, 2.0, None, 1.0, 1.
 #LANZAANCHA
 InflictDamageFXData['Amz_g_spear_sb11']=(400.0, 0.9, 240, 20, 0, 2.0, None, 1.0, 1.0)
 
+# Fire Sword
+InflictDamageFXData['Kgt_g_s28kata_new']=(0, 0.9, 255, 128, 0, 2.0, None, 1.0, 1.0)
+# Big Fire Sword
+InflictDamageFXData['Bar_g2h_earthpow']=(0, 0.9, 255, 128, 0, 2.0, None, 1.0, 1.0)
+# Fire Axe
+InflictDamageFXData['Dwf_g_22']=(0, 0.9, 255, 128, 0, 2.0, None, 1.0, 1.0)
+# Fire bo
+InflictDamageFXData['Amz_g_spear_b6_26']=(0, 0.9, 255, 128, 0, 2.0, None, 1.0, 1.0)
+
+# Ice Sword
+InflictDamageFXData['Kgt_g_12_7_s1new']=(0, 0.9, 100, 200, 240, 2.0, None, 1.0, 1.0)
+# Ice Axe
+InflictDamageFXData['Bar_g_axe30']=(0, 0.9, 100, 200, 240, 2.0, None, 1.0, 1.0)
+# Ice Hammer
+InflictDamageFXData['Dwf_g_s18_2h']=(0, 0.9, 100, 200, 240, 2.0, None, 1.0, 1.0)
+# Ice Wand
+InflictDamageFXData['Amz_g_spear16']=(0, 0.9, 100, 200, 240, 2.0, None, 1.0, 1.0)
+
+# Crush Hammer
+InflictDamageFXData['Dwf_g_s22low_new']=(0, 0.9, 30, 100, 20, 2.0, None, 1.0, 1.0)
+# Steel Feather
+InflictDamageFXData['Amz_g_spear19_bs1']=(0, 0.9, 30, 100, 20, 2.0, None, 1.0, 1.0)
 
 # Attacking Anim Table   (Damage Factor)
 AnimationData={}         #############
@@ -479,7 +501,7 @@ AnimationData['Dwf_g_27']=   1.5
 AnimationData['Dwf_g_31']=   8.0
 
 AnimationData['Dwf_g_back']=   1.0
-AnimationData['Dwf_g_s18_2h']=   1.0
+AnimationData['Dwf_g_s18_2h']=   38.0
 AnimationData['Dwf_g_32_5_3new']=   1.0
 AnimationData['Dwf_g_s22low_new']=   50.0
 AnimationData['Dwf_g_s3_new']=   12.0
@@ -1082,7 +1104,7 @@ def CheckRightHandToDrop(EntityName):
     two_handed_on_right=0
     if Actions.IsRightHandWeaponObject(EntityName):
         w_flag=Reference.GiveWeaponFlag(me.InvRight)
-        if w_flag<>Reference.W_FLAG_1H:
+        if w_flag!=Reference.W_FLAG_1H and not me.Data.NPC:
             two_handed_on_right=1
 
     special_to_drop=0
@@ -1096,7 +1118,7 @@ def CheckRightHandToDrop(EntityName):
             Actions.DropReleaseEventHandler(EntityName, "DropRightEvent")
             if me.InvRight:
                 #print "...but did not work"
-                return FALSE
+                return 0 # FALSE
 
 
 

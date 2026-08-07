@@ -9,6 +9,7 @@
 
 
 import Bladex
+import Lumenx
 
 
 ATK_UNIQUE=0
@@ -152,7 +153,7 @@ kgt.AttackWindow("Kgt_g_08_new",0.001,0.900,"GI_1H_Window")
 
 #COMBO1 group
 kgt.AddAttack("GM1_1H","Kgt_g_07_new")
-kgt.AttackWindow("Kgt_g_07_new",0.309,0.531,"GM1_1H_Window")
+kgt.AttackWindow("Kgt_g_07_new",0.2,0.531,"GM1_1H_Window") # 0.309,0.531
 kgt.AddLevels("Kgt_g_07_new",0,40)
 kgt.AddEnergyLevel("Kgt_g_07_new", 0)
 
@@ -166,7 +167,7 @@ kgt.AddEnergyLevel("Kgt_g_s3_new", 0)
 
 #COMBO2 group
 kgt.AddAttack("GM3_1H","Kgt_g_12_new")
-kgt.AttackWindow("Kgt_g_12_new",0.345,0.550,"GM3_1H_Window")
+kgt.AttackWindow("Kgt_g_12_new",0.2,0.550,"GM3_1H_Window") # 0.345,0.550
 kgt.AddLevels("Kgt_g_12_new",0,40)
 kgt.AddEnergyLevel("Kgt_g_12_new", 0)
 
@@ -180,7 +181,7 @@ kgt.AddEnergyLevel("Kgt_g_02_new", 0)
 
 #COMBO3 group
 kgt.AddAttack("GM6_1H","Kgt_g_b06_new")
-kgt.AttackWindow("Kgt_g_b06_new",0.455,0.600,"GM6_1H_Window")
+kgt.AttackWindow("Kgt_g_b06_new",0.2,0.600,"GM6_1H_Window") # 0.455,0.600
 kgt.AddLevels("Kgt_g_b06_new",0,40)
 kgt.AddEnergyLevel("Kgt_g_b06_new", 0)
 
@@ -194,7 +195,7 @@ kgt.AddEnergyLevel("Kgt_g_19_bs1_new", 0)
 
 #COMBO4 group
 kgt.AddAttack("GM8_1H","Kgt_g_01low_new")
-kgt.AttackWindow("Kgt_g_01low_new",0.395,0.510,"GM8_1H_Window")
+kgt.AttackWindow("Kgt_g_01low_new",0.2,0.510,"GM8_1H_Window") # 0.395,0.510
 kgt.AddLevels("Kgt_g_01low_new",0,40)
 kgt.AddEnergyLevel("Kgt_g_01low_new", 0)
 
@@ -315,7 +316,7 @@ kgt.AddEnergyLevel("Kgt_g_22kata_23_new", 0)
 #COMBO ESPADAFIRESWORD
 kgt.AddAttack("GM36_1H","Kgt_g_s28kata_new")
 kgt.AttackWindow("Kgt_g_s28kata_new",0.600,0.821,"GM36_1H_Window")
-kgt.AssignTrail("GM36_1H","","EstelaRoja1")
+kgt.AssignTrail("GM36_1H","","EstelaOrange")
 kgt.AddLevels("Kgt_g_s28kata_new",12,40)
 kgt.AddEnergyLevel("Kgt_g_s28kata_new", 0)
 
@@ -359,7 +360,7 @@ kgt.AddEnergyLevel("Kgt_g_bad_spear2", 0)
 
 #COMBOEXTRA1 group
 kgt.AddAttack("GM23_1H","Kgt_g_01_7_new")
-kgt.AttackWindow("Kgt_g_01_7_new",0.461,0.655,"GM23_1H_Window")
+kgt.AttackWindow("Kgt_g_01_7_new",0.161,0.655,"GM23_1H_Window") # 0.461,0.655
 kgt.AssignTrail("GM23_1H","","EstelaAmarilla1")
 kgt.AddLevels("Kgt_g_01_7_new",2,40)
 kgt.AddEnergyLevel("Kgt_g_01_7_new", 0)
@@ -432,13 +433,13 @@ kgt.AddEnergyLevel("Kgt_g_punch2", 0)
 ########################################
 #ESTELA1
 kgt.AddAttack("GM50_1H","Kgt_g_magic")
-kgt.AssignTrail("GM50_1H","","EstelaRoja1")
+kgt.AssignTrail("GM50_1H","","EstelaLight")
 kgt.AddLevels("Kgt_g_magic",19,40)
 kgt.AddEnergyLevel("Kgt_g_magic", 0)
 
 #CONCENTRACION1 ENERGIA
 kgt.AddAttack("GM51_1H","Kgt_g_magic2")
-kgt.AssignTrail("GM51_1H","","EstelaRoja1")
+kgt.AssignTrail("GM51_1H","","EstelaLight")
 kgt.AddLevels("Kgt_g_magic2",18,40)
 kgt.AddEnergyLevel("Kgt_g_magic2", 0)
 
@@ -489,6 +490,8 @@ kgt.MetaAttack("GIM_1H","GM50_1H")
 kgt.MetaAttack("GIM_1H","GM51_1H")
 
 
+kgt.MetaAttack("DODGE","DR_G_1H")
+kgt.MetaAttack("DODGE","DL_G_1H")
 kgt.MetaAttack("GOLPEINICIAL","GI_1H")
 
 #GM meta-group
@@ -575,9 +578,24 @@ kgt.MetaAttack("COMBO1","GM51_1H")
 #COMBOGIRO180
 kgt.AllowAttack("GM26_1H","L+R+B","","","","1H")
 
-kgt.AllowAttack("GM27_1H","A","DL","ARMAENANO","","Alabarda")
-kgt.AllowAttack("GM27_1H","A","DR","ARMAENANO","","Alabarda")
-kgt.AllowAttack("GM27_1H","A","DB","ARMAENANO","","Alabarda")
+if Lumenx.GetConfig("Kgt1HMastery") == "Disabled":
+    for kind in ("CrushHammer","FireAxe","IceHammer","Hacha","Hacha5","Hacha4","Hacha3","Hacha6","Hacha2","Garrote","Martillo","Martillo2","Garropin","MazaDoble","Garrote2","Martillo3","Alabarda","Cuchillo","Daga","Varita7","Varita6","Varita5","Varita2","Varita1","EspadaMagica1","EspadaMagica2","EspadaMagica3","VampWeapon","Baston3"):
+        kgt.AllowAttack("GM28_1H","A+F","","GM28_1H","",kind)
+        kgt.AllowAttack("GM28_1H","&A+F","","GM28_1H","",kind)
+
+        kgt.AllowAttack("GM29_1H","A+B","","GM29_1H","",kind)
+        kgt.AllowAttack("GM29_1H","&A+B","","GM29_1H","",kind)
+
+        kgt.AllowAttack("GM30_1H","A+L","","GM30_1H","",kind)
+        kgt.AllowAttack("GM30_1H","&A+L","","GM30_1H","",kind)
+
+        kgt.AllowAttack("GM31_1H","A+R","","GM31_1H","",kind)
+        kgt.AllowAttack("GM31_1H","&A+R","","GM31_1H","",kind)
+
+        kgt.AllowAttack("GM27_1H","A","","ARMAENANO","",kind)
+        #
+        kgt.AllowAttack("GM28_1H","A","DL","","",kind)
+        kgt.AllowAttack("GM28_1H","A","DR","","",kind)
 
 #Golpes en esquiva
 kgt.AllowAttack("DL_G_1H","A","DL","","","1H")
@@ -639,620 +657,6 @@ kgt.AllowAttack("GM15_SP","A","GM14_SP","","GM14_SP_Window","SP")
 kgt.AllowAttack("GM14_SP","A","","COMBO1,COMBO1,COMBO1","GM15_SP_Window","SP")
 
 
-
-
-
-
-#COMBOMARTILLOCRUSHHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","CrushHammer")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","CrushHammer")
-
-#COMBOMARTILLOCRUSHHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","CrushHammer")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","CrushHammer")
-
-#COMBOMARTILLOCRUSHHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","CrushHammer")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","CrushHammer")
-
-#COMBOMARTILLOCRUSHHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","CrushHammer")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","CrushHammer")
-
-#COMBOMARTILLOCRUSHHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","CrushHammer")
-
-
-
-#COMBOFIREAXE_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","FireAxe")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","FireAxe")
-
-#COMBOFIREAXE_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","FireAxe")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","FireAxe")
-
-#COMBOFIREAXE_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","FireAxe")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","FireAxe")
-
-#COMBOFIREAXE_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","FireAxe")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","FireAxe")
-
-#COMBOFIREAXE_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","FireAxe")
-
-
-
-#COMBOICEHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","IceHammer")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","IceHammer")
-
-#COMBOICEHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","IceHammer")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","IceHammer")
-
-#COMBOICEHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","IceHammer")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","IceHammer")
-
-#COMBOICEHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","IceHammer")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","IceHammer")
-
-#COMBOICEHAMMER_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","IceHammer")
-
-
-
-#COMBOHACHA_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Hacha")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Hacha")
-
-#COMBOHACHA_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Hacha")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Hacha")
-
-#COMBOHACHA_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Hacha")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Hacha")
-
-#COMBOHACHA_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Hacha")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Hacha")
-
-#COMBOHACHA_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Hacha")
-
-
-
-#COMBOHACHA5_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Hacha5")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Hacha5")
-
-#COMBOHACHA5_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Hacha5")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Hacha5")
-
-#COMBOHACHA5_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Hacha5")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Hacha5")
-
-#COMBOHACHA5_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Hacha5")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Hacha5")
-
-#COMBOHACHA5_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Hacha5")
-
-
-
-#COMBOHACHA4_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Hacha4")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Hacha4")
-
-#COMBOHACHA4_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Hacha4")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Hacha4")
-
-#COMBOHACHA4_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Hacha4")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Hacha4")
-
-#COMBOHACHA4_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Hacha4")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Hacha4")
-
-#COMBOHACHA4_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Hacha4")
-
-
-
-#COMBOHACHA3_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Hacha3")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Hacha3")
-
-#COMBOHACHA3_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Hacha3")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Hacha3")
-
-#COMBOHACHA3_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Hacha3")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Hacha3")
-
-#COMBOHACHA3_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Hacha3")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Hacha3")
-
-#COMBOHACHA3_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Hacha3")
-
-
-
-#COMBOHACHA6_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Hacha6")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Hacha6")
-
-#COMBOHACHA6_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Hacha6")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Hacha6")
-
-#COMBOHACHA6_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Hacha6")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Hacha6")
-
-#COMBOHACHA6_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Hacha6")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Hacha6")
-
-#COMBOHACHA6_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Hacha6")
-
-
-
-#COMBOHACHA2_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Hacha2")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Hacha2")
-
-#COMBOHACHA2_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Hacha2")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Hacha2")
-
-#COMBOHACHA2_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Hacha2")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Hacha2")
-
-#COMBOHACHA2_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Hacha2")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Hacha2")
-
-#COMBOHACHA2_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Hacha2")
-
-
-
-#COMBOGARROTE_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Garrote")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Garrote")
-
-#COMBOGARROTE_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Garrote")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Garrote")
-
-#COMBOGARROTE_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Garrote")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Garrote")
-
-#COMBOGARROTE_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Garrote")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Garrote")
-
-#COMBOGARROTE_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Garrote")
-
-
-
-#COMBOMARTILLO_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Martillo")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Martillo")
-
-#COMBOMARTILLO_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Martillo")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Martillo")
-
-#COMBOMARTILLO_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Martillo")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Martillo")
-
-#COMBOMARTILLO_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Martillo")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Martillo")
-
-#COMBOMARTILLO_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Martillo")
-
-
-
-#COMBOMARTILLO2_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Martillo2")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Martillo2")
-
-#COMBOMARTILLO2_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Martillo2")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Martillo2")
-
-#COMBOMARTILLO2_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Martillo2")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Martillo2")
-
-#COMBOMARTILLO2_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Martillo2")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Martillo2")
-
-#COMBOMARTILLO2_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Martillo2")
-
-
-
-#COMBOGARROPIN_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Garropin")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Garropin")
-
-#COMBOGARROPIN_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Garropin")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Garropin")
-
-#COMBOGARROPIN_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Garropin")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Garropin")
-
-#COMBOGARROPIN_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Garropin")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Garropin")
-
-#COMBOGARROPIN_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Garropin")
-
-
-
-#COMBOMAZADOBLE_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","MazaDoble")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","MazaDoble")
-
-#COMBOMAZADOBLE_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","MazaDoble")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","MazaDoble")
-
-#COMBOMAZADOBLE_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","MazaDoble")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","MazaDoble")
-
-#COMBOMAZADOBLE_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","MazaDoble")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","MazaDoble")
-
-#COMBOMAZADOBLE_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","MazaDoble")
-
-
-
-#COMBOGARROTE2_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Garrote2")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Garrote2")
-
-#COMBOGARROTE2_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Garrote2")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Garrote2")
-
-#COMBOGARROTE2_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Garrote2")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Garrote2")
-
-#COMBOGARROTE2_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Garrote2")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Garrote2")
-
-#COMBOGARROTE2_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Garrote2")
-
-
-
-#COMBOMARTILLO3_ARMA_ENANO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Martillo3")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Martillo3")
-
-#COMBOMARTILLO3_ARMA_ENANO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Martillo3")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Martillo3")
-
-#COMBOMARTILLO3_ARMA_ENANO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Martillo3")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Martillo3")
-
-#COMBOMARTILLO3_ARMA_ENANO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Martillo3")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Martillo3")
-
-#COMBOMARTILLO3_ARMA_ENANO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Martillo3")
-
-
-#COMBOALABARDA_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A+F","","ARMAENANO","","Alabarda")
-kgt.AllowAttack("GM27_1H","&A+F","","ARMAENANO","","Alabarda")
-
-#COMBOALABARDA_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A+B","","ARMAENANO","","Alabarda")
-kgt.AllowAttack("GM27_1H","&A+B","","ARMAENANO","","Alabarda")
-
-#COMBOALABARDA_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A+L","","ARMAENANO","","Alabarda")
-kgt.AllowAttack("GM27_1H","&A+L","","ARMAENANO","","Alabarda")
-
-#COMBOALABARDA_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A+R","","ARMAENANO","","Alabarda")
-kgt.AllowAttack("GM27_1H","&A+R","","ARMAENANO","","Alabarda")
-
-#COMBOALABARDA_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Alabarda")
-
-
-
-#COMBOCUCHILLO_ARMA_MAL_USO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Cuchillo")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Cuchillo")
-
-#COMBOCUCHILLO_ARMA_MAL_USO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Cuchillo")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Cuchillo")
-
-#COMBOCUCHILLO_ARMA_MAL_USO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Cuchillo")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Cuchillo")
-
-#COMBOCUCHILLO_ARMA_MAL_USO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Cuchillo")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Cuchillo")
-
-#COMBOCUCHILLO_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Cuchillo")
-
-
-
-#COMBODAGA_ARMA_MAL_USO
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Daga")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Daga")
-
-#COMBODAGA_ARMA_MAL_USO
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Daga")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Daga")
-
-#COMBODAGA_ARMA_MAL_USO
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Daga")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Daga")
-
-#COMBODAGA_ARMA_MAL_USO
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Daga")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Daga")
-#COMBODAGA_ARMA_MAL_USO
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Daga")
-
-
-
-#COMBOVARITA7_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Varita7")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Varita7")
-
-#COMBOVARITA7_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Varita7")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Varita7")
-
-#COMBOVARITA7_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Varita7")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Varita7")
-
-#COMBOVARITA7_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Varita7")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Varita7")
-
-#COMBOVARITA7_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Varita7")
-
-
-
-#COMBOVARITA6_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Varita6")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Varita6")
-
-#COMBOVARITA6_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Varita6")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Varita6")
-
-#COMBOVARITA6_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Varita6")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Varita6")
-
-#COMBOVARITA6_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Varita6")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Varita6")
-
-#COMBOVARITA6_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Varita6")
-
-
-
-#COMBOVARITA5_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Varita5")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Varita5")
-
-#COMBOVARITA5_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Varita5")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Varita5")
-
-#COMBOVARITA5_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Varita5")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Varita5")
-
-#COMBOVARITA5_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Varita5")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Varita5")
-
-#COMBOVARITA5_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Varita5")
-
-
-
-#COMBOVARITA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Varita2")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Varita2")
-
-#COMBOVARITA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Varita2")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Varita2")
-
-#COMBOVARITA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Varita2")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Varita2")
-
-#COMBOVARITA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Varita2")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Varita2")
-
-#COMBOVARITA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Varita2")
-
-
-
-#COMBOVARITA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Varita1")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Varita1")
-
-#COMBOVARITA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Varita1")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Varita1")
-
-#COMBOVARITA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Varita1")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Varita1")
-
-#COMBOVARITA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Varita1")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Varita1")
-
-#COMBOVARITA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Varita1")
-
-
-
-#COMBOESPADAMAGICA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","EspadaMagica1")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","EspadaMagica1")
-
-#COMBOESPADAMAGICA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","EspadaMagica1")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","EspadaMagica1")
-
-#COMBOESPADAMAGICA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","EspadaMagica1")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","EspadaMagica1")
-
-#COMBOESPADAMAGICA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","EspadaMagica1")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","EspadaMagica1")
-
-#COMBOESPADAMAGICA1_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","EspadaMagica1")
-
-
-
-#COMBOESPADAMAGICA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","EspadaMagica2")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","EspadaMagica2")
-
-#COMBOESPADAMAGICA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","EspadaMagica2")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","EspadaMagica2")
-
-#COMBOESPADAMAGICA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","EspadaMagica2")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","EspadaMagica2")
-
-#COMBOESPADAMAGICA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","EspadaMagica2")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","EspadaMagica2")
-
-#COMBOESPADAMAGICA2_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","EspadaMagica2")
-
-
-
-#COMBOESPADAMAGICA3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","EspadaMagica3")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","EspadaMagica3")
-
-#COMBOESPADAMAGICA3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","EspadaMagica3")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","EspadaMagica3")
-
-#COMBOESPADAMAGICA3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","EspadaMagica3")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","EspadaMagica3")
-
-#COMBOESPADAMAGICA3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","EspadaMagica3")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","EspadaMagica3")
-
-#COMBOESPADAMAGICA3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","EspadaMagica3")
-
-
-
-#COMBOVAMPWEAPON_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","VampWeapon")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","VampWeapon")
-
-#COMBOVAMPWEAPON_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","VampWeapon")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","VampWeapon")
-
-#COMBOVAMPWEAPON_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","VampWeapon")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","VampWeapon")
-
-#COMBOVAMPWEAPON_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","VampWeapon")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","VampWeapon")
-
-#COMBOVAMPWEAPON_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","VampWeapon")
-
-
-
-#COMBOBASTON3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM28_1H","A+F","","ARMAENANO","","Baston3")
-kgt.AllowAttack("GM28_1H","&A+F","","ARMAENANO","","Baston3")
-
-#COMBOBASTON3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM29_1H","A+B","","ARMAENANO","","Baston3")
-kgt.AllowAttack("GM29_1H","&A+B","","ARMAENANO","","Baston3")
-
-#COMBOBASTON3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM30_1H","A+L","","ARMAENANO","","Baston3")
-kgt.AllowAttack("GM30_1H","&A+L","","ARMAENANO","","Baston3")
-
-#COMBOBASTON3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM31_1H","A+R","","ARMAENANO","","Baston3")
-kgt.AllowAttack("GM31_1H","&A+R","","ARMAENANO","","Baston3")
-
-#COMBOBASTON3_ARMA_MAGICAS_MALAS
-kgt.AllowAttack("GM27_1H","A","","ARMAENANO","","Baston3")
-
-
-
-
-
-
 #COMBO GLADIUS
 kgt.AllowAttack("GM38_1H","F+L","GI_1H","","GI_1H_Window","Gladius")
 
@@ -1281,7 +685,7 @@ kgt.AllowAttack("GM37_1H","R+L","GM23_1H","","GM23_1H_Window","IceSword")
 kgt.AllowAttack("GM24_1H","&A","GM23_1H","","GM23_1H_Window","1H")
 
 #COMBOEXTRA1
-kgt.AllowAttack("GM23_1H","F+B","GIM_1H","COMBO1,COMBO1,COMBO1//ARMAENANO","GIM_1H_Window","1H")
+kgt.AllowAttack("GM23_1H","F+B","GIM_1H//DODGE","COMBO1,COMBO1,COMBO1//ARMAENANO","GIM_1H_Window","1H")
 
 
 

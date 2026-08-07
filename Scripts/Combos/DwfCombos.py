@@ -130,7 +130,7 @@ dwf.AttackWindow("Dwf_g_01",0.001,0.999,"GI_1H_Window")
 
 #COMBOALEATORIO1
 dwf.AddAttack("GM43_1H","Dwf_g_26")
-dwf.AttackWindow("Dwf_g_26",0.445,0.668,"GM43_1H_Window")
+dwf.AttackWindow("Dwf_g_26",0.145,0.668,"GM43_1H_Window")
 dwf.AssignTrail("GM43_1H","","EstelaAmarilla1")
 dwf.AddLevels("Dwf_g_26",4,40)
 
@@ -182,25 +182,25 @@ dwf.AddLevels("Dwf_g_bad_spear2",0,40)
 
 #COMBO1
 dwf.AddAttack("GM12_1H","Dwf_g_08")
-dwf.AttackWindow("Dwf_g_08",0.408,0.725,"GM12_1H_Window")
+dwf.AttackWindow("Dwf_g_08",0.2,0.725,"GM12_1H_Window") # 0.408,0.725
 dwf.AddLevels("Dwf_g_08",0,40)
 
 
 #COMBO2
 dwf.AddAttack("GM14_1H","Dwf_g_02")
-dwf.AttackWindow("Dwf_g_02",0.265,0.586,"GM14_1H_Window")
+dwf.AttackWindow("Dwf_g_02",0.15,0.586,"GM14_1H_Window") # 0.265,0.586
 dwf.AddLevels("Dwf_g_02",0,40)
 
 
 #COMBO3
 dwf.AddAttack("GM16_1H","Dwf_g_06")
-dwf.AttackWindow("Dwf_g_06",0.391,0.661,"GM16_1H_Window")
+dwf.AttackWindow("Dwf_g_06",0.2,0.661,"GM16_1H_Window") # 0.391,0.661
 dwf.AddLevels("Dwf_g_06",0,40)
 
 
 #COMBO4
 dwf.AddAttack("GM18_1H","Dwf_g_01low_new")
-dwf.AttackWindow("Dwf_g_01low_new",0.001,0.900,"GM18_1H_Window")
+dwf.AttackWindow("Dwf_g_01low_new",0.15,0.900,"GM18_1H_Window")
 dwf.AddLevels("Dwf_g_01low_new",0,40)
 
 
@@ -263,7 +263,7 @@ dwf.AddLevels("Dwf_g_31",18,40)
 #GOLPE FIREAXE
 dwf.AddAttack("GM24_1H","Dwf_g_22")
 dwf.AttackWindow("Dwf_g_22",0.480,0.662,"GM24_1H_Window")
-dwf.AssignTrail("GM24_1H","","EstelaRoja1")
+dwf.AssignTrail("GM24_1H","","EstelaOrange")
 dwf.AddLevels("Dwf_g_22",17,40)
 
 #GOLPE HACHA5
@@ -305,14 +305,14 @@ dwf.AddLevels("Dwf_g_s3_new",15,40)
 #GOLPE CRUSHHAMMER
 dwf.AddAttack("GM10_1H","Dwf_g_s22low_new")
 dwf.AttackWindow("Dwf_g_s22low_new",0.001,0.900,"GM10_1H_Window")
-dwf.AssignTrail("GM10_1H","","EstelaRoja1")
+dwf.AssignTrail("GM10_1H","","EstelaGreen")
 dwf.AddLevels("Dwf_g_s22low_new",16,40)
 
 #GOLPE ICEHAMMER
-dwf.AddAttack("GM9_1H","Dwf_g_09")
-dwf.AttackWindow("Dwf_g_09",0.001,0.900,"GM9_1H_Window")
-dwf.AssignTrail("GM9_1H","","EstelaRoja1")
-dwf.AddLevels("Dwf_g_09",12,40)
+dwf.AddAttack("GM9_1H","Dwf_g_s18_2h") # Was "Dwf_g_09"
+dwf.AttackWindow("Dwf_g_s18_2h",0.001,0.900,"GM9_1H_Window")
+dwf.AssignTrail("GM9_1H","","EstelaAzul1")
+dwf.AddLevels("Dwf_g_s18_2h",12,40)
 
 #GOLPE QUEENSWORD
 dwf.AddAttack("GM8_1H","Dwf_g_06lowkata_new")
@@ -327,13 +327,13 @@ dwf.AddEnergyLevel("Dwf_g_back", 0)
 
 #COMBO CONCENTRACION
 dwf.AddAttack("GM70_1H","Dwf_g_magic")
-dwf.AssignTrail("GM70_1H","","EstelaRoja1")
+dwf.AssignTrail("GM70_1H","","EstelaLight")
 dwf.AddLevels("Dwf_g_magic",19,40)
 dwf.AddEnergyLevel("Dwf_g_magic", 0)
 
 #COMBO LANZAESTELA
 dwf.AddAttack("GM71_1H","Dwf_g_magic2")
-dwf.AssignTrail("GM71_1H","","EstelaRoja1")
+dwf.AssignTrail("GM71_1H","","EstelaLight")
 dwf.AddLevels("Dwf_g_magic2",18,40)
 dwf.AddEnergyLevel("Dwf_g_magic2", 0)
 
@@ -378,6 +378,8 @@ dwf.MetaAttack("GIM_1H","GM33_1H")
 dwf.MetaAttack("GIM_1H","GM70_1H")
 dwf.MetaAttack("GIM_1H","GM71_1H")
 
+dwf.MetaAttack("DODGE","DR_G_1H")
+dwf.MetaAttack("DODGE","DL_G_1H")
 
 dwf.MetaAttack("COMBO1","GM1_AXE")
 dwf.MetaAttack("COMBO1","GM2_2W")
@@ -503,7 +505,7 @@ dwf.AllowAttack("GM17_1H","&B","GI_1H","","GI_1H_Window","Martillo")
 
 
 #COMBOALEATORIO1
-dwf.AllowAttack("GM43_1H","R+L","GI_1H","","GI_1H_Window","1H")
+dwf.AllowAttack("GM43_1H","R+L","GI_1H//DODGE","","GI_1H_Window","1H")
 
 
 

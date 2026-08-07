@@ -634,13 +634,15 @@ class LightFX:
 		self.Flick=0
 
 
-def AddParticles(entity_source_name, prtl_type, pps, rnd_vel, normal_vel, friction, time2live, death_time, ygravity=0):
+def AddParticles(entity_source_name, prtl_type, pps, rnd_vel, normal_vel, friction, time2live, death_time, ygravity=0, prtl_kind=""):
 	ent_src=Bladex.GetEntity(entity_source_name)
 	if not ent_src:
 		print "La entidad especificada como fuente de las particulas no existe!!!"
 		return
 	id_number=int(10.0*Bladex.GetTime())
-	if ent_src.Person:
+	if prtl_kind:
+		prtl_sys=Bladex.CreateEntity(entity_source_name+"prtlsys"+`id_number`, prtl_kind,0,0,0)
+	elif ent_src.Person:
 		prtl_sys=Bladex.CreateEntity(entity_source_name+"prtlsys"+`id_number`, "Entity Particle System Dperson",0,0,0)
 		prtl_sys.PersonName=entity_source_name
 	else:
@@ -696,9 +698,10 @@ def InflictDamageFX(VictimName, aura_size_var=250.0, aura_exp_time=0.7, r=10, g=
 	g2=ag-dif
 	b2=ab-dif
 	time=Bladex.GetTime()
-	aura=Auras.MakeAura(VictimName,aura_exp_time,   (1                    , 0.01, 1.0, 0, 0, 1), (), (), (2,  r1, g1, b1, 0.6, 0.3  ,  ar, ag, ab, 0.4, 1.0))
-	aura.Data.AddEvent(time+aura_exp_time/4.0   ,   (2.0*aura_size_var/3.0, 1.0 , 1.0, 0, 0, 1), (), (), (2,  r1, g1, b1, 0.6, 0.3  ,  ar, ag, ab, 0.4, 1.0))
-	aura.Data.AddEvent(time+aura_exp_time       ,   (aura_size_var        , 0.01, 1.0, 0, 0, 1), (), (), (2,  ar, ag, ab, 0.6, 0.4  ,  r2, g2, b2, 0.4, 0.5))
+	if aura_size_var > 0:
+		aura=Auras.MakeAura(VictimName,aura_exp_time,   (1                    , 0.01, 1.0, 0, 0, 1), (), (), (2,  r1, g1, b1, 0.6, 0.3  ,  ar, ag, ab, 0.4, 1.0))
+		aura.Data.AddEvent(time+aura_exp_time/4.0   ,   (2.0*aura_size_var/3.0, 1.0 , 1.0, 0, 0, 1), (), (), (2,  r1, g1, b1, 0.6, 0.3  ,  ar, ag, ab, 0.4, 1.0))
+		aura.Data.AddEvent(time+aura_exp_time       ,   (aura_size_var        , 0.01, 1.0, 0, 0, 1), (), (), (2,  ar, ag, ab, 0.6, 0.4  ,  r2, g2, b2, 0.4, 0.5))
 	if light_intensity:
 		id_number=int(10.0*Bladex.GetTime())
 		limp=Bladex.CreateEntity(VictimName+"ImpactLight"+`id_number`, "Entity Spot", x, y, z)

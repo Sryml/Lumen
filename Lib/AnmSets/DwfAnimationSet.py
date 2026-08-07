@@ -56,7 +56,7 @@ def LoadDwfAnimationSet(ct_name):
 		Bladex.LoadSampledAnimation("../../Anm/Dwf_jog_no.BMV","Jog_no_Dwf",1)
 		Bladex.AddAnmRStep("Jog_no_Dwf",0.0)
 		Bladex.AddAnmRRelease("Jog_no_Dwf",0.166)
-		Bladex.AddAnmLStep("Jog_no_Dwf",0.389)
+		Bladex.AddAnmLStep("Jog_no_Dwf",0.421)      # was 0.389 -LeadHead
 		Bladex.AddAnmLRelease("Jog_no_Dwf",0.624)
 		Bladex.AddAnmRStep("Jog_no_Dwf",1.0)
 		Bladex.AddStopTests("Jog_no_Dwf")
@@ -1026,46 +1026,48 @@ def LoadDwfAnimationSet(ct_name):
 
 
 
-		anm_name="Dwf_attack_r"
+		anm_name="Dwf_attack_r" ### Borer's anm fix has been applied
 		Bladex.LoadSampledAnimation("../../Anm/Dwf_attack_r.BMV",anm_name,1)
 		Bladex.AddAnmRStep(anm_name,0)
-		Bladex.AddAnmRRelease(anm_name,0.233)
-		Bladex.AddAnmRStep(anm_name,0.529)
-		Bladex.AddAnmRRelease(anm_name,0.785)
-		Bladex.AddAnmRStep(anm_name,1)
-		Bladex.AddAnmLStep(anm_name,0.35)
-		Bladex.AddAnmLRelease(anm_name,0.569)
-		Bladex.AddAnmLStep(anm_name,0.872)
-		Bladex.AddAnmLRelease(anm_name,1.0)
-		Bladex.AddStopTests(anm_name)
+		Bladex.AddAnmLStep(anm_name,0)     
+		Bladex.AddAnmRRelease(anm_name,0.167) 
+		Bladex.AddAnmRStep(anm_name,0.611)    
+		Bladex.AddAnmRRelease(anm_name,0.722) 
+		Bladex.AddAnmRStep(anm_name,1)    
+		Bladex.AddAnmLRelease(anm_name,0.167) 
+		Bladex.AddAnmLStep(anm_name,0.444)        
+		Bladex.AddAnmLRelease(anm_name,0.667) 
+		Bladex.AddAnmLStep(anm_name,0.944)
+		Bladex.AddStopTests(anm_name)  
 
 
-		anm_name="Dwf_attack_r_spear"
+		anm_name="Dwf_attack_r_spear" ### Borer's anm fix has been applied
 		Bladex.LoadSampledAnimation("../../Anm/Dwf_attack_r_spear.BMV",anm_name,1)
 		Bladex.AddAnmRStep(anm_name,0)
-		Bladex.AddAnmRRelease(anm_name,0.233)
-		Bladex.AddAnmLStep(anm_name,0.35)
-		Bladex.AddAnmRStep(anm_name,0.529)
-		Bladex.AddAnmLRelease(anm_name,0.569)
-		Bladex.AddAnmRRelease(anm_name,0.785)
-		Bladex.AddAnmLStep(anm_name,0.872)
-		Bladex.AddAnmLRelease(anm_name,1.0)
-		Bladex.AddAnmRStep(anm_name,1)
-		Bladex.AddStopTests(anm_name)
+		Bladex.AddAnmLStep(anm_name,0)     
+		Bladex.AddAnmRRelease(anm_name,0.167) 
+		Bladex.AddAnmRStep(anm_name,0.611)    
+		Bladex.AddAnmRRelease(anm_name,0.722) 
+		Bladex.AddAnmRStep(anm_name,1)    
+		Bladex.AddAnmLRelease(anm_name,0.167) 
+		Bladex.AddAnmLStep(anm_name,0.444)        
+		Bladex.AddAnmLRelease(anm_name,0.667) 
+		Bladex.AddAnmLStep(anm_name,1.0)
+		Bladex.AddStopTests(anm_name)           
 
 
-		anm_name="Dwf_attack_r_2w"
+		anm_name="Dwf_attack_r_2w" ### Borer's anm fix has been applied
 		Bladex.LoadSampledAnimation("../../Anm/Dwf_attack_r_sword.BMV",anm_name,1)
 		Bladex.AddAnmRStep(anm_name,0)
-		Bladex.AddAnmRRelease(anm_name,0.233)
-		Bladex.AddAnmLStep(anm_name,0.35)
-		Bladex.AddAnmRStep(anm_name,0.529)
-		Bladex.AddAnmLRelease(anm_name,0.569)
-		Bladex.AddAnmRRelease(anm_name,0.785)
-		Bladex.AddAnmLStep(anm_name,0.872)
-		Bladex.AddAnmLRelease(anm_name,1.0)
-		Bladex.AddAnmRStep(anm_name,1)
-		Bladex.AddStopTests(anm_name)
+		Bladex.AddAnmLStep(anm_name,0)     
+		Bladex.AddAnmRRelease(anm_name,0.167) 
+		Bladex.AddAnmRStep(anm_name,0.611)    
+		Bladex.AddAnmRRelease(anm_name,0.722) 
+		Bladex.AddAnmRStep(anm_name,1)    
+		Bladex.AddAnmLRelease(anm_name,0.167) 
+		Bladex.AddAnmLStep(anm_name,0.444)        
+		Bladex.AddAnmLRelease(anm_name,0.667) 
+		Bladex.AddAnmLStep(anm_name,1.0)
 
 		anm_name="Dwf_attack_f"
 		Bladex.LoadSampledAnimation("../../Anm/Dwf_attack_f.BMV",anm_name,1)
@@ -1178,17 +1180,13 @@ def LoadDwfAnimationSet(ct_name):
 		Bladex.AddAnmRStep(anm_name,0.910)
 		Bladex.AddStopTests(anm_name)
 
-		anm_name="Dwf_attack_r_s"
+		anm_name="Dwf_attack_r_s"  ### Borer's anm fix has been applied
 		Bladex.LoadSampledAnimation("../../Anm/Dwf_attack_r_s.BMV",anm_name,1,"Dwarf_N")
-		Bladex.AddAnmRStep(anm_name,0)
-		Bladex.AddAnmRRelease(anm_name,0.233)
-		Bladex.AddAnmLStep(anm_name,0.35)
-		Bladex.AddAnmRStep(anm_name,0.529)
-		Bladex.AddAnmLRelease(anm_name,0.569)
-		Bladex.AddAnmRRelease(anm_name,0.785)
-		Bladex.AddAnmLStep(anm_name,0.872)
-		Bladex.AddAnmLRelease(anm_name,1.0)
-		Bladex.AddAnmRStep(anm_name,1)
+		Bladex.AddAnmLStep(anm_name,0)     
+		Bladex.AddAnmRStep(anm_name,0.270)    
+		Bladex.AddAnmLRelease(anm_name,0.524) 
+		Bladex.AddAnmLStep(anm_name,1.0)     
+		Bladex.AddAnmRRelease(anm_name,0.994) 
 		Bladex.AddStopTests(anm_name)
 
 

@@ -33,6 +33,7 @@ class _DATA:
         "DodgeByMouseMovement": "Disabled",
         "ArcheryTrajectory": "Enabled",
         "AimingPerspective": "Nearest",
+        "Kgt1HMastery": "Enabled",
         "Cache": "Disabled",
         "AssetAnimation": [],
         "AssetImage": [],
@@ -967,9 +968,10 @@ def DeactivateInput():
     if IAS == "EmptySet":
         return 0
     _DATA.last_input_set = IAS
+    Bladex_raw.DeactivateInput()
+    Bladex_raw.ActivateInput()
     InputManager.SetInputActionsSet("EmptySet")
     return 1
-    # Bladex_raw.DeactivateInput()
 
 
 def DeleteEntity(arg):
@@ -1609,6 +1611,7 @@ GameState.ModulesToBeSaved.append(sys.modules[__name__])
 #
 
 """
+ActivateInput
 AddBoundFunc
 AddInputAction
 AddMapList
@@ -1626,6 +1629,7 @@ CallPreloadCB
 ConnectionService
 CreateEntity
 CreateSound
+DeactivateInput
 DeleteEntity
 GetAlphaBMPFiles
 GetBladeRoot

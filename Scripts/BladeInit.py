@@ -52,11 +52,6 @@ import Anm_Mdf
 Anm_Mdf.Init()
 
 
-#
-# To modify the movements of the camera
-#
-import AnmCameras
-AnmCameras.Init()
 
 
 
@@ -97,6 +92,13 @@ if string.lower(Bladex.GetCurrentMap()) in ['2dmap','casa']: # Caso especial
   print "Found 2DMap"
 elif not GotoMapVars.BeginLevel():
   execfile("pj.py")
+
+#
+# To modify the movements of the camera
+#
+import AnmCameras
+AnmCameras.Init()
+
 #
 # Scorer Data init
 #
