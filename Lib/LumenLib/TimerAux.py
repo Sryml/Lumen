@@ -37,6 +37,7 @@ def CreateTimer(timer_name, period):
         o = Bladex.CreateEntity(timer_name, "GhostPointer", 0, 0, 0)
         InitDataField.Initialise(o, Name=timer_name)
         o.Alpha = 0
+        o.CastShadows = 0
         o.RemoveFromWorld()
         o.SubscribeToList(timer_name)
         o.TimerFunc = TimerFunc
@@ -69,7 +70,7 @@ def SubscribeToList(timer_name, func, func_args=(), func_kwds={}):
     return 1
 
 
-def RemoveFromList(timer_name, func, func_args, func_kwds):
+def RemoveFromList(timer_name, func, func_args=(), func_kwds={}):
     l = SubscribedLists.get(timer_name)
     item = (func, func_args, func_kwds)
     if (l is None) or (item not in l):

@@ -235,7 +235,6 @@ import types
 import Bladex
 import BInput
 
-from LumenLib import BUtils
 
 #
 if typing.TYPE_CHECKING:
@@ -270,6 +269,8 @@ class __FunctionDecorator:
 
     # builtin module
     def execfile(self, filename, globals=None, locals=None):
+        from LumenLib import BUtils
+
         filename = AutomatedAssets(filename)
         if globals is None or locals is None:
             ret = BUtils.get_tb_namespace()
@@ -612,6 +613,22 @@ class B_PyEntity_Proxy:
     #             "../../Anm/%s" % value, value, 0, self.target.Kind
     #         )
     #     setattr(self.target, attr, value)
+
+    # -----------------------------
+    # Added
+    # -----------------------------
+    def Rel2AbsPoint4Anchor(self, x, y, z, anchor):
+        from LumenLib import mathutils
+
+        me = self.target
+        vx = me.GetDummyAxis(anchor, 1, 0, 0)
+        vy = me.GetDummyAxis(anchor, 0, 1, 0)
+        vz = me.GetDummyAxis(anchor, 0, 0, 1)
+        matrix = mathutils.Matrix((vx, vy, vz)).transposed().to_4x4()
+        matrix.SetTranslation(me.GraspPos(anchor))
+        location = matrix * mathutils.Vector((x, y, z))
+
+        return location.to_tuple()
 
 
 ######### Function Start
