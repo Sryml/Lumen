@@ -32,12 +32,12 @@ if typing.TYPE_CHECKING:
 
 
 # ----------------------------------
-LINEAR = "linear"
-EASE_OUT_SINE = "ease_out_sine"
-EASE_IN_SINE = "ease_in_sine"
-EASE_IN_QUAD = "ease_in_quad"
-EASE_OUT_QUAD = "ease_out_quad"
-EASE_IN_OUT = "ease_in_out"
+# LINEAR = "linear"
+# EASE_OUT_SINE = "ease_out_sine"
+# EASE_IN_SINE = "ease_in_sine"
+# EASE_IN_QUAD = "ease_in_quad"
+# EASE_OUT_QUAD = "ease_out_quad"
+# EASE_IN_OUT = "ease_in_out"
 
 # Destroy Methods
 DESTROY_METHOD_BIN = 1
@@ -53,6 +53,7 @@ def TrackEntity(
     local_vector=(0, 0, 0),
     anchor_dir="",
     local_dir=(0, 0, 0),
+    local_rot=(1, 0, 0, 0),
 ):
     track_ent = Bladex.GetEntity(track_name)  # type: Bladex._entity.B_PyEntity
     #
@@ -74,11 +75,11 @@ def TrackEntity(
         Direction = track_ent.GetDummyAxis(anchor_dir, x, y, z)
         self.Direction = Direction
     #
-    self.OrientationBasis = track_ent.Orientation
+    self.OrientationBasis = QuatMul(local_rot, track_ent.Orientation)
 
 
 # ----------------------------------
-class EasingFunctions:
+class EASING:
     def linear(self, t):
         return t
 
@@ -100,6 +101,94 @@ class EasingFunctions:
         return 1 - math.pow((-2 * t + 2), 2) / 2
 
 
+class NODE_HANDLER:
+    def __init__(self):
+        self.TargetAttr = ""
+        # 残影
+        self.Afterimage_Target = ""
+        self.Afterimage_LastTime = 0
+        self.Afterimage_Interval = 0.1
+        self.Afterimage_Time2Live = 0.7
+        # self.Afterimage_HaloGradient = [] # TODO: Implement
+
+    # 平移
+    def Translation(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        vx, vy, vz = Scale(self.Direction, value)  # type: ignore
+        x, y, z = self.LocationBasis
+        me.Position = (x + vx, y + vy, z + vz)
+
+    # 轴角平移
+    def TranslationByAxis(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        q = Quaternion(self.Axis, value)
+        loc = q * Vector(self.Direction)
+        location = loc + Vector(self.LocationBasis)
+        me.Position = location.to_tuple()
+
+    # 旋转
+    def Rotation(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        q = ToQuat(self.Direction, value)
+        me.Orientation = QuatMul(q, self.OrientationBasis)
+
+    # 缩放
+    def Scale(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        me.Scale = value
+
+    # 不透明度
+    def Alpha(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        me.Alpha = value
+
+    # 自发光
+    def SelfIlum(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        me.SelfIlum = value
+
+    # 任意属性
+    def FromTargetAttr(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        setattr(me, self.TargetAttr, value)
+
+    # 残影
+    def AfterimageFX(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        import Reference
+
+        tar = Bladex.GetEntity(self.Afterimage_Target)
+        if not tar:
+            return
+        if time - self.Afterimage_LastTime < self.Afterimage_Interval:
+            return
+        #
+        self.Afterimage_LastTime = time
+        x, y, z = tar.Position
+        name = "%s%s" % (tar.Name, time)
+        o = Bladex.CreateEntity(name, tar.Kind, x, y, z)
+        o.ExclusionGroup = 1
+        o.CastShadows = 0
+        o.Orientation = tar.Orientation
+        o.Alpha = 0.7
+        o.SelfIlum = 0.5
+        InitDataField.Initialise(o, Unselectable=1)
+
+        animation = Animation(o, Destroy=DESTROY_METHOD_BIN)
+
+        channel = animation.AddChannel()
+        node = channel.AddNode(
+            o.Alpha, 0, self.Afterimage_Time2Live, Handler=NODE_HANDLER.Alpha
+        )
+
+        channel = animation.AddChannel()
+        node = channel.AddNode(
+            o.SelfIlum, 0, self.Afterimage_Time2Live, Handler=NODE_HANDLER.SelfIlum
+        )
+
+        animation.run()
+
+
 class AnimEvent:
     def __init__(self):
         self.Events = []
@@ -114,13 +203,13 @@ class AnimEvent:
                 self.Events.remove(event)
                 break
 
-    def _update(self, elapsed):
+    def _update(self, time, elapsed):
         for event in self.Events:
             time, callback, pending = event
             if not pending:
                 continue
             if time <= elapsed:
-                apply(callback[0], callback[1])
+                apply(callback[0], (self,) + callback[1])
                 event[2] = 0
                 break
 
@@ -129,7 +218,7 @@ class AnimEvent:
             event[2] = 1
 
 
-class Node(AnimEvent, EasingFunctions):
+class Node(AnimEvent, EASING, NODE_HANDLER):
     def __init__(
         self,
         Name,
@@ -139,12 +228,13 @@ class Node(AnimEvent, EasingFunctions):
         Direction=(1, 0, 0),
         LocationBasis=None,
         OrientationBasis=None,
-        Execute="Translation",
+        Handler=NODE_HANDLER.Translation,
         BeforeFrame=(None, (), {}),
         OnComplete=(None, ()),
-        Easing=LINEAR,
+        Easing=EASING.linear,
     ):
         AnimEvent.__init__(self)
+        NODE_HANDLER.__init__(self)
 
         self.Name = Name
         me = Bladex.GetEntity(self.Name)
@@ -152,15 +242,15 @@ class Node(AnimEvent, EasingFunctions):
         self.Start = Start
         self.End = End
         self.Duration = Duration
-        self.Execute = getattr(self, Execute, self.Translation)
+        self.Handler = Handler
         self.BeforeFrame = BeforeFrame
         self.OnComplete = OnComplete
-        self.Easing = getattr(self, Easing)
+        self.Easing = Easing
         #
         if LocationBasis is None:
             LocationBasis = me.Position
         if OrientationBasis is None:
-            OrientationBasis = me.Orientation
+            OrientationBasis = getattr(me, "Orientation", (1, 0, 0, 0))
 
         self.Direction = Direction  # type: ...
         self.LocationBasis = LocationBasis  # type: ...
@@ -172,9 +262,9 @@ class Node(AnimEvent, EasingFunctions):
         #
         self.Axis = (1, 0, 0)
 
-    def _update(self, me, elapsed):
+    def _update(self, time, me, elapsed):
         progress = min(elapsed / self.Duration, 1.0)
-        eased_progress = self.Easing(progress)
+        eased_progress = self.Easing(self, progress)
         value = self.Start + self.Period * eased_progress
 
         self.elapsed = elapsed
@@ -184,57 +274,18 @@ class Node(AnimEvent, EasingFunctions):
             apply(
                 self.BeforeFrame[0], (self,) + self.BeforeFrame[1], self.BeforeFrame[2]
             )
-        self.Execute(me, value)
+        self.Handler(self, time, me, value)
         #
-        AnimEvent._update(self, elapsed)
+        AnimEvent._update(self, time, elapsed)
         #
         if progress == 1.0:
             if self.OnComplete[0]:
-                apply(self.OnComplete[0], self.OnComplete[1])
+                apply(self.OnComplete[0], (self,) + self.OnComplete[1])
 
         return progress
 
-    # def Execute(self, me, value):
+    # def Handler(self, me, value):
     #     pass
-
-    # def EndExecute(self):
-    #     pass
-
-    # 平移
-    def Translation(self, me, value):
-        # type: (Bladex._entity.B_PyEntity, float) -> ...
-        vx, vy, vz = Scale(self.Direction, value)  # type: ignore
-        x, y, z = self.LocationBasis
-        me.Position = (x + vx, y + vy, z + vz)
-
-    # 轴角平移
-    def TranslationByAxis(self, me, value):
-        # type: (Bladex._entity.B_PyEntity, float) -> ...
-        q = Quaternion(self.Axis, value)
-        loc = q * Vector(self.Direction)
-        location = loc + Vector(self.LocationBasis)
-        me.Position = location.to_tuple()
-
-    # 旋转
-    def Rotation(self, me, value):
-        # type: (Bladex._entity.B_PyEntity, float) -> ...
-        q = ToQuat(self.Direction, value)
-        me.Orientation = QuatMul(q, self.OrientationBasis)
-
-    # 缩放
-    def Scale(self, me, value):
-        # type: (Bladex._entity.B_PyEntity, float) -> ...
-        me.Scale = value
-
-    # 不透明度
-    def Opacity(self, me, value):
-        # type: (Bladex._entity.B_PyEntity, float) -> ...
-        me.Alpha = value
-
-    # 自发光
-    def Emission(self, me, value):
-        # type: (Bladex._entity.B_PyEntity, float) -> ...
-        me.SelfIlum = value
 
 
 class Channel(AnimEvent):
@@ -255,16 +306,16 @@ class Channel(AnimEvent):
 
     def AddNode(
         self,
-        Start,
-        End,
-        Duration,
+        Start=0.0,
+        End=1.0,
+        Duration=1.0,
         Direction=(1, 0, 0),
         LocationBasis=None,
         OrientationBasis=None,
-        Execute="Translation",
+        Handler=NODE_HANDLER.Translation,
         BeforeFrame=(None, (), {}),
         OnComplete=(None, ()),
-        Easing=LINEAR,
+        Easing=EASING.linear,
     ):
         node = Node(
             self.Name,
@@ -274,7 +325,7 @@ class Channel(AnimEvent):
             Direction,
             LocationBasis,
             OrientationBasis,
-            Execute,
+            Handler,
             BeforeFrame,
             OnComplete,
             Easing,
@@ -302,13 +353,13 @@ class Animation(AnimEvent):
         OnPlay=(None, ()),
         OnPause=(None, ()),
         OnComplete=(None, ()),
-        Destroy=0,
         Timer="Timer60",
+        Destroy=0,
     ):
         AnimEvent.__init__(self)
 
-        self.ObjId = ObjStore.GetNewId()
-        ObjStore.ObjectsStore[self.ObjId] = self
+        # self.ObjId = ObjStore.GetNewId()
+        # ObjStore.ObjectsStore[self.ObjId] = self
         self.Name = me.Name  # type: str
 
         self.InitTime = 0
@@ -329,27 +380,27 @@ class Animation(AnimEvent):
         #
         InitDataField.Initialise(me, LM_Animation=self)
 
-    def persistent_id(self):
-        return self.ObjId
+    # def persistent_id(self):
+    #     return self.ObjId
 
-    def persistent_check(self):
-        me = Bladex.GetEntity(self.Name)
-        if not me:
-            return 0
-        return 1
+    # def persistent_check(self):
+    #     me = Bladex.GetEntity(self.Name)
+    #     if not me:
+    #         return 0
+    #     return 1
 
-    def __getstate__(self):
-        return GameStateAux.SaveNewMembers(self)
+    # def __getstate__(self):
+    #     return GameStateAux.SaveNewMembers(self)
 
-    def __setstate__(self, parm):
-        GameStateAux.LoadNewMembers(self, parm)
-        ObjStore.ObjectsStore[self.ObjId] = self
+    # def __setstate__(self, parm):
+    #     GameStateAux.LoadNewMembers(self, parm)
+    #     ObjStore.ObjectsStore[self.ObjId] = self
 
     # ----------------------------------
     def Cancel(self):
         if not self._running:
             return
-        
+
         # self._cancelled = True
         TimerAux.RemoveFromList(self.Timer, self._update)
         self.Reset()
@@ -360,7 +411,7 @@ class Animation(AnimEvent):
             self.PauseTime = Bladex.GetTime()
             #
             if self.OnPause[0]:
-                apply(self.OnPause[0], self.OnPause[1])
+                apply(self.OnPause[0], (self,) + self.OnPause[1])
 
     def Resume(self):
         if self._paused:
@@ -372,7 +423,7 @@ class Animation(AnimEvent):
                 channel.StartTime = channel.StartTime + PauseTime
             #
             if self.OnPlay[0]:
-                apply(self.OnPlay[0], self.OnPlay[1])
+                apply(self.OnPlay[0], (self,) + self.OnPlay[1])
 
     def AddChannel(self, Loop=0, Time2Live=0.0, OnComplete=(None, ())):
         channel = Channel(self.Name, Loop, Time2Live, OnComplete)
@@ -405,7 +456,7 @@ class Animation(AnimEvent):
 
         #
         elapsed = time - self.InitTime
-        AnimEvent._update(self, elapsed)
+        AnimEvent._update(self, time, elapsed)
         #
         nChannels = len(self.Channels)
         nDisabled = 0
@@ -418,16 +469,16 @@ class Animation(AnimEvent):
                 channel.Enabled = 0
                 nDisabled = nDisabled + 1
                 if channel.OnComplete[0]:
-                    apply(channel.OnComplete[0], channel.OnComplete[1])
+                    apply(channel.OnComplete[0], (channel,) + channel.OnComplete[1])
                 continue
             #
             node = channel.Nodes[channel.CurrentNode]
             #
             elapsed = time - channel.InitTime
-            AnimEvent._update(channel, elapsed)
+            AnimEvent._update(channel, time, elapsed)
             #
             elapsed = time - channel.StartTime
-            progress = node._update(me, elapsed)
+            progress = node._update(time, me, elapsed)
             if progress == 1.0:
                 channel.CurrentNode = (channel.CurrentNode + 1) % len(channel.Nodes)
                 channel.StartTime = time
@@ -441,7 +492,10 @@ class Animation(AnimEvent):
                         # self.Channels.remove(channel)
                         channel.Enabled = 0
                         if channel.OnComplete[0]:
-                            apply(channel.OnComplete[0], channel.OnComplete[1])
+                            apply(
+                                channel.OnComplete[0],
+                                (channel,) + channel.OnComplete[1],
+                            )
         #
         me = Bladex.GetEntity(self.Name)
         isDead = self.Time2Live > 0 and (time - self.InitTime) >= self.Time2Live
@@ -451,7 +505,7 @@ class Animation(AnimEvent):
             # if me:
             #     me.Data.LM_Animation = None
             if self.OnComplete[0]:
-                apply(self.OnComplete[0], self.OnComplete[1])
+                apply(self.OnComplete[0], (self,) + self.OnComplete[1])
             if self.DestroyOnEnd:
                 if self.DestroyOnEnd == DESTROY_METHOD_BIN:
                     me.SubscribeToList("Pin")

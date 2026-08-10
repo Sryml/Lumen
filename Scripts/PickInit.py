@@ -188,11 +188,15 @@ def RedMethod(f): # -Sryml
     return RedCFunction(getattr(f.im_self.target, func_name))
   #
   im_self = f.im_self
-  if 1: #hasattr(im_self, "persistent_id"):
-    return ConstMethod,(im_self,func_name)
-  else:
-    printx("PickInit.RedMethod() can not register method",f)
-    return ConstMethod,(None,None)
+  if im_self is None:
+    # ?????
+    im_self = im_class
+  return ConstMethod,(im_self,func_name)
+  # if hasattr(im_self, "persistent_id"):
+  #   return ConstMethod,(im_self,func_name)
+  # else:
+  #   printx("PickInit.RedMethod() can not register method",f)
+  #   return ConstMethod,(None,None)
 
 
 def RegisterPickMethod():
