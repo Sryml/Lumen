@@ -12,6 +12,7 @@ import Bladex
 import NetSounds
 import netgame
 
+import AniSound0
 
 # ***********************************
 # *      Asignacion de sonidos      *
@@ -661,6 +662,7 @@ def AsignarSonidosAmazona(Personaje):
 	NetSounds.AddAnimSound(per,'Amz_g_spear16', AndarAmz2, 0.7000)
 	
 	## Fire Bo
+	NetSounds.AddAnimSound(per,'Amz_g_spear_b6_26', AniSound0.AparicionEnric2, 0.06) # Added
 	NetSounds.AddAnimSound(per,'Amz_g_spear_b6_26', AtaqueFuego4, 0.2020)            # Added
 	NetSounds.AddAnimSound(per,'Amz_g_spear_b6_26', AtaquesEspecialesAmz2, 0.4100)   # Added
 	NetSounds.AddAnimSound(per,'Amz_g_spear_b6_26', AtaquesEspecialesAmz1, 0.5698)   # Was SesgadoLargoAgudo, 0.4770
@@ -750,7 +752,7 @@ def AsignarSonidosAmazona(Personaje):
 	NetSounds.AddAnimSound(per,'Amz_g_spear_back', AndarAmz1, 0.5000)
 	NetSounds.AddAnimSound(per,'Amz_g_spear_back', AndarAmz2, 0.6000)
 	
-	NetSounds.AddAnimSound(per,'Amz_g_magic', ConcBladeSword1, 0.1300)
+	NetSounds.AddAnimSound(per,'Amz_g_magic', ConcBladeSword1, 0.1100) # 0.1300
 	NetSounds.AddAnimSound(per,'Amz_g_magic', EsfuerzoGolpeCabezaAmz, 0.3500)
 	NetSounds.AddAnimSound(per,'Amz_g_magic', SesgadoLargoGrave, 0.5530)
 	

@@ -1063,10 +1063,12 @@ def Init():
 
 	##### Definicion de brillitos ######
 
-	Bladex.AddParticleGType("BrillosBladeSword","StarParticle",Reference.B_PARTICLE_GTYPE_ADD,8)
+	Bladex.AddParticleGType("BrillosBladeSword","StarParticle",Reference.B_PARTICLE_GTYPE_ADD,60)
 
-	for i in range(8):
-		if i>5:
+	for i in range(60):
+		if i>7:
+			aux = 0.4
+		elif i>5:
 			aux=(8.0-i)/3.0
 		else:
 			aux=i/5.0
@@ -1135,9 +1137,9 @@ def Init():
 			traux=(60.0-i)/5.0 #va de 0 a 1
 		else:
 			traux=i/55.0 #va de 1 a 0
-		r=10
-		g=255
-		b=50
+		r=50 # 10
+		g=170 # 255
+		b=10 # 50
 		a=255.0*traux
 		size=20+200.0*(1-(1-i/60.0)**0.5)
 		Bladex.SetParticleGVal("GreenTrail",i,r,g,b,a,size)

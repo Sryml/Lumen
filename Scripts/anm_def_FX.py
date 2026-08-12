@@ -44,6 +44,14 @@ Bladex.AddAnmEvent("Kgt_g_magic2","Kgt_g_magic2_1",0.0900)
 Bladex.AddAnmEvent("Kgt_g_magic2","Kgt_g_magic2_2",0.1600)
 Bladex.AddAnmEvent("Kgt_g_magic2","Kgt_g_magic2_3",0.3200)
 
+# Fire Sword
+Bladex.AddAnmEvent("Kgt_g_s28kata_new","Kgt_g_s28kata_new_1",0.10)
+Bladex.AddAnmEvent("Kgt_g_s28kata_new","Kgt_g_s28kata_new_2",0.528)
+# Ice Sword
+Bladex.AddAnmEvent("Kgt_g_12_7_s1new","Kgt_g_12_7_s1new_1",0.094)  
+Bladex.AddAnmEvent("Kgt_g_12_7_s1new","Kgt_g_12_7_s1new_2",0.203)  
+Bladex.AddAnmEvent("Kgt_g_12_7_s1new","Kgt_g_12_7_s1new_3",0.527)  
+
 
 Bladex.AddAnmEvent("Bar_g2h_b6","Bar_g2h_b6_1",0.3700)
 Bladex.AddAnmEvent("Bar_g_axe211","Bar_g_axe211_1",0.3160)
@@ -54,6 +62,13 @@ Bladex.AddAnmEvent("Bar_g2h_s8","Bar_g2h_s8_1",0.3450)
 Bladex.AddAnmEvent("Bar_g_axe34","Bar_g_axe34_1",0.1000)
 Bladex.AddAnmEvent("Bar_g_axe34","Bar_g_axe34_2",0.2420)
 Bladex.AddAnmEvent("Bar_g_axe34","Bar_g_axe34_3",0.4130)
+
+# Ice Axe
+Bladex.AddAnmEvent("Bar_g_axe30","Bar_g_axe30_1",0.135)
+Bladex.AddAnmEvent("Bar_g_axe30","Bar_g_axe30_2",0.270)
+Bladex.AddAnmEvent("Bar_g_axe30","Bar_g_axe30_3",0.555)
+Bladex.AddAnmEvent("Bar_g_axe30","Bar_g_axe30_4",0.680)
+
 Bladex.AddAnmEvent("Bar_g2h_28","Bar_g2h_28_1",0.4370)
 Bladex.AddAnmEvent("Bar_g2h_b29","Bar_g2h_b29_1",0.3040)
 Bladex.AddAnmEvent("Bar_g_axe12","Bar_g_axe12_1",0.2360)
@@ -101,6 +116,15 @@ Bladex.AddAnmEvent("Amz_g_magic2","Amz_g_magic2_1",0.0900)
 Bladex.AddAnmEvent("Amz_g_magic2","Amz_g_magic2_2",0.1600)
 Bladex.AddAnmEvent("Amz_g_magic2","Amz_g_magic2_3",0.3200)
 
+# Ice Wand
+Bladex.AddAnmEvent("Amz_g_spear16","Amz_g_spear16_1",0.230)
+Bladex.AddAnmEvent("Amz_g_spear16","Amz_g_spear16_2",0.470)
+# STEELFEATHER
+Bladex.AddAnmEvent("Amz_g_spear19_bs1","Amz_g_spear19_bs1_1",0.150)
+Bladex.AddAnmEvent("Amz_g_spear19_bs1","Amz_g_spear19_bs1_2",0.470)
+# FIREBO
+Bladex.AddAnmEvent("Amz_g_spear_b6_26","Amz_g_spear_b6_26_1",0.100)
+Bladex.AddAnmEvent("Amz_g_spear_b6_26","Amz_g_spear_b6_26_2",0.400)
 
 Bladex.AddAnmEvent("Dwf_g_14","Dwf_g_14_1",0.3250)
 Bladex.AddAnmEvent("Dwf_g_15","Dwf_g_15_1",0.4400)
@@ -116,6 +140,17 @@ Bladex.AddAnmEvent("Dwf_g_s3_new","Dwf_g_s3_new_1",0.2640)
 Bladex.AddAnmEvent("Dwf_g_17","Dwf_g_17_1",0.4420)
 Bladex.AddAnmEvent("Dwf_g_31","Dwf_g_31_1",0.2910)
 Bladex.AddAnmEvent("Dwf_g_31","Dwf_g_31_2",0.4350)
+
+# CRUSHHAMMER
+Bladex.AddAnmEvent("Dwf_g_s22low_new","Dwf_g_s22low_new_1",0.255)
+# ICEHAMMER
+Bladex.AddAnmEvent("Dwf_g_s18_2h","Dwf_g_s18_2h_1",0.300)
+Bladex.AddAnmEvent("Dwf_g_s18_2h","Dwf_g_s18_2h_2",0.61)
+# FIREAXE
+Bladex.AddAnmEvent("Dwf_g_22","Dwf_g_22_1",0.100)
+Bladex.AddAnmEvent("Dwf_g_22","Dwf_g_22_2",0.35)
+Bladex.AddAnmEvent("Dwf_g_22","Dwf_g_22_3",0.46)
+
 Bladex.AddAnmEvent("Dwf_g_magic","Dwf_g_magic_1",0.1200)
 Bladex.AddAnmEvent("Dwf_g_magic","Dwf_g_magic_2",0.1587)
 Bladex.AddAnmEvent("Dwf_g_magic","Dwf_g_magic_3",0.3571)

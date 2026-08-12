@@ -1,6 +1,17 @@
 import Bladex
 import GenFX
 import netgame
+import math
+
+from LumenLib import AnimAux
+
+#
+import typing
+
+if typing.TYPE_CHECKING:
+    apply = lambda fn, args=(), kwds={}: None
+    execfile = lambda filename, globals=None, locals=None: None
+    cmp = lambda x, y: None
 
 
 
@@ -187,6 +198,32 @@ def Kgt_g_magic2_FX(EntityName, EventName):
 	elif step==3:
 		ComboFX_prtlsys2=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 6000, 60, 0, 0.05, 20, 0.1)
 
+# FIRESWORD      
+def Kgt_g_s28kata_new_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	if step==1:
+		pers=Bladex.GetEntity(EntityName)
+		inv=pers.GetInventory()
+		ComboFX_prtlsys=GenFX.AddParticles(inv.GetActiveWeapon(), "Llamita", 1000, 10, 0, 0.1, 20, 1.3, -3000)
+	elif step==2:
+		GenFX.ModifyParticles(ComboFX_prtlsys, 3000, 0, 20, 0.1, 20, 0.3)
+
+# ICESWORD 
+def Kgt_g_12_7_s1new_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	o = Bladex.GetEntity(inv.GetActiveWeapon())
+	x,y,z = o.Position
+	spark= Bladex.CreateSpark("Snow",x,y,z, 0,1,0, 1.1,400,100,10,10, 200,200,200, 0,0,20, 800,1.5,1.0/60.0,0)
+	spark.RasterMode="BlendingAlpha"
+	#
+	if step==1:
+		ComboFX_prtlsys=GenFX.AddParticles(inv.GetActiveWeapon(), "WhiteTrail", 500, 5, 0, 0.9, 20, 2.0, 2000)
+	elif step==3:
+		GenFX.ModifyParticles(ComboFX_prtlsys, 600, 5, 0, 0.01, 20, 0.5)
 
 
 #BARBARO
@@ -259,6 +296,23 @@ def Bar_g_axe34_FX(EntityName, EventName):
 		GenFX.ModifyParticles(ComboFX_prtlsys, 2000, 5, 0, 0.1, 10, 1.0)
 	elif step==3:
 		GenFX.ModifyParticles(ComboFX_prtlsys, 4000, 4, 0, 0.1, 10, 0.6)
+
+#"Bar_g_axe30" ICEAXE
+
+def Bar_g_axe30_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	o = Bladex.GetEntity(inv.GetActiveWeapon())
+	x,y,z = o.Position
+	spark= Bladex.CreateSpark("Snow",x,y,z, 0,1,0, 1.1,400,100,10,10, 200,200,200, 0,0,20, 800,1.5,1.0/60.0,0)
+	spark.RasterMode="BlendingAlpha"
+	#
+	if step==1:
+		ComboFX_prtlsys=GenFX.AddParticles(inv.GetActiveWeapon(), "WhiteTrail", 600, 1, 0, 0.9, 20, 2.0, 2000)
+	elif step==4:
+		GenFX.ModifyParticles(ComboFX_prtlsys, 700, 5, 0, 0.01, 20, 0.5)
 
 #"Bar_g2h_28" FLATSWORD
 
@@ -513,6 +567,64 @@ def Amz_g_spear_sb11_FX(EntityName, EventName):
 	elif step==3:
 		GenFX.ModifyParticles(ComboFX_prtlsys, 5000, 10, 0, 0.1, 10, 0.2)
 
+# ICEWAND    
+def Amz_g_spear16_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	o = Bladex.GetEntity(inv.GetActiveWeapon())
+	x,y,z = o.Position
+	#
+	if step==1:
+		ComboFX_prtlsys=GenFX.AddParticles(inv.GetActiveWeapon(), "WhiteTrail", 500, 5, 0, 0.9, 20, 2.0, 2000)
+	elif step==2:
+		spark= Bladex.CreateSpark("Snow",x,y,z, 0,1,0, 1.1,400,100,10,10, 200,200,200, 0,0,20, 800,1.5,1.0/60.0,0)
+		spark.RasterMode="BlendingAlpha"
+		GenFX.ModifyParticles(ComboFX_prtlsys, 700, 5, 0, 0.01, 20, 0.4)
+
+# STEELFEATHER
+def Amz_g_spear19_bs1_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	if step==1:
+		pers=Bladex.GetEntity(EntityName)
+		inv=pers.GetInventory()
+		ComboFX_prtlsys=GenFX.AddParticles(inv.GetActiveWeapon(), "GreenTrail", 800, 5, 0, 0.3, 18, 1.8)
+	elif step==2:
+		GenFX.ModifyParticles(ComboFX_prtlsys, 1600, 10, 0, 0.01, 24, 0.3)
+
+# FIREBO
+def Amz_g_spear_b6_26_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
+
+	if step==1:
+		id_number = int(10.0*Bladex.GetTime())
+		for i in (1,-1):
+			fx_ent1 = Bladex.CreateEntity("FX%s_%s" % (id_number, i), "FXVert2", 0,0,0)
+			fx_ent2 = Bladex.CreateEntity("FX%s_%s" % (id_number, i), "FXVert2", 0,0,0)
+			fx_ent1.Link(fx_ent2)
+			prtlsys=GenFX.AddParticles(fx_ent1.Name, "RedTrail", 400, 0, 0, 0.3, 17, 3.4)
+			prtlsys=GenFX.AddParticles(fx_ent2.Name, "Llamita", 500, 10, 0, 0.3, 20, 3.4)
+
+			animation = AnimAux.Animation(fx_ent1, 4.4, Destroy=AnimAux.DESTROY_METHOD_BIN)
+			TrackEntity = (AnimAux.TrackEntity, (obj_name, ("", "", (0,0,0)), ("", "", (1,0,0,0)), ("anchor", "1H_R", (0,0,1))), {})
+
+			channel = animation.AddChannel()
+			node = channel.AddNode(0, 1085*i, 0.9, BeforeFrame=TrackEntity)
+			node = channel.AddNode(1085*i, 0, 2.5, BeforeFrame=TrackEntity)
+			
+			channel = animation.AddChannel(Loop=-1)
+			node = channel.AddNode(0, math.pi*2, 0.5, Handler=AnimAux.NODE_HANDLER.Rotation, BeforeFrame=TrackEntity)
+
+			animation.run()
+	elif step==2:
+		ComboFX_prtlsys=GenFX.AddParticles(obj_name, "Llamita", 2000, 0, 20, 0.1, 20, 0.7, -3000)
+
 #"Amz_g_magic" BLADESWORD
 
 def Amz_g_magic_FX(EntityName, EventName):
@@ -522,17 +634,68 @@ def Amz_g_magic_FX(EntityName, EventName):
 	global ComboFX_prtlsys4
 	step=int(EventName[len(EventName)-1:])
 	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
 	if step==1:
 		ComboFX_prtlsys1=GenFX.AddParticles(pers.Name, "LittleEnergyDissip", 200, 1, 1, 0.05, 30, 2.5, -600)
 	elif step==2:
-		ComboFX_prtlsys2=GenFX.AddParticles(pers.InvRight, "FastEnergyConc", 600, 3, -10, 0.01, 20, 1.0)
+		# ComboFX_prtlsys2=GenFX.AddParticles(obj_name, "BrillosBladeSword", 60, 0, 0, 0.3, 6, 1.0)
 		GenFX.ModifyParticles(ComboFX_prtlsys1, 800, 1, 1, 0.05, 30, 0.8)
-	elif step==3:
-		ComboFX_prtlsys3=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 1000, 4, 0, 0.1, 30, 2.0)
+
+		id_number = int(10.0*Bladex.GetTime())
+
+		fx_ent1 = Bladex.CreateEntity("FX1%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent2 = Bladex.CreateEntity("FX2%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent3 = Bladex.CreateEntity("FX3%s" % (id_number,), "Entity Spot", 0,0,0)
+		fx_ent3.CastShadows = 0
+		fx_ent3.Flick = 0
+		fx_ent3.Color = (190, 180, 255)
+		fx_ent3.Intensity = 0.0
+		fx_ent1.Scale = 1.5
+		fx_ent1.Link(fx_ent2)
+		prtlsys=GenFX.AddParticles(fx_ent1.Name, "LittleEnergyDissip", 350, 0, 0, 0.1, 17, 3.9+0.7) # FastEnergyConc
+		prtlsys=GenFX.AddParticles(fx_ent2.Name, "BrillosBladeSword", 150, 5, 0, 0.01, 6, 3.9+0.7)
+
+		TrackEntity = (AnimAux.TrackEntity, (obj_name, ("anchor", "1H_R", (0,0,0)), ("", "", (1,0,0,0)), ("anchor", "1H_R", (0,0,1))), {})
+		animation = AnimAux.Animation(fx_ent1, 5.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 1.3, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 0.7, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 0, 2.5, BeforeFrame=TrackEntity)
+		
+		channel = animation.AddChannel(Loop=-1)
+		node = channel.AddNode(0, math.pi*2, 0.75, Handler=AnimAux.NODE_HANDLER.Rotation, BeforeFrame=TrackEntity)
+
+		animation.run()
+		#
+		animation = AnimAux.Animation(fx_ent3, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 0.8, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 2.0, BeforeFrame=TrackEntity)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0.0, 8.0, 0.8, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+		node = channel.AddNode(8.0, 0.0, 2.0, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+
+		animation.run()
+
 	elif step==4:
-		GenFX.ModifyParticles(ComboFX_prtlsys3, 1000, 4, 0, 0.1, 20, 1.75)
+		prtlsys=GenFX.AddParticles(obj_name, "LittleEnergyDissip", 1000, 4, 0, 0.1, 20, 1.4)
 	elif step==5:
-		ComboFX_prtlsys4=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 6000, 60, 0, 0.05, 20, 0.1)
+		prtlsys=GenFX.AddParticles(obj_name, "BrillosBladeSword", 800, 60, 0, 0.1, 24, 0.15)
+		# 残影
+		obj = Bladex.CreateEntity(str(Bladex.GetTime()), "FXVert2", 0,0,0)
+
+		animation = AnimAux.Animation(obj, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel(Loop=-1, Time2Live=0.28)
+		node = channel.AddNode(Handler=AnimAux.NODE_HANDLER.AfterimageFX)
+		node.Afterimage_Target = obj_name
+		node.Afterimage_Interval = 0.019
+
+		animation.run()
 
 #"Amz_g_magic2" BLADESWORD
 
@@ -682,6 +845,104 @@ def Dwf_g_31_FX(EntityName, EventName):
 	elif step==2:
 		GenFX.ModifyParticles(ComboFX_prtlsys, 3000, 3, 0, 0.1, 10, 0.4)
 
+#"Dwf_g_s22low_new" CRUSHHAMMER
+
+def Dwf_g_s22low_new_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	if step==1:
+		pers=Bladex.GetEntity(EntityName)
+		inv=pers.GetInventory()
+		ComboFX_prtlsys=GenFX.AddParticles(inv.GetActiveWeapon(), "GreenTrail", 1200, 5, 0, 0.1, 20, 0.9)
+
+#"Dwf_g_s18_2h" ICEHAMMER
+
+def Dwf_g_s18_2h_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
+	o = Bladex.GetEntity(obj_name)
+	#
+	if step==1:
+		ComboFX_prtlsys=GenFX.AddParticles(obj_name, "WhiteTrail", 500, 5, 0, 0.5, 25, 2.0, 2000)
+	elif step==2:
+		GenFX.ModifyParticles(ComboFX_prtlsys, 1000, 35, 0, 0.01, 35, 0.25)
+		x,y,z = o.Position
+		spark= Bladex.CreateSpark("Snow",x,y,z, 0,1,0, 1.1,400,100,10,10, 200,200,200, 0,0,20, 800,1.5,1.0/60.0,0)
+		spark.RasterMode="BlendingAlpha"
+		#
+		id_number = int(10.0*Bladex.GetTime())
+		fx_ent1 = Bladex.CreateEntity("FX%s" % (id_number), "FXVert2", 0,0,0)
+		fx_ent1.Scale=5
+		fx_ent1.Position = pers.Rel2AbsPoint(0,-800,-700)
+		prtlsys=GenFX.AddParticles(fx_ent1.Name, "WhiteTrail", 1000, 23, 0, 0.05, 35, 0.65, 3000)
+		prtlsys.Velocity=0,-3000,0
+
+		animation = AnimAux.Animation(fx_ent1, 2.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(fx_ent1.Scale, 28, 0.55, Handler=AnimAux.NODE_HANDLER.Scale)
+
+		channel = animation.AddChannel(Loop=-1)
+		node = channel.AddNode(0, AnimAux.two_pi, 0.4, Handler=AnimAux.NODE_HANDLER.Rotation)
+		node.Direction = (0,-1,0)
+
+		animation.run()
+
+
+#"Dwf_g_22" FIREAXE
+
+def Dwf_g_22_FX(EntityName, EventName):
+	global ComboFX_prtlsys
+	step=int(EventName[len(EventName)-1:])
+	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
+
+	if step==1:
+		id_number = int(10.0*Bladex.GetTime())
+		for i in (1,-1):
+			fx_ent1 = Bladex.CreateEntity("FX%s_%s" % (id_number, i), "FXVert2", 0,0,0)
+			fx_ent2 = Bladex.CreateEntity("FX%s_%s" % (id_number, i), "FXVert2", 0,0,0)
+			fx_ent1.Link(fx_ent2)
+			fx_ent1.Scale = fx_ent2.Scale = 4
+			prtlsys=GenFX.AddParticles(fx_ent1.Name, "RedTrail", 400, 0, 0, 0.3, 17, 3.1)
+			prtlsys=GenFX.AddParticles(fx_ent2.Name, "Llamita", 500, 10, 0, 0.3, 20, 3.1)
+
+			animation = AnimAux.Animation(fx_ent1, 4.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+			TrackEntity = (AnimAux.TrackEntity, (obj_name, ("anchor", "1H_R", (0,0,490)), ("", "", (1,0,0,0)), ("anchor", "1H_R", (0,0,1))), {})
+
+			channel = animation.AddChannel(Loop=-1)
+			node = channel.AddNode(-490*i, 490*i, 1.1, BeforeFrame=TrackEntity)
+			node = channel.AddNode(490*i, -490*i, 1.1, BeforeFrame=TrackEntity)
+			
+			channel = animation.AddChannel(Loop=-1)
+			node = channel.AddNode(0, AnimAux.two_pi, 0.9, Handler=AnimAux.NODE_HANDLER.Rotation, BeforeFrame=TrackEntity)
+
+			animation.run()
+	elif step==2:
+		ComboFX_prtlsys=GenFX.AddParticles(obj_name, "Llamita", 1000, 0, 20, 0.1, 20, 0.7, -3000)
+	elif step==3:
+		id_number = int(10.0*Bladex.GetTime())
+		fx_ent1 = Bladex.CreateEntity("FX%s" % (id_number), "FXVert2", 0,0,0)
+		fx_ent1.Scale=5
+		fx_ent1.Position = pers.Rel2AbsPoint(0,-800,-600)
+		prtlsys=GenFX.AddParticles(fx_ent1.Name, "RedTrail", 1000, 25, 0, 0.05, 35, 0.65, -2000)
+		prtlsys.Velocity=0,-1000,0
+
+		animation = AnimAux.Animation(fx_ent1, 2.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(fx_ent1.Scale, 33, 0.6, Handler=AnimAux.NODE_HANDLER.Scale)
+
+		channel = animation.AddChannel(Loop=-1)
+		node = channel.AddNode(0, AnimAux.two_pi, 0.3, Handler=AnimAux.NODE_HANDLER.Rotation)
+		node.Direction = (0,-1,0)
+
+		animation.run()
+
 #"Dwf_g_magic" BLADESWORD
 
 def Dwf_g_magic_FX(EntityName, EventName):
@@ -777,6 +1038,14 @@ def KgtCombosFX(pers_name):
 	pers.AddAnmEventFunc("Kgt_g_magic2_2", Kgt_g_magic2_FX)
 	pers.AddAnmEventFunc("Kgt_g_magic2_3", Kgt_g_magic2_FX)
 
+	# Added
+	pers.AddAnmEventFunc("Kgt_g_s28kata_new_1", Kgt_g_s28kata_new_FX)
+	pers.AddAnmEventFunc("Kgt_g_s28kata_new_2", Kgt_g_s28kata_new_FX)
+	
+	pers.AddAnmEventFunc("Kgt_g_12_7_s1new_1", Kgt_g_12_7_s1new_FX)
+	pers.AddAnmEventFunc("Kgt_g_12_7_s1new_2", Kgt_g_12_7_s1new_FX)
+	pers.AddAnmEventFunc("Kgt_g_12_7_s1new_3", Kgt_g_12_7_s1new_FX)
+
 
 def AmzCombosFX(pers_name):
 	if netgame.GetNetState() == 1:
@@ -822,6 +1091,16 @@ def AmzCombosFX(pers_name):
 	pers.AddAnmEventFunc("Amz_g_magic2_1", Amz_g_magic2_FX)
 	pers.AddAnmEventFunc("Amz_g_magic2_2", Amz_g_magic2_FX)
 	pers.AddAnmEventFunc("Amz_g_magic2_3", Amz_g_magic2_FX)
+    
+    # Added
+	pers.AddAnmEventFunc("Amz_g_spear16_1", Amz_g_spear16_FX)
+	pers.AddAnmEventFunc("Amz_g_spear16_2", Amz_g_spear16_FX)
+    
+	pers.AddAnmEventFunc("Amz_g_spear19_bs1_1", Amz_g_spear19_bs1_FX)
+	pers.AddAnmEventFunc("Amz_g_spear19_bs1_2", Amz_g_spear19_bs1_FX)
+	
+	pers.AddAnmEventFunc("Amz_g_spear_b6_26_1", Amz_g_spear_b6_26_FX)
+	pers.AddAnmEventFunc("Amz_g_spear_b6_26_2", Amz_g_spear_b6_26_FX)
 
 
 def BarCombosFX(pers_name):
@@ -843,6 +1122,12 @@ def BarCombosFX(pers_name):
 	pers.AddAnmEventFunc("Bar_g_axe34_1", Bar_g_axe34_FX)
 	pers.AddAnmEventFunc("Bar_g_axe34_2", Bar_g_axe34_FX)
 	pers.AddAnmEventFunc("Bar_g_axe34_3", Bar_g_axe34_FX)
+	
+	# Added
+	pers.AddAnmEventFunc("Bar_g_axe30_1", Bar_g_axe30_FX)
+	pers.AddAnmEventFunc("Bar_g_axe30_2", Bar_g_axe30_FX)
+	pers.AddAnmEventFunc("Bar_g_axe30_3", Bar_g_axe30_FX)
+	pers.AddAnmEventFunc("Bar_g_axe30_4", Bar_g_axe30_FX)
 
 	pers.AddAnmEventFunc("Bar_g2h_28_1", Bar_g2h_28_FX)
 
@@ -912,3 +1197,13 @@ def DwfCombosFX(pers_name):
 	pers.AddAnmEventFunc("Dwf_g_magic2_1", Dwf_g_magic2_FX)
 	pers.AddAnmEventFunc("Dwf_g_magic2_2", Dwf_g_magic2_FX)
 	pers.AddAnmEventFunc("Dwf_g_magic2_3", Dwf_g_magic2_FX)
+
+    # Added
+	pers.AddAnmEventFunc("Dwf_g_s22low_new_1", Dwf_g_s22low_new_FX)
+
+	pers.AddAnmEventFunc("Dwf_g_s18_2h_1", Dwf_g_s18_2h_FX)
+	pers.AddAnmEventFunc("Dwf_g_s18_2h_2", Dwf_g_s18_2h_FX)
+
+	pers.AddAnmEventFunc("Dwf_g_22_1", Dwf_g_22_FX)
+	pers.AddAnmEventFunc("Dwf_g_22_2", Dwf_g_22_FX)
+	pers.AddAnmEventFunc("Dwf_g_22_3", Dwf_g_22_FX)

@@ -12,6 +12,8 @@ import Bladex
 import NetSounds
 import netgame
 
+import AniSound0
+
 # ***********************************
 # *      Asignacion de sonidos      *
 # ***********************************
@@ -659,7 +661,8 @@ def AsignarSonidosEnano(Personaje):
 	NetSounds.AddAnimSound(per,'Dwf_g_21', EsfuerzoGolpeArribaDwf, 0.5300)
 	NetSounds.AddAnimSound(per,'Dwf_g_21', AndarDwf1, 0.4600)
 	NetSounds.AddAnimSound(per,'Dwf_g_21', SesgadoEspecialLargo1, 0.5410)
-    
+
+	NetSounds.AddAnimSound(per,'Dwf_g_22', AniSound0.AparicionEnric2, 0.09) # Added
 	NetSounds.AddAnimSound(per,'Dwf_g_22', AtaqueFuego4, 0.2020)            # Added
 	NetSounds.AddAnimSound(per,'Dwf_g_22', EsfuerzoGolpeAtrasDwf, 0.4000)
 	NetSounds.AddAnimSound(per,'Dwf_g_22', SesgadoEspecialLargo2, 0.4100)   # Added

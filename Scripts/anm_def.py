@@ -2502,7 +2502,7 @@ def Init():
     Bladex.AddAnmEvent("Dwf_g_17","Start_Weapon",0.442)
     Bladex.AddAnmEvent("Dwf_g_17","Stop_Weapon",0.610)
     
-    Bladex.AddAnmEvent("Dwf_g_22","HitInitialItp",0.130)
+    Bladex.AddAnmEvent("Dwf_g_22","HitInitialItp",0.050)
     Bladex.AddAnmEvent("Dwf_g_22","HitFinalItp",0.789)
     Bladex.AddAnmEvent("Dwf_g_22","Start_Trail",0.454)
     Bladex.AddAnmEvent("Dwf_g_22","Stop_Trail",0.677)
