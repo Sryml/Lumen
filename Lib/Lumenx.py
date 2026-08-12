@@ -630,6 +630,37 @@ class B_PyEntity_Proxy:
 
         return location.to_tuple()
 
+    def Rel2AbsVector4Anchor(self, x, y, z, anchor):
+        me = self.target
+        vector = me.GetDummyAxis(anchor, x, y, z)
+
+        return vector
+
+    def Abs2RelPoint4Anchor(self, x, y, z, anchor):
+        from LumenLib import mathutils
+
+        me = self.target
+        vx = me.GetDummyAxis(anchor, 1, 0, 0)
+        vy = me.GetDummyAxis(anchor, 0, 1, 0)
+        vz = me.GetDummyAxis(anchor, 0, 0, 1)
+        q = mathutils.Matrix((vx, vy, vz)).transposed().to_quaternion().inverted()
+        vector = mathutils.Vector((x, y, z)) - mathutils.Vector(me.GraspPos(anchor))
+        vector = q * vector
+
+        return vector.to_tuple()
+
+    def Abs2RelVector4Anchor(self, x, y, z, anchor):
+        from LumenLib import mathutils
+
+        me = self.target
+        vx = me.GetDummyAxis(anchor, 1, 0, 0)
+        vy = me.GetDummyAxis(anchor, 0, 1, 0)
+        vz = me.GetDummyAxis(anchor, 0, 0, 1)
+        q = mathutils.Matrix((vx, vy, vz)).transposed().to_quaternion().inverted()
+        vector = q * mathutils.Vector((x, y, z))
+
+        return vector.to_tuple()
+
 
 ######### Function Start
 def ActivateInput():

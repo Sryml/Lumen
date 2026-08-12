@@ -145,7 +145,7 @@ def test_Quaternion_normalize_normalized_inverse():
     normalized = q.normalized()
     assert q.to_tuple() == (1.0, 2.0, 3.0, 4.0)
     _assert_close(normalized.length(), 1.0)
-    inverse = q.inverse()
+    inverse = q.inverted()
     product = q * inverse
     _assert_close(product.w, 1.0)
     _assert_close(product.x, 0.0)
@@ -251,7 +251,7 @@ def test_Matrix_determinant():
 
 def test_Matrix_inverse():
     matrix = Matrix([(4.0, 7.0), (2.0, 6.0)])
-    inverse = matrix.inverse()
+    inverse = matrix.inverted()
     _assert_close(inverse[0][0], 0.6)
     _assert_close(inverse[0][1], -0.7)
     _assert_close(inverse[1][0], -0.2)

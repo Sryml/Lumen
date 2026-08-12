@@ -48,34 +48,62 @@ DESTROY_METHOD_REMOVE = 2
 def TrackEntity(
     self,
     track_name,
-    bone_loc=None,
-    anchor_loc="",
-    local_vector=(0, 0, 0),
-    anchor_dir="",
-    local_dir=(0, 0, 0),
-    local_rot=(1, 0, 0, 0),
+    track_loc=None,
+    track_rot=None,
+    track_axis=None,
 ):
     track_ent = Bladex.GetEntity(track_name)  # type: Bladex._entity.B_PyEntity
     #
-    x, y, z = local_vector
-    if bone_loc is not None:
-        if bone_loc == "":
-            LocationBasis = track_ent.Rel2AbsPoint(x, y, z)
+    if track_loc:
+        mode, target, offset = track_loc
+        x, y, z = offset
+        if mode == "bone":
+            if target == "":
+                LocationBasis = track_ent.Rel2AbsPoint(x, y, z)
+            else:
+                LocationBasis = track_ent.Rel2AbsPoint(x, y, z, target)
+        elif mode == "anchor":
+            LocationBasis = track_ent.Rel2AbsPoint4Anchor(x, y, z, target)
         else:
-            LocationBasis = track_ent.Rel2AbsPoint(x, y, z, bone_loc)
-    elif anchor_loc:
-        LocationBasis = track_ent.Rel2AbsPoint4Anchor(x, y, z, anchor_loc)
-    else:
-        LocationBasis = (Vector(track_ent.Position) + Vector(local_vector)).to_tuple()
+            LocationBasis = (Vector(track_ent.Position) + Vector(offset)).to_tuple()
 
-    self.LocationBasis = LocationBasis
+        self.LocationBasis = LocationBasis
     #
-    x, y, z = local_dir
-    if anchor_dir:
-        Direction = track_ent.GetDummyAxis(anchor_dir, x, y, z)
+    if track_rot:
+        mode, target, quat = track_rot
+        if mode == "bone":
+            if target == "":
+                OrientationBasis = track_ent.Orientation
+            else:
+                x = track_ent.Rel2AbsVector(1, 0, 0, target)
+                y = track_ent.Rel2AbsVector(0, 1, 0, target)
+                z = track_ent.Rel2AbsVector(0, 0, 1, target)
+                OrientationBasis = (
+                    Matrix((x, y, z)).transposed().to_quaternion().to_tuple()
+                )
+        elif mode == "anchor":
+            x = track_ent.GetDummyAxis(target, 1, 0, 0)
+            y = track_ent.GetDummyAxis(target, 0, 1, 0)
+            z = track_ent.GetDummyAxis(target, 0, 0, 1)
+            OrientationBasis = Matrix((x, y, z)).transposed().to_quaternion().to_tuple()
+        else:
+            OrientationBasis = track_ent.Orientation
+        OrientationBasis = QuatMul(OrientationBasis, quat)
+
+        self.OrientationBasis = OrientationBasis
+    #
+    if track_axis and track_axis[0]:
+        mode, target, axis = track_axis
+        x, y, z = axis
+        if mode == "bone":
+            if target == "":
+                Direction = track_ent.Rel2AbsVector(x, y, z)
+            else:
+                Direction = track_ent.Rel2AbsVector(x, y, z, target)
+        elif mode == "anchor":
+            Direction = track_ent.GetDummyAxis(target, x, y, z)
+
         self.Direction = Direction
-    #
-    self.OrientationBasis = QuatMul(local_rot, track_ent.Orientation)
 
 
 # ----------------------------------
@@ -111,15 +139,15 @@ class NODE_HANDLER:
         self.Afterimage_Time2Live = 0.7
         # self.Afterimage_HaloGradient = [] # TODO: Implement
 
-    # 平移
-    def Translation(self, time, me, value):
+    # 位移
+    def Displacement(self, time, me, value):
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
         vx, vy, vz = Scale(self.Direction, value)  # type: ignore
         x, y, z = self.LocationBasis
         me.Position = (x + vx, y + vy, z + vz)
 
-    # 轴角平移
-    def TranslationByAxis(self, time, me, value):
+    # 角位移
+    def AngularDisplacement(self, time, me, value):
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
         q = Quaternion(self.Axis, value)
         loc = q * Vector(self.Direction)
@@ -147,10 +175,10 @@ class NODE_HANDLER:
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
         me.SelfIlum = value
 
-    # 任意属性
-    def FromTargetAttr(self, time, me, value):
+    # 亮度/强度
+    def Intensity(self, time, me, value):
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
-        setattr(me, self.TargetAttr, value)
+        me.Intensity = value
 
     # 残影
     def AfterimageFX(self, time, me, value):
@@ -187,6 +215,11 @@ class NODE_HANDLER:
         )
 
         animation.run()
+
+    # 任意属性
+    def FromTargetAttr(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
+        setattr(me, self.TargetAttr, value)
 
 
 class AnimEvent:
@@ -228,7 +261,7 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         Direction=(1, 0, 0),
         LocationBasis=None,
         OrientationBasis=None,
-        Handler=NODE_HANDLER.Translation,
+        Handler=NODE_HANDLER.Displacement,
         BeforeFrame=(None, (), {}),
         OnComplete=(None, ()),
         Easing=EASING.linear,
@@ -312,7 +345,7 @@ class Channel(AnimEvent):
         Direction=(1, 0, 0),
         LocationBasis=None,
         OrientationBasis=None,
-        Handler=NODE_HANDLER.Translation,
+        Handler=NODE_HANDLER.Displacement,
         BeforeFrame=(None, (), {}),
         OnComplete=(None, ()),
         Easing=EASING.linear,

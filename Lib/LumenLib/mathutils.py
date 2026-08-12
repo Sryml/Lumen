@@ -497,7 +497,18 @@ class Quaternion:
         result.normalize()
         return result
 
-    def inverse(self):
+    def invert(self):
+        length_squared = self.length_squared()
+
+        if length_squared == 0:
+            raise ValueError, "Cannot invert a zero quaternion"  # type: ignore
+
+        self.w = self.w / length_squared
+        self.x = -self.x / length_squared
+        self.y = -self.y / length_squared
+        self.z = -self.z / length_squared
+    
+    def inverted(self):
         length_squared = self.length_squared()
 
         if length_squared == 0:
@@ -516,7 +527,7 @@ class Quaternion:
 
         # q * v * q^-1 可同时支持单位和非单位四元数，避免依赖调用方状态。
         qvector = Quaternion((0, vector[0], vector[1], vector[2]))
-        result = self * qvector * self.inverse()
+        result = self * qvector * self.inverted()
 
         return Vector((result.x, result.y, result.z))
 
@@ -987,7 +998,11 @@ class Matrix:
 
         raise ValueError, "Unsupported matrix size"  # type: ignore
 
-    def inverse(self):
+    def invert(self):
+        matrix = self.inverted()
+        self.rows = matrix.rows
+
+    def inverted(self):
         if self.row_count != self.column_count:
             raise ValueError, "Inverse requires a square matrix"  # type: ignore
 
