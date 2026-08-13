@@ -172,17 +172,67 @@ def Kgt_g_magic_FX(EntityName, EventName):
 	global ComboFX_prtlsys4
 	step=int(EventName[len(EventName)-1:])
 	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
 	if step==1:
 		ComboFX_prtlsys1=GenFX.AddParticles(pers.Name, "LittleEnergyDissip", 200, 1, 1, 0.05, 30, 2.5, -600)
 	elif step==2:
-		ComboFX_prtlsys2=GenFX.AddParticles(pers.InvRight, "FastEnergyConc", 600, 3, -10, 0.01, 20, 1.0)
 		GenFX.ModifyParticles(ComboFX_prtlsys1, 800, 1, 1, 0.05, 30, 0.8)
-	elif step==3:
-		ComboFX_prtlsys3=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 1000, 4, 0, 0.1, 30, 2.0)
+
+		id_number = int(10.0*Bladex.GetTime())
+
+		fx_ent1 = Bladex.CreateEntity("FX1%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent2 = Bladex.CreateEntity("FX2%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent3 = Bladex.CreateEntity("FX3%s" % (id_number,), "Entity Spot", 0,0,0)
+		fx_ent3.CastShadows = 0
+		fx_ent3.Flick = 0
+		fx_ent3.Color = (190, 180, 255)
+		fx_ent3.Intensity = 0.0
+		fx_ent1.Scale = 1.5
+		fx_ent1.Link(fx_ent2)
+		prtlsys=GenFX.AddParticles(fx_ent1.Name, "LittleEnergyDissip", 350, 0, 0, 0.1, 17, 3.9+0.7) # FastEnergyConc
+		prtlsys=GenFX.AddParticles(fx_ent2.Name, "BrillosBladeSword", 150, 5, 0, 0.01, 6, 3.9+0.7)
+
+		TrackEntity = (AnimAux.TrackEntity, (obj_name, ("anchor", "1H_R", (0,0,0)), ("", "", (1,0,0,0)), ("anchor", "1H_R", (0,0,1))), {})
+		animation = AnimAux.Animation(fx_ent1, 5.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 1.3, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 0.7, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 0, 2.5, BeforeFrame=TrackEntity)
+		
+		channel = animation.AddChannel(Loop=-1)
+		node = channel.AddNode(0, math.pi*2, 0.75, Handler=AnimAux.NODE_HANDLER.Rotation, BeforeFrame=TrackEntity)
+
+		animation.run()
+		#
+		animation = AnimAux.Animation(fx_ent3, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 0.8, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 2.0, BeforeFrame=TrackEntity)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0.0, 8.0, 0.8, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+		node = channel.AddNode(8.0, 0.0, 2.0, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+
+		animation.run()
+
 	elif step==4:
-		GenFX.ModifyParticles(ComboFX_prtlsys3, 1000, 4, 0, 0.1, 20, 1.75)
+		prtlsys=GenFX.AddParticles(obj_name, "LittleEnergyDissip", 1000, 4, 0, 0.1, 20, 1.4)
 	elif step==5:
-		ComboFX_prtlsys4=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 6000, 60, 0, 0.05, 20, 0.1)
+		prtlsys=GenFX.AddParticles(obj_name, "BrillosBladeSword", 800, 60, 0, 0.1, 24, 0.15)
+		# 残影
+		obj = Bladex.CreateEntity(str(Bladex.GetTime()), "FXVert2", 0,0,0)
+
+		animation = AnimAux.Animation(obj, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel(Loop=-1, Time2Live=0.28)
+		node = channel.AddNode(Handler=AnimAux.NODE_HANDLER.AfterimageFX)
+		node.Afterimage_Target = obj_name
+		node.Afterimage_Interval = 0.019
+
+		animation.run()
 
 #"Kgt_g_magic2" BLADESWORD
 
@@ -399,17 +449,67 @@ def Bar_g_magic_FX(EntityName, EventName):
 	global ComboFX_prtlsys4
 	step=int(EventName[len(EventName)-1:])
 	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
 	if step==1:
 		ComboFX_prtlsys1=GenFX.AddParticles(pers.Name, "LittleEnergyDissip", 200, 1, 1, 0.05, 30, 2.5, -600)
 	elif step==2:
-		ComboFX_prtlsys2=GenFX.AddParticles(pers.InvRight, "FastEnergyConc", 600, 3, -10, 0.01, 20, 1.0)
 		GenFX.ModifyParticles(ComboFX_prtlsys1, 800, 1, 1, 0.05, 30, 0.8)
-	elif step==3:
-		ComboFX_prtlsys3=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 1000, 4, 0, 0.1, 30, 2.0)
+
+		id_number = int(10.0*Bladex.GetTime())
+
+		fx_ent1 = Bladex.CreateEntity("FX1%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent2 = Bladex.CreateEntity("FX2%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent3 = Bladex.CreateEntity("FX3%s" % (id_number,), "Entity Spot", 0,0,0)
+		fx_ent3.CastShadows = 0
+		fx_ent3.Flick = 0
+		fx_ent3.Color = (190, 180, 255)
+		fx_ent3.Intensity = 0.0
+		fx_ent1.Scale = 1.5
+		fx_ent1.Link(fx_ent2)
+		prtlsys=GenFX.AddParticles(fx_ent1.Name, "LittleEnergyDissip", 350, 0, 0, 0.1, 17, 3.9+0.7) # FastEnergyConc
+		prtlsys=GenFX.AddParticles(fx_ent2.Name, "BrillosBladeSword", 150, 5, 0, 0.01, 6, 3.9+0.7)
+
+		TrackEntity = (AnimAux.TrackEntity, (obj_name, ("anchor", "1H_R", (0,0,0)), ("", "", (1,0,0,0)), ("anchor", "1H_R", (0,0,1))), {})
+		animation = AnimAux.Animation(fx_ent1, 5.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 1.3, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 0.7, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 0, 2.5, BeforeFrame=TrackEntity)
+		
+		channel = animation.AddChannel(Loop=-1)
+		node = channel.AddNode(0, math.pi*2, 0.75, Handler=AnimAux.NODE_HANDLER.Rotation, BeforeFrame=TrackEntity)
+
+		animation.run()
+		#
+		animation = AnimAux.Animation(fx_ent3, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 0.8, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 2.0, BeforeFrame=TrackEntity)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0.0, 8.0, 0.8, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+		node = channel.AddNode(8.0, 0.0, 2.0, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+
+		animation.run()
+
 	elif step==4:
-		GenFX.ModifyParticles(ComboFX_prtlsys3, 1000, 4, 0, 0.1, 20, 1.75)
+		prtlsys=GenFX.AddParticles(obj_name, "LittleEnergyDissip", 1000, 4, 0, 0.1, 20, 1.4)
 	elif step==5:
-		ComboFX_prtlsys4=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 6000, 60, 0, 0.05, 20, 0.1)
+		prtlsys=GenFX.AddParticles(obj_name, "BrillosBladeSword", 800, 60, 0, 0.1, 24, 0.15)
+		# 残影
+		obj = Bladex.CreateEntity(str(Bladex.GetTime()), "FXVert2", 0,0,0)
+
+		animation = AnimAux.Animation(obj, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel(Loop=-1, Time2Live=0.28)
+		node = channel.AddNode(Handler=AnimAux.NODE_HANDLER.AfterimageFX)
+		node.Afterimage_Target = obj_name
+		node.Afterimage_Interval = 0.019
+
+		animation.run()
 
 #"Bar_g_magic2" BLADESWORD
 
@@ -639,7 +739,6 @@ def Amz_g_magic_FX(EntityName, EventName):
 	if step==1:
 		ComboFX_prtlsys1=GenFX.AddParticles(pers.Name, "LittleEnergyDissip", 200, 1, 1, 0.05, 30, 2.5, -600)
 	elif step==2:
-		# ComboFX_prtlsys2=GenFX.AddParticles(obj_name, "BrillosBladeSword", 60, 0, 0, 0.3, 6, 1.0)
 		GenFX.ModifyParticles(ComboFX_prtlsys1, 800, 1, 1, 0.05, 30, 0.8)
 
 		id_number = int(10.0*Bladex.GetTime())
@@ -952,17 +1051,67 @@ def Dwf_g_magic_FX(EntityName, EventName):
 	global ComboFX_prtlsys4
 	step=int(EventName[len(EventName)-1:])
 	pers=Bladex.GetEntity(EntityName)
+	inv=pers.GetInventory()
+	obj_name = inv.GetActiveWeapon()
 	if step==1:
 		ComboFX_prtlsys1=GenFX.AddParticles(pers.Name, "LittleEnergyDissip", 200, 1, 1, 0.05, 30, 2.5, -600)
 	elif step==2:
-		ComboFX_prtlsys2=GenFX.AddParticles(pers.InvRight, "FastEnergyConc", 600, 3, -10, 0.01, 20, 1.0)
 		GenFX.ModifyParticles(ComboFX_prtlsys1, 800, 1, 1, 0.05, 30, 0.8)
-	elif step==3:
-		ComboFX_prtlsys3=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 1000, 4, 0, 0.1, 30, 2.0)
+
+		id_number = int(10.0*Bladex.GetTime())
+
+		fx_ent1 = Bladex.CreateEntity("FX1%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent2 = Bladex.CreateEntity("FX2%s" % (id_number,), "FXVert2", 0,0,0)
+		fx_ent3 = Bladex.CreateEntity("FX3%s" % (id_number,), "Entity Spot", 0,0,0)
+		fx_ent3.CastShadows = 0
+		fx_ent3.Flick = 0
+		fx_ent3.Color = (190, 180, 255)
+		fx_ent3.Intensity = 0.0
+		fx_ent1.Scale = 1.5
+		fx_ent1.Link(fx_ent2)
+		prtlsys=GenFX.AddParticles(fx_ent1.Name, "LittleEnergyDissip", 350, 0, 0, 0.1, 17, 3.9+0.7) # FastEnergyConc
+		prtlsys=GenFX.AddParticles(fx_ent2.Name, "BrillosBladeSword", 150, 5, 0, 0.01, 6, 3.9+0.7)
+
+		TrackEntity = (AnimAux.TrackEntity, (obj_name, ("anchor", "1H_R", (0,0,0)), ("", "", (1,0,0,0)), ("anchor", "1H_R", (0,0,1))), {})
+		animation = AnimAux.Animation(fx_ent1, 5.0, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 1.3, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 0.7, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 0, 2.5, BeforeFrame=TrackEntity)
+		
+		channel = animation.AddChannel(Loop=-1)
+		node = channel.AddNode(0, math.pi*2, 0.75, Handler=AnimAux.NODE_HANDLER.Rotation, BeforeFrame=TrackEntity)
+
+		animation.run()
+		#
+		animation = AnimAux.Animation(fx_ent3, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0, 1280, 0.8, BeforeFrame=TrackEntity)
+		node = channel.AddNode(1280, 1280, 2.0, BeforeFrame=TrackEntity)
+
+		channel = animation.AddChannel()
+		node = channel.AddNode(0.0, 8.0, 0.8, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+		node = channel.AddNode(8.0, 0.0, 2.0, BeforeFrame=TrackEntity, Handler=AnimAux.NODE_HANDLER.Intensity)
+
+		animation.run()
+
 	elif step==4:
-		GenFX.ModifyParticles(ComboFX_prtlsys3, 1000, 4, 0, 0.1, 20, 1.75)
+		prtlsys=GenFX.AddParticles(obj_name, "LittleEnergyDissip", 1000, 4, 0, 0.1, 20, 1.4)
 	elif step==5:
-		ComboFX_prtlsys4=GenFX.AddParticles(pers.InvRight, "LittleEnergyDissip", 6000, 60, 0, 0.05, 20, 0.1)
+		prtlsys=GenFX.AddParticles(obj_name, "BrillosBladeSword", 800, 60, 0, 0.1, 24, 0.15)
+		# 残影
+		obj = Bladex.CreateEntity(str(Bladex.GetTime()), "FXVert2", 0,0,0)
+
+		animation = AnimAux.Animation(obj, Destroy=AnimAux.DESTROY_METHOD_BIN)
+
+		channel = animation.AddChannel(Loop=-1, Time2Live=0.28)
+		node = channel.AddNode(Handler=AnimAux.NODE_HANDLER.AfterimageFX)
+		node.Afterimage_Target = obj_name
+		node.Afterimage_Interval = 0.019
+
+		animation.run()
 
 #"Dwf_g_magic2" BLADESWORD
 

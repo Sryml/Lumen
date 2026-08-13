@@ -11,10 +11,10 @@ Bladex.AddTextureMaterial("tabla","MaderaTablas")
 
 Bladex.AddTextureMaterial("grapa","Madera")
 
-Bladex.AddTextureMaterial("acant","Tierra")
 Bladex.AddTextureMaterial("tierra","Tierra")
 Bladex.AddTextureMaterial("cho","Tierra")
 
+Bladex.AddTextureMaterial("acant","Grava")
 Bladex.AddTextureMaterial("gre2","Grava")
 Bladex.AddTextureMaterial("suelopa","Grava")
 

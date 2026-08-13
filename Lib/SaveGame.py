@@ -63,11 +63,10 @@ def ElUsuarioPresionaLaTeclaEscape(Salio):
     return 1
 
 
-def LoadGameAux(clave, mod_dir=None):
+def LoadGameAux(clave, mod_dir=None): # -Sryml
     import Language
     import SplashImage
 
-    # by Sryml: start
     if mod_dir is None:
         mod_dir = Lumenx.GetCurrentModMenu()
     if mod_dir:
@@ -88,6 +87,8 @@ def LoadGameAux(clave, mod_dir=None):
     file_data_aux = open("%s/%saux" % (save_dir, "aux"), "rt")
     lines = file_data_aux.readlines()
     file_data_aux.close()
+    info = string.split(string.strip(lines[1]), ", ")
+    new_kind = info[1]
     map_dir = string.strip(lines[2])
     # mod_dir = string.strip(lines[3])
     map_path = os.path.join(mod_root, "Maps", map_dir)
@@ -112,7 +113,10 @@ def LoadGameAux(clave, mod_dir=None):
     Bladex.BeginLoadGame()
     prev_map_root = os.path.normpath(os.getcwd() + "\\..")
     os.chdir(map_path)
-    new_map_dir = os.path.relpath(os.getcwd(), prev_map_root)
+    if new_kind != Bladex.GetEntity("Player1").Kind:
+        new_map_dir = ""
+    else:
+        new_map_dir = os.path.relpath(os.getcwd(), prev_map_root)
 
     lines = lines + [
         "sys.path.append('%s/Lib')" % new_lumen_root,
@@ -121,7 +125,7 @@ def LoadGameAux(clave, mod_dir=None):
         "sys.path.append('%s/Lib/PythonLib/Plat-Win')" % new_blade_root,
         # "import Lumenx",
         "InNewMap = %d"
-        % (string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
+        % ((not new_map_dir) or string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
         "execfile(%s)" % (repr(string.replace(save_file, "\\", "/")),),
         "b3028472_681f_5be2_8aeb_c7011b166583 = round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
         "Lumenx.printx('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583, flush=1)",
@@ -131,7 +135,6 @@ def LoadGameAux(clave, mod_dir=None):
 
     Bladex.CloseLevel(string.join(lines, ";"), new_map_dir)
     return 1
-    # by Sryml: end
 
 
 def LoadGameFromDisk(menu_class):

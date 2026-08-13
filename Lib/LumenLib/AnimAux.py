@@ -11,9 +11,6 @@ import InitDataField
 import ObjStore
 import GameStateAux
 
-# import GameState
-# import Reference
-
 import math
 import sys
 import traceback
@@ -50,6 +47,7 @@ def TrackEntity(
     track_name,
     track_loc=None,
     track_rot=None,
+    track_dir=None,
     track_axis=None,
 ):
     track_ent = Bladex.GetEntity(track_name)  # type: Bladex._entity.B_PyEntity
@@ -92,9 +90,9 @@ def TrackEntity(
 
         self.OrientationBasis = OrientationBasis
     #
-    if track_axis and track_axis[0]:
-        mode, target, axis = track_axis
-        x, y, z = axis
+    if track_dir and track_dir[0]:
+        mode, target, offset = track_dir
+        x, y, z = offset
         if mode == "bone":
             if target == "":
                 Direction = track_ent.Rel2AbsVector(x, y, z)
@@ -104,6 +102,20 @@ def TrackEntity(
             Direction = track_ent.GetDummyAxis(target, x, y, z)
 
         self.Direction = Direction
+    #
+    if track_axis and track_axis[0]:
+        mode, target, offset = track_axis
+        x, y, z = offset
+        if mode == "bone":
+            if target == "":
+                Axis = track_ent.Rel2AbsVector(x, y, z)
+            else:
+                Axis = track_ent.Rel2AbsVector(x, y, z, target)
+        elif mode == "anchor":
+            Axis = track_ent.GetDummyAxis(target, x, y, z)
+
+        Axis = Vector(Axis).normalized().to_tuple()
+        self.Axis = Axis
 
 
 # ----------------------------------
@@ -133,6 +145,7 @@ class NODE_HANDLER:
     def __init__(self):
         self.TargetAttr = ""
         # 残影
+        # self.Afterimage_Entities = []
         self.Afterimage_Target = ""
         self.Afterimage_LastTime = 0
         self.Afterimage_Interval = 0.1
@@ -183,8 +196,6 @@ class NODE_HANDLER:
     # 残影
     def AfterimageFX(self, time, me, value):
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
-        import Reference
-
         tar = Bladex.GetEntity(self.Afterimage_Target)
         if not tar:
             return
@@ -201,6 +212,7 @@ class NODE_HANDLER:
         o.Alpha = 0.7
         o.SelfIlum = 0.5
         InitDataField.Initialise(o, Unselectable=1)
+        # self.Afterimage_Entities.append(o)
 
         animation = Animation(o, Destroy=DESTROY_METHOD_BIN)
 
@@ -292,16 +304,21 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         self.Period = End - Start
         self.elapsed = 0
         self.progress = 0
+        self.eased_progress = 0
         #
         self.Axis = (1, 0, 0)
 
     def _update(self, time, me, elapsed):
         progress = min(elapsed / self.Duration, 1.0)
         eased_progress = self.Easing(self, progress)
-        value = self.Start + self.Period * eased_progress
+        if progress == 1.0:
+            value = self.End
+        else:
+            value = self.Start + self.Period * eased_progress
 
         self.elapsed = elapsed
         self.progress = progress
+        self.eased_progress = eased_progress
 
         if self.BeforeFrame[0]:
             apply(
@@ -563,3 +580,33 @@ class Animation(AnimEvent):
 
 
 # ----------------------------------
+
+
+def _example():
+    import InitDataField, GenFX
+    from LumenLib import AnimAux
+
+    # fmt: off
+    for dir, kind, ptrl_type in [(1, "Gema", "GreenTrail"), (-1, "Gemaroja", "RedTrail")]:
+        o = Bladex.CreateEntity(kind, kind, 0, 0, 0)
+        InitDataField.Initialise(o, Unselectable=1)
+        o.CastShadows = 0
+        o.SelfIlum = 0.2
+        o.Alpha = 0.9
+        o.RasterMode = "AdditiveAlpha"
+        prtlsys = GenFX.AddParticles(o.Name, ptrl_type, 400, 0, 0, 0.01, 19, 0)
+        # Create Animation
+        animation = AnimAux.Animation(o)
+        TrackEntity = (AnimAux.TrackEntity, ("Player1", ("bone", "Chest", (0, 0, 0)), None, ("bone", "", (0, 600, 0)), ("bone", "", (-1, 0, 1 * dir))), {})
+        #
+        channel = animation.AddChannel(Loop=-1)
+        node = channel.AddNode(0, AnimAux.two_pi, 1.3, Handler=AnimAux.NODE_HANDLER.AngularDisplacement, BeforeFrame=TrackEntity)
+        animation.run()
+    # fmt: on
+
+
+"""
+if 1:
+    from LumenLib import AnimAux
+    AnimAux._example()
+"""
