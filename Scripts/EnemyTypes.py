@@ -1932,10 +1932,9 @@ class EntitiesFader(Interpolator.LinearInt):
 	def SetEntities2Fade(self):
 		me = Bladex.GetEntity(self.Owner)
 		self.Entities2Fade = [self.Owner]
-		if me.InvRight:
-			self.Entities2Fade.append(me.InvRight)
-		if me.InvLeft:
-			self.Entities2Fade.append(me.InvLeft)
+		for name in (me.InvRight, me.InvRightBack, me.InvLeft, me.InvLeftBack):
+			if name:
+				self.Entities2Fade.append(name)
 
 	def ExecuteFadeOut(self,value):
 		#pdb.set_trace()
@@ -2680,8 +2679,8 @@ class Great_Demon (Enm_Def.NPCPerson):
 	shield_particle_system= None
 	LifeUpCalled=0
 
-	back_aura=None
-	front_aura=None
+	# back_aura=None # AutoSave
+	# front_aura=None # AutoSave
 
 	GDLevelUpParticleData=[]
 
@@ -2766,19 +2765,19 @@ class Great_Demon (Enm_Def.NPCPerson):
 			print "ERROR: Great_Demon.__getstate__(): Base class version differs."
 			return NPCPerson_state
 
-		shield_light_Name=""
-		if self.shield_light:
-			shield_light_Name=self.shield_light.Name
+		# shield_light_Name=""
+		# if self.shield_light:
+		# 	shield_light_Name=self.shield_light.Name
 
-		shield_particle_system_Name=""
-		if self.shield_particle_system:
-			shield_particle_system_Name=self.shield_particle_system.Name
+		# shield_particle_system_Name=""
+		# if self.shield_particle_system:
+		# 	shield_particle_system_Name=self.shield_particle_system.Name
 
 		NPCPerson_state[1]["Great_Demon"]=(self.Flame,
 						self.AGE_Number,
 						self.Phase,
-						shield_light_Name,
-						shield_particle_system_Name,
+						self.shield_light,
+						self.shield_particle_system,
 						self.LifeUpCalled,
 						self.RingName,
 						self.Fader,)
@@ -2789,8 +2788,8 @@ class Great_Demon (Enm_Def.NPCPerson):
 
 		Enm_Def.NPCPerson.__setstate__(self,parm)
 
-		shield_light_Name=""
-		shield_particle_system_Name=""
+		# shield_light_Name=""
+		# shield_particle_system_Name=""
 		me=Bladex.GetEntity(self.Name)
 		version=parm[0]
 		if version==1:
@@ -2799,20 +2798,20 @@ class Great_Demon (Enm_Def.NPCPerson):
 			self.AGE_Number=parms[1]
 			self.Phase=parms[2]
 
-			shield_light_Name= parms[3]
-			shield_particle_system_Name=parms[4]
+			self.shield_light= parms[3]
+			self.shield_particle_system=parms[4]
 			self.LifeUpCalled=parms[5]
 			self.RingName=parms[6]
 			self.Fader=parms[7]
 
-			self.shield_light=Bladex.GetEntity(shield_light_Name)
-			self.shield_particle_system=Bladex.GetEntity(shield_particle_system_Name)
+			# self.shield_light=Bladex.GetEntity(shield_light_Name)
+			# self.shield_particle_system=Bladex.GetEntity(shield_particle_system_Name)
 
 			# constants
 			self.LevelUpTime=0.5
 			self.ImplosionPeriod = 2.5
 			self.DeathBallPeriod = 3.5
-			self.LifeUpCalled=0
+			# self.LifeUpCalled=0 # Fixed -Sryml
 			me.AddAnmEventFunc("Spit", self.StartSpit)
 			me.AddAnmEventFunc("Stop_Spit", self.StopSpit)
 			me.AddAnmEventFunc("Quake", self.Quake)
@@ -2829,14 +2828,14 @@ class Great_Demon (Enm_Def.NPCPerson):
 			self.FadeInTime= 0.23333
 			self.TransitTime= 0.0
 
-			pos= me.Position
-			self.back_aura= Bladex.GetEntity(me.Name+"_BackAura")
-			self.front_aura= Bladex.GetEntity(me.Name+"_FrontAura")
-			self.SetAuraIntensity()
-			self.back_aura.SetAuraGradient(2,  0.0, 0.0, 1.0, 0.3, 0.6, 1.0, 1.0, 1.0, 0.0, 1.0)
-			self.front_aura.SetAuraGradient(2,  0.0, 0.0, 1.0, 0.1, 0.0  , 1.0, 1.0, 1.0, 0.0, 1.0)
-			self.back_aura.SetAuraActive(0)
-			self.front_aura.SetAuraActive(0)
+			# pos= me.Position
+			# self.back_aura= Bladex.GetEntity(me.Name+"_BackAura")
+			# self.front_aura= Bladex.GetEntity(me.Name+"_FrontAura")
+			# self.SetAuraIntensity()
+			# self.back_aura.SetAuraGradient(2,  0.0, 0.0, 1.0, 0.3, 0.6, 1.0, 1.0, 1.0, 0.0, 1.0)
+			# self.front_aura.SetAuraGradient(2,  0.0, 0.0, 1.0, 0.1, 0.0  , 1.0, 1.0, 1.0, 0.0, 1.0)
+			# self.back_aura.SetAuraActive(0)
+			# self.front_aura.SetAuraActive(0)
 			Bladex.CreateTimer("Timer8",1.0/8.0)
 			me.Alpha= 0.85
 
@@ -3200,13 +3199,18 @@ class Great_Demon (Enm_Def.NPCPerson):
 	def RespondToHit(self, EntityName, AttackerName, DamagePoints, DamageType, DamageZone, Shielded):
 
 		if self.shield_light.Intensity > 0.0:
-			damage_absorbed= (self.shield_light.Intensity/self.ShieldIntensityMax) * DamagePoints
+			# Fixed -Sryml
+			prev_shield_life = (self.shield_light.Intensity/self.ShieldIntensityMax) * self.ShieldLife
+			current_shield_life = max(0, prev_shield_life - DamagePoints)
+			if current_shield_life == 0:
+				damage_absorbed = prev_shield_life
+			else:
+				damage_absorbed = DamagePoints
+			#
 			me = Bladex.GetEntity(EntityName)
 			if me and me.Life > -damage_absorbed:
 				me.Life= me.Life+damage_absorbed
 				DamagePoints= max (DamagePoints-damage_absorbed, 0.0)
-				current_shield_life= (self.shield_light.Intensity/self.ShieldIntensityMax) * self.ShieldLife
-				current_shield_life= current_shield_life - damage_absorbed
 				self.shield_light.Intensity = (current_shield_life/self.ShieldLife)*self.ShieldIntensityMax
 				self.SetAuraIntensity()
 				#print "shield at "+`(self.shield_light.Intensity/self.ShieldIntensityMax)`
@@ -4423,10 +4427,10 @@ class DalGurak (Enm_Def.NPCPerson):
 		if(NPCPerson_state[0]!=1):
 			print "ERROR: DalGurak.__getstate__(): Base class version differs."
 			return NPCPerson_state
-		if self.Dalweapon: DalweaponName= self.Dalweapon.Name
-		else: DalweaponName= ""
-		if self.Dalshield: DalshieldName= self.Dalshield.Name
-		else: DalshieldName= ""
+		# if self.Dalweapon: DalweaponName= self.Dalweapon.Name
+		# else: DalweaponName= ""
+		# if self.Dalshield: DalshieldName= self.Dalshield.Name
+		# else: DalshieldName= ""
 		NPCPerson_state[1]["DalGurak"]=(self.positionlist,
 										self.last_disappeared_at,
 										self.AGE_Number,
@@ -4434,8 +4438,8 @@ class DalGurak (Enm_Def.NPCPerson):
 										self.Phase,
 										self.BallName,
 										self.MissileName,
-										DalweaponName,
-										DalshieldName,
+										self.Dalweapon,
+										self.Dalshield,
 										self.Fader,)
 		return NPCPerson_state
 
@@ -4451,15 +4455,15 @@ class DalGurak (Enm_Def.NPCPerson):
 			self.Phase= parms[4]
 			self.BallName= parms[5]
 			self.MissileName= parms[6]
-			DalweaponName=  parms[7]
-			DalshieldName=  parms[8]
+			self.Dalweapon=  parms[7]
+			self.Dalshield=  parms[8]
 			self.Fader= parms[9]
 
 
-			if DalweaponName: self.Dalweapon= Bladex.GetEntity(DalweaponName)
-			else: self.Dalweapon= None
-			if DalshieldName: self.Dalshield= Bladex.GetEntity(DalshieldName)
-			else: self.Dalshield= None
+			# if DalweaponName: self.Dalweapon= Bladex.GetEntity(DalweaponName)
+			# else: self.Dalweapon= None
+			# if DalshieldName: self.Dalshield= Bladex.GetEntity(DalshieldName)
+			# else: self.Dalshield= None
 			Enm_Def.NPCPerson.__setstate__(self,parm)
 
 			#constants
