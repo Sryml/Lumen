@@ -43,6 +43,7 @@ class PersistantItemType:
 		return 1
 
 	def __getstate__(self):
+		# type: () -> tuple[int, dict]
 		# Tiene que devolver cómo poder guardar el estado de la clase
 		return (
 			1,
@@ -380,27 +381,27 @@ class BolaDalGurak(PersistantItemType):
 	def __getstate__(self):
 
 		state= PersistantItemType.__getstate__(self)
-		MissileShootSoundName= ""
-		MissileWhileSoundName= ""
-		MissileImpactSoundName= ""
-		ThrownByName=""
-		FirePSName=""
-		if self.MissileShootSound: MissileShootSoundName= self.MissileShootSound.Name
-		if self.MissileWhileSound: MissileWhileSoundName= self.MissileWhileSound.Name
-		if self.MissileImpactSound: MissileImpactSoundName= self.MissileImpactSound.Name
-		if self.ThrownBy: ThrownByName=self.ThrownBy.Name
-		if self.FirePS: FirePSName= self.FirePS.Name
+		# MissileShootSoundName= ""
+		# MissileWhileSoundName= ""
+		# MissileImpactSoundName= ""
+		# ThrownByName=""
+		# FirePSName=""
+		# if self.MissileShootSound: MissileShootSoundName= self.MissileShootSound.Name
+		# if self.MissileWhileSound: MissileWhileSoundName= self.MissileWhileSound.Name
+		# if self.MissileImpactSound: MissileImpactSoundName= self.MissileImpactSound.Name
+		# if self.ThrownBy: ThrownByName=self.ThrownBy.Name
+		# if self.FirePS: FirePSName= self.FirePS.Name
 
 		state[1]["BolaDalGurak"]=(self.DamageEntityName,
 									self.Name,
 									self.OwnerName,
 									self.Hit,
 									self.Fired,
-									MissileShootSoundName,
-									MissileWhileSoundName,
-									MissileImpactSoundName,
-									ThrownByName,
-									FirePSName
+									self.MissileShootSound,
+									self.MissileWhileSound,
+									self.MissileImpactSound,
+									self.ThrownBy,
+									self.FirePS
 									)
 
 		return state
@@ -409,33 +410,33 @@ class BolaDalGurak(PersistantItemType):
 		PersistantItemType.__setstate__(self,parm)
 		if parm[0]==1:
 			parms=parm[1]["BolaDalGurak"]
-			MissileShootSoundName=""
-			MissileWhileSoundName=""
-			MissileImpactSoundName=""
-			ThrownByName=""
-			FirePSName=""
+			# MissileShootSoundName=""
+			# MissileWhileSoundName=""
+			# MissileImpactSoundName=""
+			# ThrownByName=""
+			# FirePSName=""
 
 			(self.DamageEntityName,
 			self.Name,
 			self.OwnerName,
 			self.Hit,
 			self.Fired,
-			MissileShootSoundName,
-			MissileWhileSoundName,
-			MissileImpactSoundName,
-			ThrownByName,
-			FirePSName)= parms
+			self.MissileShootSound,
+			self.MissileWhileSound,
+			self.MissileImpactSound,
+			self.ThrownBy,
+			self.FirePS)= parms
 
-			if MissileShootSoundName:
-				self.MissileShootSound= Bladex.GetEntity(MissileShootSoundName)
-			if MissileWhileSoundName:
-				self.MissileWhileSound= Bladex.GetEntity(MissileWhileSoundName)
-			if MissileImpactSoundName:
-				self.MissileImpactSound= Bladex.GetEntity(MissileImpactSoundName)
-			if ThrownByName:
-				self.ThrownBy=Bladex.GetEntity(ThrownByName)
-			if FirePSName:
-				self.FirePS=Bladex.GetEntity(FirePSName)
+			# if MissileShootSoundName:
+			# 	self.MissileShootSound= Bladex.GetEntity(MissileShootSoundName)
+			# if MissileWhileSoundName:
+			# 	self.MissileWhileSound= Bladex.GetEntity(MissileWhileSoundName)
+			# if MissileImpactSoundName:
+			# 	self.MissileImpactSound= Bladex.GetEntity(MissileImpactSoundName)
+			# if ThrownByName:
+			# 	self.ThrownBy=Bladex.GetEntity(ThrownByName)
+			# if FirePSName:
+			# 	self.FirePS=Bladex.GetEntity(FirePSName)
 
 		if self.Name:
 			me=Bladex.GetEntity(self.Name)
@@ -778,16 +779,16 @@ class BolaRayos(PersistantItemType):
 
 	def __getstate__(self):
 		state= PersistantItemType.__getstate__(self)
-		MissileShootSoundName= ""
-		MissileWhileSoundName= ""
-		MissileImpactSoundName= ""
-		ThrownByName=""
-		FirePSName=""
-		if self.MissileShootSound: MissileShootSoundName= self.MissileShootSound.Name
-		if self.MissileWhileSound: MissileWhileSoundName= self.MissileWhileSound.Name
-		if self.MissileImpactSound: MissileImpactSoundName= self.MissileImpactSound.Name
-		if self.ThrownBy: ThrownByName= self.ThrownBy.Name
-		if self.FirePS: FirePSName= self.FirePS.Name
+		# MissileShootSoundName= ""
+		# MissileWhileSoundName= ""
+		# MissileImpactSoundName= ""
+		# ThrownByName=""
+		# FirePSName=""
+		# if self.MissileShootSound: MissileShootSoundName= self.MissileShootSound.Name
+		# if self.MissileWhileSound: MissileWhileSoundName= self.MissileWhileSound.Name
+		# if self.MissileImpactSound: MissileImpactSoundName= self.MissileImpactSound.Name
+		# if self.ThrownBy: ThrownByName= self.ThrownBy.Name
+		# if self.FirePS: FirePSName= self.FirePS.Name
 
 		state[1]["BolaRayos"]=(self.DamageEntityName,
 								self.Name,
@@ -795,11 +796,11 @@ class BolaRayos(PersistantItemType):
 								self.OwnerName,
 								self.Hit,
 								self.Fired,
-								MissileShootSoundName,
-								MissileWhileSoundName,
-								MissileImpactSoundName,
-								ThrownByName,
-								FirePSName
+								self.MissileShootSound,
+								self.MissileWhileSound,
+								self.MissileImpactSound,
+								self.ThrownBy,
+								self.FirePS
 								)
 
 		return state
@@ -808,11 +809,11 @@ class BolaRayos(PersistantItemType):
 		PersistantItemType.__setstate__(self,parm)
 		if parm[0]==1:
 			parms=parm[1]["BolaRayos"]
-			MissileShootSoundName=""
-			MissileWhileSoundName=""
-			MissileImpactSoundName=""
-			ThrownByName=""
-			FirePSName=""
+			# MissileShootSoundName=""
+			# MissileWhileSoundName=""
+			# MissileImpactSoundName=""
+			# ThrownByName=""
+			# FirePSName=""
 
 			(self.DamageEntityName,
 			self.Name,
@@ -820,22 +821,22 @@ class BolaRayos(PersistantItemType):
 			self.OwnerName,
 			self.Hit,
 			self.Fired,
-			MissileShootSoundName,
-			MissileWhileSoundName,
-			MissileImpactSoundName,
-			ThrownByName,
-			FirePSName)= parms
+			self.MissileShootSound,
+			self.MissileWhileSound,
+			self.MissileImpactSound,
+			self.ThrownBy,
+			self.FirePS)= parms
 
-			if MissileShootSoundName:
-				self.MissileShootSound= Bladex.GetEntity(MissileShootSoundName)
-			if MissileWhileSoundName:
-				self.MissileWhileSound= Bladex.GetEntity(MissileWhileSoundName)
-			if MissileImpactSoundName:
-				self.MissileImpactSound= Bladex.GetEntity(MissileImpactSoundName)
-			if ThrownByName:
-				self.ThrownBy=Bladex.GetEntity(ThrownByName)
-			if FirePSName:
-				self.FirePS=Bladex.GetEntity(FirePSName)
+			# if MissileShootSoundName:
+			# 	self.MissileShootSound= Bladex.GetEntity(MissileShootSoundName)
+			# if MissileWhileSoundName:
+			# 	self.MissileWhileSound= Bladex.GetEntity(MissileWhileSoundName)
+			# if MissileImpactSoundName:
+			# 	self.MissileImpactSound= Bladex.GetEntity(MissileImpactSoundName)
+			# if ThrownByName:
+			# 	self.ThrownBy=Bladex.GetEntity(ThrownByName)
+			# if FirePSName:
+			# 	self.FirePS=Bladex.GetEntity(FirePSName)
 
 		if self.Name:
 			me=Bladex.GetEntity(self.Name)
@@ -2375,12 +2376,12 @@ class DalWeapon(PersistantItemType):
 
 	def __getstate__(self):
 		state= PersistantItemType.__getstate__(self)
-		ThrownByName=""
-		WeaponName=""
-		SpinSoundName=""
-		if self.Weapon: WeaponName=self.Weapon.Name
-		if self.ThrownBy: ThrownByName=self.ThrownBy.Name
-		if self.spinsound: SpinSoundName=self.spinsound.Name
+		# ThrownByName=""
+		# WeaponName=""
+		# SpinSoundName=""
+		# if self.Weapon: WeaponName=self.Weapon.Name
+		# if self.ThrownBy: ThrownByName=self.ThrownBy.Name
+		# if self.spinsound: SpinSoundName=self.spinsound.Name
 
 		state[1]["DalWeapon"]=(self.Name,
 								self.Speed,
@@ -2396,11 +2397,11 @@ class DalWeapon(PersistantItemType):
 								self.WeaponActive,
 								self.grasped,
 								self.tFinished,
-								WeaponName,
-								ThrownByName,
+								self.Weapon,
+								self.ThrownBy,
 								self.Target,
 								self.Time2Grasp,
-								SpinSoundName,
+								self.spinsound,
 								self.WeaponFX)
 
 		return state
@@ -2409,9 +2410,9 @@ class DalWeapon(PersistantItemType):
 		PersistantItemType.__setstate__(self,parm)
 		if parm[0]==1:
 			parms=parm[1]["DalWeapon"]
-			ThrownByName=""
-			WeaponName=""
-			SpinSoundName=""
+			# ThrownByName=""
+			# WeaponName=""
+			# SpinSoundName=""
 
 			(self.Name,
 			self.Speed,
@@ -2427,16 +2428,16 @@ class DalWeapon(PersistantItemType):
 			self.WeaponActive,
 			self.grasped,
 			self.tFinished,
-			WeaponName,
-			ThrownByName,
+			self.Weapon,
+			self.ThrownBy,
 			self.Target,
 			self.Time2Grasp,
-			SpinSoundName,
+			self.spinsound,
 			self.WeaponFX)= parms
 
-			if WeaponName: self.Weapon=Bladex.GetEntity(WeaponName)
-			if ThrownByName: self.ThrownBy=Bladex.GetEntity(ThrownByName)
-			if SpinSoundName: self.spinsound=Bladex.GetEntity(SpinSoundName)
+			# if WeaponName: self.Weapon=Bladex.GetEntity(WeaponName)
+			# if ThrownByName: self.ThrownBy=Bladex.GetEntity(ThrownByName)
+			# if SpinSoundName: self.spinsound=Bladex.GetEntity(SpinSoundName)
 
 		else:
 			self.Name="Unnamed"
@@ -2631,17 +2632,17 @@ class DalBlade(PersistantItemType):
 
 	def __getstate__(self):
 		state= PersistantItemType.__getstate__(self)
-		MissileShootSoundName= ""
-		MissileWhileSoundName= ""
-		MissileImpactSoundName= ""
-		ThrownByName=""
-		WeaponName=""
-		if self.MissileShootSound: MissileShootSoundName= self.MissileShootSound.Name
-		if self.MissileWhileSound: MissileWhileSoundName= self.MissileWhileSound.Name
-		if self.MissileImpactSound: MissileImpactSoundName= self.MissileImpactSound.Name
-		if self.Weapon and hasattr(self.Weapon, 'Name'):
-			WeaponName=self.Weapon.Name
-		if self.ThrownBy: ThrownByName=self.ThrownBy.Name
+		# MissileShootSoundName= ""
+		# MissileWhileSoundName= ""
+		# MissileImpactSoundName= ""
+		# ThrownByName=""
+		# WeaponName=""
+		# if self.MissileShootSound: MissileShootSoundName= self.MissileShootSound.Name
+		# if self.MissileWhileSound: MissileWhileSoundName= self.MissileWhileSound.Name
+		# if self.MissileImpactSound: MissileImpactSoundName= self.MissileImpactSound.Name
+		# if self.Weapon and hasattr(self.Weapon, 'Name'):
+		# 	WeaponName=self.Weapon.Name
+		# if self.ThrownBy: ThrownByName=self.ThrownBy.Name
 
 		state[1]["DalBlade"]=(self.Name,
 								self.OwnerName,
@@ -2652,15 +2653,15 @@ class DalBlade(PersistantItemType):
 								self.Spin,
 								self.WeaponActive,
 								self.CreationTime,
-								MissileShootSoundName,
-								MissileWhileSoundName,
-								MissileImpactSoundName,
+								self.MissileShootSound,
+								self.MissileWhileSound,
+								self.MissileImpactSound,
 								self.AuxFuncsData,
 								self.sp,
 								self.tp,
 								self.v,
-								WeaponName,
-								ThrownByName
+								self.Weapon,
+								self.ThrownBy
 								)
 
 		return state
@@ -2669,11 +2670,11 @@ class DalBlade(PersistantItemType):
 		PersistantItemType.__setstate__(self,parm)
 		if parm[0]==1:
 			parms=parm[1]["DalBlade"]
-			MissileShootSoundName= ""
-			MissileWhileSoundName= ""
-			MissileImpactSoundName= ""
-			ThrownByName=""
-			WeaponName=""
+			# MissileShootSoundName= ""
+			# MissileWhileSoundName= ""
+			# MissileImpactSoundName= ""
+			# ThrownByName=""
+			# WeaponName=""
 
 			(self.Name,
 			self.OwnerName,
@@ -2684,21 +2685,21 @@ class DalBlade(PersistantItemType):
 			self.Spin,
 			self.WeaponActive,
 			self.CreationTime,
-			MissileShootSoundName,
-			MissileWhileSoundName,
-			MissileImpactSoundName,
+			self.MissileShootSound,
+			self.MissileWhileSound,
+			self.MissileImpactSound,
 			self.AuxFuncsData,
 			self.sp,
 			self.tp,
 			self.v,
-			WeaponName,
-			ThrownByName)= parms
+			self.Weapon,
+			self.ThrownBy)= parms
 
-			if MissileShootSoundName: self.MissileShootSound= Bladex.GetEntity(MissileShootSoundName)
-			if MissileWhileSoundName: self.MissileWhileSound= Bladex.GetEntity(MissileWhileSoundName)
-			if MissileImpactSoundName: self.MissileImpactSound= Bladex.GetEntity(MissileImpactSoundName)
-			if WeaponName: self.Weapon=Bladex.GetEntity(WeaponName)
-			if ThrownByName: self.ThrownBy=Bladex.GetEntity(ThrownByName)
+			# if MissileShootSoundName: self.MissileShootSound= Bladex.GetEntity(MissileShootSoundName)
+			# if MissileWhileSoundName: self.MissileWhileSound= Bladex.GetEntity(MissileWhileSoundName)
+			# if MissileImpactSoundName: self.MissileImpactSound= Bladex.GetEntity(MissileImpactSoundName)
+			# if WeaponName: self.Weapon=Bladex.GetEntity(WeaponName)
+			# if ThrownByName: self.ThrownBy=Bladex.GetEntity(ThrownByName)
 
 			me= Bladex.GetEntity(self.Name)
 			if me: me.InflictHitFunc= self.DalBladeInflictHitFunc
@@ -2898,13 +2899,13 @@ class HalfmoonTrail(PersistantItemType):
 	def __getstate__(self):
 		state= PersistantItemType.__getstate__(self)
 
-		loopsoundName= ""
-		WeaponName=""
-		ThrownByName=""
+		# loopsoundName= ""
+		# WeaponName=""
+		# ThrownByName=""
 
-		if self.loopsound and hasattr(self.loopsound, "Name"): loopsoundName= self.loopsound.Name
-		if self.Weapon and hasattr(self.Weapon, "Name"): WeaponName=self.Weapon.Name
-		if self.ThrownBy and hasattr(self.ThrownBy, "Name"): ThrownByName=self.ThrownBy.Name
+		# if self.loopsound and hasattr(self.loopsound, "Name"): loopsoundName= self.loopsound.Name
+		# if self.Weapon and hasattr(self.Weapon, "Name"): WeaponName=self.Weapon.Name
+		# if self.ThrownBy and hasattr(self.ThrownBy, "Name"): ThrownByName=self.ThrownBy.Name
 
 		state[1]["HalfmoonTrail"]=(self.Name,
 								self.OwnerName,
@@ -2923,9 +2924,9 @@ class HalfmoonTrail(PersistantItemType):
 								self.v,
 								self.TimeWeaponStarted,
 								self.WeaponActive,
-								loopsoundName,
-								WeaponName,
-								ThrownByName
+								self.loopsound,
+								self.Weapon,
+								self.ThrownBy
 								)
 
 		return state
@@ -2935,9 +2936,9 @@ class HalfmoonTrail(PersistantItemType):
 		if parm[0]==1:
 			parms=parm[1]["HalfmoonTrail"]
 
-			loopsoundName= ""
-			ThrownByName=""
-			WeaponName=""
+			# loopsoundName= ""
+			# ThrownByName=""
+			# WeaponName=""
 
 			(self.Name,
 			self.OwnerName,
@@ -2956,13 +2957,13 @@ class HalfmoonTrail(PersistantItemType):
 			self.v,
 			self.TimeWeaponStarted,
 			self.WeaponActive,
-			loopsoundName,
-			WeaponName,
-			ThrownByName)= parms
+			self.loopsound,
+			self.Weapon,
+			self.ThrownBy)= parms
 
-			if loopsoundName: self.loopsound= Bladex.GetEntity(loopsoundName)
-			if WeaponName: self.Weapon=Bladex.GetEntity(WeaponName)
-			if ThrownByName: self.ThrownBy=Bladex.GetEntity(ThrownByName)
+			# if loopsoundName: self.loopsound= Bladex.GetEntity(loopsoundName)
+			# if WeaponName: self.Weapon=Bladex.GetEntity(WeaponName)
+			# if ThrownByName: self.ThrownBy=Bladex.GetEntity(ThrownByName)
 
 			me= Bladex.GetEntity(self.Name)
 			if me: me.InflictHitFunc= self.HalfmoonTrailInflictHitFunc

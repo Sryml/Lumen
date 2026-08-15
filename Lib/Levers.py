@@ -128,11 +128,11 @@ class Lever:
 		return self.ObjId
 
 	def __getstate__(self):
-		# Tiene que devolver cómo poder guardar el estado de la clase
+		# Tiene que devolver cÃ³mo poder guardar el estado de la clase
 
-		stick_objId=None
-		if self.stick_obj:
-			stick_objId=self.stick_obj.Name
+		# stick_objId=None
+		# if self.stick_obj:
+		# 	stick_objId=self.stick_obj.Name
 		return (1,
 				self.ObjId,
 				self.state,
@@ -141,14 +141,14 @@ class Lever:
 				self.OnTurnOnArgs,
 				GameStateAux.SaveFunctionAux(self.OnTurnOffFunc),
 				self.OnTurnOffArgs,
-				stick_objId,
+				self.stick_obj,
 				self.type,
 				GameStateAux.SaveEntityAux(self.obj),
 				GameStateAux.SaveNewMembers(self)
 				)
 
 	def __setstate__(self,parm):
-		# Toma como parámetro lo que devuelve __getstate__() y debe recrear la clase
+		# Toma como parÃ¡metro lo que devuelve __getstate__() y debe recrear la clase
 
 		if parm[0]==1:
 			#self.ObjId=parm[1] En GameStateAux.PersistentObject()
@@ -162,17 +162,17 @@ class Lever:
 			self.OnTurnOnArgs=parm[5]
 			GameStateAux.LoadFunctionAux(parm[6],self,"OnTurnOffFunc")
 			self.OnTurnOffArgs=parm[7]
-			stick_objId=parm[8]
+			self.stick_obj=parm[8]
 			self.type=parm[9]
 			self.obj=GameStateAux.LoadEntityAux(parm[10])
 			GameStateAux.LoadNewMembers(self,parm[11])
-			if stick_objId:
-				self.stick_obj=Bladex.GetEntity(stick_objId)
-			else:
-				self.stick_obj=None
+			# if stick_objId:
+			# 	self.stick_obj=Bladex.GetEntity(stick_objId)
+			# else:
+			# 	self.stick_obj=None
 		else:
 			print "Lever.__setstate__() -> Version mismatch"
-			# Valores de creación por si valen para algo.
+			# Valores de creaciÃ³n por si valen para algo.
 			self.state=LEVER_OFF
 			self.mode=1
 			self.OnEndOpenFunc=None
