@@ -10,6 +10,7 @@ import Actions
 import netgame
 import Auras
 import GenFX
+import re
 
 
 if netgame.GetNetState() != 0:
@@ -924,18 +925,19 @@ def DropInvalidObjectsOnImpact(EntityName):
 
 def BreakMyShield(EntityName):
 	me=Bladex.GetEntity(EntityName)
-	if me.InvLeft<>"":
+	if me.InvLeft!="":
 		esc=Bladex.GetEntity(me.InvLeft)
 		if esc:
 			n_child=esc.GetNChildren()
-			for n in range(n_child):
+			pattern = re.compile(r"^Entity ")
+			for n in range(n_child-1, -1, -1):
 				child=Bladex.GetEntity(esc.GetChild(n))
-				if child and child.Kind<>"Entity Spot":
+				if child and (not pattern.match(child.Kind)): # -Sryml
 					esc.Unlink(child)
 					child.Impulse(0,0,0)
-		if Breakings.ExplodeSpecialObject ( me.InvLeft , 24000.0)==0:
-			if hasattr(esc.Data, "BreakFunc"): # -Sryml
-				esc.Data.BreakFunc()
+		Breakings.ExplodeSpecialObject ( me.InvLeft , 24000.0)
+		if hasattr(esc.Data, "BreakFunc"): # -Sryml
+			esc.Data.BreakFunc()
 		if Reference.EntitiesObjectData.has_key(me.InvLeft):
 			del Reference.EntitiesObjectData[me.InvLeft]
 		DropInvalidObjectsOnImpact (EntityName)
@@ -950,12 +952,21 @@ def BreakMyShield(EntityName):
 
 def BreakMySword(EntityName):
 	me=Bladex.GetEntity(EntityName)
-	if me.InvRight<>"":		
+	if me.InvRight!="":		
 		obj = Bladex.GetEntity(me.InvRight)
+		# -Sryml
+		n_child=obj.GetNChildren()
+		pattern = re.compile(r"^Entity ")
+		for n in range(n_child-1, -1, -1):
+			child=Bladex.GetEntity(obj.GetChild(n))
+			if child and (not pattern.match(child.Kind)):
+				obj.Unlink(child)
+				child.Impulse(0,0,0)
+		#
 		Actions.Stop_Weapon (EntityName,"Stop_Weapon")
-		if Breakings.ExplodeSpecialObject ( me.InvRight , 24000.0)==0:
-			if hasattr(obj.Data, "BreakFunc"): # -Sryml
-				obj.Data.BreakFunc()
+		Breakings.ExplodeSpecialObject ( me.InvRight , 24000.0)
+		if hasattr(obj.Data, "BreakFunc"): # -Sryml
+			obj.Data.BreakFunc()
 		if Reference.EntitiesObjectData.has_key(me.InvRight):
 			del Reference.EntitiesObjectData[me.InvRight]
 		DropInvalidObjectsOnImpact (EntityName)
@@ -1113,7 +1124,7 @@ def CheckRightHandToDrop(EntityName):
         print "right 2 drop"
         special_to_drop=1
 
-    if special_to_drop==1 or (two_handed_on_right and me.InvLeft and me.InvRight<>me.InvLeft):
+    if special_to_drop==1 or (two_handed_on_right and me.InvLeft and me.InvRight!=me.InvLeft):
         if Actions.TryDropRight(EntityName):
             Actions.DropReleaseEventHandler(EntityName, "DropRightEvent")
             if me.InvRight:
@@ -1319,7 +1330,7 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 				return
 			w_weapon=Bladex.GetEntity(victimsWeaponName)
 			w_flag=Reference.GiveObjectFlag(victimsWeaponName)
-			if w_flag<>Reference.OBJ_WEAPON:
+			if w_flag!=Reference.OBJ_WEAPON:
 				print "Error in CalculateDamage"
 				print "Blocking with an unexpected type of weapon"
 				return

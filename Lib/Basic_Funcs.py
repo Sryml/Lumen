@@ -718,6 +718,7 @@ class PlayerPerson:
 								resistance= resistance+extra_resistance
 								resistance= min(resistance,1.0)
 				except AttributeError: pass
+				# -Sryml
 				if Reference.GiveObjectFlag(obj_name) == Reference.OBJ_ARMOUR:
 					object_data = Reference.GetObjectData(obj_name)
 					if len(object_data) > 6:
@@ -1035,15 +1036,21 @@ class PlayerPerson:
 
 		if DamagePoints<=0 and Shielded and me.GetInventory().GetMagicShield():
 			return
-		if me and me.Life > 0:
-			damage_factor = DamagePoints / (me.Life+DamagePoints)
+		if me:
+			if me.Life <= 0:
+				damage_factor = 1
+			else:
+				damage_factor = DamagePoints / (me.Life+DamagePoints)
+			do_react = damage_factor > me.Data.DamageFactorNone
 
-			if damage_factor > me.Data.DamageFactorNone:
+			if do_react:
 				if DamageZone >= 0 and DamageZone < 32:
 					me.SetWoundedZone(DamageZone, 1)
-
+			
+			if do_react and me.Life > 0:
 				do_not_abort=0
-				if me.AnimName == "df_s_broken" or me.AnimName == "sword_broken" or me.AnimName == "sw_react" or  self.Invincibility==2:
+				# Do not abort if the reaction time is greater than 0.6 seconds. -Sryml
+				if (me.AnimName in ("df_s_broken", "sword_broken", "sw_react") and Bladex.GetAnimationDuration(me.AnimFullName) * (1-me.AnmPos) > 0.6) or self.Invincibility==2:
 					do_not_abort=1
 				if do_not_abort==0:
 
@@ -1103,7 +1110,7 @@ class PlayerPerson:
 								Reference.debugprint("Launching .hurt_f_l_leg")
 								me.LaunchAnmType("hurt_f_l_leg")
 					else:
-						if me.Run:
+						if me.Run and (not Shielded) and (me.AnimName[-3:]=="JOG"):		# Added check to see if we are actually running	-LeadHead
 							Reference.debugprint("Launching .hurt_jog")
 							me.LaunchAnmType("hurt_jog")
 						else:

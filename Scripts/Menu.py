@@ -1212,7 +1212,7 @@ def SetDeFacingValue(v):
 
 
 
-_MainMenu=None
+_MainMenu=None # type: MainMenu # type: ignore
 
 TB_ACTIVATED=0
 

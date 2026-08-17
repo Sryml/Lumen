@@ -66,11 +66,11 @@ class B_CreditsImageWidget(BUIx.B_RectWidget):
         global musiccredits
 
         if not musiccredits:
-                musiccredits             = Bladex.CreateSound('../../Sounds/tema.wav', 'MusicCreditos')
+                musiccredits             = Bladex.CreateSound('../../Sounds/tema.ogg', 'MusicCreditos')
                 musiccredits.Volume      = 1.0
                 musiccredits.MinDistance = 100000
                 musiccredits.MaxDistance = 200000
-        musiccredits.PlayStereo(0)
+        musiccredits.PlayStereo(1)
         self.MusicVolume = Bladex.GetMusicVolume()
         Bladex.SetMusicVolume(0)
         self.StayImage = (((60.0 * 4) + 37.0) / self.Pages)
@@ -118,11 +118,11 @@ class B_CreditsImageWidget(BUIx.B_RectWidget):
             if self.image1 >= self.Pages:
                 global musiccredits
                 if not musiccredits:
-                        musiccredits             = Bladex.CreateSound('../../Sounds/tema.wav', 'MusicCreditos')
+                        musiccredits             = Bladex.CreateSound('../../Sounds/tema.ogg', 'MusicCreditos')
                         musiccredits.Volume      = 1.0
                         musiccredits.MinDistance = 100000
                         musiccredits.MaxDistance = 200000
-                musiccredits.PlayStereo(0)
+                musiccredits.PlayStereo(1)
                 self.image1 = 0
                 Bladex.TriggerEvent(22)
 
@@ -195,9 +195,12 @@ def NoExitMenu(val):
 def Show(type = 0,r = 255,g = 255,b = 255):
     import Menu
     Menu.ActivateMenu("credits")
-    Menu._MainMenu.MenuPrevItem()
-    Menu._MainMenu.MenuPrevItem()
-    Menu._MainMenu.ActivateMenuItem()
+
+    # -Sryml
+    frame = Menu._MainMenu.MenuStack.Top()
+    w, idx = Menu.GetMenuWidget("CREDITS", frame)
+    frame.SetFocus_Idx(idx)
+    w.ActivateItem(1)
 
     Menu.EscapeFunction = NoExitMenu
 

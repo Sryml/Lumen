@@ -478,17 +478,17 @@ def GrantRank():
 		if v:
 			nMaps = nMaps + 1
 	print "Visited maps = " + str(nMaps)
-	vismap = Reference.TimesSaved/nMaps
+	vismap = max(0, (Reference.TimesSaved-1) / nMaps)
 	print "vismap = " + str(vismap)
 	if Reference.TimesSaved == 0:
 		Bladex.TriggerEvent(45)
-	elif 0 <= vismap and vismap < 2:
+	if vismap < 2:
 		Bladex.TriggerEvent(46)
-	elif 2 <= vismap and vismap < 5:
+	if vismap < 5:
 		Bladex.TriggerEvent(47)
-	elif 5 <= vismap and vismap < 9:
+	if vismap < 9:
 		Bladex.TriggerEvent(48)
-	elif 9 <= vismap and vismap < 14:
+	if vismap < 14:
 		Bladex.TriggerEvent(49)
 
 	Kind = "Knight_N"

@@ -1016,6 +1016,9 @@ class BolaRayos(PersistantItemType):
 
 	def OnHitFunc (self, EntityName, hit_entity):
 		# Called on the impact of the ball with the world, or an Entity (if DamagePoints parameter==1)
+		if self.MissileWhileSound: self.MissileWhileSound.StopSound()
+		if self.MissileImpactSound: self.MissileImpactSound.PlaySound(0)
+		#
 		ball_name=self.DamageEntityName
 		ball=Bladex.GetEntity(ball_name)
 		x, y, z=ball.Position
@@ -1077,8 +1080,6 @@ class BolaRayos(PersistantItemType):
 					if victim.Person:
 						Bladex.RemoveScheduledFunc("PostFunc"+self.Name)
 						ball.Alpha=0.99
-						if self.MissileWhileSound: self.MissileWhileSound.StopSound()
-						if self.MissileImpactSound: self.MissileImpactSound.PlaySound(0)
 						victim.DamageFunc(hit_entity, "", self.DamageEntityName, "Fire", 1, -1, x, y, z, 0)
 						# Override hurt anim
 						if victim.Life>0:
