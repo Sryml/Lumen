@@ -2184,6 +2184,8 @@ def DropReleaseEventHandler(EntityName, EventName, TestHit=TRUE):
 
 	if EventName == "DropLeftEvent":
 		object = Bladex.GetEntity(me.InvLeft)
+	elif EventName == "DropLeft2Event":
+		object = Bladex.GetEntity(me.InvLeft2)
 	else:
 		object = Bladex.GetEntity(me.InvRight)
 
@@ -2196,7 +2198,7 @@ def DropReleaseEventHandler(EntityName, EventName, TestHit=TRUE):
 
 		RemoveFromInventory (me, object, EventName)
 
-		if EventName == "DropLeftEvent":
+		if EventName in ("DropLeftEvent", "DropLeft2Event"):
 			impulse = me.Rel2AbsVector(500.0, -750.0, 0.0)
 		elif EventName == "Drop2HandedEvent":
 			impulse = me.Rel2AbsVector(0.0, -750.0, 0.0)

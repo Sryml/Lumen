@@ -921,6 +921,8 @@ def DropInvalidObjectsOnImpact(EntityName):
 			or left_type==Reference.OBJ_SPECIALKEY \
 			or left_type==Reference.OBJ_TABLET:
 				Actions.DropReleaseEventHandler (EntityName, "DropLeftEvent")
+		if me.InvLeft2:
+			Actions.DropReleaseEventHandler (EntityName, "DropLeft2Event")
 
 
 def BreakMyShield(EntityName):
@@ -1204,6 +1206,7 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 	# Animation component, character type, level and magical components #
 	######################################################################################
 	attacker= None
+	FX_Anim = ""
 	if AttackerName:
 		attacker=Bladex.GetEntity(AttackerName)
 		
@@ -1219,14 +1222,13 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 			if not thrown_flag:
 				if AnimationData.has_key(attacker.AnimFullName):
 					animF = AnimationData[attacker.AnimFullName]
-					if InflictDamageFXData.has_key(attacker.AnimFullName) and (netgame.GetNetState() != 1):
-						aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch = InflictDamageFXData[attacker.AnimFullName]
-						GenFX.InflictDamageFX(VictimName, aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch)
+					# if InflictDamageFXData.has_key(attacker.AnimFullName) and (netgame.GetNetState() != 1):
+					# 	aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch = InflictDamageFXData[attacker.AnimFullName]
+					# 	GenFX.InflictDamageFX(VictimName, aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch)
 				elif AnimationData.has_key(attacker.AnimName):
 					animF = AnimationData[attacker.AnimName]
-					if InflictDamageFXData.has_key(attacker.AnimFullName) and (netgame.GetNetState() != 1):
-						aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch = InflictDamageFXData[attacker.AnimFullName]
-						GenFX.InflictDamageFX(VictimName, aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch)
+				if InflictDamageFXData.has_key(attacker.AnimFullName) and (netgame.GetNetState() != 1):
+					FX_Anim = attacker.AnimFullName
 		
 	randomF= round(whrandom.uniform(-0.05, 0.05)*charF)
 	charF= max (charF + randomF, 0)
@@ -1358,6 +1360,7 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 		shield.HitShieldFunc (shield.Name,WeaponName,x,y,z,ximpulse,yimpulse,zimpulse,DamageType)
 		return
 	else:
+		# -Sryml
 		left_name = me.InvLeft
 		ent = Bladex.GetEntity(left_name)
 		if left_name and ent:
@@ -1369,7 +1372,17 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 					shieldF = objData[2]
 
 	######################################################################################	
-	
+	# -Sryml
+	if FX_Anim:
+		if Shielded:
+			if blocking_with_weapon:
+				FX_Target = victimsWeaponName
+			else:
+				FX_Target = victimsShieldName
+		else:
+			FX_Target = VictimName
+		aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch = InflictDamageFXData[FX_Anim]
+		GenFX.InflictDamageFX(FX_Target, aura_size_var, aura_exp_time, r, g, b, light_intensity, sound, volume, pitch)
 	######################################################################################
 	# Character Type component #
 	######################################################################################
