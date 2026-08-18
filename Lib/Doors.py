@@ -5,6 +5,9 @@ import GameStateAux
 import ObjStore
 import Scorer
 
+OPENING = 1
+CLOSING = 2
+
 CLOSED=0
 OPENED=1
 AC=2
@@ -39,6 +42,7 @@ def EndOpenFunc(sld_name):
 	sld_area=Bladex.GetEntity(sld_name)
 	sld_area.RemoveFromList("DoorTimer")
 	door=sld_area.Data.doordata
+	sld_area.OnStopFunc = None
 
 	door.currdispl=sld_area.Displacement
 	displ_var=door.prevdispl-door.currdispl
@@ -51,6 +55,8 @@ def EndOpenFunc(sld_name):
 		door.EndOpenSound.Position=door.soundpos
 		door.EndOpenSound.PlaySound(0)
 	door.status=OPENED
+	door.run_status = None
+
 	if (door.OnEndOpenFunc):
 		apply(door.OnEndOpenFunc, door.OnEndOpenArgs)
 
@@ -60,6 +66,7 @@ def EndCloseFunc(sld_name):
 	sld_area=Bladex.GetEntity(sld_name)
 	sld_area.RemoveFromList("DoorTimer")
 	door=sld_area.Data.doordata
+	sld_area.OnStopFunc = None
 
 	door.currdispl=sld_area.Displacement
 	displ_var=door.prevdispl-door.currdispl
@@ -73,6 +80,7 @@ def EndCloseFunc(sld_name):
 		door.EndCloseSound.Position=door.soundpos
 		door.EndCloseSound.PlaySound(0)
 	door.status=CLOSED
+	door.run_status = None
 
 	if (door.OnEndCloseFunc):
 		apply(door.OnEndCloseFunc, door.OnEndCloseArgs)
@@ -178,16 +186,43 @@ class Door:
 		self.ObjId=ObjStore.GetNewId() # Para identificarlo al grabar/guardar
 ##		GameStateAux.PersistentObject.__init__(self)
 		self.Name= Name
+		self.run_status = None # -Sryml
 
 		ObjStore.ObjectsStore[self.ObjId]=self
 
 	def sld_area(self):
 		return Bladex.GetEntity(self.Name)
 
+	def Abort(self):
+		# -Sryml
+		if self.run_status not in (OPENING, CLOSING):
+			return
+		
+		sld_area= Bladex.GetEntity(self.Name)
+		sld_area.RemoveFromList("DoorTimer")
+		sld_area.OnStopFunc = None
+		sld_area.SlideTo(sld_area.Displacement, 1, 0)
+
+		self.run_status = None
+		if (self.WhileOpenSound):
+			self.WhileOpenSound.StopSound()
+		if (self.WhileCloseSound):
+			self.WhileCloseSound.StopSound()
+
+	def CompletedAhead(self):
+		# -Sryml
+		if self.run_status not in (OPENING, CLOSING):
+			return
+
+		sld_area= Bladex.GetEntity(self.Name)
+		if sld_area.OnStopFunc:
+			apply(sld_area.OnStopFunc, (sld_area.Name,))
 
 	def OpenDoor(self):
-		if (self.status==OPENED):
+		if (self.run_status==OPENING or (not self.run_status and self.status==OPENED)):
 			return
+		self.CompletedAhead()
+		self.run_status = OPENING
 
 		sld_area= Bladex.GetEntity(self.Name)
 		self.prevdispl=sld_area.Displacement
@@ -244,8 +279,11 @@ class Door:
 ##		import pdb
 ##		pdb.set_trace()
 
-		if (self.status==CLOSED):
+		if (self.run_status==CLOSING or (not self.run_status and self.status==CLOSED)):
 			return
+		self.CompletedAhead()
+		self.run_status = CLOSING
+
 		sld_area= Bladex.GetEntity(self.Name)
 		self.prevdispl=sld_area.Displacement
 		if self.Squezze:
