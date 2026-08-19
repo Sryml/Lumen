@@ -1138,7 +1138,9 @@ def CheckRightHandToDrop(EntityName):
 
 def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone, DamageNode, x, y, z, Shielded):
 	#pdb.set_trace()
-	
+	if Bladex.GetAppMode() == "Menu": # -Sryml
+		return
+
 	CheckRightHandToDrop(VictimName)
 
 	# Additive vars set to 0

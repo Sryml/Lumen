@@ -136,7 +136,9 @@ class LAVA_AREA:
 					AuxFuncs.FadeFrom(0.15,0.0,255,128,0)
 					self.SetLastCameraPosition(5.0,cam)
 			else:
-				player.Life=player.Life-(factor+1.0)*0.0025*CharStats.GetCharMaxLife(player.Kind,player.Level)
+				AppMode = Bladex.GetAppMode()
+				if netgame.GetNetState() == 1 or AppMode != "Menu":
+					player.Life=player.Life-(factor+1.0)*0.0025*CharStats.GetCharMaxLife(player.Kind,player.Level)
 		else:
 			return
 
