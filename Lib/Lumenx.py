@@ -40,6 +40,8 @@ class _DATA:
         "AssetModel": [],
         "AssetSound": [],
         "AssetOther": [],
+        # debug
+        "print_conflicting_sound": "Disabled",
     }
     map_list = {
         "": {
@@ -82,13 +84,12 @@ class _DATA:
     mod_root = ""
     lumen_root = ""
     blade_root = ""
-    asset_path = []
+    asset_path = []  # Normalized path
     AssetAnimationPath = []
     AssetImagePath = []
     AssetModelPath = []
     AssetSoundPath = []
     AssetOtherPath = []
-    BodLink = {}
     #
     res_mmps = []
     res_bmps = {}
@@ -98,8 +99,10 @@ class _DATA:
     opened_files_delta = 0  # 修正量
     nsave_num = 0
     listener_pos = (1, 0, 0, 0)
+    BodLink = {}
     anm_event_funcs = {}
     sampled_animations = {}
+    py_sounds = {}
     last_input_set = ""
 
 
@@ -201,6 +204,7 @@ __fn()
 
 # python3-like print function
 def printx(*values, **kwargs):
+    """sep=" ", end="\\n", file=None, flush=0"""
     import string
 
     sep = kwargs.get("sep", " ")
@@ -386,6 +390,7 @@ __bladex_decorators = [
     "LoadAnmRaceData",
     "LoadLevel",
     "LoadSampledAnimation",
+    "LoadSoundDataBase",
     "LoadWorld",
     "ReadAlphaBitMap",
     "ReadBitMap",
@@ -401,6 +406,54 @@ __bladex_decorators = [
 ]
 for __fn in __bladex_decorators:  # type: ignore
     Bladex_raw.__dict__[__fn] = Bladex.__dict__.get(__fn, __empty_func)  # type: ignore
+
+
+# -----------------------------
+# 私有函数
+# -----------------------------
+def _SoundManager(file_name, sound_name, resolved_conflict=1):
+    """0=not exist, 1=exist, 2=conflict"""
+    status = 0
+    if not file_name or (not sound_name):
+        return (0, sound_name)
+
+    new_snd = string.lower(os.path.normpath(file_name))
+    if _DATA.py_sounds.has_key(sound_name):
+        exist_snd = _DATA.py_sounds[sound_name]
+        if new_snd == exist_snd:
+            status = 1
+        elif resolved_conflict:
+            status = 2
+            # 名称冲突的情况
+            if GetConfig("print_conflicting_sound") == "Enabled":
+                printx(
+                    "Warning: conflict sound resolved (%s):\n%s <==> %s"
+                    % (sound_name, repr(exist_snd), repr(new_snd))
+                )
+            idx = 1
+            sound_name = _name = os.path.splitext(os.path.basename(new_snd))[0]
+            while 1:
+                if _DATA.py_sounds.get(sound_name) == new_snd:
+                    status = 1
+                    break
+                if Bladex.GetSound(sound_name) or Bladex_raw.GetEntity(sound_name):
+                    sound_name = "%s.%03d" % (_name, idx)
+                    idx = idx + 1
+                else:
+                    break
+            # printx("New Name:", sound_name)
+        else:
+            status = 1
+            if GetConfig("print_conflicting_sound") == "Enabled":
+                printx(
+                    "Warning: conflict sound unresolved (%s):\n%s <==> %s"
+                    % (sound_name, repr(exist_snd), repr(new_snd))
+                )
+
+    if status != 1:
+        _DATA.py_sounds[sound_name] = new_snd
+
+    return (status, sound_name)
 
 
 ######### Proxy
@@ -517,7 +570,24 @@ class B_PyEntity_Proxy:
 
     # -----------------------------
     def SetSound(self, file_name):
+        me = self.target
+        resolved_conflict = 0
+        status, sound_name = _SoundManager(file_name, me.Name, resolved_conflict)
         file_name = AutomatedAssets(file_name, multi_ext=1)
+        if status == 2 and resolved_conflict:
+            me.SetSound(file_name)
+            o = Bladex.CreateEntity(sound_name, "Entity Sound", 0, 0, 0)
+            o.Position = me.Position
+            self.target = o
+            # for attr in (
+            #     "BaseVolume",
+            #     "MaxDistance",
+            #     "MinDistance",
+            #     "Pitch",
+            #     "SendNotify",
+            #     "Volume",
+            # ):
+            #     setattr(o, attr, getattr(me, attr))
         return self.target.SetSound(file_name)
 
     def SetMaxCamera(self, cam_file_name, start, end):
@@ -866,9 +936,9 @@ def AutomatedAssets(path, root_priority=[], multi_ext=0):
     elif ext in (".wav", ".mp3", ".ogg"):
         root_priority = root_priority + _DATA.AssetSoundPath
         if multi_ext:
-            check_ext = [".wav", ".ogg", ".mp3"]
-            idx = check_ext.index(ext)
-            check_ext[0], check_ext[idx] = check_ext[idx], check_ext[0]
+            check_ext = [".ogg", ".wav", ".mp3"]  # 优先检查ogg版本
+            # idx = check_ext.index(ext)
+            # check_ext[0], check_ext[idx] = check_ext[idx], check_ext[0]
     else:
         root_priority = root_priority + _DATA.AssetOtherPath
     #
@@ -1006,6 +1076,10 @@ def CreateEntity(name, kind, x, y, z, *args):
 
 
 def CreateSound(file_name, sound_name):
+    status, sound_name = _SoundManager(file_name, sound_name)
+    if status == 1:
+        return Bladex.GetSound(sound_name)
+    #
     file_name = AutomatedAssets(file_name, multi_ext=1)
     return Bladex_raw.CreateSound(file_name, sound_name)
 
@@ -1326,6 +1400,14 @@ def LoadSampledAnimation(file, anm_name, *args):
     return ret
 
 
+def LoadSoundDataBase(file_name):
+    ret = Bladex_raw.LoadSoundDataBase(file_name)
+    # for n in range(Bladex.nSounds()):
+    #     sound_name = Bladex.GetSoundName(n)
+    #     file_name = Bladex.GetSoundFileName(n)
+    return ret
+
+
 def LoadWorld(file_name):
     file_name = AutomatedAssets(file_name)
     return Bladex_raw.LoadWorld(file_name)
@@ -1633,13 +1715,13 @@ import GameState
 def SaveData(filename):
     import GameStateAux
 
-    GameStateAux.SaveData(filename, _DATA.anm_event_funcs)
+    GameStateAux.SaveData(filename, (_DATA.anm_event_funcs, _DATA.py_sounds))
 
 
 def LoadData(filename):
     import GameStateAux
 
-    _DATA.anm_event_funcs = GameStateAux.LoadData(filename)
+    _DATA.anm_event_funcs, _DATA.py_sounds = GameStateAux.LoadData(filename)
     for ent_name, event_funcs in _DATA.anm_event_funcs.items():
         ent = Bladex_raw.GetEntity(ent_name)
         if ent:
@@ -1712,6 +1794,7 @@ LoadAnmRaceData
 LoadComponent
 LoadLevel
 LoadSampledAnimation
+LoadSoundDataBase
 LoadWorld
 printx
 Raisex

@@ -4,7 +4,7 @@ import Bladex
 # *      Asignacion de sonidos      *
 # ***********************************
 
-AsignarSonidosAnAhkard=0
+AsignarSonidosAnAhkardCalled=0
 def AsignarSonidosAnAhkard(Personaje):
 
 
@@ -21,8 +21,8 @@ def AsignarSonidosAnAhkard(Personaje):
 	per.AddEventSound('mutilate', TajoMutilacionAnk)
 	per.AddEventSound('crush', GolpeContundenteAnk)
 	
-	global AsignarSonidosAnAhkard
-	if AsignarSonidosAnAhkard:
+	global AsignarSonidosAnAhkardCalled
+	if AsignarSonidosAnAhkardCalled:
 		return
 	AsignarSonidosAnAhkardCalled=1
 
