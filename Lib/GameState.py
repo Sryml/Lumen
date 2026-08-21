@@ -1384,7 +1384,7 @@ for i in range(len(keys)):
         try:
             for i in global_vars:
                 if str(i[0])!="__doc__":
-                    file.write('%s="%s"\n'%(str(i[0]),str(i[1])))
+                    file.write('%s=%s\n'%(str(i[0]),repr(i[1])))
         except  IndexError:
             print "SaveVars Float Variables out of range"
             return 0

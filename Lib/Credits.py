@@ -66,7 +66,7 @@ class B_CreditsImageWidget(BUIx.B_RectWidget):
         global musiccredits
 
         if not musiccredits:
-                musiccredits             = Bladex.CreateSound('../../Sounds/tema.ogg', 'MusicCreditos')
+                musiccredits             = Bladex.CreateSound('../../Sounds/tema.wav', 'MusicCreditos')
                 musiccredits.Volume      = 1.0
                 musiccredits.MinDistance = 100000
                 musiccredits.MaxDistance = 200000
@@ -118,7 +118,7 @@ class B_CreditsImageWidget(BUIx.B_RectWidget):
             if self.image1 >= self.Pages:
                 global musiccredits
                 if not musiccredits:
-                        musiccredits             = Bladex.CreateSound('../../Sounds/tema.ogg', 'MusicCreditos')
+                        musiccredits             = Bladex.CreateSound('../../Sounds/tema.wav', 'MusicCreditos')
                         musiccredits.Volume      = 1.0
                         musiccredits.MinDistance = 100000
                         musiccredits.MaxDistance = 200000

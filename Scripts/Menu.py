@@ -51,6 +51,8 @@ import os
 import GamepadWidget
 import Lumenx
 
+from Lumenx import printx
+
 #import Bldb
 
 MenuFontSmall=Language.FontTitle
@@ -1366,7 +1368,7 @@ def ActivateMenu(caller_id = None):
     print "Invalid AppMode"
 
   Raster.RemoveBackgroundImage()
-  print "End ActivateMenu()"
+  printx("End ActivateMenu()", flush=1)
 
 MENU_PREACTIVATED = 0
 def PreActivateMenu():
