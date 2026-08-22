@@ -312,13 +312,13 @@ def TrackArrowFunc(t):
 
 
 # ----------------------------------
-def SaveData(filename):
-    GameStateAux.SaveData(filename, TRAJECTORYS)
+def SaveData():
+    return TRAJECTORYS
 
 
-def LoadData(filename):
+def LoadData(d):
     global TRAJECTORYS
-    TRAJECTORYS = GameStateAux.LoadData(filename)
+    TRAJECTORYS = d
 
 
 GameState.ModulesToBeSaved.append(sys.modules[__name__])

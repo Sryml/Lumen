@@ -1265,38 +1265,15 @@ def CheckWeapons():
 TimesSaved = 0
 SpecialsTB = 0
 
-def SaveData(filename):
-  import cPickle
-  import GameStateAux
-
-  funcfile=open(filename,"wt")
-  p=cPickle.Pickler(funcfile)
-  p.persistent_id=GameStateAux.persistent_id
+def SaveData():
   d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB)
-  p.dump(d)
-  funcfile.close()
+  return d
 
 
-def LoadData(filename):
-  import cPickle
-  import GameStateAux
-  import ObjStore
+def LoadData(d):
+  global EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB
 
-  funcfile=open(filename,"rt")
-  p=cPickle.Unpickler(funcfile)
-  p.persistent_load=GameStateAux.persistent_load
-  d=p.load()
-  funcfile.close()
-
-  global EntitiesSelectionData
-  global TimesSaved
-  global EntitiesObjectData
-  global SpecialsTB
-
-  EntitiesSelectionData = d[0]
-  TimesSaved            = d[1]
-  EntitiesObjectData    = d[2]
-  SpecialsTB = d[3]
+  EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB = d
 
 import GameState
 GameState.ModulesToBeSaved.append(__import__(__name__))

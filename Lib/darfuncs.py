@@ -863,29 +863,12 @@ def StopMatrixFX():
 
 
 
-def SaveData(filename):
-  import cPickle
-  import GameStateAux
-
-  funcfile=open(filename,"wt")
-  p=cPickle.Pickler(funcfile)
-  p.persistent_id=GameStateAux.persistent_id
+def SaveData():
   d=(muertonum,ActualLevel,QuakeFactor,FIRE_DAMAGE,PersonasEnLlamas,SectorTable, MatrixTime, MatrixCameraState, MatrixPerson)
-  
-  p.dump(d)
-  funcfile.close()
+  return d
 
 
-def LoadData(filename):
-  import cPickle
-  import GameStateAux
-
-  funcfile=open(filename,"rt")
-  p=cPickle.Unpickler(funcfile)
-  p.persistent_load=GameStateAux.persistent_load
-  d=p.load()
-  funcfile.close()
-
+def LoadData(d):
   global muertonum
   global ActualLevel
   global QuakeFactor

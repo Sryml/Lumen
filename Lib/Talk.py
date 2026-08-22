@@ -19,6 +19,7 @@ import ObjStore
 import MenuText
 
 import os
+import sys
 import string
 import re
 import whrandom
@@ -448,33 +449,7 @@ class ClsTSDB:
     FreeHandsWhenTalk = 1
 
     def __init__(self):
-        self.ObjId = ObjStore.GetNewId()  # Para identificarlo al grabar/guardar
-        ObjStore.ObjectsStore[self.ObjId] = self
-
-    # def persistent_id(self):
-    #     return self.ObjId
-
-    def __getstate__(self):
-        # modified by sryml
-        return (
-            2,
-            # self.ObjId,
-            self.Var,
-            self.JrlIds,
-            self.FreeHandsWhenTalk,
-            # GameStateAux.SaveNewMembers(self),
-            # GameStateAux.SaveFunctionAux(self.InitGenFunc),
-        )
-
-    def __setstate__(self, parm):
-        # modified by sryml
-        # Restores data to the TSDB, after which it will be garbage collected.
-        if parm[0] == 1:
-            pass
-            # GameStateAux.LoadFunctionAux(parm[13],self,"InitGenFunc")
-        elif parm[0] == 2:
-            TSDB.Var, TSDB.JrlIds, TSDB.FreeHandsWhenTalk = parm[1:]
-            # GameStateAux.LoadNewMembers(TSDB, parm[-1])
+        pass
 
     def Init(self, module=None):
         if module:
@@ -646,7 +621,9 @@ class ClsTS:
         TSText.AddText(self.Parse("%" + person + ": " + CurrentDlg["Text"]))
         if CurrentDlg.has_key("ExtraDlg"):
             TSText.AddText(
-                self.Parse("%" + CurrentDlg["ExtraDlg"][0] + ": " + CurrentDlg["ExtraDlg"][1])
+                self.Parse(
+                    "%" + CurrentDlg["ExtraDlg"][0] + ": " + CurrentDlg["ExtraDlg"][1]
+                )
             )
 
         nAnswers = 0
@@ -1471,9 +1448,6 @@ class ClsTSWidgets:
 
 """
 There is no need to check the TSDB instance, just restore the data to the global variable TSDB.
-It is not recommended to set custom variables in the global scope of
-DefFuncs.py as it will be overwritten after loading the archive.
-This is because the ObjStore data is restored after DefFuncs.py
 - Sryml
 """
 TSDB = ClsTSDB()
@@ -1482,6 +1456,22 @@ TSWidgets = ClsTSWidgets()
 TSText = ClsTSText()
 TSjText = ClsTSjText()
 TS = ClsTS()
+
+###########################################################################
+# Persistence
+###########################################################################
+import GameState
+
+
+def SaveData():
+    return (TSDB.Var, TSDB.JrlIds, TSDB.FreeHandsWhenTalk)
+
+
+def LoadData(data):
+    TSDB.Var, TSDB.JrlIds, TSDB.FreeHandsWhenTalk = data
+
+
+GameState.ModulesToBeSaved.append(sys.modules[__name__])
 
 ###########################################################################
 # User Interface

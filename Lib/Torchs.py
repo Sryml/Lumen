@@ -161,36 +161,16 @@ def SetUsable(obj_name, light_int=3.0, fire_int=3.0, life=-1):
 UseFunc = None         # UseFunc(from,to)
 
 
-def SaveData(filename):
-  import cPickle
-  import GameStateAux
-  import GameStateAux
-
-  funcfile=open(filename,"wt")
-  p=cPickle.Pickler(funcfile)
-  p.persistent_id=GameStateAux.persistent_id
-  d=(GameStateAux.SaveFunctionAux(UseFunc),tipos_antorcha)
-
-  p.dump(d)
-  funcfile.close()
+def SaveData():
+  d=(UseFunc,tipos_antorcha)
+  return d
 
 
-def LoadData(filename):
-  import cPickle
-  import GameStateAux
-  import GameStateAux
-
-  funcfile=open(filename,"rt")
-  p=cPickle.Unpickler(funcfile)
-  p.persistent_load=GameStateAux.persistent_load
-  d=p.load()
-  funcfile.close()
-  print d
-
+def LoadData(d):
   global UseFunc
   global tipos_antorcha
   
-  UseFunc=GameStateAux.LoadFunctionAux(d[0])
+  UseFunc=d[0]
   tipos_antorcha=d[1]
 
 

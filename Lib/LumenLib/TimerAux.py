@@ -80,13 +80,13 @@ def RemoveFromList(timer_name, func, func_args=(), func_kwds={}):
 
 
 # ----------------------------------
-def SaveData(filename):
-    GameStateAux.SaveData(filename, (SubscribedLists, TimerInfo))
+def SaveData():
+    return (SubscribedLists, TimerInfo)
 
 
-def LoadData(filename):
+def LoadData(d):
     global SubscribedLists, TimerInfo
-    SubscribedLists, TimerInfo = GameStateAux.LoadData(filename)
+    SubscribedLists, TimerInfo = d
     # Reference.debugprint("%s LoadData done." % __name__)
 
 

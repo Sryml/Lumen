@@ -25,32 +25,14 @@ def OnInitTakeFunc(objname):
 
 
 
-def SaveData(filename):
-  import cPickle
-  import GameStateAux
-
-  funcfile=open(filename,"wt")
-  p=cPickle.Pickler(funcfile)
-  p.persistent_id=GameStateAux.persistent_id
+def SaveData():
   d=(InitTakeDictionary,)
-  p.dump(d)
-  funcfile.close()
+  return d
 
 
 
-def LoadData(filename):
-  import cPickle
-  import GameStateAux
-
-  funcfile=open(filename,"rt")
-  p=cPickle.Unpickler(funcfile)
-  p.persistent_load=GameStateAux.persistent_load
-  d=p.load()
-  funcfile.close()
-  print d
-
+def LoadData(d):
   global InitTakeDictionary
-
 
   InitTakeDictionary=d[0]
 

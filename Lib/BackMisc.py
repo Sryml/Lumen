@@ -566,29 +566,17 @@ def MuerteBichoMolesto(Name):
 
 
 
-def SaveData(filename):
-  import cPickle
-  import GameStateAux
-
-  funcfile=open(filename,"wt")
-  p=cPickle.Pickler(funcfile)
-  p.persistent_id=GameStateAux.persistent_id
+def SaveData():
   d=(_AppearsCagazo,ChaosKnightActivated,CHAOS_KNIGHT_LEVEL,
      CHAOS_KNIGHT_POSITION,CHAOS_KNIGHT_ANGLE,CHAOS_KNIGHT_ACTIVATE,
      CHAOS_KNIGHT_DEACTIVATE,TIME_BEFORE_PLAYER_APPEARING,
      EXEC_IN_PLAYER_APPEARING,EXEC_IN_CHAOS_KNIGHT_APPEARING,
      SECTOR_PROCS,LastSectorIdx,SECTOR_COUNT,L_Vamp,L_Little_Demon)
-
-
-  p.dump(d)
-  funcfile.close()
+  return d
 
 
 
-def LoadData(filename):
-  import cPickle
-  import GameStateAux
-
+def LoadData(d):
   global _AppearsCagazo
   global ChaosKnightActivated
   global CHAOS_KNIGHT_LEVEL
@@ -604,14 +592,6 @@ def LoadData(filename):
   global SECTOR_COUNT
   global L_Vamp
   global L_Little_Demon
-
-  funcfile=open(filename,"rt")
-  p=cPickle.Unpickler(funcfile)
-  p.persistent_load=GameStateAux.persistent_load
-  d=p.load()
-  funcfile.close()
-  print d
-
 
   _AppearsCagazo                 = d[ 0]
   ChaosKnightActivated           = d[ 1]

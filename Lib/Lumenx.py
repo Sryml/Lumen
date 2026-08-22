@@ -418,8 +418,8 @@ def _SoundManager(file_name, sound_name, resolved_conflict=1):
         return (0, sound_name)
 
     new_snd = string.lower(os.path.normpath(file_name))
-    if _DATA.py_sounds.has_key(sound_name):
-        exist_snd = _DATA.py_sounds[sound_name]
+    if Bladex.GetSound(sound_name):
+        exist_snd = _DATA.py_sounds.get(sound_name, "Unknown Sound")
         if new_snd == exist_snd:
             status = 1
         elif resolved_conflict:
@@ -1712,16 +1712,12 @@ del __fn, obj, name
 import GameState
 
 
-def SaveData(filename):
-    import GameStateAux
-
-    GameStateAux.SaveData(filename, (_DATA.anm_event_funcs, _DATA.py_sounds))
+def SaveData():
+    return (_DATA.anm_event_funcs, _DATA.py_sounds)
 
 
-def LoadData(filename):
-    import GameStateAux
-
-    _DATA.anm_event_funcs, _DATA.py_sounds = GameStateAux.LoadData(filename)
+def LoadData(data):
+    _DATA.anm_event_funcs, _DATA.py_sounds = data
     for ent_name, event_funcs in _DATA.anm_event_funcs.items():
         ent = Bladex_raw.GetEntity(ent_name)
         if ent:
