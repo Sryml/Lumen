@@ -26,6 +26,7 @@ class _DATA:
     config = {}
     config_default = {
         "Language": "English",
+        "BasicClone": "Default",
         "InventoryStyle": "Improved",
         "InventoryActivatedByFocus": "Weapon",
         "InventoryActivatedByNumbers": "Object",
@@ -1151,6 +1152,12 @@ def GetCurrentModMenu():
     return _DATA.current_mod_menu
 
 
+def GetDefaultConfig(key=None):
+    if key is None:
+        return _DATA.config_default
+    return _DATA.config_default.get(key)
+
+
 def GetEntity(arg):
     ret = Bladex_raw.GetEntity(arg)
     if ret is None:
@@ -1783,6 +1790,7 @@ GetControlCharacter
 GetCurrentMap
 GetCurrentMod
 GetCurrentModMenu
+GetDefaultConfig
 GetEntity
 GetGameVersion
 GetInventoryStyle

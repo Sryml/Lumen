@@ -491,6 +491,33 @@ def SetAimingPerspective(option):
     OnChangeMenu()
 
 
+def RestoreDefaults(this):
+    keys = [
+        "BasicClone",
+        "InventoryStyle",
+        "InventoryActivatedByFocus",
+        "InventoryActivatedByNumbers",
+        "GrillableLimb",
+        "DodgeByMouseMovement",
+        "ArcheryTrajectory",
+        "AimingPerspective",
+        "Kgt1HMastery",
+        # "AssetAnimation",
+        # "AssetImage",
+        # "AssetModel",
+        # "AssetSound",
+        # "AssetOther",
+    ]
+    frame = this.StackMenu.Top()
+    for key in keys:
+        _DATA.menu_config[key] = BCopy.deepcopy(Lumenx.GetDefaultConfig(key))
+        w = Menu.GetMenuWidget(key, frame)[0]
+        if w.__class__.__name__ == "B_MenuItemOption":
+            w.SetSelOption(w.Options.index(_DATA.menu_config[key]))
+    #
+    OnChangeMenu()
+
+
 #
 def GetEnableOption(this):
     return this.Options.index(_DATA.menu_config[this.MenuDescr["Name"]])
@@ -503,10 +530,11 @@ def SetEnable(option, this):
 
 #
 def GetBasicCloneOption(this):
-    return 0
+    return this.Options.index(_DATA.menu_config["BasicClone"])
 
 
 def SetBasicClone(option):
+    _DATA.menu_config["BasicClone"] = option
     OnChangeMenu()
 
 
@@ -738,7 +766,7 @@ def AddMod(mod_dir, mod_root, BLModInfo):
         for name, path in name_space.get(k, []):
             if name in _DATA.asset_paths[k]["#Sorted"]:
                 continue
-            _DATA.asset_paths[k][name] = os.path.join(mod_root, path)
+            _DATA.asset_paths[k][name] = os.path.normpath(os.path.join(mod_root, path))
             _DATA.asset_paths[k]["#Sorted"].append(name)
 
 
@@ -933,7 +961,7 @@ ModMenu = {
             "OnLeave": LeaveMenu,
             "ListDescr": [
                 {
-                    "Name": "Basic Clone",
+                    "Name": "BasicClone",
                     "Text": MenuText.GetMenuText("Basic Clone") + ":",
                     "Font": Language.FontCommon,
                     "FontScale": Language.MFontScale["M"],
@@ -1144,7 +1172,17 @@ ModMenu = {
                     "SelOptionFunc2": GetAimingPerspectiveOption,
                     "Command": SetAimingPerspective,
                 },
-                GenEnableOption("Kgt1HMastery", "One-Handed Weapon Mastery (Knight)", VSep="0.7em"),
+                GenEnableOption(
+                    "Kgt1HMastery", "One-Handed Weapon Mastery (Knight)", VSep="0.7em"
+                ),
+                {
+                    "Name": "RESTORE DEFAULTS",
+                    "Text": MenuText.GetMenuText("RESTORE DEFAULTS"),
+                    "Font": Language.FontCommon,
+                    "FontScale": Language.MFontScale["M"],
+                    "VSep": Menu.LastOptionVSep,
+                    "Command": RestoreDefaults,
+                },
                 # GenEnableOption("Cache", VSep="0.7em"),
                 GetNoteLabelItem(),
                 BackOptionCommon,

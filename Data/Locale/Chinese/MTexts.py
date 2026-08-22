@@ -147,6 +147,7 @@ ForeingDict = {
     "size": "大小",
     "transparent": "透明",
     "quick save": "快速保存",
+    "restore defaults": "恢复默认",
     # Inventory
     "activated by focus": "由焦点激活",
     "activated by numbers": "由数字激活",
