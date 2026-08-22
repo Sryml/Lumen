@@ -15,6 +15,7 @@ import cStringIO
 import string
 import traceback
 import sys
+import Lumenx
 
 from Lumenx import printx
 
@@ -27,6 +28,7 @@ if typing.TYPE_CHECKING:
     cmp = lambda x, y: None
 
 
+ConstantDatabase = {}
 PickDataBase={}
 LoadedPickledData={}
 aux_dir='.'
@@ -49,12 +51,13 @@ FixDataBase=[]
 
 def LoadGlobalCompVars(filename,dest_dict):
 
-  file=open(filename)
-  u=cPickle.Unpickler(file)
+  # file=open(filename)
+  # u=cPickle.Unpickler(file)
 
-  u.persistent_load=persistent_load
-  ret=u.load()
-  file.close()
+  # u.persistent_load=persistent_load
+  # ret=u.load()
+  # file.close()
+  ret = PickDataBase["Globs"]
 
   # ret es un diccionario con las variables globales de tipo lista, tupla y diccionario.
   for i in ret.keys():
@@ -76,6 +79,7 @@ def InitGameState(aux_dir):
   filename="%s/PickDataBase.dat"%(aux_dir,)
   funcfile=open(filename,"rt")
   p=cPickle.Unpickler(funcfile)
+  p.persistent_load = ManualConstruction
   PickDataBase=p.load()
   funcfile.close()
   #print "PickDataBase read"
@@ -94,6 +98,8 @@ def CleanLoadTemp():
   global LoadedPickledData
   LoadedPickledData={}
 
+  global ConstantDatabase
+  ConstantDatabase = {}
 
 
 def CleanSaveTemp():
@@ -104,51 +110,63 @@ def CleanSaveTemp():
   global LoadedPickledData
   LoadedPickledData={}
 
+  global ConstantDatabase
+  ConstantDatabase = {}
+
 
 
 
 def EndGameState(aux_dir):
+  PickDataBase["ObjectsStore"] = ObjStore.ObjectsStore
 
   filename="%s/PickDataBase.dat"%(aux_dir,)
   funcfile=open(filename,"wt")
   p=cPickle.Pickler(funcfile)
+  p.persistent_id = ManualReduction #
   p.dump(PickDataBase)
   funcfile.close()
   #print "PickDataBase written"
   #print PickDataBase.keys()
   #print "PickDataBase len:",len(PickDataBase.keys())
-
+  #
+  filename="%s/ConstantDatabase.dat"%(aux_dir,)
+  funcfile=open(filename,"wt")
+  p=cPickle.Pickler(funcfile)
+  # p.persistent_id = ManualReduction #
+  p.dump(ConstantDatabase)
+  funcfile.close()
 
 
 
 def persistent_id(obj):
-  if hasattr(obj, "persistent_id"):
-    return obj.persistent_id()
-  else:
+  # if hasattr(obj, "persistent_id"):
+  #   return obj.persistent_id()
+  # else:
     return ManualReduction(obj)
 
 
 def persistent_load(obj_id):
-  if obj_id[0] == "*":
     return ManualConstruction(obj_id)
-  else:
-    #print "Found at ObjStore",ObjStore.ObjectsStore[obj_id],obj_id
-    return ObjStore.ObjectsStore.get(obj_id, None)
+  # if obj_id[0] == "*":
+  #   return ManualConstruction(obj_id)
+  # else:
+  #   #print "Found at ObjStore",ObjStore.ObjectsStore[obj_id],obj_id
+  #   return ObjStore.ObjectsStore.get(obj_id, None)
 
 ##  if LoadedPickledData.has_key(filename):
 ##    print "GameStateAux.persistent_load Found in LoadedPickledData",obj_id
 ##    return LoadedPickledData[obj_id]
 ##  else:
 ##    filename="%s/%s.dat"%(aux_dir,obj_id)
-    filename="%s/%s.dat"%("f",obj_id)
+    # filename="%s/%s.dat"%("f",obj_id)
 
-    dat=GetPickledData(filename)
+    # dat=GetPickledData(filename)
 
-    try:
-      LoadedPickledData[dat.persistent_id()]=dat
-    except KeyError:
-      LoadedPickledData[obj_id]=dat
-    return dat
+    # try:
+    #   LoadedPickledData[dat.persistent_id()]=dat
+    # except KeyError:
+    #   LoadedPickledData[obj_id]=dat
+    # return dat
 
 
 
@@ -162,12 +180,13 @@ def SavePickData(filename,data):
   if PickDataBase.has_key(filename):
     return
 
-  string_file=cStringIO.StringIO()
-  p=cPickle.Pickler(string_file)
-  p.persistent_id=persistent_id
-  # data = SavePickleEnsure(data) #
-  p.dump(data)
-  PickDataBase[filename]=string_file.getvalue()
+  # string_file=cStringIO.StringIO()
+  # p=cPickle.Pickler(string_file)
+  # p.persistent_id=persistent_id
+  # # data = SavePickleEnsure(data) #
+  # p.dump(data)
+  # PickDataBase[filename]=string_file.getvalue()
+  PickDataBase[filename] = data
 
 
 
@@ -175,13 +194,14 @@ def SavePickData(filename,data):
 
 def GetPickledData(filename):
 
-  string_file = cStringIO.StringIO(PickDataBase[filename])
-  u=cPickle.Unpickler(string_file)
+  # string_file = cStringIO.StringIO(PickDataBase[filename])
+  # u=cPickle.Unpickler(string_file)
 
-  u.persistent_load=persistent_load
-  ret=u.load()
-  # ret = LoadPickleEnsure(ret) #
-  return ret
+  # u.persistent_load=persistent_load
+  # ret=u.load()
+  # # ret = LoadPickleEnsure(ret) #
+  # return ret
+  return PickDataBase[filename]
 
 
 # ---------------------------------- Sryml
@@ -230,20 +250,51 @@ def LoadPickleEnsure(data_ex, res_obj=None, res_field=""):
 
 
 def SaveData(filename, d):
-    funcfile = open(filename, "wt")
-    p = cPickle.Pickler(funcfile)
-    p.persistent_id = persistent_id
-    p.dump(d)
-    funcfile.close()
-
+    PickDataBase[filename] = d
+   
+    # funcfile = open(filename, "wt")
+    # p = cPickle.Pickler(funcfile)
+    # p.persistent_id = persistent_id
+    # p.dump(d)
+    # funcfile.close()
 
 def LoadData(filename):
-    funcfile = open(filename, "rt")
-    p = cPickle.Unpickler(funcfile)
-    p.persistent_load = persistent_load
-    ret = p.load()
-    funcfile.close()
-    return ret
+    return PickDataBase[filename]
+    # funcfile = open(filename, "rt")
+    # p = cPickle.Unpickler(funcfile)
+    # p.persistent_load = persistent_load
+    # ret = p.load()
+    # funcfile.close()
+    # return ret
+
+def LoadModuleData(module_names):
+  for m_name in module_names:
+    __import__(m_name)
+    sys.modules[m_name].LoadData(LoadData(m_name))
+
+
+def SaveConstData(module_name, d):
+  ConstantDatabase[module_name] = d
+
+def LoadConstData(module_name):
+  if Lumenx.IsSavedGame():
+    sys.modules[module_name].LoadConstData(ConstantDatabase[module_name])
+    del ConstantDatabase[module_name]
+
+def LoadModuleConstData(module_names):
+  for m_name in module_names:
+    __import__(m_name)
+    if ConstantDatabase.has_key(m_name):
+      sys.modules[m_name].LoadConstData(ConstantDatabase[m_name])
+
+def InitConstantDatabase(aux_dir):
+  global ConstantDatabase
+
+  filename="%s/ConstantDatabase.dat"%(aux_dir,)
+  funcfile=open(filename,"rt")
+  p=cPickle.Unpickler(funcfile)
+  ConstantDatabase=p.load()
+  funcfile.close()
 # ----------------------------------
 
 
@@ -388,35 +439,12 @@ def LoadFunctionAux(func_id_ex,res_obj=None,res_field="",aux=None): # -Sryml
 
 
 def SaveObjectAux(obj):
-  try:
-    return ("o",(obj.persistent_id(),None))
-  except Exception,exc:
-    print "Exception in SaveObjectAux()",exc," with object",obj
-    return ("n",(None,None))
+  return SavePickleEnsure(obj)
 
 
 
-def LoadObjectAux(obj_id_ex,res_obj=None,res_field=None,aux=None):
-  assign_obj=None
-  obj_id=obj_id_ex[1]
-  obj_kind=obj_id_ex[0]
-  if obj_kind=="o": # Metodo
-    ob_id=obj_id[0]
-    if ObjStore.ObjectsStore.has_key(ob_id):
-      assign_obj=ObjStore.ObjectsStore[ob_id]
-    else:
-      if res_obj is not None:
-        #print "FixDataBase.append() Entity->",obj_id,res_field,ob_id
-        FixDataBase.append((obj_id,res_obj.ObjId,res_field,ob_id,"Object"))
-      else:
-        print "Can not find object to add to FixDataBase",obj_id_ex
-  elif func_kind=="n":  # None
-    assign_obj=None
-
-  if res_obj:
-    exec("res_obj."+res_field+"=assign_obj")
-  else:
-    return assign_obj
+def LoadObjectAux(obj_id_ex,res_obj=None,res_field="",aux=None):
+  return LoadPickleEnsure(obj_id_ex,res_obj,res_field)
 
 
 def SaveEntityAux(ent):

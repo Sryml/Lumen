@@ -26,20 +26,14 @@ ModulesToBeSaved = []
 v__entities_saved = 0
 
 def GetPickFileName(data):
-    # return "f/%s.dat" % ObjStore.GetAutoId()
-    filename=None
-    try:
-        filename="%s/%s.dat"%("f",data.persistent_id())
-    except:
-        # if type(data) in (types.DictionaryType,types.ListType,types.TupleType):
-        #     filename="%s/%s%s.dat"%("f",str(type(data)),ObjStore.GetAutoId())
-        # elif type(data) == types.FunctionType:
-        #     filename="%s/%s%s.dat"%("f",data.func_name,ObjStore.GetAutoId())
-        if type(data) in (types.FunctionType, types.MethodType, types.BuiltinFunctionType):
-            filename="%s/%s %s.dat"%("f",data.__name__,ObjStore.GetAutoId())
-        else:
-##            filename="%s/%s.dat"%("f",ObjStore.GetNewId())
-            filename="%s/%s %s.dat"%("f",str(type(data)),ObjStore.GetAutoId()) # -Sryml
+    # -Sryml
+    id_ = ObjStore.GetAutoId()
+    t = type(data)
+
+    if t in (types.FunctionType, types.MethodType, types.BuiltinFunctionType):
+        filename="f/%s %s.dat"%(id_, data.__name__)
+    else:
+        filename="f/%s %s.dat"%(id_, t)
 
     return filename
 
@@ -816,9 +810,9 @@ class WorldState:
         file.write('Bladex.KillMusic()\n')             #
         file.write('Bladex.ShutDownSoundChannels()\n') #
         file.write('Bladex.PauseSoundSystem()\n')      #
-        file.write('Bladex.BeginLoadGame()\n')         #
-        file.write('import Lumenx\n\n')                # -Sryml
+        file.write('Bladex.BeginLoadGame()\n\n')       #
 
+        file.write('import Lumenx\n')                  # -Sryml
         file.write('execfile("../../Scripts/sys_init.py")\n\n')
 
         file.write('import BBLib\n')
@@ -1081,6 +1075,7 @@ for i in range(len(keys)):
 
         # Grabar las variables, funciones, ...
         file.write( '\n')
+        self.SaveConstModulesToBeSaved(file,temp_dir,aux_dir,ModulesToBeSaved) # -Sryml
         file.write('GameStateAux.InitGameState("%s")\n\n'%(aux_dir,))
         file.write('__load_bar.Increment()\n')
 
@@ -1101,18 +1096,18 @@ for i in range(len(keys)):
         file.write('__load_bar.Increment("Entities")\n')
         load_bar.Increment("Entities")
         self.SaveEntities(file)
-        file.write('__load_bar.Increment("PickledObjects")\n')
-        load_bar.Increment("PickledObjects")
         # printx("Saved global variables, Time %.3f" % (time.time()-start_time)) # Time
 
-        start_time = time.time()
-        ret = SavePickledObjects(file,temp_dir)
-        if(ret==0):
-            print "Failed to save pickled objects"
-            file.close()
-            return 0
-        printx("Saved pickled objects, Time %.3f" % (time.time()-start_time)) # Time
-        file.write('GameStateAux.GetPickledObjects("%s")\n\n'%("%s/%s.dat"%(aux_dir,"DinObjs"),))
+        # start_time = time.time()
+        # file.write('__load_bar.Increment("PickledObjects")\n')
+        # load_bar.Increment("PickledObjects")
+        # ret = SavePickledObjects(file,temp_dir)
+        # if(ret==0):
+        #     print "Failed to save pickled objects"
+        #     file.close()
+        #     return 0
+        # printx("Saved pickled objects, Time %.3f" % (time.time()-start_time)) # Time
+        # file.write('GameStateAux.GetPickledObjects("%s")\n\n'%("%s/%s.dat"%(aux_dir,"DinObjs"),))
 
         start_time = time.time()
         load_bar.Increment("Extra Modules")
@@ -1330,23 +1325,24 @@ for i in range(len(keys)):
         for i in global_vars:
             globs_dict[str(i[0])]=i[1]
 
-        filename="%s/%s.dat"%(temp_dir,"Globs")
-        try:
-            globfile=open(filename,"wt")
-        except:
-            print "failed to open "+filename
-            return 0
+        GameStateAux.PickDataBase["Globs"] = globs_dict
+        # filename="%s/%s.dat"%(temp_dir,"Globs")
+        # try:
+        #     globfile=open(filename,"wt")
+        # except:
+        #     print "failed to open "+filename
+        #     return 0
             
-        try:
-            p=cPickle.Pickler(globfile)
-        except cPickle.PicklingError: #
-            print "Failed to pickle file"+globfile
-            globfile.close()
-            return 0
+        # try:
+        #     p=cPickle.Pickler(globfile)
+        # except cPickle.PicklingError: #
+        #     print "Failed to pickle file"+globfile
+        #     globfile.close()
+        #     return 0
             
-        p.persistent_id=GameStateAux.persistent_id # -Sryml
-        p.dump(globs_dict)
-        globfile.close()
+        # p.persistent_id=GameStateAux.persistent_id # -Sryml
+        # p.dump(globs_dict)
+        # globfile.close()
         return 1
 
 
@@ -1499,16 +1495,34 @@ for i in range(len(keys)):
         file.write('\n\n')
 
 
-    def SaveModulesToBeSaved(self,file,temp_dir,aux_dir,ModulesToBeSaved):
+    def SaveConstModulesToBeSaved(self,file,temp_dir,aux_dir,ModulesToBeSaved):
         # -Sryml
+        module_names = []
         for i in ModulesToBeSaved:
             m_name = i.__name__
-            tempname="%s/%sData.dat"%(temp_dir,m_name)
-            filemame="%s/%sData.dat"%(aux_dir,m_name)
-            file.write('__load_bar.Increment("Module")\n')
-            i.SaveData(tempname)
-            file.write('import %s\n'%(m_name,))
-            file.write('%s.LoadData("%s")\n\n'%(m_name,filemame,))
+            if i.__dict__.has_key("SaveConstData"):
+                GameStateAux.SaveConstData(m_name, i.SaveConstData())
+                module_names.append(m_name)
+        file.write('__load_bar.Increment("Module")\n')
+        file.write('GameStateAux.LoadModuleConstData(%s)\n\n' % repr(module_names))
+
+
+    def SaveModulesToBeSaved(self,file,temp_dir,aux_dir,ModulesToBeSaved):
+        # -Sryml
+        module_names = []
+        for i in ModulesToBeSaved:
+            m_name = i.__name__
+            if i.__dict__.has_key("SaveData"):
+                GameStateAux.SaveData(m_name, i.SaveData())
+                module_names.append(m_name)
+        file.write('__load_bar.Increment("Module")\n')
+        file.write('GameStateAux.LoadModuleData(%s)\n\n' % repr(module_names))
+            # tempname="%s/%sData.dat"%(temp_dir,m_name)
+            # filemame="%s/%sData.dat"%(aux_dir,m_name)
+            # file.write('__load_bar.Increment("Module")\n')
+            # i.SaveData(tempname)
+            # file.write('import %s\n'%(m_name,))
+            # file.write('%s.LoadData("%s")\n\n'%(m_name,filemame,))
 
 
 
