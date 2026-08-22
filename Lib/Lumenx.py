@@ -75,6 +75,7 @@ class _DATA:
     #
     game_version = 1
     is_saved_game = 0
+    save_dir = ""
     current_map = ""
     current_mod = ""
     current_mod_menu = ""
@@ -197,6 +198,10 @@ def __fn():
         _DATA.game_version = CLASSIC_VER
 
     _DATA.is_saved_game = __main__.__dict__.get("IsSavedGame", 0)
+    _DATA.save_dir = __main__.__dict__.get("save_dir", "")
+    #
+    if _DATA.save_dir:
+        del __main__.__dict__["save_dir"]
 
 
 __fn()
@@ -1710,14 +1715,18 @@ del __fn, obj, name
 
 # ----------------------------------
 import GameState
+import GameStateAux
+
+if IsSavedGame():
+    GameStateAux.InitConstantDatabase(_DATA.save_dir)
 
 
 def SaveData():
-    return (_DATA.anm_event_funcs, _DATA.py_sounds)
+    return (_DATA.anm_event_funcs,)
 
 
 def LoadData(data):
-    _DATA.anm_event_funcs, _DATA.py_sounds = data
+    _DATA.anm_event_funcs = data[0]
     for ent_name, event_funcs in _DATA.anm_event_funcs.items():
         ent = Bladex_raw.GetEntity(ent_name)
         if ent:
@@ -1727,7 +1736,16 @@ def LoadData(data):
             del _DATA.anm_event_funcs[ent_name]
 
 
+def SaveConstData():
+    return _DATA.py_sounds
+
+
+def LoadConstData(data):
+    _DATA.py_sounds = data
+
+
 GameState.ModulesToBeSaved.append(sys.modules[__name__])
+GameStateAux.LoadConstData(__name__)
 
 #  _    _   _ __  __ _____ _   _
 # | |  | | | |  \/  | ____| \ | |

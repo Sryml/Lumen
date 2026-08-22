@@ -94,7 +94,10 @@ def LoadGameAux(clave, mod_dir=None): # -Sryml
     map_path = os.path.join(mod_root, "Maps", map_dir)
     if not os.path.isdir(map_path):
         return 0
+    save_dir = os.path.relpath(save_dir, map_path)
+    save_dir = string.replace(save_dir, "\\", "/")
     save_file = os.path.relpath(save_file, map_path)
+    save_file = string.replace(save_file, "\\", "/")
 
     printx("%s, %s" % (repr(mod_dir), map_dir))
 
@@ -119,6 +122,7 @@ def LoadGameAux(clave, mod_dir=None): # -Sryml
         new_map_dir = os.path.relpath(os.getcwd(), prev_map_root)
 
     lines = lines + [
+        "save_dir = %s" % (repr(save_dir),),
         "sys.path.append('%s/Lib')" % new_lumen_root,
         "sys.path.append('%s/Lib/PythonLib')" % new_lumen_root,
         "sys.path.append('%s/Lib/PythonLib')" % new_blade_root,
@@ -126,7 +130,7 @@ def LoadGameAux(clave, mod_dir=None): # -Sryml
         # "import Lumenx",
         "InNewMap = %d"
         % ((not new_map_dir) or string.lower(new_map_dir) != string.lower(Lumenx.GetCurrentMap())),
-        "execfile(%s)" % (repr(string.replace(save_file, "\\", "/")),),
+        "execfile(%s)" % (repr(save_file),),
         "b3028472_681f_5be2_8aeb_c7011b166583 = round(time.time() - b3028472_681f_5be2_8aeb_c7011b166583, 3)",
         "Lumenx.printx('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583, flush=1)",
         # "import Actions;Actions.ReportMsg('Load Time = %s' % b3028472_681f_5be2_8aeb_c7011b166583)",
