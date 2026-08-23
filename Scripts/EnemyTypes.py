@@ -33,6 +33,7 @@ import ObjStore
 import types
 
 from Lumenx import AutomatedAssets
+from LumenLib import BUtils
 
 
 #
@@ -2427,30 +2428,24 @@ class Lich (Enm_Def.NPCPerson):
 							elif weapon.Parent:
 								AttackerEntity= Bladex.GetEntity(weapon.Parent)
 							else:
-								AttackerEntity= None
+								AttackerEntity= getattr(weapon.Data, "ThrownBy", None) # -Sryml
 							if AttackerEntity and AttackerEntity.Person:
 								AttackerEntity.Data.OnKilledEnemy(EntityName)
 			elif NewMutilation==self.RightHand or NewMutilation==self.RightArm:
 				object = Bladex.GetEntity(me.InvRight)
 				if me.InvRight and object:
 					Actions.RemoveFromInventory (me, object,"DropRightEvent")
-					object.Impulse(0.0, 0.0, 0.0)
-					if object.TestHit:
-						object.RemoveFromWorld()
+					BUtils.ItemDrop(object) # -Sryml
 				object = Bladex.GetEntity(me.InvLeft)
 				if me.InvLeft and object:
 					Actions.RemoveFromInventory (me, object,"DropLeftEvent")
-					object.Impulse(0.0, 0.0, 0.0)
-					if object.TestHit:
-						object.RemoveFromWorld()
+					BUtils.ItemDrop(object) # -Sryml
 
 			elif NewMutilation==self.LeftHand or NewMutilation==self.LeftArm:
 				object = Bladex.GetEntity(me.InvLeft)
 				if me.InvLeft and object:
 					Actions.RemoveFromInventory (me, object,"DropLeftEvent")
-					object.Impulse(0.0, 0.0, 0.0)
-					if object.TestHit:
-						object.RemoveFromWorld()
+					BUtils.ItemDrop(object) # -Sryml
 
 			self.ResetCombat (EntityName)
 
