@@ -1009,7 +1009,12 @@ def CalculateFatigue(EntityName, AnimName):
 			#
 			# The ATTACK....
 			#
-			
+			# -Sryml
+			if not me.InvRight and me.InvRightBack and Reference.GiveObjectFlag(me.InvRightBack) != Reference.OBJ_QUIVER and AnimName not in ("g_draw_rlx", "g_draw_run"):
+				AnimName = me.AnimName == "JOG" and "g_draw_run" or "g_draw_rlx"
+				me.AddAnmEventFunc("ChangeREvent",Actions.ToggleIAttackRight)
+				me.AddAnmEventFunc("ChangeLEvent",Actions.ToggleIAttackLeft)
+				me.RaiseEvent("Interrupt")
 			######################################################################################	
 			# We start with the weapon component #
 			######################################################################################	
