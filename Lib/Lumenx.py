@@ -409,6 +409,7 @@ __bladex_decorators = [
     "SetGhostSectorSound",
     "SetListenerPosition",
     "ShowCriticalWarning",
+    "TriggerEvent",
 ]
 for __fn in __bladex_decorators:  # type: ignore
     Bladex_raw.__dict__[__fn] = Bladex.__dict__.get(__fn, __empty_func)  # type: ignore
@@ -1634,6 +1635,13 @@ def ShowCriticalWarning(*args):
     return apply(Bladex_raw.ShowCriticalWarning, args)
 
 
+def TriggerEvent(achv_idx):
+    import Reference
+
+    Reference.debugprint("Activated Achievement: %s" % achv_idx)
+    return Bladex_raw.TriggerEvent(achv_idx)
+
+
 ######### Function End
 
 
@@ -1841,4 +1849,5 @@ SetLumenRoot
 SetMapListPath
 SetModRoot
 ShowCriticalWarning
+TriggerEvent
 """

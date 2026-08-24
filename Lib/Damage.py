@@ -1582,6 +1582,10 @@ def CalculateDamage(VictimName, AttackerName, WeaponName, DamageType, DamageZone
 				AttackerEntity=Bladex.GetEntity(AttackerName)
 				if AttackerEntity:
 					AttackerEntity.Data.OnKilledEnemy(VictimName)
+					# -Sryml
+					if AttackerName == "Player1":
+						if Bladex.GetEntity(WeaponName).Kind[:4]=="Limb":
+							Bladex.TriggerEvent(54)
 
 	# Sticking to player
 	# Check type of weapon

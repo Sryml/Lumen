@@ -977,16 +977,16 @@ class PlayerPerson:
 		LevelLimit=CharStats.GetCharExperienceCost(me.CharType,me.Level)
 
 		if self.Name=="Player1":  #REVISAR
-			inv=me.GetInventory()
-			if inv:
-				weapon_name=inv.GetActiveWeapon()
-				if weapon_name is not None:
-					weapon= Bladex.GetEntity(weapon_name)
-					kind = weapon.Kind
-					Reference.debugprint("Player's active weapon: " + weapon_name)
-					Reference.debugprint("Player's weapon kind: " + kind)
-					if kind[:4]=="Limb":
-						Bladex.TriggerEvent(54)
+			# inv=me.GetInventory()
+			# if inv:
+			# 	weapon_name=inv.GetActiveWeapon()
+			# 	if weapon_name is not None:
+			# 		weapon= Bladex.GetEntity(weapon_name)
+			# 		kind = weapon.Kind
+			# 		Reference.debugprint("Player's active weapon: " + weapon_name)
+			# 		Reference.debugprint("Player's weapon kind: " + kind)
+			# 		if kind[:4]=="Limb":
+			# 			Bladex.TriggerEvent(54)
 			import Scorer
 			# Ahora compruebo si sube de nivel
 			if me.PartialLevel>=LevelLimit:
