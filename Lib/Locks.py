@@ -8,6 +8,8 @@ import darfuncs
 import types
 import B3DLib
 
+from LumenLib import mathutils
+
 LOCK          = 0
 UNLOCK        = 1
 LOCK_DISTANCE = 2000
@@ -30,6 +32,14 @@ def PlayerHasKey(EntityName, key):
 			return 1
 	return 0
 
+def KeyUp(pj_name,event):
+	pj = Bladex.GetEntity(pj_name)	
+	inv = pj.GetInventory()
+	obj = pj.Data.obj_used
+	lock = obj.Data.lockdata
+	inv.LinkRightHand(lock.key)
+	pj.DelAnmEventFunc("Key_up")
+
 def KeyDown(pj_name,event):
 	pj=Bladex.GetEntity(pj_name)	
 	inv = pj.GetInventory()	
@@ -46,15 +56,22 @@ def LockUseFunc(lock_name,use_from):
 	pj=Bladex.GetEntity("Player1")
 	
 	if B3DLib.GetXZDistance('Player1', lock_name)> LOCK_DISTANCE:
+		Actions.ReportMsg("Not in reach")
 		return
 		
 	if pj.Wuea==Reference.WUEA_WAIT:
 		return
 	
 	if PlayerHasKey (pj.Name, lock.key):
+		v1 = mathutils.Vector(pj.Position)
+		v2 = mathutils.Vector(obj.Position)
+		q = mathutils.Quaternion((0,-1,0), 0.2)
+		v = q * (v2-v1)
+		angle = B3DLib.GetXZAngle (v.x, 0.0, v.z)
+		#
 		if not pj.InvRight:
 			pj.Data.SwitchedWeapon = 0
-			Actions.QuickTurnToFaceEntity ("Player1", lock_name)
+			pj.QuickFace(angle)
 			LockUseFunc2(pj.Name)
 		else:
 			if Actions.IsRightHandStandardObject(pj.Name):
@@ -63,13 +80,13 @@ def LockUseFunc(lock_name,use_from):
 				pj.Wuea=Reference.WUEA_ENDED					
 				if not pj.InvRight:
 					pj.Data.SwitchedWeapon = 0
-					Actions.QuickTurnToFaceEntity ("Player1", lock_name)
+					pj.QuickFace(angle)
 					LockUseFunc2(pj.Name)
 			else:
 				pj.AddAnmEventFunc("ChangeREvent",Actions.ToggleWEvent)
 				pj.LaunchAnmType("Chg_r")
 				pj.Data.SwitchedWeapon = 1
-				Actions.QuickTurnToFaceEntity ("Player1", lock_name)
+				pj.QuickFace(angle)
 				pj.AnmEndedFunc=LockUseFunc2
 		import Scorer
 		Scorer.wLogFrame.SetVisible(0)
@@ -79,11 +96,12 @@ def LockUseFunc(lock_name,use_from):
 
 def LockUseFunc2(EntityName):
 	pj=Bladex.GetEntity(EntityName)
-	obj = pj.Data.obj_used	
-	lock = obj.Data.lockdata
-	inv = pj.GetInventory()	
-	inv.LinkRightHand(lock.key)
+	# obj = pj.Data.obj_used	
+	# lock = obj.Data.lockdata
+	# inv = pj.GetInventory()	
+	# inv.LinkRightHand(lock.key)
 	pj.LaunchAnmType("key")	
+	pj.AddAnmEventFunc("Key_up",KeyUp)
 	pj.AddAnmEventFunc("Activate",ActivateLock)
 	pj.AddAnmEventFunc("Key_down",KeyDown)
 	pj.AnmEndedFunc=LockUseFunc3
