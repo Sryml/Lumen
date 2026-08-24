@@ -28,12 +28,12 @@ def GetGlobalsAux(): # -Sryml
 
 
 def GetGlobalsAux2(req_type):
-##    global GlobalModulesCache
+    global GlobalModulesCache
 ##    global GlobalFunctionsCache
 ##    global GlobalCFunctionsCache
 ##
-##    if req_type==types.ModuleType and GlobalModulesCache:
-##        return GlobalModulesCache
+    if req_type==types.ModuleType and GlobalModulesCache:
+        return GlobalModulesCache
 ##    elif (req_type==types.FunctionType or req_type==types.MethodType) and GlobalFunctionsCache:
 ##        return GlobalFunctionsCache
 ##    elif req_type==types.BuiltinFunctionType and GlobalCFunctionsCache:
@@ -45,8 +45,8 @@ def GetGlobalsAux2(req_type):
         if type(i[1])==req_type:
             elems.append(i)
 
-##    if req_type==types.ModuleType:
-##        GlobalModulesCache=elems
+    if req_type==types.ModuleType:
+        GlobalModulesCache=elems
 ##    elif req_type==types.FunctionType or req_type==types.MethodType:
 ##        GlobalFunctionsCache=elems
 ##    elif req_type==types.BuiltinFunctionType:
@@ -244,17 +244,18 @@ def ConstCFunction(fun_name, func_self): # -Sryml
     # Primero en los de Blade
     import Bladex,Traps_C,B3DLib,BUIxc,BBLibc
     mods=(Bladex,Traps_C,B3DLib,BUIxc,BBLibc)
-    for i in mods:
-      func=i.__dict__.get(fun_name, None)
+    for m in mods:
+      func=m.__dict__.get(fun_name, None)
       if func:
-          return func
+        return func
     # Y luego en los otros
-    # global_mods=GetGlobalsAux2(types.ModuleType)
-    # for i in global_mods:
-    #   if i not in mods:
-    #       func=FindFunctionAux(i[1],fun_name)
-    #       if func:
-    #           return func
+    global_mods=GetGlobalsAux2(types.ModuleType)
+    for k,m in global_mods:
+      if m not in mods:
+        func=m.__dict__.get(fun_name, None)
+        if func:
+          return func
+        
   ret = getattr(func_self, fun_name, None)
   if ret is None:
     printx("Warning, can't find builtin function", (fun_name,func_self))
@@ -370,10 +371,10 @@ def Init():
   ClearCaches()
   RegisterPickSound()
   RegisterPickEntity()
-  # RegisterPickFunction() # Unable to cover serialization behavior
+  RegisterPickFunction() # Unable to override serialization behavior, but can prevent unsafe unpacking issues
   RegisterPickSector()
   RegisterPickMethod()
-  # RegisterPickCFunction() # Unable to cover serialization behavior
+  RegisterPickCFunction() # Unable to override serialization behavior, but can prevent unsafe unpacking issues
   RegisterPickEntInventory()
   RegisterPickEllipsis()
   print "Executed PickInit.Init()"
