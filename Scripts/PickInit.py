@@ -73,7 +73,7 @@ def RedSound(s):
 
 
 def RegisterPickSound():
-  #Creo uno cualquiera.  �Revisar?
+  #Creo uno cualquiera.  ¿Revisar?
   gmadlig=Bladex.CreateSound('../../sounds/golpe-madera-mediana.wav', 'GolpeMaderaMediana')
 
   copy_reg.pickle(type(gmadlig),RedSound,ConstSound)
@@ -99,7 +99,7 @@ def RedEntity(e):
 
 
 def RegisterPickEntity():
-  #Creo uno cualquiera.  �Revisar?
+  #Creo uno cualquiera.  ¿Revisar?
   #gmadlig=Bladex.CreateEntity('PickEntity','Entity Spot',0,0,0)
   gmadlig=Bladex.GetEntity("Camera") # by Sryml
 
@@ -153,6 +153,9 @@ def ConstMethod(im_self, method_name): # -Sryml
   import ObjStore
   import GameStateAux
 
+  if im_self is None:
+    return None
+  
   ret = getattr(im_self, method_name, None)
   if not ret:
     printx("PickInit.ConstMethod() can not find method",method_name,"in object",im_self)
@@ -189,7 +192,7 @@ def RedMethod(f): # -Sryml
   #
   im_self = f.im_self
   if im_self is None:
-    # ?????
+    # 未绑定方法
     im_self = im_class
   return ConstMethod,(im_self,func_name)
   # if hasattr(im_self, "persistent_id"):

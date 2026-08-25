@@ -215,13 +215,19 @@ def ManualReduction(obj):
     #     construction, args = PickInit.RedFunction(obj)
     if data_t == types.BuiltinFunctionType:
         construction, args = PickInit.RedCFunction(obj)
-
-    if construction is not None:
         ret = "*%s" % repr(((construction.__name__, GetFunctionFile(construction)), args))
+    elif data_t == types.InstanceType:
+        check = getattr(obj, "persistent_check", None)
+        if check and (not check()):
+            ret = "None"
+
     return ret
 
 # 手动构造函数
 def ManualConstruction(obj_id):
+    if obj_id == "None":
+        return None
+    #
     (func_name, lib_name), args = eval(obj_id[1:])
     __import__(lib_name)
     construction = sys.modules[lib_name].__dict__[func_name]
