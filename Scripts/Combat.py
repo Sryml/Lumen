@@ -361,7 +361,7 @@ SkeletonAttackData = [
             [BLOCK,  0.05, "tf",                3500.0, 7000.0, 9000.0, 0.50],
             
            # attacks:
-        [ATTACKDOWN, 1.00, ("STAIRS",),         1200.0, 1600.0, 2500.0, 0.35],
+        # [ATTACKDOWN, 1.00, ("STAIRS",),         1200.0, 1600.0, 2500.0, 0.35], # Nonexistent action -Sryml
             
             [ATTACK, 0.00, ("GA","GA","GA","GM1",), 1200.0, 1400.0, 2500.0, 0.35],
             [ATTACK, 0.50, ("GA",),             1200.0, 1400.0, 2500.0, 0.35],

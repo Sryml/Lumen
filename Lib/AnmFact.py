@@ -1565,9 +1565,9 @@ def AnmFactGolem():
 # Prisoner
 #
 
-Bladex.AddTranTime("Prs_1","","",0.2, 0)
-Bladex.AddTranTime("Prs_2","","",0.2, 0)
-Bladex.AddTranTime("Prs_3","","",0.2, 0)
-Bladex.AddTranTime("Prs_4","","",0.2, 0)
-Bladex.AddTranTime("Prs_5","","",0.2, 0)
-Bladex.AddTranTime("Prs_6","","",0.2, 0)
+# Bladex.AddTranTime("Prs_1","","",0.2, 0)
+# Bladex.AddTranTime("Prs_2","","",0.2, 0)
+# Bladex.AddTranTime("Prs_3","","",0.2, 0)
+# Bladex.AddTranTime("Prs_4","","",0.2, 0)
+# Bladex.AddTranTime("Prs_5","","",0.2, 0)
+# Bladex.AddTranTime("Prs_6","","",0.2, 0)

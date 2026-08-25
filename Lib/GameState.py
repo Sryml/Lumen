@@ -27,13 +27,18 @@ v__entities_saved = 0
 
 def GetPickFileName(data):
     # -Sryml
-    id_ = ObjStore.GetAutoId()
     t = type(data)
 
     if t in (types.FunctionType, types.MethodType, types.BuiltinFunctionType):
-        filename="f/%s %s.dat"%(id_, data.__name__)
+        filename="f/%s %s.dat"%(ObjStore.GetAutoId(), data.__name__)
+    elif t == types.InstanceType:
+        id_ = data.__dict__.get("ObjId")
+        if id_ is None:
+            filename="f/%s %s.dat"%(ObjStore.GetAutoId(), t)
+        else:
+            filename="f/%s.dat"%(id_)
     else:
-        filename="f/%s %s.dat"%(id_, t)
+        filename="f/%s %s.dat"%(ObjStore.GetAutoId(), t)
 
     return filename
 
@@ -76,6 +81,12 @@ def SavePickledObjects(file,aux_dir):
     return 1
 
 
+def RestoreSave(save_dir):
+    try:
+        shutil.rmtree(save_dir)
+        os.rename("../../Save/SaveBackup/%s" % os.path.basename(save_dir),save_dir)
+    except:
+        pass
 
 
 class EntityState:
@@ -737,12 +748,8 @@ class WorldState:
         except:
             traceback.print_exc()
             import SaveGame
-            try:
-                shutil.rmtree(save_dir)
-                if SaveGame.SAVE_BACKUP:
-                    os.rename("../../Save/SaveBackup/%s" % os.path.basename(save_dir),save_dir)
-            except:
-                pass
+            if SaveGame.SAVE_BACKUP:
+                Bladex.AddScheduledFunc(-1, RestoreSave, (save_dir,))
             printx("[SAVE FAILED]: "+save_dir)
             save_success = 0
         else:

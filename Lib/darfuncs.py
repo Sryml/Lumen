@@ -509,10 +509,10 @@ class E_Grup:
 		return self.ObjId
 
 	def ImDeadFunc(self,Name):
+		Bladex.GetEntity(Name).ImDeadFunc = self.ImDeadFuncs["Ch_"+Name] # Ensure correct recovery when multiple groups are assigned -Sryml
 		self.ImDeadFuncs["Ch_"+Name](Name)
 		self.n = self.n - 1
 		#print "Quedan",self.n
-		Bladex.GetEntity(Name).ImDeadFunc = self.ImDeadFuncs["Ch_"+Name]		
 		self.Guys.remove(Name)
 		if self.n == 0:
 			if self.OnDeath:

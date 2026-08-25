@@ -1160,6 +1160,8 @@ def GetDefaultConfig(key=None):
 
 
 def GetEntity(arg):
+    if arg is None:
+        return None
     ret = Bladex_raw.GetEntity(arg)
     if ret is None:
         return None
