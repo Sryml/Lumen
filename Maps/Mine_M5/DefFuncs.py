@@ -267,6 +267,7 @@ def BorraLuzAzulada():
 	luz      = Bladex.GetEntity("GemaBlueLight")
 	gemaBlue.Unlink(luz)
 	luz.SubscribeToList("Pin")
+	Ontake.DelOnTakeEvent(gemaBlue.Name) # -Sryml
 
 
 def MuerteBichitoZampon(ent_name):
@@ -1166,6 +1167,7 @@ def takeGemR() :
 	luz.TimerFunc=RLightTimerB;
 	luz.SubscribeToList("RLightTimerB")
 	lightTimerStartTime=Bladex.GetTime()
+	Ontake.DelOnTakeEvent("GemaR") # -Sryml
 
 def takeGemG() :
 	global lightTimerStartTime
@@ -1176,6 +1178,7 @@ def takeGemG() :
 	lightTimerStartTime=Bladex.GetTime()
 	MusicTool.Music2Sector("ambiente33","Atmosfera18")
 	MusicTool.ModifyMusicEvent("ambiente33","ambiente30")
+	Ontake.DelOnTakeEvent("GemaG") # -Sryml
 
 def Print(x):
 	print x

@@ -1178,6 +1178,8 @@ def BorraLuz():
 	MusicTool.Music2Sector("ambiente30","Combate4")
 	MusicTool.Music2Sector("ambiente29",None)
 
+	Ontake.DelOnTakeEvent("IcePowPot1") # -Sryml
+
 
 
 ######################################################################################################
@@ -1587,6 +1589,7 @@ def CriptaSuena(sectorindex,entityname):
 def DetieneMusica():
 
 	MusicTool.Music2Sector("ambiente22",None)
+	Ontake.DelOnTakeEvent("DiscoLocomia") # -Sryml
 
 
 

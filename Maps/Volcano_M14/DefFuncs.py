@@ -26,6 +26,8 @@ def BorraLuz():
 	volcancorona.Unlink(luz2_PP)
 	luz2_PP.SubscribeToList("Pin")
 
+	Ontake.DelOnTakeEvent("Volcancorona") # -Sryml
+
 
 #*************************************************************************************************
 #*************************************************************************************************
@@ -525,6 +527,7 @@ def SubeLavaHasta(lava,delta,hasta):
 ### Esta funcion creara los salamanders!!!!
 
 def subelavera():
+	Ontake.DelOnTakeEvent("volcweap2") # -Sryml
 
 	darfuncs.UnhideBadGuy("23Salamander")
 	darfuncs.UnhideBadGuy("23bSalamander")

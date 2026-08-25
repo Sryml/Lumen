@@ -2055,6 +2055,7 @@ def DespuesMuerte():
 def Fetichazo():
 	global ActivaLosEsqueletos
 	ActivaLosEsqueletos = 1
+	Ontake.DelOnTakeEvent("Fetiche1") # -Sryml
 
 def SubeFeticheX():
      global Continuafet

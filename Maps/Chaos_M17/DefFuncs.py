@@ -1270,6 +1270,7 @@ def GolemVomitoso():
 		Bladex.AddScheduledFunc(Bladex.GetTime()+2.0, GolemVomitosoCae,())
 		Bladex.DeactivateInput()
 		CierraBarrotes()
+		Ontake.DelOnTakeEvent("Llavevamp") # -Sryml
 
 
 def ChapuzaGolemMierda(epi,blas):

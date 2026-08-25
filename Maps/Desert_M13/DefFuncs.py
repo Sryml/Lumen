@@ -2369,6 +2369,7 @@ def CambiazoGolem():
 	CierraBarrotes()
 	Bladex.AddScheduledFunc(Bladex.GetTime()+2.0,CambiazoGolemFinal,())
 	#Bladex.ExeMusicEvent( Bladex.GetMusicEvent("Acombhard") )
+	Ontake.DelOnTakeEvent("llave4") # -Sryml
 	
 
 def ClearCentralGolem():
