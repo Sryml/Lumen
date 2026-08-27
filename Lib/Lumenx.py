@@ -273,7 +273,8 @@ class __FunctionDecorator:
 
     def Decorator(self, obj, name):
         RawFunc = self.RawFunc
-        setattr(RawFunc, name, getattr(obj, name))
+        if hasattr(obj, name):
+            setattr(RawFunc, name, getattr(obj, name))
         setattr(obj, name, getattr(self, name))
         self.NameList.append(name)
 
@@ -309,13 +310,16 @@ class __FunctionDecorator:
         return self.RawFunc.isinstance(obj, cls)
 
     def getattr(self, obj, name, default=Ellipsis):
-        # 大概率存在使用try
+        # 大概率存在则使用try
         try:
             return self.RawFunc.getattr(obj, name)
         except:
             if default is not Ellipsis:
                 return default
             Raisex(AttributeError, "object has no attribute '%s'" % name)
+
+    def enumerate(self, obj):
+        return map(lambda x, y: (x, y), range(len(obj)), obj)
 
     # BBLibc module
     def B_BitMap24_ReadFromBMP(self, this, arg0):
@@ -1710,6 +1714,7 @@ for obj, name in (
     (sys.modules["__builtin__"], "type"),
     (sys.modules["__builtin__"], "isinstance"),
     (sys.modules["__builtin__"], "getattr"),
+    (sys.modules["__builtin__"], "enumerate"),
     (BBLibc, "B_BitMap24_ReadFromBMP"),
     (BBLibc, "B_BitMap24_ReadFromJPEG"),
     (BBLibc, "B_BitMap24_ReadFromFile"),
