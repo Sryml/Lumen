@@ -273,10 +273,10 @@ def ReviveSave(this):
         Inventory_dict = props[2]
         compatible = 0
 
-        maxWeapons = Inventory_dict.get("maxWeapons", 4)
-        if maxWeapons < Inventory.MAXWEAPONS:
+        vals = MemPersistence.Get('2DMapValues')
+        if vals and vals[0][14]:
             compatible = 1
-            Inventory_dict["maxWeapons"] = Inventory.MAXWEAPONS
+            Props["MaxWeaponsEx"] = 1
         Armor = Props.get("Armor", ())
         if Armor:
             Armor_dict = {

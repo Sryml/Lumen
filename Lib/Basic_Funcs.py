@@ -236,7 +236,7 @@ class PlayerPerson:
 
 		me.MutilateFunc= self.MutilateFunc
 		inv = me.GetInventory()
-		inv.maxWeapons = Inventory.MAXWEAPONS
+		inv.maxWeapons = Inventory.MAXWEAPONS + Reference.MaxWeaponsEx
 		inv.maxShields = Inventory.MAXSHIELDS
 		inv.maxQuivers = Inventory.MAXQUIVERS
 		inv.maxObjects = Inventory.MAXOBJECTS
@@ -389,7 +389,7 @@ class PlayerPerson:
 	def __getstate__(self):
 		# Tiene que devolver c�mo poder guardar el estado de la clase
 		me = Bladex.GetEntity(self.Name)
-		inv = me.GetInventory()
+		# inv = me.GetInventory()
 		return (1,{"PlayerPerson":(self.ObjId,
 								   self.NPC,
 								   self.Name,
@@ -415,7 +415,6 @@ class PlayerPerson:
 								   self.ObjectsTaken,
 								   self.Invincibility,
 								   self.LastDamageType,
-								   (inv.maxWeapons, inv.maxShields, inv.maxQuivers, inv.maxObjects),
 								   GameStateAux.SaveNewMembers(self),
 								   PlayerPerson.__save_core_funcs__(self))
 					}
@@ -452,8 +451,13 @@ class PlayerPerson:
 			me.NewComboFunc=self.StdNewCombo
 			me.BigFallFunc=self.StdBigFall
 			me.AttackFunc= Damage.CalculateFatigue
+			#
 			inv = me.GetInventory()
-
+			inv.maxWeapons = Inventory.MAXWEAPONS + Reference.MaxWeaponsEx
+			inv.maxShields = Inventory.MAXSHIELDS
+			inv.maxQuivers = Inventory.MAXQUIVERS
+			inv.maxObjects = Inventory.MAXOBJECTS
+			#
 			self.DamageFactorNone=parms[3]
 			self.DamageFactorLight=parms[4]
 			self.DamageFactorHeavy=parms[5]
@@ -476,9 +480,8 @@ class PlayerPerson:
 			self.ObjectsTaken=parms[22]
 			self.Invincibility=parms[23]
 			self.LastDamageType=parms[24]
-			inv.maxWeapons,inv.maxShields,inv.maxQuivers,inv.maxObjects = parms[25]
-			GameStateAux.LoadNewMembers(self,parms[26])
-			PlayerPerson.__load_core_funcs__(self,parms[27])
+			GameStateAux.LoadNewMembers(self,parms[25])
+			PlayerPerson.__load_core_funcs__(self,parms[26])
 
 		else:
 			print "ERROR, Incorrect version"

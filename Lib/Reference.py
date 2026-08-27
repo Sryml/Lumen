@@ -698,9 +698,9 @@ DefaultObjectData['CarcajEnvenenado2']=  DefaultObjectData['CarcajEnvenenado']
 
 DefaultObjectData['Cincel']=             [OBJ_STANDARD,  2, 0, 2.0,  THR_STRAIGHT, []]
 DefaultObjectData['Estaca']=             [OBJ_STANDARD,  4, 0, 2.0,  THR_STRAIGHT, []]
-DefaultObjectData['MartilloForja']=      [OBJ_STANDARD,  5, 0, 2.0,  THR_STRAIGHT, []]
-DefaultObjectData['Pala']=               [OBJ_STANDARD, 10, 0, 2.0,  THR_STRAIGHT, []]
-DefaultObjectData['Pico']=               [OBJ_STANDARD, 20, 0, 2.0,  THR_STRAIGHT, []]
+DefaultObjectData['MartilloForja']=      [OBJ_WEAPON,  5, 0, 2.0,  THR_STRAIGHT, []]
+DefaultObjectData['Pala']=               [OBJ_WEAPON, 10, 0, 2.0,  THR_STRAIGHT, []]
+DefaultObjectData['Pico']=               [OBJ_WEAPON, 20, 0, 2.0,  THR_STRAIGHT, []]
 
 
 
@@ -1264,16 +1264,27 @@ def CheckWeapons():
 
 TimesSaved = 0
 SpecialsTB = 0
+MaxWeaponsEx = 0
 
 def SaveData():
-  d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB)
+  d=(EntitiesSelectionData,TimesSaved,EntitiesObjectData)
   return d
 
 
 def LoadData(d):
-  global EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB
+  global EntitiesSelectionData,TimesSaved,EntitiesObjectData
 
-  EntitiesSelectionData,TimesSaved,EntitiesObjectData,SpecialsTB = d
+  EntitiesSelectionData,TimesSaved,EntitiesObjectData = d
+
+
+def SaveConstData():
+  d=(SpecialsTB,MaxWeaponsEx)
+  return d
+
+def LoadConstData(d):
+  global SpecialsTB,MaxWeaponsEx
+
+  SpecialsTB,MaxWeaponsEx = d
 
 import GameState
 GameState.ModulesToBeSaved.append(__import__(__name__))

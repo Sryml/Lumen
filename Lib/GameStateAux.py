@@ -389,19 +389,61 @@ def LoadBODs(files):
 
 
 
+def AddObjectToInventory(me, names): # -Sryml
+  # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
+  import Actions
+  from LumenLib import BUtils
+  
+  inv = me.GetInventory()
+  for i,name in enumerate(names):
+    if i >= inv.maxObjects:
+      BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
+      continue
+    Actions.ExtendedTakeObject(inv, name)
 
-
-def AddWeaponToInventory(inv,weapon_name):
+def AddWeaponToInventory(me, names): # -Sryml
+  # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
   import Reference
+  import Actions
+  from LumenLib import BUtils
+  
+  inv = me.GetInventory()
+  for i,name in enumerate(names):
+    if i >= inv.maxWeapons:
+      BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
+      continue
 
-  object_flag=Reference.GiveObjectFlag(weapon_name)
-  if object_flag == Reference.OBJ_BOW:
-      inv.AddBow(weapon_name)
-  else:
-      flag=Reference.GiveWeaponFlag(weapon_name)
-      #inv.AddWeapon(i[0],flag)
-      inv.AddWeapon(weapon_name,flag)
-    
+    object_flag=Reference.GiveObjectFlag(name)
+    if object_flag == Reference.OBJ_BOW:
+        inv.AddBow(name)
+    else:
+        flag=Reference.GiveWeaponFlag(name)
+        inv.AddWeapon(name,flag)
+
+def AddShieldToInventory(me, names): # -Sryml
+  # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
+  import Actions
+  from LumenLib import BUtils
+  
+  inv = me.GetInventory()
+  for i,name in enumerate(names):
+    if i >= inv.maxShields:
+      BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
+      continue
+    inv.AddShield(name)
+
+def AddQuiverToInventory(me, names): # -Sryml
+  # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
+  import Actions
+  from LumenLib import BUtils
+  
+  inv = me.GetInventory()
+  for i,name in enumerate(names):
+    if i >= inv.maxQuivers:
+      BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
+      continue
+    inv.AddQuiver(name)
+
 
 def LinkRight(weapon_name,inv,owner):
 	weapon = Bladex.GetEntity(weapon_name)
@@ -424,10 +466,6 @@ def LinkLeft2B(weapon_name,inv,owner):
 	owner.Unlink(weapon)
 	inv.LinkLeftHand2(weapon_name)
 
-def AddQuiverToInventory(inv,quiver_name):
-  obj=Bladex.GetEntity(quiver_name)
-##  ItemTypes.ItemDefaultFuncs(obj)
-  inv.AddQuiver(quiver_name)
 
 
 def SaveFunctionAux(func): # -Sryml

@@ -996,7 +996,7 @@ def IsOneTooMany (EntityName, ObjectName):
 	#	return FALSE
 	#else:
 	if object_flag == Reference.OBJ_ITEM:
-		ret_val =  inv.nKindObjects >= inv.maxObjects
+		ret_val =  inv.nObjects >= inv.maxObjects
 		if not ret_val:
 			ObjectEntity =  Bladex.GetEntity(ObjectName)
 			for i in range(inv.nKindObjects):

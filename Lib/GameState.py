@@ -399,8 +399,10 @@ class EntityPersonState(EntityBipedState):
 
 
     def SaveStatePass2(self,file,aux_dir):
+        # -Sryml
         #print "begin PersonEntity.SaveStatePass2() "
         #EntityBipedState.SaveStatePass2(self,file,aux_dir)
+        import Reference
 
         file.write('\no=Bladex.GetEntity("%s")\n'%(self.CreationProps["Name"]))
 
@@ -409,27 +411,28 @@ class EntityPersonState(EntityBipedState):
             SavePickDataAux(file,data,'o.Data=%s\n')
 
         file.write('inv=o.GetInventory()\n')
-        for i in self.Inventory["Objects"]:
-            #inv.AddObject(i)
-            file.write('Actions.ExtendedTakeObject(inv,"%s")\n'%(i,))
 
-        # file.write('inv.maxWeapons=%d\n'%(self.Inventory["maxWeapons"],))
-        for i in self.Inventory["Weapons"]:
-            file.write('GameStateAux.AddWeaponToInventory(inv,"%s")\n'%(i,))
+        if self.Inventory["Objects"]:
+            file.write("GameStateAux.AddObjectToInventory(o, %s)\n" % self.Inventory["Objects"])
+
+        if self.Inventory["Weapons"]:
+            file.write("GameStateAux.AddWeaponToInventory(o, %s)\n" % self.Inventory["Weapons"])
 
         for i in self.Inventory["Shields"]:
             #inv.AddShield(i)
             #Breakings.SetBreakableWS(i)
-            file.write('inv.AddShield("%s")\n'%(i,))
+            # file.write('inv.AddShield("%s")\n'%(i,))
             real_ent=Bladex.GetEntity(i)
             try:
                 a=real_ent.Data.brkobjdata
-                file.write('Breakings.SetBreakableWS("%s")\n'%(i,))
+                # file.write('Breakings.SetBreakableWS("%s")\n'%(i,))
             except Exception,exc:
-                print "Exception in SaveStatePass2",exc
+                Reference.debugprint("Exception in SaveStatePass2",exc, i)
+        if self.Inventory["Shields"]:
+            file.write("GameStateAux.AddShieldToInventory(o, %s)\n" % self.Inventory["Shields"])
 
-        for i in self.Inventory["Quivers"]:
-            file.write('GameStateAux.AddQuiverToInventory(inv,"%s")\n'%(i,))
+        if self.Inventory["Quivers"]:
+            file.write("GameStateAux.AddQuiverToInventory(o, %s)\n" % self.Inventory["Quivers"])
 
         for i in self.Inventory["Keys"]:
             file.write('inv.AddKey("%s")\n'%(i,))
@@ -834,6 +837,7 @@ class WorldState:
         file.write('import darfuncs\n\n\n\n')
         file.write('import LoadBar\n\n\n\n')
         file.write('import Language\n\n')
+        file.write('from LumenLib import BUtils\n')
         file.write('############################################################\n\n\n')
 
         file.write('my_last_player_ctype="%s"\n'%(Bladex.GetLastPlayerCType(),))

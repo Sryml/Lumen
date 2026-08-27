@@ -2045,6 +2045,7 @@ class BladeSword(PersistantItemType):
 		weapon.Impulse(ix, iy, iz)
 		weapon.ExcludeHitFor(owner)
 		owner.DelAnmEventFunc(EventName)
+		weapon.OnStopFunc = self.StartBackToPlayer #
 
 
 class BladeSword2(ActivateableSpecialWeapon):
@@ -2182,6 +2183,7 @@ class BladeSword2(ActivateableSpecialWeapon):
 		weapon.Impulse(ix, iy, iz)
 		weapon.ExcludeHitFor(owner)
 		owner.DelAnmEventFunc(EventName)
+		weapon.OnStopFunc = self.StartBackToPlayer #
 
 	def ThrowReleaseEventHandler (self,EntityName,EventName):
 		weapon= Bladex.GetEntity(self.Name)

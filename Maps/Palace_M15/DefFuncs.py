@@ -2972,9 +2972,10 @@ def ComienzaLaHistoria(sectorindex,entityname):
 
 	if entityname == "Player1":
 		#
+		Reference.MaxWeaponsEx = 1
 		char = Bladex.GetEntity("Player1")
 		inv = char.GetInventory()
-		inv.maxWeapons = inv.maxWeapons + 1
+		inv.maxWeapons = inv.maxWeapons + Reference.MaxWeaponsEx
 		#
 		GetTabliStates()
 		Carried = 0

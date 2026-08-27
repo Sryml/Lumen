@@ -292,9 +292,12 @@ def ResetExclusionGroup(ent_name):
     me.OnStopFunc = None
 
 
-def ItemDrop(object, safe_pos=None):
-    # type: (Bladex._entity.B_PyEntity, ...) -> ...
+def ItemDrop(object, safe_pos=None, pos=None):
+    # type: (Bladex._entity.B_PyEntity, ..., ...) -> ...
     import SolidMask
+
+    if pos is not None:
+        object.Position = pos
 
     try:
         object.Solid = 1

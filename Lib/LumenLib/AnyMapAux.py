@@ -10,6 +10,7 @@ MainCharData = {
             "Saves": 0,
             "Energy": 0.0,
             "Life": 1,
+            "MaxWeaponsEx": 0,
         },
         {
             "Weapons": [],
@@ -1121,7 +1122,7 @@ MainCharData = {
     },
     "tower_m16": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1223,7 +1224,7 @@ MainCharData = {
     },
     "chaos_m17": {
         "Default": (
-            {"Level": 19, "PartialLevel": 0.63},
+            {"Level": 19, "PartialLevel": 0.63, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1330,7 +1331,7 @@ MainCharData = {
     },
     "mine_back": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1432,7 +1433,7 @@ MainCharData = {
     },
     "labyrinth_back": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1534,7 +1535,7 @@ MainCharData = {
     },
     "tomb_back": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1636,7 +1637,7 @@ MainCharData = {
     },
     "ice_back": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1738,7 +1739,7 @@ MainCharData = {
     },
     "btomb_back": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [
@@ -1840,7 +1841,7 @@ MainCharData = {
     },
     "desert_back": {
         "Default": (
-            {"Level": 18, "PartialLevel": 0.75},
+            {"Level": 18, "PartialLevel": 0.75, "MaxWeaponsEx": 1},
             {
                 "Weapons": [("Player1_Equip_2", "QueenSword", ""), ("", "Arco", "")],
                 "Quivers": [

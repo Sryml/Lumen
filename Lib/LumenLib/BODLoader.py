@@ -234,7 +234,6 @@ def StartGame(this):
                             Inventory_Dict[k] = v
 
                 CreationProps["Kind"] = Kind
-                Inventory_Dict["maxWeapons"] = Inventory.MAXWEAPONS
                 Props["Life"] = CharStats.GetCharMaxLife(Kind, Props["Level"])
                 Props["Energy"] = CharStats.GetCharMaxEnergy(Kind, Props["Level"])
                 if SkinName != Kind:
@@ -267,7 +266,7 @@ def StartGame(this):
                 except:
                     pass
 
-                Reference.debugprint("Weapons: %s" % Inventory_Dict["Weapons"])
+                # Reference.debugprint("Weapons: %s" % Inventory_Dict["Weapons"])
                 MemPersistence.Store(
                     "2DMapValues",
                     [VisitedMaps, PlacedTablets, MText, PWeapons, PItems, BaList],

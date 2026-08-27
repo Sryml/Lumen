@@ -30,6 +30,7 @@ class MainCharState(GameState.EntityPersonState):
 		# self.Props["Armor"]=(entity.MeshName,entity.Data.armour_level,entity.Data.armour_prot_factor)
 		self.Props["Saves"]=Reference.TimesSaved
 		self.Props["SpecialsTB"]=Reference.SpecialsTB
+		self.Props["MaxWeaponsEx"]=Reference.MaxWeaponsEx
 		self.Props["Combos"]=Bladex.GetCombos("Player1")
 		self.Props["PViewType"]=cam.PViewType
 		self.Props["ObjectsTaken"]=entity.Data.ObjectsTaken
@@ -46,7 +47,7 @@ class MainCharState(GameState.EntityPersonState):
 			for name in Actions.GetListOfObjectsAt(inv,i):
 				self.Inventory["Objects"].append(self.__GetObjAux(name))
 
-		self.Inventory["maxWeapons"]=inv.maxWeapons
+		# self.Inventory["maxWeapons"]=inv.maxWeapons
 		self.Inventory["Weapons"]=[]
 		for i in range(inv.nWeapons):
 			self.Inventory["Weapons"].append(self.__GetObjAux(inv.GetWeapon(i)))
@@ -153,15 +154,23 @@ def CreateMainCharWithProps(props):
 	import CharStats
 
 
-	char=Bladex.CreateEntity("Player1",CreationProps["Kind"],0,0,0,"Person")
+	char=Bladex.CreateEntity("Player1",CreationProps["Kind"],0,0,0,"Person") # type: Bladex._entity.B_Entity_Person
 	cam=Bladex.GetEntity("Camera")
+	#
+	Reference.TimesSaved         = Props["Saves"]
+	Reference.SpecialsTB         = Props.get("SpecialsTB", 0)
+	Reference.MaxWeaponsEx       = Props.get("MaxWeaponsEx", 0)
+	Bladex.SetCombos("Player1",Props["Combos"])
+	if cam: cam.PViewType=Props["PViewType"]
+	else: print "Camera not available for setting PViewType"
+
 	char.Data=Basic_Funcs.PlayerPerson(char)
 	inv=char.GetInventory()
-	AniSound.AsignarSonidosCaballero('Player1')
+	# AniSound.AsignarSonidosCaballero('Player1')
 
 	char.Level=Props["Level"]
 	PartialLevel = Props["PartialLevel"]
-	if 0 < PartialLevel < 1:
+	if 0 < PartialLevel < 1: # -Sryml
 		PartialLevel = PartialLevel * CharStats.GetCharExperienceCost(CreationProps["Kind"],Props["Level"])
 	char.PartialLevel=PartialLevel
 	char.Life=Props["Life"]
@@ -177,26 +186,24 @@ def CreateMainCharWithProps(props):
 		char.Data.InvShieldQueue = Props["InventoryQueue"][1]
 		char.Data.InvQuiverQueue = Props["InventoryQueue"][2]
 		char.Data.InvObjectQueue = Props["InventoryQueue"][3]
-	#
-	Reference.TimesSaved         = Props["Saves"]
-	Reference.SpecialsTB         = Props.get("SpecialsTB", 0)
-	Bladex.SetCombos("Player1",Props["Combos"])
-	if cam: cam.PViewType=Props["PViewType"]
-	else: print "Camera not available for setting PViewType"
 
 	char.SendTriggerSectorMsgs=1
 
 
-
+	maxInv = len(Inventory["Objects"])
+	prev_maxInv, inv.maxObjects = inv.maxObjects, maxInv
 	for i in Inventory["Objects"]:
 		CreateEntAux(i,"Physic")
 		Actions.ExtendedTakeObject(inv,i[0])
+	inv.maxObjects = prev_maxInv
 	#
 	SkinName = Props.get("SkinName")
 	if SkinName:
 		char.SetMesh(SkinName)
 
-	inv.maxWeapons=Inventory["maxWeapons"]
+	# inv.maxWeapons=Inventory["maxWeapons"]
+	maxInv = len(Inventory["Weapons"])
+	prev_maxInv, inv.maxWeapons = inv.maxWeapons, maxInv
 	for i in Inventory["Weapons"]:
 		obj=CreateEntAux(i,"Weapon")
 		object_flag=Reference.GiveObjectFlag(i[0])
@@ -205,17 +212,23 @@ def CreateMainCharWithProps(props):
 		else:
 			flag=Reference.GiveWeaponFlag(i[0])
 			inv.AddWeapon(i[0],flag)
+	inv.maxWeapons = prev_maxInv
 
-
+	maxInv = len(Inventory["Shields"])
+	prev_maxInv, inv.maxShields = inv.maxShields, maxInv
 	for i in Inventory["Shields"]:
 		CreateEntAux(i,"Weapon")
 		inv.AddShield(i[0])
+	inv.maxShields = prev_maxInv
 
+	maxInv = len(Inventory["Quivers"])
+	prev_maxInv, inv.maxQuivers = inv.maxQuivers, maxInv
 	for i in Inventory["Quivers"]:
 		obj=CreateEntAux(i[0],"Physic")
 		try: obj.Data.SetNumberOfArrows(i[1])
 		except: pass
 		inv.AddQuiver(i[0][0])
+	inv.maxQuivers = prev_maxInv
 
 	for i in Inventory["Keys"]:
 		CreateEntAux(i,"Physic",0)

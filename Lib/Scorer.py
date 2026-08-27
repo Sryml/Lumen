@@ -650,12 +650,12 @@ wEnemyRight.SetColor(255,255,255)
 Inventory.InventoryUI()
 #
 
-RInitAlpha=[1.0,0.3,0.2,0.1,0.05] + [0.0] * 11
-RInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)] + [(140,50)] * 11
+RInitAlpha=[1.0,0.3,0.2,0.1,0.05] + [0.0] * 99
+RInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)] + [(140,50)] * 99
 wRightHand=ScorerWidgets.B_HandWidget(wFrame,"RightHand",150,150,"Right",
                                       RInitAlpha,RInitPositions)
-LInitAlpha=[1.0,0.3,0.2,0.1,0.05] + [0.0] * 11
-LInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)] + [(140,50)] * 11
+LInitAlpha=[1.0,0.3,0.2,0.1,0.05] + [0.0] * 99
+LInitPositions=[(5,10),(35,20),(75,30),(110,40),(140,50)] + [(140,50)] * 99
 wLeftHand=ScorerWidgets.B_HandWidget(wFrame,"LefttHand",150,150,"Left",
                                       LInitAlpha,LInitPositions)
 
