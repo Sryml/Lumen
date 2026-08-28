@@ -321,6 +321,23 @@ class __FunctionDecorator:
     def enumerate(self, obj):
         return map(lambda x, y: (x, y), range(len(obj)), obj)
 
+    def zip(self, *args):
+        result = []
+        iterables = map(lambda x: (len(x), x), args)  # type: list # type: ignore
+        for idx in range(iterables[0][0]):
+            sub = []
+            abort = 0
+            for length, obj in iterables:
+                if idx >= length:
+                    abort = 1
+                    break
+                sub.append(obj[idx])
+
+            if abort:
+                break
+            result.append(tuple(sub))
+        return result
+
     # BBLibc module
     def B_BitMap24_ReadFromBMP(self, this, arg0):
         arg0 = AutomatedAssets(arg0)
@@ -1715,6 +1732,7 @@ for obj, name in (
     (sys.modules["__builtin__"], "isinstance"),
     (sys.modules["__builtin__"], "getattr"),
     (sys.modules["__builtin__"], "enumerate"),
+    (sys.modules["__builtin__"], "zip"),
     (BBLibc, "B_BitMap24_ReadFromBMP"),
     (BBLibc, "B_BitMap24_ReadFromJPEG"),
     (BBLibc, "B_BitMap24_ReadFromFile"),
