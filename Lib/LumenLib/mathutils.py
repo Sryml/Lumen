@@ -14,6 +14,8 @@ import string
 from Lumenx import printx
 from math import pi
 
+from LumenLib.BUtils import is_sequence
+
 #
 import typing
 
@@ -69,9 +71,6 @@ def Scale(*args):
     return apply(B3DLib.Scale, args)
 # -------------------------------
 
-def _is_sequence(value):
-    return type(value) in (types.ListType, types.TupleType)
-
 
 def _copy_sequence(value):
     result = []
@@ -91,7 +90,7 @@ class Vector:
         if isinstance(values, Vector):
             values = values.values
         
-        if not _is_sequence(values):
+        if not is_sequence(values):
             raise TypeError, "Vector requires a tuple or list"  # type: ignore
 
         if len(values) == 0:
@@ -365,7 +364,7 @@ class Quaternion:
                 self.y = values.y
                 self.z = values.z
             else:
-                if not _is_sequence(values) or len(values) != 4:
+                if not is_sequence(values) or len(values) != 4:
                     raise ValueError, "Quaternion requires four values"  # type: ignore
 
                 self.w = values[0]
@@ -373,7 +372,7 @@ class Quaternion:
                 self.y = values[2]
                 self.z = values[3]
         else:
-            if not _is_sequence(values) or len(values) != 3:  # type: ignore
+            if not is_sequence(values) or len(values) != 3:  # type: ignore
                 raise ValueError, "Axis-angle quaternion requires a 3D axis"  # type: ignore
 
             axis = Vector(values)
@@ -637,7 +636,7 @@ class Matrix:
 
         i = 0
         while i < len(rows):
-            if not _is_sequence(rows[i]):
+            if not is_sequence(rows[i]):
                 raise TypeError, "Matrix rows must be tuples or lists"  # type: ignore
 
             if len(rows[i]) != row_size:

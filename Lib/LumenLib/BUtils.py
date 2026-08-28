@@ -15,7 +15,6 @@ import Bladex
 import ObjStore
 import whrandom
 
-from LumenLib import mathutils
 
 from Lumenx import printx
 
@@ -284,6 +283,15 @@ def get_tb_namespace(depth=1):
 
 
 # -------------------------------
+#
+# -------------------------------
+
+
+def is_sequence(value):
+    return type(value) in (types.ListType, types.TupleType)
+
+
+# -------------------------------
 # 物品掉落
 # -------------------------------
 def ResetExclusionGroup(ent_name):
@@ -295,6 +303,7 @@ def ResetExclusionGroup(ent_name):
 def ItemDrop(object, safe_pos=None, pos=None):
     # type: (Bladex._entity.B_PyEntity, ..., ...) -> ...
     import SolidMask
+    from LumenLib import mathutils
 
     if pos is not None:
         object.Position = pos
