@@ -151,6 +151,8 @@ class NODE_HANDLER:
         self.Afterimage_Interval = 0.1
         self.Afterimage_Time2Live = 0.7
         # self.Afterimage_HaloGradient = [] # TODO: Implement
+        # 光环
+        self.AuraParams = (0, 0, 1)
 
     # 位移
     def Displacement(self, time, me, value):
@@ -228,6 +230,12 @@ class NODE_HANDLER:
 
         animation.run()
 
+    # 光环淡化缩放和亮度
+    def FadeScaleIntensityAura(self, time, me, value):
+        # type: (Node, float, Bladex._entity.B_PyEntity, ...) -> ...
+        t = self.AuraParams
+        me.SetAuraParams(value[0], value[1], value[2], t[0], t[1], t[2])
+
     # 任意属性
     def FromTargetAttr(self, time, me, value):
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
@@ -275,6 +283,7 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         OrientationBasis=None,
         Handler=NODE_HANDLER.Displacement,
         BeforeFrame=(None, (), {}),
+        AfterFrame=(None, (), {}),
         OnComplete=(None, ()),
         Easing=EASING.linear,
     ):
@@ -283,12 +292,17 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
 
         self.Name = Name
         me = Bladex.GetEntity(self.Name)
+        if len(BeforeFrame) < 3:
+            BeforeFrame = (BeforeFrame[0], BeforeFrame[1], {})
+        if len(AfterFrame) < 3:
+            AfterFrame = (AfterFrame[0], AfterFrame[1], {})
         #
         self.Start = Start
         self.End = End
         self.Duration = Duration
         self.Handler = Handler
         self.BeforeFrame = BeforeFrame
+        self.AfterFrame = AfterFrame
         self.OnComplete = OnComplete
         self.Easing = Easing
         #
@@ -301,10 +315,15 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         self.LocationBasis = LocationBasis  # type: ...
         self.OrientationBasis = OrientationBasis  # type: ...
         #
-        self.Period = End - Start
         self.elapsed = 0
         self.progress = 0
         self.eased_progress = 0
+        if is_sequence(Start):
+            self.Period = []
+            for s, e in zip(Start, End):
+                self.Period.append(e - s)
+        else:
+            self.Period = End - Start
         #
         self.Axis = (1, 0, 0)
 
@@ -314,7 +333,12 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         if progress == 1.0:
             value = self.End
         else:
-            value = self.Start + self.Period * eased_progress
+            if is_sequence(self.Start):
+                value = []
+                for idx in range(len(self.Start)):
+                    value.append(self.Start[idx] + self.Period[idx] * eased_progress)
+            else:
+                value = self.Start + self.Period * eased_progress
 
         self.elapsed = elapsed
         self.progress = progress
@@ -328,6 +352,8 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         #
         AnimEvent._update(self, time, elapsed)
         #
+        if self.AfterFrame[0]:
+            apply(self.AfterFrame[0], (self,) + self.AfterFrame[1], self.AfterFrame[2])
         if progress == 1.0:
             if self.OnComplete[0]:
                 apply(self.OnComplete[0], (self,) + self.OnComplete[1])
@@ -356,14 +382,15 @@ class Channel(AnimEvent):
 
     def AddNode(
         self,
-        Start=0.0,
-        End=1.0,
+        Start=0.0,  # type: float | tuple | list
+        End=1.0,  # type: float | tuple | list
         Duration=1.0,
         Direction=(1, 0, 0),
         LocationBasis=None,
         OrientationBasis=None,
         Handler=NODE_HANDLER.Displacement,
         BeforeFrame=(None, (), {}),
+        AfterFrame=(None, (), {}),
         OnComplete=(None, ()),
         Easing=EASING.linear,
     ):
@@ -377,6 +404,7 @@ class Channel(AnimEvent):
             OrientationBasis,
             Handler,
             BeforeFrame,
+            AfterFrame,
             OnComplete,
             Easing,
         )
