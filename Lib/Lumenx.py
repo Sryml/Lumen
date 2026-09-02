@@ -425,6 +425,7 @@ __bladex_decorators = [
     "RemoveBoundFunc",
     "RemoveInputAction",
     "SaveAnmRaceData",
+    "SaveSoundDataBase",
     "SetCurrentMap",
     "SetGhostSectorGroupSound",
     "SetGhostSectorSound",
@@ -469,7 +470,8 @@ def _SoundManager(file_name, sound_name, resolved_conflict=1):
                     idx = idx + 1
                 else:
                     break
-            # printx("New Name:", sound_name)
+            if GetConfig("print_conflicting_sound") == "Enabled":
+                printx("New Name:", sound_name)
         else:
             status = 1
             if GetConfig("print_conflicting_sound") == "Enabled":
@@ -1105,8 +1107,8 @@ def CreateEntity(name, kind, x, y, z, *args):
 
 def CreateSound(file_name, sound_name):
     status, sound_name = _SoundManager(file_name, sound_name)
-    if status == 1:
-        return Bladex.GetSound(sound_name)
+    # if status == 1:
+    #     return Bladex.GetSound(sound_name)
     #
     file_name = AutomatedAssets(file_name, multi_ext=1)
     return Bladex_raw.CreateSound(file_name, sound_name)
@@ -1559,6 +1561,11 @@ def SaveAnmRaceData(file_name, race):
         return Bladex_raw.SaveAnmRaceData(file_name, race)
 
 
+def SaveSoundDataBase(file_name):
+    GameStateAux.SaveConstData("Lumenx", SaveConstData())
+    return Bladex_raw.SaveSoundDataBase(file_name)
+
+
 def SaveConfig(config):
     _DATA.config = copy.deepcopy(config)
     pp = pprint.PrettyPrinter(indent=4)
@@ -1777,7 +1784,8 @@ def LoadData(data):
 
 
 def SaveConstData():
-    return _DATA.py_sounds
+    import BCopy
+    return BCopy.deepcopy(_DATA.py_sounds)
 
 
 def LoadConstData(data):
@@ -1859,6 +1867,7 @@ ReadLevel
 RemoveBoundFunc
 RemoveInputAction
 SaveAnmRaceData
+SaveSoundDataBase
 SaveConfig
 SetAfterFrameFunc2
 SetBladeRoot

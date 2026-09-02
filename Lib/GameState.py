@@ -1713,6 +1713,8 @@ def CheckGlobals():
     }
 
     for k,v in sys.modules["__main__"].__dict__.items():
+        if k in ("__doc__",):
+            continue
         t = type(v)
         if t in (SoundType, EntityType, SectorType,
                  types.DictionaryType, types.ListType, types.TupleType,

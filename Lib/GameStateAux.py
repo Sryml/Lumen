@@ -280,7 +280,8 @@ def LoadModuleData(module_names):
 
 
 def SaveConstData(module_name, d):
-  ConstantDatabase[module_name] = d
+  if not ConstantDatabase.has_key(module_name):
+    ConstantDatabase[module_name] = d
 
 def LoadConstData(module_name):
   if Lumenx.IsSavedGame():
