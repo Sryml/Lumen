@@ -35,7 +35,7 @@ import ItemTypes
 import SolidMask
 
 from Lumenx import AutomatedAssets, printx
-from LumenLib import Inventory
+from LumenLib import Inventory, BUtils
 from LumenLib.Trajectory import Trajectory
 
 #
@@ -963,11 +963,12 @@ def DropToMakeRoomFor (EntityName, ObjectName):
 			RemoveFromInventory (me, object, "DropToMakeRoomFor "+ObjectName)
 			object.Position= me.Position
 			object.ExcludeHitFor(me)
-			if object.TestHit:
-				object.RemoveFromWorld()
-			else:
-				object.Alpha= 1.0
-				object.Impulse(0.0, 0.0, 0.0)
+			BUtils.ItemDrop(object) #
+			# if object.TestHit:
+			# 	object.RemoveFromWorld()
+			# else:
+			# 	object.Alpha= 1.0
+			# 	object.Impulse(0.0, 0.0, 0.0)
 
 # Do we have all that we can carry of an object type
 def IsOneTooMany (EntityName, ObjectName):
@@ -2085,6 +2086,10 @@ def ThrowReleaseEventHandler(EntityName, EventName):
 		object.Data.ThrownBy= me
 
 	me.DelAnmEventFunc(EventName)
+	# -Sryml
+	ThrowReleaseCallback = getattr(object.Data, "ThrowReleaseCallback", None)
+	if ThrowReleaseCallback:
+		ThrowReleaseCallback(EntityName, EventName)
 
 #
 # Dropping Actions
