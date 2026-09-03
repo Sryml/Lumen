@@ -8,8 +8,6 @@
 import Bladex
 import Lumenx
 import InitDataField
-import ObjStore
-import GameStateAux
 
 import math
 import sys
@@ -29,6 +27,8 @@ if typing.TYPE_CHECKING:
 
 
 # ----------------------------------
+_ANIMATIONS = {}  # type: dict[str, Animation]
+
 # LINEAR = "linear"
 # EASE_OUT_SINE = "ease_out_sine"
 # EASE_IN_SINE = "ease_in_sine"
@@ -118,6 +118,25 @@ def TrackEntity(
         self.Axis = Axis
 
 
+# def RotationLike(RotateLink, quat, Depth=1):
+#     # type: (..., Quaternion, int) -> ...
+#     axis, angle = quat.to_axis_angle()
+#     for d in RotateLink:
+#         Ent, OrientationBasis, Rate, Gear = d["values"]
+#         if Gear:
+#             dir = (Depth % 2) * -1
+#         else:
+#             dir = 1
+#         a = angle * Rate * dir
+#         q = Quaternion(axis, a) * Quaternion(OrientationBasis)
+#         q = q.to_tuple()
+#         Ent.Orientation = q
+#         #
+#         children = d.get("children")
+#         if children:
+#             RotationLike(d, quat, Depth+1)
+
+
 # ----------------------------------
 class EASING:
     def linear(self, t):
@@ -153,7 +172,10 @@ class NODE_HANDLER:
         # self.Afterimage_HaloGradient = [] # TODO: Implement
         # 光环
         self.AuraParams = (0, 0, 1)
+        # 旋转联动
+        # self.RotateLink = [] # [Ent, OrientationBasis]
 
+    # ----------------------------------
     # 位移
     def Displacement(self, time, me, value):
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
@@ -274,7 +296,7 @@ class AnimEvent:
 class Node(AnimEvent, EASING, NODE_HANDLER):
     def __init__(
         self,
-        Name,
+        Parent,  # type: Channel
         Start,
         End,
         Duration,
@@ -290,11 +312,12 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         AnimEvent.__init__(self)
         NODE_HANDLER.__init__(self)
 
-        self.Name = Name
-        me = Bladex.GetEntity(self.Name)
-        if len(BeforeFrame) < 3:
+        self.Parent = Parent
+
+        Target = Parent.Parent.Target
+        if BeforeFrame and len(BeforeFrame) < 3:
             BeforeFrame = (BeforeFrame[0], BeforeFrame[1], {})
-        if len(AfterFrame) < 3:
+        if AfterFrame and len(AfterFrame) < 3:
             AfterFrame = (AfterFrame[0], AfterFrame[1], {})
         #
         self.Start = Start
@@ -307,9 +330,9 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         self.Easing = Easing
         #
         if LocationBasis is None:
-            LocationBasis = me.Position
+            LocationBasis = getattr(Target, "Position", (0, 0, 0))
         if OrientationBasis is None:
-            OrientationBasis = getattr(me, "Orientation", (1, 0, 0, 0))
+            OrientationBasis = getattr(Target, "Orientation", (1, 0, 0, 0))
 
         self.Direction = Direction  # type: ...
         self.LocationBasis = LocationBasis  # type: ...
@@ -344,7 +367,7 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         self.progress = progress
         self.eased_progress = eased_progress
 
-        if self.BeforeFrame[0]:
+        if self.BeforeFrame and self.BeforeFrame[0]:
             apply(
                 self.BeforeFrame[0], (self,) + self.BeforeFrame[1], self.BeforeFrame[2]
             )
@@ -352,10 +375,10 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
         #
         AnimEvent._update(self, time, elapsed)
         #
-        if self.AfterFrame[0]:
+        if self.AfterFrame and self.AfterFrame[0]:
             apply(self.AfterFrame[0], (self,) + self.AfterFrame[1], self.AfterFrame[2])
         if progress == 1.0:
-            if self.OnComplete[0]:
+            if self.OnComplete and self.OnComplete[0]:
                 apply(self.OnComplete[0], (self,) + self.OnComplete[1])
 
         return progress
@@ -365,12 +388,19 @@ class Node(AnimEvent, EASING, NODE_HANDLER):
 
 
 class Channel(AnimEvent):
-    def __init__(self, Name, Loop=0, Time2Live=0.0, OnComplete=(None, ())):
+    def __init__(
+        self,
+        Parent,  # type: Animation
+        Loop=0,
+        Time2Live=0.0,
+        OnComplete=(None, ()),
+    ):
         AnimEvent.__init__(self)
 
-        self.Name = Name
-        self.Time2Live = Time2Live
+        self.Parent = Parent
+
         self.Loop = Loop
+        self.Time2Live = Time2Live
         self.OnComplete = OnComplete
         #
         self.Enabled = 1
@@ -379,6 +409,7 @@ class Channel(AnimEvent):
         self.LoopCount = 0
         self.CurrentNode = 0
         self.Nodes = []  # type: list[Node]
+        self._reverse = 0
 
     def AddNode(
         self,
@@ -395,7 +426,7 @@ class Channel(AnimEvent):
         Easing=EASING.linear,
     ):
         node = Node(
-            self.Name,
+            self,
             Start,
             End,
             Duration,
@@ -418,27 +449,65 @@ class Channel(AnimEvent):
     def Reset(self):
         self.Enabled = 1
         self.LoopCount = 0
+        self.InitTime = 0
+        self.StartTime = 0
+
         AnimEvent.Reset(self)
         for node in self.Nodes:
             node.Reset()
+
+    def SetReverse(self, reverse, keep_current=1):
+        # type: (typing.Literal[0,1], ...) -> None
+        if self._reverse == reverse:
+            return
+
+        for node in self.Nodes:
+            node.Start, node.End = node.End, node.Start
+            if is_sequence(node.Period):
+                node.Period = list(map(lambda x: -x, node.Period))
+            else:
+                node.Period = -node.Period  # type: ignore
+            for event in node.Events:
+                event[0] = node.Duration - event[0]
+                event[2] = 1
+        #
+        time = Bladex.GetTime()
+        if self.Parent._paused:
+            time = time - (time - self.Parent.PauseTime)
+        if keep_current and self.StartTime > 0:
+            elapsed = time - self.StartTime
+            self.StartTime = time - (node.Duration - elapsed)
+        else:
+            self.StartTime = time
+            self.CurrentNode = len(self.Nodes) - 1
+
+        self.Enabled = 1
+        self.LoopCount = 0
+        #
+        self._reverse = reverse
+
+    def GetReverse(self):
+        # if self._reverse is None:
+        #     return self.Parent.GetReverse()
+        return self._reverse
 
 
 class Animation(AnimEvent):
     def __init__(
         self,
-        me,
+        Target,
         Time2Live=0.0,
         OnPlay=(None, ()),
         OnPause=(None, ()),
         OnComplete=(None, ()),
         Timer="Timer60",
         Destroy=0,
+        Name="",
     ):
+        global _ANIMATIONS
         AnimEvent.__init__(self)
 
-        # self.ObjId = ObjStore.GetNewId()
-        # ObjStore.ObjectsStore[self.ObjId] = self
-        self.Name = me.Name  # type: str
+        self.Target = Target
 
         self.InitTime = 0
         self.PauseTime = 0
@@ -449,30 +518,22 @@ class Animation(AnimEvent):
         self.OnPlay = OnPlay
         self.OnPause = OnPause
         self.OnComplete = OnComplete
-        self.DestroyOnEnd = Destroy
         self.Timer = Timer
-
+        self.DestroyOnEnd = Destroy
+        # InitDataField.Initialise(me, LM_Animation=self)
+        if not Name:
+            Name = Target.Name
+        num = 1
+        while _ANIMATIONS.has_key(Name):
+            Name = "%s_ANM%s" % (Name, num)
+            num = num + 1
+        self.Name = Name
+        _ANIMATIONS[Name] = self
+        #
         self._running = False
         self._cancelled = False
         self._paused = False
-        #
-        InitDataField.Initialise(me, LM_Animation=self)
-
-    # def persistent_id(self):
-    #     return self.ObjId
-
-    # def persistent_check(self):
-    #     me = Bladex.GetEntity(self.Name)
-    #     if not me:
-    #         return 0
-    #     return 1
-
-    # def __getstate__(self):
-    #     return GameStateAux.SaveNewMembers(self)
-
-    # def __setstate__(self, parm):
-    #     GameStateAux.LoadNewMembers(self, parm)
-    #     ObjStore.ObjectsStore[self.ObjId] = self
+        self._reverse = 0
 
     # ----------------------------------
     def Cancel(self):
@@ -488,7 +549,7 @@ class Animation(AnimEvent):
             self._paused = True
             self.PauseTime = Bladex.GetTime()
             #
-            if self.OnPause[0]:
+            if self.OnPause and self.OnPause[0]:
                 apply(self.OnPause[0], (self,) + self.OnPause[1])
 
     def Resume(self):
@@ -499,12 +560,13 @@ class Animation(AnimEvent):
             for channel in self.Channels:
                 channel.InitTime = channel.InitTime + PauseTime
                 channel.StartTime = channel.StartTime + PauseTime
+            self.PauseTime = 0
             #
-            if self.OnPlay[0]:
+            if self.OnPlay and self.OnPlay[0]:
                 apply(self.OnPlay[0], (self,) + self.OnPlay[1])
 
     def AddChannel(self, Loop=0, Time2Live=0.0, OnComplete=(None, ())):
-        channel = Channel(self.Name, Loop, Time2Live, OnComplete)
+        channel = Channel(self, Loop, Time2Live, OnComplete)
         self.Channels.append(channel)
         return channel
 
@@ -516,10 +578,21 @@ class Animation(AnimEvent):
         self._running = False
         self._cancelled = False
         self._paused = False
+        self.InitTime = 0
+        self.PauseTime = 0
         #
         AnimEvent.Reset(self)
         for channel in self.Channels:
             channel.Reset()
+
+    def SetReverse(self, reverse, keep_current=1):
+        # type: (typing.Literal[0,1], ...) -> None
+        self._reverse = reverse
+        for channel in self.Channels:
+            channel.SetReverse(reverse, keep_current)
+
+    def GetReverse(self):
+        return self._reverse
 
     # ----------------------------------
     def _update(self, time):
@@ -527,8 +600,7 @@ class Animation(AnimEvent):
             return
         if self._paused:
             return
-        me = Bladex.GetEntity(self.Name)
-        if not me:
+        if not self.Target:
             TimerAux.RemoveFromList(self.Timer, self._update)
             return
 
@@ -546,7 +618,7 @@ class Animation(AnimEvent):
             if channel.Time2Live > 0 and (time - channel.InitTime) >= channel.Time2Live:
                 channel.Enabled = 0
                 nDisabled = nDisabled + 1
-                if channel.OnComplete[0]:
+                if channel.OnComplete and channel.OnComplete[0]:
                     apply(channel.OnComplete[0], (channel,) + channel.OnComplete[1])
                 continue
             #
@@ -555,44 +627,49 @@ class Animation(AnimEvent):
             elapsed = time - channel.InitTime
             AnimEvent._update(channel, time, elapsed)
             #
+            Reverse = channel.GetReverse()
             elapsed = time - channel.StartTime
-            progress = node._update(time, me, elapsed)
+            progress = node._update(time, self.Target, elapsed)
             if progress == 1.0:
-                channel.CurrentNode = (channel.CurrentNode + 1) % len(channel.Nodes)
                 channel.StartTime = time
-                if channel.CurrentNode == 0:
+                if Reverse:
+                    channel.CurrentNode = channel.CurrentNode - 1
+                else:
+                    channel.CurrentNode = channel.CurrentNode + 1
+                if channel.CurrentNode < 0 or channel.CurrentNode >= len(channel.Nodes):
+                    channel.CurrentNode = channel.CurrentNode % len(channel.Nodes)
                     if channel.Loop == -1 or channel.LoopCount < channel.Loop:
                         if channel.Loop > 0:
                             channel.LoopCount = channel.LoopCount + 1
                         for node in channel.Nodes:
                             node.Reset()
                     else:
-                        # self.Channels.remove(channel)
                         channel.Enabled = 0
-                        if channel.OnComplete[0]:
+                        if channel.OnComplete and channel.OnComplete[0]:
                             apply(
                                 channel.OnComplete[0],
                                 (channel,) + channel.OnComplete[1],
                             )
+                        channel.StartTime = 0
         #
-        me = Bladex.GetEntity(self.Name)
         isDead = self.Time2Live > 0 and (time - self.InitTime) >= self.Time2Live
         if nDisabled == nChannels or isDead:
             self._running = False
             TimerAux.RemoveFromList(self.Timer, self._update)
+            self.Reset()
             # if me:
             #     me.Data.LM_Animation = None
-            if self.OnComplete[0]:
+            if self.OnComplete and self.OnComplete[0]:
                 apply(self.OnComplete[0], (self,) + self.OnComplete[1])
             if self.DestroyOnEnd:
+                RemoveAnimation(self.Name)
                 if self.DestroyOnEnd == DESTROY_METHOD_BIN:
-                    me.SubscribeToList("Pin")
+                    self.Target.SubscribeToList("Pin")
                 elif self.DestroyOnEnd == DESTROY_METHOD_REMOVE:
-                    me.RemoveFromWorld()
+                    self.Target.RemoveFromWorld()
 
     def run(self):
-        me = Bladex.GetEntity(self.Name)
-        if not me:
+        if not self.Target:
             return
         if self._running:
             return
@@ -606,6 +683,33 @@ class Animation(AnimEvent):
 
         self._running = True
 
+
+# ----------------------------------
+def GetAnimation(name):
+    return _ANIMATIONS.get(name)
+
+
+def RemoveAnimation(name):
+    if _ANIMATIONS.has_key(name):
+        anim = _ANIMATIONS[name]
+        anim.Cancel()
+        del _ANIMATIONS[name]
+
+
+# ----------------------------------
+import GameState
+
+
+def SaveData():
+    return _ANIMATIONS
+
+
+def LoadData(data):
+    global _ANIMATIONS
+    _ANIMATIONS = data
+
+
+GameState.ModulesToBeSaved.append(sys.modules[__name__])
 
 # ----------------------------------
 
