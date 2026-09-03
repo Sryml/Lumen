@@ -364,7 +364,7 @@ class Quaternion:
                 self.y = values.y
                 self.z = values.z
             else:
-                if not is_sequence(values) or len(values) != 4:
+                if len(values) != 4:
                     raise ValueError, "Quaternion requires four values"  # type: ignore
 
                 self.w = values[0]
@@ -372,7 +372,7 @@ class Quaternion:
                 self.y = values[2]
                 self.z = values[3]
         else:
-            if not is_sequence(values) or len(values) != 3:  # type: ignore
+            if len(values) != 3:  # type: ignore
                 raise ValueError, "Axis-angle quaternion requires a 3D axis"  # type: ignore
 
             axis = Vector(values)

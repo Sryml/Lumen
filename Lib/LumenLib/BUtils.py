@@ -288,7 +288,16 @@ def get_tb_namespace(depth=1):
 
 
 def is_sequence(value):
-    return type(value) in (types.ListType, types.TupleType)
+    ret = 0
+    if type(value) in (types.ListType, types.TupleType):
+        ret = 1
+    else:
+        try:
+            len(value)
+            ret = 1
+        except:
+            pass
+    return ret
 
 
 # -------------------------------
