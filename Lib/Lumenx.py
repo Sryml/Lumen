@@ -380,7 +380,18 @@ class __FunctionDecorator:
         )
 
     def new_B_BitmapWidget(self, arg0, arg1, arg2, arg3, arg4, *args):
-        args = tuple(map(AutomatedAssets, args))
+        if args:
+            _file_name = args[0]
+            root, ext = os.path.splitext(_file_name)
+            if string.lower(ext) == ".mmp":
+                parent, base = os.path.split(root)
+                file_name = os.path.join(parent, "mmps", arg4 + "_hi.png")
+                file_name = AutomatedAssets(file_name)
+                if not os.path.isfile(file_name):
+                    file_name = AutomatedAssets(_file_name)
+            else:
+                file_name = AutomatedAssets(_file_name)
+            args = (file_name,) + args[1:]
         return apply(
             self.RawFunc.new_B_BitmapWidget, (arg0, arg1, arg2, arg3, arg4) + args
         )
@@ -1458,14 +1469,27 @@ def Raisex(exc, msg=""):
 def ReadAlphaBitMap(file_name, internal_name, save=1):
     if save and _DATA.res_alpha_bmps.get(internal_name) is None:
         _DATA.res_alpha_bmps[internal_name] = file_name
+
+    # _file_name = file_name
+    # file_name = "%s_hi.png" % os.path.splitext(file_name)[0]
+    # file_name = AutomatedAssets(file_name)
+    # if not os.path.isfile(file_name):
+    #     file_name = AutomatedAssets(_file_name)
     file_name = AutomatedAssets(file_name)
+
     return Bladex_raw.ReadAlphaBitMap(file_name, internal_name)
 
 
 def ReadBitMap(file_name, internal_name, save=1):
     if save and _DATA.res_bmps.get(internal_name) is None:
         _DATA.res_bmps[internal_name] = file_name
+
+    _file_name = file_name
+    file_name = "%s_hi.png" % os.path.splitext(file_name)[0]
     file_name = AutomatedAssets(file_name)
+    if not os.path.isfile(file_name):
+        file_name = AutomatedAssets(_file_name)
+
     return Bladex_raw.ReadBitMap(file_name, internal_name)
 
 
@@ -1785,6 +1809,7 @@ def LoadData(data):
 
 def SaveConstData():
     import BCopy
+
     return BCopy.deepcopy(_DATA.py_sounds)
 
 
