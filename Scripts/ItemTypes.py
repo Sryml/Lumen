@@ -23,7 +23,7 @@ import Blood
 import Lumenx
 
 from Lumenx import AutomatedAssets
-from LumenLib import TimerAux
+from LumenLib import TimerAux, AnimAux
 
 class PersistantItemType:
 	ObjId = ""
@@ -1964,7 +1964,12 @@ class BladeSword(PersistantItemType):
 		self.Speed= 10000.0
 		self.AuxFuncsData= None
 		self.OwnerName= "Player1"
-		me.OnStopFunc=self.StartBackToPlayer
+		# me.OnStopFunc=self.StartBackToPlayer
+		# -Sryml
+		self.BackAnims = []
+		animation = AnimAux.Animation(me)
+		animation.AddChannel().AddNode(me.Alpha, 0.01, self.FadeTime, Handler=AnimAux.NODE_HANDLER.Alpha)
+		self.BackAnims.append(animation)
 
 	def __getstate__(self):
 		state= PersistantItemType.__getstate__(self)
@@ -1990,7 +1995,7 @@ class BladeSword(PersistantItemType):
 			self.OwnerName= parms[5]
 
 			me= Bladex.GetEntity(self.Name)
-			if me: me.OnStopFunc=self.StartBackToPlayer
+			# if me: me.OnStopFunc=self.StartBackToPlayer
 		else:
 			self.Name="Unnamed"
 			self.Age = 0
@@ -1999,19 +2004,24 @@ class BladeSword(PersistantItemType):
 			self.AuxFuncsData= None
 			self.OwnerName  = "Player1"
 
-	def BackToPlayer(self):
+	def BackToPlayer(self, anim):
 		weapon= Bladex.GetEntity(self.Name)
 		owner= Bladex.GetEntity(self.OwnerName)
 		if owner and weapon:
-			if not owner.InvRight:
-				AuxFuncs.FadeObject(weapon.Name, weapon.Alpha, 1.0, self.FadeTime)
+			Actions.TakeObject(self.OwnerName,weapon.Name)
+			if weapon.InWorld:
+				self.BackAnims[0].OnComplete = None
+				for anim in self.BackAnims:
+					anim.SetReverse(1)
+					anim.run()
 			else:
 				weapon.Alpha= 1.0
-			Actions.TakeObject(self.OwnerName,weapon.Name)
 
 	def StartBackToPlayer(self, EntityName):
 		weapon= Bladex.GetEntity(self.Name)
-		if not weapon:
+		owner= Bladex.GetEntity(self.OwnerName)
+		inv= owner.GetInventory()
+		if not weapon or inv.CarringObject(self.Name):
 			return
 		prtl=Bladex.CreateEntity(weapon.Name+"BackToPlayerParticles", "Entity Particle System Dobj", 0, 0, 0)
 		prtl.ObjectName=weapon.Name
@@ -2025,8 +2035,12 @@ class BladeSword(PersistantItemType):
 		prtl.FollowFactor=0.0
 		prtl.Time2Live=6
 		prtl.DeathTime=Bladex.GetTime()+2.0*self.FadeTime
-		AuxFuncs.FadeObject(weapon.Name, weapon.Alpha, 0.01, self.FadeTime)
-		Bladex.AddScheduledFunc(Bladex.GetTime()+self.FadeTime, self.BackToPlayer, ())
+		weapon.Stop()
+		self.BackAnims[0].OnComplete = (self.BackToPlayer, ())
+		for anim in self.BackAnims:
+			anim.Cancel()
+			anim.SetReverse(0)
+			anim.run()
 
 	def DropReleaseEventHandler (self,EntityName,EventName):
 		weapon= Bladex.GetEntity(self.Name)
@@ -2045,8 +2059,12 @@ class BladeSword(PersistantItemType):
 		weapon.Impulse(ix, iy, iz)
 		weapon.ExcludeHitFor(owner)
 		owner.DelAnmEventFunc(EventName)
-		weapon.OnStopFunc = self.StartBackToPlayer #
+		Bladex.RemoveScheduledFunc(self.Name+"StartBackToPlayer")
+		Bladex.AddScheduledFunc(Bladex.GetTime()+1.8, self.StartBackToPlayer, (self.Name,), self.Name+"StartBackToPlayer")
 
+	def ThrowReleaseCallback(self, EntityName, EventName):
+		Bladex.RemoveScheduledFunc(self.Name+"StartBackToPlayer")
+		Bladex.AddScheduledFunc(Bladex.GetTime()+1.8, self.StartBackToPlayer, (self.Name,), self.Name+"StartBackToPlayer")
 
 class BladeSword2(ActivateableSpecialWeapon):
 
@@ -2073,9 +2091,23 @@ class BladeSword2(ActivateableSpecialWeapon):
 		self.ImpactSound.MaxDistance=30000
 
 		Actions.LinkContinuosSound(me.Name,"../../Sounds/m-loop-lavahervidero-1.wav",Volume=0.4)
-		me.OnStopFunc=self.StartBackToPlayer
+		# me.OnStopFunc=self.StartBackToPlayer
 		self.OwnerName="Player1"
-
+		# -Sryml
+		self.BackAnims = []
+		animation = AnimAux.Animation(me)
+		animation.AddChannel().AddNode(me.Alpha, 0.01, self.FadeTime, Handler=AnimAux.NODE_HANDLER.Alpha)
+		self.BackAnims.append(animation)
+		blaura=Bladex.GetEntity(me.Name+"Aura")
+		if blaura:
+			animation = AnimAux.Animation(blaura)
+			animation.AddChannel().AddNode((80,1,1), (250,0.01,1), self.FadeTime, Handler=AnimAux.NODE_HANDLER.FadeScaleIntensityAura)
+			self.BackAnims.append(animation)
+		bllight=Bladex.GetEntity(me.Name+"Light")
+		if bllight:
+			animation = AnimAux.Animation(bllight)
+			animation.AddChannel().AddNode(bllight.Intensity, 0.0, self.FadeTime, Handler=AnimAux.NODE_HANDLER.Intensity)
+			self.BackAnims.append(animation)
 
 	def __getstate__(self):
 		state= ActivateableSpecialWeapon.__getstate__(self)
@@ -2116,8 +2148,8 @@ class BladeSword2(ActivateableSpecialWeapon):
 			self.OwnerName= "Player1"
 
 		weapon=  Bladex.GetEntity(self.Name)
-		if weapon:
-			weapon.OnStopFunc=self.StartBackToPlayer
+		# if weapon:
+		# 	weapon.OnStopFunc=self.StartBackToPlayer
 
 		if self.missileName:
 			missile= Bladex.GetEntity(self.missileName)
@@ -2129,7 +2161,7 @@ class BladeSword2(ActivateableSpecialWeapon):
 			else:
 				print "Missile "+self.missileName+" unavailable for linking...."
 
-	def BackToPlayer(self):
+	def BackToPlayer(self, anim):
 		weapon= Bladex.GetEntity(self.Name)
 		owner= Bladex.GetEntity(self.OwnerName)
 		if owner and weapon:
@@ -2138,13 +2170,13 @@ class BladeSword2(ActivateableSpecialWeapon):
 			inv.AddWeapon(weapon.Name,flag)
 			blaura=Bladex.GetEntity(weapon.Name+"Aura")
 			bllight=Bladex.GetEntity(weapon.Name+"Light")
-			if not owner.InvRight:
+			if not owner.InvRight and not owner.InvRightBack:
 				inv.LinkRightHand(weapon.Name)
-				AuxFuncs.FadeObject(weapon.Name, weapon.Alpha, 1.0, self.FadeTime)
-				if blaura:
-					AuxFuncs.FadeAndScaleAura(blaura.Name, 250.0, 80.0, 0.01, 1.0, self.FadeTime)
-				if bllight:
-					AuxFuncs.SpotIntensityVariation(bllight.Name, 0.0, 1.0, self.FadeTime)
+			if weapon.InWorld:
+				self.BackAnims[0].OnComplete = None
+				for anim in self.BackAnims:
+					anim.SetReverse(1)
+					anim.run()
 			else:
 				weapon.Alpha= 1.0
 				if blaura:
@@ -2155,16 +2187,16 @@ class BladeSword2(ActivateableSpecialWeapon):
 
 	def StartBackToPlayer(self, EntityName):
 		weapon= Bladex.GetEntity(self.Name)
-		if not weapon:
+		owner= Bladex.GetEntity(self.OwnerName)
+		inv= owner.GetInventory()
+		if not weapon or inv.CarringObject(self.Name):
 			return
-		AuxFuncs.FadeObject(weapon.Name, weapon.Alpha, 0.01, self.FadeTime)
-		blaura=Bladex.GetEntity(weapon.Name+"Aura")
-		if blaura:
-			AuxFuncs.FadeAndScaleAura(blaura.Name, 80.0, 250.0, 1.0, 0.01, self.FadeTime)
-		bllight=Bladex.GetEntity(weapon.Name+"Light")
-		if bllight:
-			AuxFuncs.SpotIntensityVariation(bllight.Name, 1.0, 0.0, self.FadeTime)
-		Bladex.AddScheduledFunc(Bladex.GetTime()+self.FadeTime, self.BackToPlayer, ())
+		weapon.Stop()
+		self.BackAnims[0].OnComplete = (self.BackToPlayer, ())
+		for anim in self.BackAnims:
+			anim.Cancel()
+			anim.SetReverse(0)
+			anim.run()
 
 	def DropReleaseEventHandler (self,EntityName,EventName):
 		weapon= Bladex.GetEntity(self.Name)
@@ -2183,7 +2215,8 @@ class BladeSword2(ActivateableSpecialWeapon):
 		weapon.Impulse(ix, iy, iz)
 		weapon.ExcludeHitFor(owner)
 		owner.DelAnmEventFunc(EventName)
-		weapon.OnStopFunc = self.StartBackToPlayer #
+		Bladex.RemoveScheduledFunc(self.Name+"StartBackToPlayer")
+		Bladex.AddScheduledFunc(Bladex.GetTime()+1.8, self.StartBackToPlayer, (self.Name,), self.Name+"StartBackToPlayer")
 
 	def ThrowReleaseEventHandler (self,EntityName,EventName):
 		weapon= Bladex.GetEntity(self.Name)
