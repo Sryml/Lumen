@@ -1,8 +1,11 @@
-
+import Bladex
 import LoadBar
 LoadBar.LanguageProgressBar(371,"Blade_progress.jpg")
 
-from library import *
+# from library import *
+execfile("../../Scripts/sys_init.py")
+Bladex.ReadLevel("ragnar.lvl")
+execfile("../../Scripts/BladeInit.py")
 
 #
 import Sparks
