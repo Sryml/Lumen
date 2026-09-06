@@ -3611,6 +3611,7 @@ def CreaEsqueleto(n, x, y, z,Level):
 
 
 	escudo=Bladex.CreateEntity("Escudely"+`n`, "Escudo7", 0, 0, 0,"Weapon")
+	ItemTypes.ItemDefaultFuncs(escudo) # -Sryml
 	#Sparks.MakeShield(escudo.Name)
 
 
