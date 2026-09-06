@@ -1259,17 +1259,17 @@ def ftOpenDoors():
 
 def ftCloseDoors():
 	ftDoorA.closetype=Doors.AC_UNIF_DEC
-	ftDoorA.c_init_vel=0	; ftDoorA.c_init_displ=625
-	ftDoorA.c_med_vel=1000 ; ftDoorA.c_med_displ=3000
-	ftDoorA.c_end_vel=0	; ftDoorA.c_end_displ=625
+	ftDoorA.c_init_vel=0	; ftDoorA.c_init_displ=325
+	ftDoorA.c_med_vel=2500 ; ftDoorA.c_med_displ=3600
+	ftDoorA.c_end_vel=0	; ftDoorA.c_end_displ=325
 	ftDoorA.SetWhileCloseSound(puertapiedrai)
 	ftDoorA.SetEndCloseSound(finpuertapiedrai)
 	ftDoorA.CloseDoor()
 
 	ftDoorB.closetype=Doors.AC_UNIF_DEC
-	ftDoorB.c_init_vel=0	; ftDoorB.c_init_displ=625
-	ftDoorB.c_med_vel=1000 ; ftDoorB.c_med_displ=3000
-	ftDoorB.c_end_vel=0	; ftDoorB.c_end_displ=625
+	ftDoorB.c_init_vel=0	; ftDoorB.c_init_displ=325
+	ftDoorB.c_med_vel=2500 ; ftDoorB.c_med_displ=3600
+	ftDoorB.c_end_vel=0	; ftDoorB.c_end_displ=325
 	ftDoorB.SetWhileCloseSound(puertapiedrad)
 	ftDoorB.SetEndCloseSound(finpuertapiedrad)
 	ftDoorB.CloseDoor()

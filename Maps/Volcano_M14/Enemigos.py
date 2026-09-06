@@ -721,17 +721,17 @@ o=Bladex.CreateEntity("VolcanoEspada22","EgyptSword",0,0,0,"Weapon")
 ItemTypes.ItemDefaultFuncs(o)
 o=Bladex.CreateEntity("VolcanoEscudo22","Escudo8",0,0,0,"Weapon")
 ItemTypes.ItemDefaultFuncs(o)
-potion=Bladex.CreateEntity("Potion10","Pocima200",0,0,0,"Physic")
+potion=Bladex.CreateEntity("VolcanoPotion10","Pocima200",0,0,0,"Physic")
 potion.Solid=1
 potion.Scale=1.220190
-pocimac.CreatePotion("Potion10")
+pocimac.CreatePotion(potion.Name)
 
 pers=Bladex.CreateEntity("22Kngt","Dark_Knight",-25694.3908123, 7371.67299813, 4804.74281317,"Person")
 pers.Angle=1.48636296227
 pers.Level=lvl_control.GiveLevel(10,13)
 Actions.TakeObject(pers.Name,"VolcanoEspada22")
 Actions.TakeObject(pers.Name,"VolcanoEscudo22")
-Actions.TakeObject(pers.Name,"Potion10")
+Actions.TakeObject(pers.Name,potion.Name)
 Actions.TakeObject(pers.Name,"llave1")
 pers.ActionAreaMin=pow(2,14)
 pers.ActionAreaMax=pow(2,15)

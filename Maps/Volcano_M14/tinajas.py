@@ -233,7 +233,7 @@ Breakings.SetBreakable("BARSSF3",12,100)
 o=Bladex.CreateEntity("BARSSF4","Barril",-46746.673091,-12489.355477,-13974.670608,"Physic")
 o.Scale=1.126825
 o.Orientation=0.707107,0.707107,0.000000,0.000000
-Breakings.SetBreakable("BARSSF3",12,100)
+Breakings.SetBreakable("BARSSF4",12,100) #
 
 
 o=Bladex.CreateEntity("BARGAR1","Barril",16766.239190,-1620.371290,-7384.978725,"Physic")
