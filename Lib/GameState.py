@@ -1226,7 +1226,7 @@ for i in range(len(keys)):
         file.write('import Menu\n')
         file.write('Menu.InitMenuKeys()\n')
         file.write('__load_bar.Increment()\n')
-        file.write('execfile("../../Scripts/Globals.py")\n')
+        file.write('execfile("../../Scripts/Globals.py")\n\n')
 
         import GotoMapVars
         file.write('import GotoMapVars\n')
@@ -1236,18 +1236,18 @@ for i in range(len(keys)):
         file.write('import MemPersistence\n')
         file.write('MemPersistence.Store("2DMapValues",%s)\n'%(str(MemPersistence.Get("2DMapValues")),))
         file.write('MemPersistence.Store("MainChar",%s)\n'%(str(MemPersistence.Get("MainChar")),))
-        file.write('MemPersistence.Store("SelectedChar",%s)\n'%(str(MemPersistence.Get("SelectedChar")),))
+        file.write('MemPersistence.Store("SelectedChar",%s)\n\n'%(str(MemPersistence.Get("SelectedChar")),))
 
         import Reference
         # file.write('Reference.PYTHON_DEBUG=%d\n'%(Reference.PYTHON_DEBUG,))
 
-        file.write('if Reference.PYTHON_DEBUG >= 1:\n')
-        file.write('############### DEBUG LEVEL ONE ###############\n')
-        file.write('  execfile("../../Scripts/DebugControl.py")\n')
+        # file.write('if Reference.PYTHON_DEBUG >= 1:\n')
+        # file.write('############### DEBUG LEVEL ONE ###############\n')
+        # file.write('  execfile("../../Scripts/DebugControl.py")\n')
 
-        file.write('if Reference.PYTHON_DEBUG >= 2:\n')
-        file.write('############### DEBUG LEVEL TWO ###############\n')
-        file.write('  Bladex.SetCallCheck(3)\n')
+        # file.write('if Reference.PYTHON_DEBUG >= 2:\n')
+        # file.write('############### DEBUG LEVEL TWO ###############\n')
+        # file.write('  Bladex.SetCallCheck(3)\n')
         # file.write('else:\n')
         # file.write('  Bladex.SetCallCheck(0)\n')
 

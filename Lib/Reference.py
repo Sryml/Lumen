@@ -4,6 +4,7 @@ import math
 import netgame
 import os
 
+from Lumenx import debugprint
 from LumenLib import BUtils
 
 PI = math.pi
@@ -18,7 +19,7 @@ TWOPI = PI*2.0
 #
 
 DEMO_MODE=0
-if not os.path.exists(os.path.join(Lumenx.GetLumenRoot(),"maps/Mine_M5")): # by Sryml
+if not os.path.exists(os.path.join(Lumenx.GetLumenRoot(),"maps/Mine_M5")): # -Sryml
 	DEMO_MODE=1
 DEMO_PLAYERS=("AM", "BR", "KN", "DW")
 
@@ -27,17 +28,16 @@ DEMO_PLAYERS=("AM", "BR", "KN", "DW")
 #
 # To show debugging info or not
 #
-DEBUG_INFO   = 0
-PYTHON_DEBUG = 0
+DEBUG_INFO   = Lumenx.DEBUG
+PYTHON_DEBUG = Lumenx.DEBUG * 2
 
-def debugprint(*args, **kwargs):
-	if DEBUG_INFO==0:
-		return
-	apply(Lumenx.printx, args, kwargs)
-	# try:
-	# 	print Msg
-	# except TypeError:
-	# 	pass
+# def debugprint(Msg):
+# 	if DEBUG_INFO==0:
+# 		return
+# 	try:
+# 		print Msg
+# 	except TypeError:
+# 		pass
 ######################################
 
 

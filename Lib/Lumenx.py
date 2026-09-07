@@ -17,7 +17,12 @@ CLASSIC_VER = 0
 V109_VER = 1
 MAJOR_VER = 2
 
+VERSION = "0.0.1"
+VERSION_DATE = "2026-01-01"
+
 MAX_FLOAT = 1.79769313486e308
+
+DEBUG = 0
 
 
 # private database
@@ -176,7 +181,14 @@ def __fn():
     #
     import Bladex, string
 
-    Bladex.SetCallCheck(0)
+    #
+    global DEBUG
+    if os.path.isfile(lumen_root + "/DEBUG"):
+        DEBUG = 1
+        Bladex.SetCallCheck(3)
+    else:
+        Bladex.SetCallCheck(0)
+    #
     _DATA.current_mod = string.lower(_DATA.current_mod)
 
     # If it is not the first time to start from Lumen.exe
@@ -198,6 +210,12 @@ def __fn():
     else:
         _DATA.game_version = CLASSIC_VER
 
+    global VERSION, VERSION_DATE
+    f = open(lumen_root + "/version", "r")
+    VERSION = string.strip(f.readline())
+    VERSION_DATE = string.strip(f.readline())
+    f.close()
+    #
     _DATA.is_saved_game = __main__.__dict__.get("IsSavedGame", 0)
     _DATA.save_dir = __main__.__dict__.get("save_dir", "")
     #
@@ -225,6 +243,12 @@ def printx(*values, **kwargs):
     file.write(end)
     if flush:
         file.flush()
+
+
+def debugprint(*args, **kwargs):
+    if DEBUG == 0:
+        return
+    apply(printx, args, kwargs)
 
 
 # sys.modules["__builtin__"].printx = printx  # type: ignore
@@ -1690,9 +1714,7 @@ def ShowCriticalWarning(*args):
 
 
 def TriggerEvent(achv_idx):
-    import Reference
-
-    Reference.debugprint("Activated Achievement: %s" % achv_idx)
+    debugprint("Activated Achievement: %s" % achv_idx)
     return Bladex_raw.TriggerEvent(achv_idx)
 
 

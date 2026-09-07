@@ -36,6 +36,7 @@ os.makedirs("../../AnmPak", exist_ok=True)
 import Menu
 from LumenLib import BODLoader
 
+BODLoader.BasicInit()
 BODLoader.Init()
 
 Lumenx.printx("Executed sys_init.py")

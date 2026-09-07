@@ -162,13 +162,13 @@ Bladex.SetListenerPosition(1)
 #
 #
 
-if Reference.PYTHON_DEBUG >= 1:
-	############### DEBUG LEVEL ONE ###############
-	execfile("../../Scripts/DebugControl.py")
+# if Reference.PYTHON_DEBUG >= 1:
+# 	############### DEBUG LEVEL ONE ###############
+# 	execfile("../../Scripts/DebugControl.py")
 
-	if Reference.PYTHON_DEBUG >= 2:
-		############### DEBUG LEVEL TWO ###############
-		Bladex.SetCallCheck(3)
+	# if Reference.PYTHON_DEBUG >= 2:
+	# 	############### DEBUG LEVEL TWO ###############
+	# 	Bladex.SetCallCheck(3)
 # else:
 # 	Bladex.SetCallCheck(0)
 

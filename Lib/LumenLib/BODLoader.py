@@ -38,11 +38,6 @@ if typing.TYPE_CHECKING:
 # ----------------------------------
 LUMEN_ROOT = Lumenx.GetLumenRoot()
 
-f = open(LUMEN_ROOT + "/version", "r")
-VERSION = string.strip(f.readline())
-VERSION_DATE = string.strip(f.readline())
-f.close()
-
 BackImage = BBLib.B_BitMap24()
 BackImageBanner = BBLib.B_BitMap24()
 BackImage.ReadFromFile("../../Data/menu_mod.jpg")
@@ -727,11 +722,11 @@ def AddMod(mod_dir, mod_root, BLModInfo):
     BLModInit = os.path.join(mod_root, "BLModInit.py")
     Enabled = _DATA.mod_info.get(mod_dir, {}).get("Enabled", 0)
     Installed = _DATA.mod_info.get(mod_dir, {}).get("Installed", -1)
-    if not os.path.isfile(BLModInit):
+    if not os.path.isfile(BLModInit):  # 不存在BLModInit.py则无需安装
         Installed = -1
-    elif Installed == -1:
+    elif Installed == -1:  # 存在BLModInit.py且状态为无需安装
         Installed = 0
-    # BLModInit文件被用户意外删除的情况
+    # 启用后BLModInit.py被删除
     if Installed != 1:
         Enabled = 0
 
@@ -792,6 +787,11 @@ def SaveModInfo():
     f = open(os.path.join(LUMEN_ROOT, "Config/BLData.cfg"), "w")
     f.write(pp.pformat(mod_info))
     f.close()
+
+
+def BasicInit():
+    if Lumenx.DEBUG:
+        from LumenLib import LM_Debug
 
 
 def Init():
@@ -1249,7 +1249,7 @@ ModMenu = {
         {
             "Name": "Version",
             "Text": "%s: %s (%s)"
-            % (MenuText.GetMenuText("Version"), VERSION, VERSION_DATE),
+            % (MenuText.GetMenuText("Version"), Lumenx.VERSION, Lumenx.VERSION_DATE),
             "Font": Language.FontCommon,
             "FontScale": Language.MFontScale["S"],
             "VSep": "0.959f",

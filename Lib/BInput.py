@@ -506,6 +506,12 @@ def GetInputManager():
     return InputManager
 
 
+def CurrentlyActivated(action_name):
+    action = InputManager.GetInputActions().Find(action_name)
+    if action.this != "NULL" and action.CurrentlyActivated():
+        return 1
+    return 0
+
 # -------------- VARIABLE WRAPPERS ------------------
 
 # -------------- INITIALIZATION ------------------
