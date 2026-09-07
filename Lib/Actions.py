@@ -383,10 +383,10 @@ def ExtendedTakeObject(inv,Object2TakeName):
 								obj.Orientation = (0.707, 0.707, 0.0, 0.0)
 								obj.Rotate(0,0,1, me.Angle)
 								obj.Position = object.Position[0],min(object.Position[1], me.Position[1])-200,object.Position[2]
-								obj.Static = 0
 								obj.Solid = 1
 								obj.ExclusionGroup = SolidMask.EXG_MAGIC
 								obj.Impulse(0,100,0)
+								InitDataField.Initialise(obj, Takeable=1)
 								break
 				TakeArmour(me.Name, Object2TakeName)
 			else:
@@ -850,7 +850,7 @@ def IsValidForTaking(instance_name):
 			parent=Bladex.GetEntity(object.Parent)
 			if parent and parent.Person:
 				return FALSE
-		if object.Data and "Takeable" in dir(object.Data) and not object.Data.Takeable:
+		if not getattr(object.Data, "Takeable", 1): # -Sryml
 			return FALSE
 		object_data = None
 		if Reference.EntitiesObjectData.has_key(instance_name):
@@ -1537,7 +1537,7 @@ def TakeMainAnm(EntityName):
 	object = Bladex.GetEntity(object_name)
 
 	if Reference.GiveObjectFlag(object_name)==Reference.OBJ_ARMOUR:
-		object.Static = 1
+		InitDataField.Initialise(object, Takeable=0)
 		AuxFuncs.FadeFrom(0.7, 0.3)
 		Bladex.AddScheduledFunc(Bladex.GetTime()+0.1, TakeObject, (EntityName, object_name))
 

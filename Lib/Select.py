@@ -29,7 +29,7 @@ def SqDistanceToGpj(entity):
 def GetSelectionData(entity_name):
 	entity=Bladex.GetEntity(entity_name)
 	#
-	if getattr(entity.Data, "Unselectable", 0):
+	if not getattr(entity.Data, "Selectable", 1):
 		return None
 	#
 	if(Reference.EntitiesSelectionData.has_key(entity_name)):

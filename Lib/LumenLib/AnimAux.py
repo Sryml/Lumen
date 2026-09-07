@@ -235,7 +235,7 @@ class NODE_HANDLER:
         o.Orientation = tar.Orientation
         o.Alpha = 0.7
         o.SelfIlum = 0.5
-        InitDataField.Initialise(o, Unselectable=1)
+        InitDataField.Initialise(o, Selectable=0)
         # self.Afterimage_Entities.append(o)
 
         animation = Animation(o, Destroy=DESTROY_METHOD_BIN)
@@ -721,7 +721,7 @@ def _example():
     # fmt: off
     for dir, kind, ptrl_type in [(1, "Gema", "GreenTrail"), (-1, "Gemaroja", "RedTrail")]:
         o = Bladex.CreateEntity(kind, kind, 0, 0, 0)
-        InitDataField.Initialise(o, Unselectable=1)
+        InitDataField.Initialise(o, Selectable=0)
         o.CastShadows = 0
         o.SelfIlum = 0.2
         o.Alpha = 0.9
