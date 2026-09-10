@@ -53,6 +53,7 @@ class B_InputListener(B_InputListenerPtr):
     def __init__(self, arg0):
         self.this = BInputc.new_B_InputListener(arg0)
         self.thisown = 1
+        self.Name = arg0 #
 
 
 class B_InputDevicePtr:

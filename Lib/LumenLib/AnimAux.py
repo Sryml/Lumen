@@ -181,7 +181,10 @@ class NODE_HANDLER:
         # type: (Node, float, Bladex._entity.B_PyEntity, float) -> ...
         vx, vy, vz = Scale(self.Direction, value)  # type: ignore
         x, y, z = self.LocationBasis
-        me.Position = (x + vx, y + vy, z + vz)
+        if self.TargetAttr:
+            setattr(me, self.TargetAttr, (x + vx, y + vy, z + vz))
+        else:
+            me.Position = (x + vx, y + vy, z + vz)
 
     # 角位移
     def AngularDisplacement(self, time, me, value):
@@ -446,6 +449,9 @@ class Channel(AnimEvent):
         if node in self.Nodes:
             self.Nodes.remove(node)
 
+    def ClearNodes(self):
+        self.Nodes = []
+
     def Reset(self):
         self.Enabled = 1
         self.LoopCount = 0
@@ -536,6 +542,12 @@ class Animation(AnimEvent):
         self._reverse = 0
 
     # ----------------------------------
+    def isRunning(self):
+        return self._running
+
+    def isPaused(self):
+        return self._paused
+
     def Cancel(self):
         if not self._running:
             return
@@ -573,6 +585,9 @@ class Animation(AnimEvent):
     def RemoveChannel(self, channel):
         if channel in self.Channels:
             self.Channels.remove(channel)
+
+    def ClearChannels(self):
+        self.Channels = []
 
     def Reset(self):
         self._running = False
