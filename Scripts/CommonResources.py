@@ -21,7 +21,7 @@ def Init():
     BBLib.ReadMMP('../../3dChars/DwfSkin1.mmp')
     BBLib.ReadMMP('../../3dChars/DwfSkin2.mmp')
     
-    BBLib.ReadMMP('../../3dobjs/weapons2.mmp')
+    BBLib.ReadMMP('../../3dobjs/objects.mmp')
     BBLib.ReadMMP("../../3dobjs/ArcheryTarget.mmp")
     BBLib.ReadMMP('../../Data/UIWidgets.mmp')
     #

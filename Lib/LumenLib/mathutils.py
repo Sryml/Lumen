@@ -272,14 +272,14 @@ class Vector:
         return result
 
     def dot(self, other):
-        if isinstance(other, Vector):
-            if self.size != other.size:
+        if is_sequence(other):
+            if self.size != len(other):
                 raise ValueError, "Vector sizes do not match"  # type: ignore
 
             result = 0
             i = 0
             while i < self.size:
-                result = result + self.values[i] * other.values[i]
+                result = result + self.values[i] * other[i]
                 i = i + 1
 
             return result
@@ -287,21 +287,21 @@ class Vector:
         raise TypeError, "Invalid Vector dot product"  # type: ignore
 
     def cross(self, other):
-        if not isinstance(other, Vector):
-            raise TypeError, "Vector cross product requires a Vector"  # type: ignore
+        if not is_sequence(other):
+            raise TypeError, "Invalid Vector cross product"  # type: ignore
 
-        if self.size != 3 or other.size != 3:
+        if self.size != 3 or len(other) != 3:
             raise ValueError, "Cross product requires 3D vectors"  # type: ignore
 
         return Vector((
-            self.values[1] * other.values[2] -
-            self.values[2] * other.values[1],
+            self.values[1] * other[2] -
+            self.values[2] * other[1],
 
-            self.values[2] * other.values[0] -
-            self.values[0] * other.values[2],
+            self.values[2] * other[0] -
+            self.values[0] * other[2],
 
-            self.values[0] * other.values[1] -
-            self.values[1] * other.values[0]
+            self.values[0] * other[1] -
+            self.values[1] * other[0]
         ))
 
     def angle(self, other):
@@ -377,7 +377,12 @@ class Quaternion:
 
             axis = Vector(values)
             if axis.length_squared() == 0:
-                raise ValueError, "Axis-angle quaternion requires a non-zero axis"  # type: ignore
+                self.w = 1
+                self.x = 0
+                self.y = 0
+                self.z = 0
+                return
+                # raise ValueError, "Axis-angle quaternion requires a non-zero axis"  # type: ignore
             axis.normalize()
 
             half_angle = angle * 0.5

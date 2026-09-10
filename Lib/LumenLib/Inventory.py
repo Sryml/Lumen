@@ -37,9 +37,9 @@ MAXSHIELDS = 16
 MAXQUIVERS = 16
 MAXOBJECTS = 32
 
-VIEW_PERIOD = 2.0
-FADEIN_PERIOD = 0.3
-FADEOUT_PERIOD = 0.3
+VIEW_PERIOD = 2.5
+FADEIN_PERIOD = 0.2
+FADEOUT_PERIOD = 0.4
 BORDERANIM_PERIOD = 0.3
 
 INVENTORY = None
@@ -1105,6 +1105,12 @@ class InventoryUI:
             return
         ent_name, kind, number, max_stack, star_flag = self.child_frame[focus].slot_data
         if not ent_name:
+            return
+        # ent = Bladex.GetEntity(ent_name)
+        me = Lumenx.GetControlCharacter()
+        inv = me.GetInventory()
+        if ent_name != "%sKeyRing" % (me.Name) and not inv.CarringObject(ent_name): # CarringObject会忽略KeyRing
+            ShowInventory(init=0, next_page=0, update_focus=1)  # refresh
             return
         #
         label = self.detail_label

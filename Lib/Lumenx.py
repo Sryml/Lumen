@@ -252,6 +252,8 @@ def debugprint(*args, **kwargs):
 
 
 # sys.modules["__builtin__"].printx = printx  # type: ignore
+__main__.printx = printx
+__main__.debugprint = debugprint
 
 ######### Initialization End #########
 

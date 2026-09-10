@@ -62,6 +62,7 @@ def GetTimerInfo(name):
 
 
 def SubscribeToList(timer_name, func, func_args=(), func_kwds={}):
+    """Timer60, Timer30, Timer15"""
     l = SubscribedLists.get(timer_name)
     item = (func, func_args, func_kwds)
     if (l is None) or (item in l):
