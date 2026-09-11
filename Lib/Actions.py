@@ -34,7 +34,7 @@ import Torchs
 import ItemTypes
 import SolidMask
 
-from Lumenx import AutomatedAssets, printx
+from Lumenx import AutomatedAssets, printx, debugprint
 from LumenLib import Inventory, BUtils
 from LumenLib.Trajectory import Trajectory
 
@@ -369,6 +369,10 @@ def ExtendedTakeObject(inv,Object2TakeName):
 		me = Bladex.GetEntity(inv.Owner) # type: Bladex._entity.B_Entity_Person
 		object = Bladex.GetEntity(Object2TakeName)
 		object_data = Reference.GetObjectData(Object2TakeName)
+		if not object_data:
+			printx("ERROR - ExtendedTakeObject: Object data not found for "+Object2TakeName)
+			return
+
 		object_flag = Reference.GiveObjectFlag(Object2TakeName)
 		if object_flag == Reference.OBJ_ARMOUR:
 			if me.CharTypeExt == object_data[1]:
@@ -409,6 +413,11 @@ def TakeObject(EntityName,Object2TakeName, force_take=TRUE):
 	#if me.Data and me.Data.pickup_entity:
 	#	me.Data.pickup_entity=Object2TakeName
 	#PickupEventHandler(EntityName,"PickupEvent")
+	object_flag=Reference.GiveObjectFlag(Object2TakeName) # -Sryml
+	if object_flag == Reference.OBJ_NONE:
+		print "ERROR adding an object to a character !!!"
+		print "Not classified properly in Reference.py!!!"
+		return
 
 	if IsOneTooMany (EntityName, Object2TakeName):
 		if force_take:
@@ -417,7 +426,6 @@ def TakeObject(EntityName,Object2TakeName, force_take=TRUE):
 			print (EntityName+": Too many objects of this type: "+Object2TakeName)
 			return
 
-	object_flag=Reference.GiveObjectFlag(Object2TakeName)
 	try:
 		me.Data.RegisterObjectAsTaken(Object2TakeName)
 	except:
@@ -457,9 +465,6 @@ def TakeObject(EntityName,Object2TakeName, force_take=TRUE):
 		ExtendedTakeObject(inv,Object2TakeName)
 	elif object_flag == Reference.OBJ_ARMOUR:
 		ExtendedTakeObject(inv,Object2TakeName)
-	else:
-		print "ERROR adding an object to a character !!!"
-		print "Not classified properly in Reference.py!!!"
 
 
 def StatR(EntityName):
@@ -1436,10 +1441,9 @@ def TakeArmour(EntityName, ObjectName):
 	object=Bladex.GetEntity(ObjectName)
 
 	# Get object type
-	if Reference.EntitiesObjectData.has_key(ObjectName):
-		object_data = Reference.EntitiesObjectData[ObjectName]
-	else:
-		object_data = Reference.DefaultObjectData[object.Kind]
+	object_data = Reference.GetObjectData(ObjectName)
+	if not object_data:
+		return
 
 	ct = Bladex.GetCharType(me.CharType,me.CharTypeExt)
 

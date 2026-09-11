@@ -1206,13 +1206,11 @@ def GiveObjectFlag(ObjectName):
 def GiveWeaponFlag(ObjectName):
 	object=Bladex.GetEntity(ObjectName)
 	# Get object type
-	if EntitiesObjectData.has_key(ObjectName):
-		object_data = EntitiesObjectData[ObjectName]
-	else:
-		object_data = DefaultObjectData[object.Kind]
+	object_data = GetObjectData(ObjectName) # -Sryml
+	if not object_data:
+		return -1
 	object_flag = object_data[0]
-
-	if object_flag<>OBJ_WEAPON:
+	if object_flag != OBJ_WEAPON:
 		return -1
 
 	if len(object_data)<6:

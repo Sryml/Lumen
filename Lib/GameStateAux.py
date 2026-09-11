@@ -392,15 +392,18 @@ def LoadBODs(files):
 
 def AddObjectToInventory(me, names): # -Sryml
   # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
-  import Actions
+  import Actions, Reference
   from LumenLib import BUtils
   
   inv = me.GetInventory()
-  for i,name in enumerate(names):
-    if i >= inv.maxObjects:
+  count = 0
+  for name in names:
+    object_data = Reference.GetObjectData(name)
+    if count >= inv.maxObjects or (not object_data):
       BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
       continue
     Actions.ExtendedTakeObject(inv, name)
+    count = count + 1
 
 def AddWeaponToInventory(me, names): # -Sryml
   # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
@@ -409,8 +412,10 @@ def AddWeaponToInventory(me, names): # -Sryml
   from LumenLib import BUtils
   
   inv = me.GetInventory()
-  for i,name in enumerate(names):
-    if i >= inv.maxWeapons:
+  count = 0
+  for name in names:
+    object_data = Reference.GetObjectData(name)
+    if count >= inv.maxWeapons or (not object_data):
       BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
       continue
 
@@ -420,30 +425,37 @@ def AddWeaponToInventory(me, names): # -Sryml
     else:
         flag=Reference.GiveWeaponFlag(name)
         inv.AddWeapon(name,flag)
+    count = count + 1
 
 def AddShieldToInventory(me, names): # -Sryml
   # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
-  import Actions
+  import Actions, Reference
   from LumenLib import BUtils
   
   inv = me.GetInventory()
-  for i,name in enumerate(names):
-    if i >= inv.maxShields:
+  count = 0
+  for name in names:
+    object_data = Reference.GetObjectData(name)
+    if count >= inv.maxShields or (not object_data):
       BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
       continue
     inv.AddShield(name)
+    count = count + 1
 
 def AddQuiverToInventory(me, names): # -Sryml
   # type: (Bladex._entity.B_Entity_Person, list[str]) -> ...
-  import Actions
+  import Actions, Reference
   from LumenLib import BUtils
   
   inv = me.GetInventory()
-  for i,name in enumerate(names):
-    if i >= inv.maxQuivers:
+  count = 0
+  for name in names:
+    object_data = Reference.GetObjectData(name)
+    if count >= inv.maxQuivers or (not object_data):
       BUtils.ItemDrop(Bladex.GetEntity(name), pos=me.Position)
       continue
     inv.AddQuiver(name)
+    count = count + 1
 
 
 def LinkRight(weapon_name,inv,owner):
