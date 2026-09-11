@@ -3273,5 +3273,25 @@ def TestJumpDelay():
 	TestJumpLock = 0
 
 
+def FloorFail(EntityName, EventName):
+	me = Bladex.GetEntity(EntityName)
+	if getattr(me.Data, "Flying", 0):
+		return
+	me.RaiseEvent("FloorFail_Raw")
+
+def FloorFailAd(EntityName, EventName):
+	me = Bladex.GetEntity(EntityName)
+	if getattr(me.Data, "Flying", 0):
+		return
+	me.RaiseEvent("FloorFailAd_Raw")
+
+def FallTest(EntityName, EventName):
+	me = Bladex.GetEntity(EntityName)
+	if getattr(me.Data, "Flying", 0):
+		return
+	me.RaiseEvent("FallTest_Raw")
+
+
+
 # ----------------------------------
 

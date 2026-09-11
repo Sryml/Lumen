@@ -65,8 +65,10 @@ def Init():
 
     Bladex.SetEventTableFunc("Rlx","DthFllArrivedWarper",Actions.DthFllArrivedWarper)
     Bladex.SetEventTableFuncC("Rlx","DthFllArrived","DthFllArrived")
-    Bladex.SetEventTableFuncC("Rlx","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("Rlx","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("Rlx","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("Rlx","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("Rlx","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("Rlx","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("Rlx","Turn180","RelaxTurn")
     #Bladex.SetEventTableFuncC("Rlx","2Right4Combat","2Right4Combat")
     #Bladex.SetEventTableFuncC("Rlx","2Left4Combat","2Left4Combat")
@@ -83,8 +85,10 @@ def Init():
     Bladex.SetEventTableFuncC("Rlx_vt","SlipNeeded","SlipNeeded")
     Bladex.SetEventTableFunc("Rlx_vt","DthFllArrivedWarper",Actions.DthFllArrivedWarper)
     Bladex.SetEventTableFuncC("Rlx_vt","DthFllArrived","DthFllArrived")
-    Bladex.SetEventTableFuncC("Rlx_vt","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("Rlx_vt","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("Rlx_vt","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("Rlx_vt","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("Rlx_vt","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("Rlx_vt","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("Rlx_vt","Recover","EndGenericAction")
 
 
@@ -131,8 +135,10 @@ def Init():
 
     Bladex.SetEventTableFunc("WBK","DthFllArrivedWarper",Actions.DthFllArrivedWarper)
     Bladex.SetEventTableFuncC("WBK","DthFllArrived","DthFllArrived")
-    Bladex.SetEventTableFuncC("WBK","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("WBK","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("WBK","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("WBK","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("WBK","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("WBK","FloorFailAd_Raw","FloorFailAd")
 
 
 
@@ -164,8 +170,10 @@ def Init():
 
     Bladex.SetEventTableFunc("WBK_JOG","DthFllArrivedWarper",Actions.DthFllArrivedWarper)
     Bladex.SetEventTableFuncC("WBK_JOG","DthFllArrived","DthFllArrived")
-    Bladex.SetEventTableFuncC("WBK_JOG","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("WBK_JOG","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("WBK_JOG","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("WBK_JOG","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("WBK_JOG","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("WBK_JOG","FloorFailAd_Raw","FloorFailAd")
 
 
 
@@ -196,8 +204,10 @@ def Init():
 
     Bladex.SetEventTableFunc("WLK","DthFllArrivedWarper",Actions.DthFllArrivedWarper)
     Bladex.SetEventTableFuncC("WLK","DthFllArrived","DthFllArrived")
-    Bladex.SetEventTableFuncC("WLK","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("WLK","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("WLK","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("WLK","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("WLK","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("WLK","FloorFailAd_Raw","FloorFailAd")
 
 
     # Andar hacia delante , JOG
@@ -226,8 +236,10 @@ def Init():
 
     Bladex.SetEventTableFunc("JOG","DthFllArrivedWarper",Actions.DthFllArrivedWarper)
     Bladex.SetEventTableFuncC("JOG","DthFllArrived","DthFllArrived")
-    Bladex.SetEventTableFuncC("JOG","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("JOG","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("JOG","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("JOG","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("JOG","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("JOG","FloorFailAd_Raw","FloorFailAd")
 
     # Andar hacia delante ,SNEAK
     Bladex.SetEventTableFunc("SNK","ActionStart",Actions.GraspString)
@@ -252,8 +264,10 @@ def Init():
     Bladex.SetEventTableFuncC("SNK","Turn180","SneakTurn")
 
 
-    Bladex.SetEventTableFuncC("SNK","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("SNK","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("SNK","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("SNK","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("SNK","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("SNK","FloorFailAd_Raw","FloorFailAd")
 
 
     ####################################################################################
@@ -278,8 +292,10 @@ def Init():
     Bladex.SetEventTableFuncC("TURNING","StopBackwards","CS_GoBackwards")	
 
     #Bladex.SetEventTableFuncC("TURNING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("TURNING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("TURNING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("TURNING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("TURNING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("TURNING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("TURNING","FloorFailAd_Raw","FloorFailAd")
 
 
 
@@ -307,7 +323,8 @@ def Init():
     Bladex.SetEventTableFuncC("Fll","StrafeLeft","SS_StrafeLeft")
     Bladex.SetEventTableFuncC("Fll","StopStrafeLeft","CS_StrafeLeft")
 
-    Bladex.SetEventTableFuncC("Fll","FloorFail","FloorFail")
+    Bladex.SetEventTableFunc("Fll","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("Fll","FloorFail_Raw","FloorFail")
     Bladex.SetEventTableFuncC("Fll","ConstraintsChanged","Fall")
 
     Bladex.SetEventTableFunc("Dth_Fll2","ActionStart",Actions.UnGraspString)
@@ -345,7 +362,8 @@ def Init():
     Bladex.SetEventTableFuncC("Dth","StopStrafeRight","CS_StrafeRight")
     Bladex.SetEventTableFuncC("Dth","StrafeLeft","SS_StrafeLeft")
     Bladex.SetEventTableFuncC("Dth","StopStrafeLeft","CS_StrafeLeft")
-    Bladex.SetEventTableFuncC("Dth","FloorFail","FloorFail")
+    Bladex.SetEventTableFunc("Dth","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("Dth","FloorFail_Raw","FloorFail")
     Bladex.SetEventTableFuncC("Dth","ConstraintsChanged","Fall")
 
 
@@ -386,8 +404,10 @@ def Init():
     #Bladex.SetEventTableFuncC("FING_RLX","2Right4Combat","2Right4Combat")
     #Bladex.SetEventTableFuncC("FING_RLX","2Left4Combat","2Left4Combat")
 
-    Bladex.SetEventTableFuncC("FING_RLX","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_RLX","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_RLX","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_RLX","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_RLX","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_RLX","FloorFailAd_Raw","FloorFailAd")
 
 
     #Turning while in fac
@@ -399,8 +419,10 @@ def Init():
     Bladex.SetEventTableFuncC("FING_TURN","StopBlock","StopBlock")
 
 
-    Bladex.SetEventTableFuncC("FING_TURN","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_TURN","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_TURN","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_TURN","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_TURN","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_TURN","FloorFailAd_Raw","FloorFailAd")
 
 
     # Facinf , forwards , with shield 
@@ -427,8 +449,10 @@ def Init():
     Bladex.SetEventTableFuncC("FING_FRW_S","StopTurn","StopTurn")
 
 
-    Bladex.SetEventTableFuncC("FING_FRW_S","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_FRW_S","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_FRW_S","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_FRW_S","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_FRW_S","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_FRW_S","FloorFailAd_Raw","FloorFailAd")
 
 
     # Facinf , forwards , without shield
@@ -449,8 +473,10 @@ def Init():
     Bladex.SetEventTableFuncC("FING_FRW","StrafeLeft","StartStrafeLeft")
     Bladex.SetEventTableFuncC("FING_FRW","ActionEnd","Cycle")
 
-    Bladex.SetEventTableFuncC("FING_FRW","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_FRW","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_FRW","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_FRW","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_FRW","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_FRW","FloorFailAd_Raw","FloorFailAd")
 
 
     #Facing , backwards , with shield
@@ -477,8 +503,10 @@ def Init():
     Bladex.SetEventTableFuncC("FING_BWD_S","StopTurn","StopTurn")
 
 
-    Bladex.SetEventTableFuncC("FING_BWD_S","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_BWD_S","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_BWD_S","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_BWD_S","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_BWD_S","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_BWD_S","FloorFailAd_Raw","FloorFailAd")
 
 
 
@@ -501,8 +529,10 @@ def Init():
     Bladex.SetEventTableFuncC("FING_BWD","StrafeLeft","StartStrafeLeft")
     Bladex.SetEventTableFuncC("FING_BWD","ActionEnd","Cycle")
 
-    Bladex.SetEventTableFuncC("FING_BWD","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_BWD","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_BWD","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_BWD","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_BWD","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_BWD","FloorFailAd_Raw","FloorFailAd")
 
     #Facing , strafe right , without shield
     Bladex.SetEventTableFunc("FING_RIGHT","InstantAttack",Actions.InstantAttackSlow)
@@ -532,8 +562,10 @@ def Init():
     #Bladex.SetEventTableFuncC("FING_RIGHT","2Right4Combat","2Right4Combat")
     Bladex.SetEventTableFuncC("FING_RIGHT","2Left4Combat","2Left4Combat")
 
-    Bladex.SetEventTableFuncC("FING_RIGHT","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_RIGHT","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_RIGHT","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_RIGHT","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_RIGHT","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_RIGHT","FloorFailAd_Raw","FloorFailAd")
 
 
     #Facing , strafe right , with shield
@@ -564,8 +596,10 @@ def Init():
     Bladex.SetEventTableFuncC("FING_RIGHT_S","Back","SS_BackwardsInStrafe")
     Bladex.SetEventTableFuncC("FING_RIGHT_S","StopBackwards","CS_BackwardsInStrafe")	
 
-    Bladex.SetEventTableFuncC("FING_RIGHT_S","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_RIGHT_S","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_RIGHT_S","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_RIGHT_S","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_RIGHT_S","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_RIGHT_S","FloorFailAd_Raw","FloorFailAd")
 
 
 
@@ -599,8 +633,10 @@ def Init():
     #Bladex.SetEventTableFuncC("FING_LEFT","2Left4Combat","2Left4Combat")
 
 
-    Bladex.SetEventTableFuncC("FING_LEFT","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_LEFT","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_LEFT","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_LEFT","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_LEFT","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_LEFT","FloorFailAd_Raw","FloorFailAd")
 
 
 
@@ -634,8 +670,10 @@ def Init():
     #Bladex.SetEventTableFuncC("FING_LEFT_S","2Left4Combat","2Left4Combat")
 
 
-    Bladex.SetEventTableFuncC("FING_LEFT_S","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("FING_LEFT_S","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("FING_LEFT_S","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("FING_LEFT_S","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("FING_LEFT_S","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("FING_LEFT_S","FloorFailAd_Raw","FloorFailAd")
 
     ####################################################################################
     #
@@ -676,7 +714,8 @@ def Init():
 
 
     #Bladex.SetEventTableFuncC("CLIMBING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("CLIMBING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("CLIMBING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("CLIMBING","FloorFailAd_Raw","FloorFailAd")
 
 
     # Salto...
@@ -694,10 +733,13 @@ def Init():
 
     Bladex.SetEventTableFuncC("JUMPING","SlipNeeded","SlipNeeded")
 
-    Bladex.SetEventTableFuncC("JUMPING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("JUMPING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("JUMPING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("JUMPING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("JUMPING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("JUMPING","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("JUMPING","ConstraintsChanged","Fall")
-    Bladex.SetEventTableFuncC("JUMPING","FallTest","FallTest")
+    Bladex.SetEventTableFunc("JUMPING","FallTest",Actions.FallTest)
+    Bladex.SetEventTableFuncC("JUMPING","FallTest_Raw","FallTest")
 
 
     Bladex.SetEventTableFuncC("SLIPPING","SlipNeeded","SlipNeeded") #If slope change...
@@ -709,8 +751,10 @@ def Init():
     #Bladex.SetEventTableFuncC("SLIPPING","TransitionEnded","SlipTransitionEnded")
     Bladex.SetEventTableFuncC("SLIPPING","AnmChange","SlipChange")
 
-    Bladex.SetEventTableFuncC("SLIPPING","FloorFailAd","FloorFailAd")  
-    Bladex.SetEventTableFuncC("SLIPPING","FloorFail","FloorFail")
+    Bladex.SetEventTableFunc("SLIPPING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("SLIPPING","FloorFailAd_Raw","FloorFailAd")  
+    Bladex.SetEventTableFunc("SLIPPING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("SLIPPING","FloorFail_Raw","FloorFail")
 
 
 
@@ -727,8 +771,10 @@ def Init():
     Bladex.SetEventTableFuncC("SLIP_END","StopBlock","StopBlock")
     
 
-    Bladex.SetEventTableFuncC("SLIP_END","FloorFailAd","FloorFailAd")  
-    Bladex.SetEventTableFuncC("SLIP_END","FloorFail","FloorFail")
+    Bladex.SetEventTableFunc("SLIP_END","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("SLIP_END","FloorFailAd_Raw","FloorFailAd")  
+    Bladex.SetEventTableFunc("SLIP_END","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("SLIP_END","FloorFail_Raw","FloorFail")
 
 
 
@@ -740,15 +786,19 @@ def Init():
 
 
     Bladex.SetEventTableFunc("BOWING","ActionEnd",Actions.EndDrawBowEventHandler)
-    Bladex.SetEventTableFuncC("BOWING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("BOWING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("BOWING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("BOWING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("BOWING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("BOWING","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("BOWING","SlipNeeded","SlipNeeded")
     Bladex.SetEventTableFunc("BOWING","Jump",Actions.TestJump) # Added
     Bladex.SetEventTableFuncC("BOWING","Jump_Raw","BreakAndTestDodge") # Added
 
     Bladex.SetEventTableFunc("RELOADING","ActionEnd",Actions.EndReloadBowEventHandler)
-    Bladex.SetEventTableFuncC("RELOADING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("RELOADING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("RELOADING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("RELOADING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("RELOADING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("RELOADING","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("RELOADING","SlipNeeded","SlipNeeded")
     Bladex.SetEventTableFunc("RELOADING","Jump",Actions.TestJump) # Added
     Bladex.SetEventTableFuncC("RELOADING","Jump_Raw","BreakAndTestDodge") # Added
@@ -763,8 +813,10 @@ def Init():
 
     Bladex.SetEventTableFuncC("PARRYING","SlipNeeded","SlipNeeded")
 
-    Bladex.SetEventTableFuncC("PARRYING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("PARRYING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("PARRYING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("PARRYING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("PARRYING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("PARRYING","FloorFailAd_Raw","FloorFailAd")
 
     Bladex.SetEventTableFuncC("PARRYING","Walk","SS_GoForwards")
     Bladex.SetEventTableFuncC("PARRYING","StopForwards","CS_GoForwards")
@@ -790,8 +842,10 @@ def Init():
     Bladex.SetEventTableFuncC("HURT","HitFinalItp","NextMoveIfKeyOrAttack")
 
 
-    Bladex.SetEventTableFuncC("HURT","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("HURT","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("HURT","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("HURT","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("HURT","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("HURT","FloorFailAd_Raw","FloorFailAd")
 
     Bladex.SetEventTableFuncC("HURT","Walk","SS_GoForwards")
     Bladex.SetEventTableFuncC("HURT","StopForwards","CS_GoForwards")
@@ -818,8 +872,10 @@ def Init():
     Bladex.SetEventTableFuncC("ATTACKING","HitFinalItpC","LinkNextAttack")
     Bladex.SetEventTableFunc("ATTACKING","ActionEnd",Actions.EndOfAttack)
     Bladex.SetEventTableFuncC("ATTACKING","ActionEndC","EndOfAttack")
-    Bladex.SetEventTableFuncC("ATTACKING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("ATTACKING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("ATTACKING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("ATTACKING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("ATTACKING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("ATTACKING","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("ATTACKING","Walk","SS_GoForwards")
     Bladex.SetEventTableFuncC("ATTACKING","StopForwards","CS_GoForwards")
     Bladex.SetEventTableFuncC("ATTACKING","Back","SS_GoBackwards")
@@ -841,8 +897,10 @@ def Init():
     Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","SlipNeeded","SlipNeeded")
     Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","HitFinalItp","LinkNextAttack")
     Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","ActionEnd","EndOfAttack")
-    Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("ATTACKING_NOMOVE","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("ATTACKING_NOMOVE","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("ATTACKING_NOMOVE","FloorFailAd_Raw","FloorFailAd")
     Bladex.SetEventTableFuncC("ATTACKING","Walk","SS_GoForwards")
     Bladex.SetEventTableFuncC("ATTACKING","StopForwards","CS_GoForwards")
     Bladex.SetEventTableFuncC("ATTACKING","Back","SS_GoBackwards")
@@ -864,8 +922,10 @@ def Init():
     Bladex.SetEventTableFuncC("DODGING","SlipNeeded","SlipNeeded")
     Bladex.SetEventTableFuncC("DODGING","HitFinalItp","LinkNextAttack")
 
-    Bladex.SetEventTableFuncC("DODGING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("DODGING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("DODGING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("DODGING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("DODGING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("DODGING","FloorFailAd_Raw","FloorFailAd")
 
     Bladex.SetEventTableFuncC("DODGING","Walk","SS_GoForwards")
     Bladex.SetEventTableFuncC("DODGING","StopForwards","CS_GoForwards")
@@ -913,8 +973,10 @@ def Init():
     Bladex.SetEventTableFuncC("INSULTING","JogBack","SS_GoBackwards")
     Bladex.SetEventTableFuncC("INSULTING","StopBackwards","CS_GoBackwards")	
 
-    Bladex.SetEventTableFuncC("INSULTING","FloorFail","FloorFail")
-    Bladex.SetEventTableFuncC("INSULTING","FloorFailAd","FloorFailAd")
+    Bladex.SetEventTableFunc("INSULTING","FloorFail",Actions.FloorFail)
+    Bladex.SetEventTableFuncC("INSULTING","FloorFail_Raw","FloorFail")
+    Bladex.SetEventTableFunc("INSULTING","FloorFailAd",Actions.FloorFailAd)
+    Bladex.SetEventTableFuncC("INSULTING","FloorFailAd_Raw","FloorFailAd")
 
 
 
