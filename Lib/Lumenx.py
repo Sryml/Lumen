@@ -191,7 +191,7 @@ def __fn():
     #
     _DATA.current_mod = string.lower(_DATA.current_mod)
 
-    # If it is not the first time to start from Lumen.exe
+    # If it is the first time to start from Lumen.exe
     if not __main__.__dict__.get("isLumen"):
         f_name = "2ea5b509-3c98-5063-95c2-cae184dc13fd"  # by uuid.uuid5(uuid.NAMESPACE_OID,"Lumen:Port")
         path = os.path.join(lumen_root, f_name)
@@ -810,15 +810,15 @@ def ActivateInput():
     # Bladex_raw.ActivateInput()
 
 
-def AddBoundFunc(action_name, proc):
-    IActions = BInput.GetInputManager().GetInputActions()
-    action_name = BInput.GetInternalName(IActions.ID, action_name)
-    Bladex_raw.AddBoundFunc(action_name, proc)  # type: ignore
-    return 1
+def AddBoundFunc(action_name, proc, toggle=0):
+    InputManager = BInput.GetInputManager()
+    return InputManager.AddBoundFunc(action_name, proc, toggle)
 
 
-def AddInputAction(action_name, npi):
-    val = BInput.GetInputManager().AddInputAction(action_name, npi, dict_only=1)
+def AddInputAction(action_name, npi, toggle=0):
+    val = BInput.GetInputManager().AddInputAction(
+        action_name, npi, dict_only=1, toggle=toggle
+    )
     if not val:
         return 0
 
@@ -955,9 +955,9 @@ def AssocControl():
         printx("BladeInit -> Executed Control.py")
 
 
-def AssocKey(action_name, device, key, on_press=1):
+def AssocKey(action_name, device, key, on_press=1, toggle=0):
     val = BInput.GetInputManager().AssocKey(
-        action_name, device, key, on_press, dict_only=1
+        action_name, device, key, on_press, dict_only=1, toggle=toggle
     )
     if not val:
         return 0
@@ -1588,16 +1588,14 @@ def ReadLevel(file_name):
     #             fn(val)
 
 
-def RemoveBoundFunc(action_name, proc):
-    IActions = BInput.GetInputManager().GetInputActions()
-    action_name = BInput.GetInternalName(IActions.ID, action_name)
-    Bladex_raw.RemoveBoundFunc(action_name, proc)  # type: ignore
+def RemoveBoundFunc(action_name, proc, toggle=0):
+    BInput.GetInputManager().RemoveBoundFunc(action_name, proc, toggle)  # type: ignore
     return 1
 
 
-def RemoveInputAction(action_name):
+def RemoveInputAction(action_name, toggle=0):
     IActions = BInput.GetInputManager().GetInputActions()
-    val = IActions.RemoveAction(action_name, dict_only=1)
+    val = IActions.RemoveAction(action_name, dict_only=1, toggle=toggle)
     if not val:
         return 0
 

@@ -10,22 +10,34 @@
 
 # This file was created automatically by SWIG.
 
+import Bladex
+import Lumenx
 import BInputc
 import BCopy
+import types
+
 from Lumenx import printx
 
 __CurrentInputActions = "Default"
 __InputActionsSet = {}  # type: dict[str,B_InputActionsPtr]
 __InputActionsNum = 0
-__AutoUniqueization = 0  # FIXME: Enabling it will cause some button functions to fail, such as the attack function.
+# __AutoUniqueization = 0  # Enabling it will cause some button functions to fail, such as the attack function.
+
+
+def Wrapper(func):
+    def wrapped(func=func):
+        Bladex.AddScheduledFunc(-1, func, (), "[NSAVE]")
+
+    return wrapped
 
 
 def GetInternalName(ID, action_name):
-    global __AutoUniqueization
-    if not __AutoUniqueization:
-        return action_name
-    else:
-        return str(ID) + "_" + action_name
+    return action_name
+    # global __AutoUniqueization
+    # if not __AutoUniqueization:
+    #     return action_name
+    # else:
+    #     return str(ID) + "_" + action_name
 
 
 class B_InputListenerPtr:
@@ -53,7 +65,7 @@ class B_InputListener(B_InputListenerPtr):
     def __init__(self, arg0):
         self.this = BInputc.new_B_InputListener(arg0)
         self.thisown = 1
-        self.Name = arg0 #
+        self.Name = arg0  #
 
 
 class B_InputDevicePtr:
@@ -148,6 +160,12 @@ class B_InputActionPtr:
         self.thisown = 0
         self.name = name
         self.action = action
+
+    def __getstate__(self):
+        pass
+
+    def __setstate__(self, parms):
+        pass
 
     def __str__(self):
         val = BInputc.B_InputAction___str__(self.this)
@@ -247,7 +265,10 @@ class B_InputActionPtr:
         self.action["Devices"][device] = []
         return val
 
-    def RemoveAllProcs(self):
+    def RemoveAllProcs(self, toggle=0):
+        if not toggle:
+            self.action["BoundFunc"] = []
+            self.action["BoundFuncMap"] = {}
         val = BInputc.B_InputAction_RemoveAllProcs(self.this)
         return val
 
@@ -278,6 +299,12 @@ class B_InputActionsPtr:
             # },
         }
 
+    def __getstate__(self):
+        pass
+
+    def __setstate__(self, parms):
+        pass
+
     def nElements(self):
         return len(self.names)
         # val = BInputc.B_InputActions_nElements(self.this)
@@ -298,13 +325,16 @@ class B_InputActionsPtr:
         val = B_InputActionPtr(val, action_name, self.actions.get(action_name, None))
         return val
 
-    def RemoveAction(self, action_name, dict_only=0):
+    def RemoveAction(self, action_name, dict_only=0, toggle=0):
         """dict_only: If set to 1, only the dictionary is updated"""
         if action_name not in self.names:
             return 0
 
-        self.names.remove(action_name)
-        del self.actions[action_name]
+        if not toggle:
+            self.names.remove(action_name)
+            self.actions[action_name]["BoundFunc"] = []
+            self.actions[action_name]["BoundFuncMap"] = {}
+            del self.actions[action_name]
         if not dict_only:
             val = BInputc.B_InputActions_RemoveAction(
                 self.this, GetInternalName(self.ID, action_name)
@@ -346,48 +376,52 @@ class B_InputManagerPtr:
         val = BInputc.B_InputManager_GetTimeActionActivated(self.this, action_name)
         return val
 
-    def AddInputAction(self, action_name, IsConst, dict_only=0):
+    def AddInputAction(self, action_name, IsConst, dict_only=0, toggle=0):
         """dict_only: If set to 1, only the dictionary is updated"""
         IActions = self.GetInputActions()
-        if action_name in IActions.names:
-            return 0
+        if not toggle:
+            if action_name in IActions.names:
+                return 0
 
-        IActions.names.append(action_name)
-        IActions.actions[action_name] = {
-            "IsConst": IsConst,
-            "Devices": {
-                "Keyboard": [],
-                "Mouse": [],
-                "Gamepad": [],
-            },
-        }
+            IActions.names.append(action_name)
+            IActions.actions[action_name] = {
+                "IsConst": IsConst,
+                "Devices": {
+                    "Keyboard": [],
+                    "Mouse": [],
+                    "Gamepad": [],
+                },
+                "BoundFunc": [],
+                "BoundFuncMap": {},
+            }
         if not dict_only:
             action_name = GetInternalName(IActions.ID, action_name)
             val = BInputc.B_InputManager_AddInputAction(self.this, action_name, IsConst)
         return 1
 
-    def AssocKey(self, action_name, device, key, on_press, dict_only=0):
+    def AssocKey(self, action_name, device, key, on_press, dict_only=0, toggle=0):
         """dict_only: If set to 1, only the dictionary is updated"""
         IActions = self.GetInputActions()
-        if action_name not in IActions.names:
-            return 0
+        if not toggle:
+            if action_name not in IActions.names:
+                return 0
 
-        key_tuple = (key, on_press)
-        if key_tuple in IActions.actions[action_name]["Devices"][device]:
-            return 0
-        # If already bound, unbind and overwrite
-        device_obj = GetInputManager().GetAttachedDevice(device)
-        if device_obj.IsBinded(key):
-            for name in IActions.names:
-                # Actions with IsConst set to 1 will not be overridden, skipped
-                if IActions.actions[name]["IsConst"] or name == action_name:
-                    continue
-                if key_tuple in IActions.actions[name]["Devices"][device]:
-                    IAction = IActions.Find(name)
-                    IAction.RemoveEvent(device_obj, key, on_press)
-                    break
-        #
-        IActions.actions[action_name]["Devices"][device].append(key_tuple)
+            key_tuple = (key, on_press)
+            if key_tuple in IActions.actions[action_name]["Devices"][device]:
+                return 0
+            # If already bound, unbind and overwrite
+            device_obj = GetInputManager().GetAttachedDevice(device)
+            if device_obj.IsBinded(key):
+                for name in IActions.names:
+                    # Actions with IsConst set to 1 will not be overridden, skipped
+                    if IActions.actions[name]["IsConst"] or name == action_name:
+                        continue
+                    if key_tuple in IActions.actions[name]["Devices"][device]:
+                        IAction = IActions.Find(name)
+                        IAction.RemoveEvent(device_obj, key, on_press)
+                        break
+            #
+            IActions.actions[action_name]["Devices"][device].append(key_tuple)
 
         if not dict_only:
             action_name = GetInternalName(IActions.ID, action_name)
@@ -402,6 +436,49 @@ class B_InputManagerPtr:
         #     return
         # val = BInputc.B_InputManager_DisassocKey(self.this, device, key)  # type: ignore
         return self.GetAttachedDevice(device).UnBinded(key)
+
+    def AddBoundFunc(self, action_name, proc, toggle=0):
+        """[LUMEN] Added"""
+        IActions = self.GetInputActions()
+        val = 0
+        if toggle:
+            val = 1
+        else:
+            if action_name in IActions.names:
+                action = IActions.actions[action_name]
+                raw_proc = proc
+                if not action["BoundFuncMap"].has_key(raw_proc):
+                    if type(raw_proc) == types.StringType:
+                        action["BoundFuncMap"][raw_proc] = proc
+                    else:
+                        action["BoundFuncMap"][raw_proc] = Wrapper(proc)
+
+                proc = action["BoundFuncMap"][raw_proc]
+                action["BoundFunc"].append(proc)
+                val = 1
+        if val:
+            Lumenx.Bladex_raw.AddBoundFunc(action_name, proc)
+        return val
+
+    def RemoveBoundFunc(self, action_name, proc, toggle=0):
+        """[LUMEN] Added"""
+        IActions = self.GetInputActions()
+        val = 0
+        if toggle:
+            val = 1
+        else:
+            if action_name in IActions.names:
+                action = IActions.actions[action_name]
+                raw_proc = proc
+                proc = action["BoundFuncMap"].get(raw_proc)
+                if proc:
+                    action["BoundFunc"].remove(proc)
+                    if proc not in action["BoundFunc"]:
+                        del action["BoundFuncMap"][raw_proc]
+                    val = 1
+        if val:
+            Lumenx.Bladex_raw.RemoveBoundFunc(action_name, proc)
+        return val
 
     def Bind2(self, arg0, arg1, arg2, arg3):
         val = BInputc.B_InputManager_Bind2(self.this, arg0, arg1, arg2, arg3)
@@ -459,16 +536,27 @@ class B_InputManagerPtr:
 
         IActions = self.GetInputActions()
         for action_name in IActions.names:
-            IAction = IActions.Find(action_name)
-            IAction.RemoveAllEvents(toggle=1)
+            # IAction = IActions.Find(action_name)
+            # IAction.RemoveAllEvents(toggle=1)
+            # IAction.RemoveAllProcs(toggle=1)
+            # if IAction.IsConst():
+            Bladex.RemoveInputAction(action_name, toggle=1)  # type: ignore
 
         IActions = self.InputActionsSet[set_name]
         for action_name in IActions.names:
-            IAction = IActions.Find(action_name)
-            for device, keys in IActions.actions[action_name]["Devices"].items():
-                device_obj = self.GetAttachedDevice(device)
+            actions = IActions.actions[action_name]
+            # if actions["IsConst"]:
+            Bladex.AddInputAction(action_name, actions["IsConst"], toggle=1)  # type: ignore
+            for device, keys in actions["Devices"].items():
                 for key, on_press in keys:
-                    IAction.AddEvent(device_obj, key, on_press, toggle=1)
+                    Bladex.AssocKey(action_name, device, key, on_press, toggle=1)  # type: ignore
+            for proc in actions["BoundFunc"]:
+                InputManager.AddBoundFunc(action_name, proc, toggle=1)
+            # IAction = IActions.Find(action_name)
+            # for device, keys in IActions.actions[action_name]["Devices"].items():
+            #     device_obj = self.GetAttachedDevice(device)
+            #     for key, on_press in keys:
+            #         IAction.AddEvent(device_obj, key, on_press, toggle=1)
 
         globals()["__CurrentInputActions"] = set_name
         return 1
@@ -512,6 +600,7 @@ def CurrentlyActivated(action_name):
     if action.this != "NULL" and action.CurrentlyActivated():
         return 1
     return 0
+
 
 # -------------- VARIABLE WRAPPERS ------------------
 
